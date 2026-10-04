@@ -5,6 +5,7 @@ const memory=new Map(),host=Object.fromEntries(Object.getOwnPropertyNames(native
 host.readText=path=>path.startsWith('userdata/')?(memory.get(path)??''):native.readText(path);
 host.writeText=(path,text)=>memory.set(`userdata/${path}`,text);
 const application=new ProjectApplication(host,{testing:true,fixedClock:true,seed:2107,...scenario.options});
+if(Number.isInteger(scenario.readingIndex)&&application.page?.pages)application.page.index=scenario.readingIndex;
 let count=0;
 const advance=(mask=0)=>{
   const input=scenario.input?.[count]??scenario.inputMask??mask;
@@ -13,7 +14,7 @@ const advance=(mask=0)=>{
     else if(action.type==='select'){application.core.menu.selection=action.index;application.core.menu.phase=2;}
     else if(action.type==='play'){application.page=null;application.core.startTransition(action.selection??{});}
     else if(action.type==='practice')application.choosePractice(action.selection);
-    else if(action.type==='ending')application.page=new EndingPage({result:action.result,onClose:()=>{},text:application.text,art:application.art,music:application.music});
+    else if(action.type==='ending')application.page=new EndingPage({result:action.result,onClose:()=>{application.page=null;application.core.openMenu();},text:application.text,art:application.art,music:application.music});
   }
   application.update(input);count++;
 };

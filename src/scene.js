@@ -8,7 +8,7 @@ import {GameFrameSkin} from './frame-skin.js';
 import {GAME_REVISION} from './storage.js';
 
 const names=new Map(CHARACTERS.map(value=>[value.id,value.name]));
-const stages=STAGES.map(value=>({...value,bossName:names.get(value.bossId),midbossName:names.get(value.bossId)}));
+const stages=STAGES.map(value=>({...value,bossName:names.get(value.bossId),midbossName:names.get(MIDBOSSES.find(midboss=>midboss.stageId===value.id)?.bossId??value.bossId)}));
 const formatScore=value=>String(Math.trunc(value*10)).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 const clone=value=>JSON.parse(JSON.stringify(value));
 const rgba=value=>((value<<8)|(value>>>24))>>>0;
@@ -52,7 +52,9 @@ export class CampaignScene extends TouhouGame {
       rng:settings.rng??new TouhouRNG(config.seed),visualRng:settings.visualRng??new TouhouRNG(config.seed^0x6d2b79f5),
       renderBackground:(draw,game)=>{background.draw(draw,game);game.stageTransition?.draw(draw,{x:48,y:24,width:576,height:672});},
       spellContext:{...settings.spellContext,...(host?.rasterizeBitmapText&&host?.encodeText?{
-        createNameAnimation:(name,options)=>resources.createNameAnimation(name,{...options,codePage:936},settings.banks.text)}:{})},
+        createNameAnimation:(name,options)=>{const vm=resources.createNameAnimation(name,{...options,codePage:936},settings.banks.text),drawSelf=vm.drawSelf.bind(vm);
+          vm.drawSelf=(draw,view)=>{const priority=vm.drawPriority,alreadyClipped=priority>=10&&priority<=62||priority>=80&&priority<=83;
+            if(!alreadyClipped)draw.scissor(48,24,576,672);drawSelf(draw,view);if(!alreadyClipped)draw.scissorEnd();};return vm;}}:{})},
       spellOptions:{...settings.spellOptions,records,fallbackRecords:{},viewIndex:config.character,playback:!!playbackSource,mode:config.mode==='spell-practice'?2:0},
       gameOverOptions:{...settings.gameOverOptions,onOpen:()=>music.pause(),onContinue:()=>music.resume()}});
     Object.assign(this,{resources,host,art,text,music,storage,config,options,background,onComplete,onReplayDone,onSpellPracticeEnd});
@@ -84,7 +86,8 @@ export class CampaignScene extends TouhouGame {
         if(record){const mode=this.spell.mode===2?1:0;record.captures[mode]=Math.min(99999,record.captures[mode]+1);}}
       onEvent?.(name,data);
     };
-    this.bossHud.drawName=(draw,name,style)=>this.text.draw(draw,name,76,26,{size:18,width:455,height:38,color:0xf8e8caff});
+    this.bossHud.drawName=(queue,name,style)=>{const label=names.get(this.context.boss?.bossId)??name;
+      queue.enqueuePriority(style.drawPriority,draw=>this.text.draw(draw,label,76,18,{size:16,width:455,height:25,color:0xf8e8caff,alpha:(style.color>>>24)/255}));};
     // The restored game facade overrides the inactive timer with -1. Keep the
     // public HUD's authored nonspell clock at this consumer composition point.
     const updateHud=this.bossHud.update.bind(this.bossHud);
@@ -158,6 +161,7 @@ export class CampaignScene extends TouhouGame {
     for(const enemy of this.enemies){enemy.animation.destroy();for(const effect of enemy.effects)effect.destroy();}this.enemies.length=0;this.context.enemies=this.enemies;
     this.bossPresentation.stopCombat();this.bossPresentation.clearBoss();
   }
+  openGameOver(mask=0){this.session.highScore=Math.max(this.session.highScore??0,this.player.highScore,this.player.score);return super.openGameOver(mask);}
   completeCampaign(result){this.finishedResult={...result};this.pendingCompletion={...result};}
   dispatchCompletion(){const result=this.pendingCompletion;if(!result)return;this.pendingCompletion=null;
     if(!this.playback&&!this.options.testing){this.storage.recordClear(result);this.storage.saveProgress();}
@@ -166,8 +170,8 @@ export class CampaignScene extends TouhouGame {
     if(this.config.mode==='spell-practice'||this.config.mode==='stage-practice')this.onSpellPracticeEnd?.(result,this);
     else this.onComplete?.(result,this);
   }
-  saveRun(summary={}){if(this.savedRun||this.playback||this.options.testing)return;this.savedRun=true;
-    this.storage.saveProgress();if(this.storage.settings.autoSaveReplay&&this.recorder?.frames)this.storage.saveReplay(this.recorder.toJSON(),{character:this.config.character,difficulty:this.config.difficulty,mode:this.config.mode,score:this.player.score,stageId:this.director.stageId,...summary});}
+  saveRun(summary={},{force=false}={}){if(this.savedRun||this.playback||this.options.testing)return;this.savedRun=true;
+    this.storage.saveProgress();if((force||this.storage.settings.autoSaveReplay)&&this.recorder?.frames){this.storage.saveReplay(this.recorder.toJSON(),{character:this.config.character,difficulty:this.config.difficulty,mode:this.config.mode,score:this.player.score,stageId:this.director.stageId,...summary});this.replaySaved=true;}}
   update(mask=0){
     if(this.playback){const value=this.playback.next();if(value===null){if(!this.replayDone){this.replayDone=true;this.onReplayDone?.(this);}return;}mask=value;}
     this.recorder?.record(mask);

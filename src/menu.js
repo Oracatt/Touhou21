@@ -3,12 +3,15 @@ import {GAME,PLAYERS} from './content.js';
 
 export const TITLE_LABELS=['开始游戏','Extra Start','关卡练习','符卡练习','回放鉴赏','玩家记录','音乐室','选项','游戏说明','退出游戏'];
 export class ProjectTitleMenu extends TouhouTitleMenu {
-  constructor(options,{art,text,storage,unlockAll=false}={}){super({...options,labels:TITLE_LABELS,startModes:{0:'normal',1:'extra'},excluded:storage.extraUnlocked||unlockAll?[]:[1]});Object.assign(this,{art,text,storage});}
+  constructor(options,{art,text,storage,unlockAll=false,onReturnMain}={}){super({...options,labels:TITLE_LABELS,startModes:{0:'normal',1:'extra'},excluded:storage.extraUnlocked||unlockAll?[]:[1]});Object.assign(this,{art,text,storage,onReturnMain});this.normalDifficulty=this.difficulty>=0&&this.difficulty<=3?this.difficulty:1;}
   openDifficulty(){
-    const fixedExtra=this.mode==='extra'||this.difficulty===4;
+    const fixedExtra=this.mode==='extra'||this.mode==='spell-practice'&&this.difficulty===4;
     if(fixedExtra&&this.state==='character'&&this.phase===4){this.returnMain();return;}
-    if(fixedExtra){this.difficulty=4;this.openCharacter();}else super.openDifficulty();
+    if(fixedExtra){if(this.difficulty<=3)this.normalDifficulty=this.difficulty;this.difficulty=4;this.openCharacter();}
+    else{if(this.difficulty===4)this.difficulty=this.normalDifficulty;super.openDifficulty();}
   }
+  openCharacter(){if(this.difficulty>=0&&this.difficulty<=3)this.normalDifficulty=this.difficulty;super.openCharacter();}
+  returnMain(){this.difficulty=this.normalDifficulty;this.mode='normal';super.returnMain();this.onReturnMain?.();}
   draw(draw){
     const t=this.age,alpha=Math.min(1,(t+10)/35),slide=Math.max(0,24-t*.6);
     this.art.background(draw,'title',480,360,960,720);

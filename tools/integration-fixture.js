@@ -4,12 +4,13 @@ import {ProjectApplication} from '../src/application.js';
 import {STAGES,ALL_SPELLS} from '../src/content.js';
 import {GAME_REVISION} from '../src/storage.js';
 
-// Dedicated native headless QA entry. It never reads or writes real userdata.
+// Dedicated native headless QA entry. Player userdata is replaced by memory;
+// only dedicated userdata/integration files test the real native path adapter.
 // Real resources, native hosts and every public gameplay owner stay in use.
 export function createIntegrationFixture(scenarioPath){
 const native=globalThis.tsstg;
 const scenario=JSON.parse(native.readText(scenarioPath));
-const memory=new Map();let writes=0;
+const memory=new Map();let writes=0,sceneUpdateCalls=0,applicationUpdateCalls=0;
 const isUserData=path=>String(path).replaceAll('\\','/').startsWith('userdata/');
 const host=Object.create(native);
 Object.defineProperties(host,{
@@ -21,7 +22,14 @@ let result=null,application=null;
 const assert=(condition,message)=>{if(!condition)throw new Error(message);};
 const tick=(app,frames=1,mask=0)=>{for(let i=0;i<frames;i++)app.update(typeof mask==='function'?mask(i):mask);};
 const tap=(app,mask)=>{app.update(mask);app.update(0);};
-const make=options=>new ProjectApplication(host,{testing:true,fixedClock:true,seed:210721,...options});
+const make=options=>{
+  const app=new ProjectApplication(host,{testing:true,fixedClock:true,seed:210721,...options}),track=game=>{
+    const update=game.update.bind(game);game.update=mask=>{sceneUpdateCalls++;return update(mask);};return game;
+  };
+  if(app.core.game)track(app.core.game);const create=app.core.createGame;
+  app.core.createGame=(settings,core)=>track(create(settings,core));
+  const update=app.update.bind(app);app.update=mask=>{applicationUpdateCalls++;return update(mask);};return app;
+};
 function owners(game){return{game:game instanceof TouhouGame,player:game.player instanceof TouhouPlayer,
   bullets:game.bullets instanceof TouhouBulletField,lasers:game.lasers instanceof TouhouLaserField,spell:game.spell instanceof TouhouSpell,
   items:game.items instanceof TouhouItems,bossPresentation:game.bossPresentation instanceof TouhouBossPresentation,bossHud:game.bossHud instanceof TouhouBossHud,
@@ -88,6 +96,7 @@ function* replay(){
 function* continuationReplay(){
   // Fixture-only low stock makes the first real road collision reach GameOver.
   memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
+  memory.set('userdata/guiming-progress.json',JSON.stringify({scores:[{character:0,difficulty:1,mode:'normal',score:12345678}]}));
   application=make({autostart:true,mode:'normal',difficulty:1,character:0});
   const source=application.core.game,events={miss:0,gameover:0},event=source.onEvent;
   source.onEvent=(name,data)=>{if(name in events)events[name]++;event?.(name,data);};
@@ -101,6 +110,7 @@ function* continuationReplay(){
   }
   assert(continuedAt!==null&&events.gameover>=1&&events.miss>=1,'Real road collision and GameOver inputs reach the common Continue restoration');
   assert(source.session.continues===1&&source.session.credits===4,'Continue consumes one of the original five credits');
+  assert(source.player.highScore===12345678&&source.session.highScore===12345678,'Continue keeps an existing high score greater than the current run');
   const recorded=source.recorder.toJSON(),expected=source.snapshot();
   assert(recorded.frames===frames,'Recorder preserves every paused GameOver/Continue input frame');
   assert(recorded.checkpoints.some(point=>point.frame>continuedAt),'At least one checkpoint covers simulation after Continue');
@@ -117,21 +127,154 @@ function* continuationReplay(){
   result={kind:'continuation-replay',frames,continuedAt,events,config:recorded.config,inputRuns:recorded.runs,checkpoints:recorded.checkpoints,
     checkedFinalHash:stateHash(expected),replayFinalHash:stateHash(playing.snapshot()),snapshot:expected,memoryWrites:writes};
 }
+function* pauseExternalPages(){
+  application=make({autostart:true,invincible:true});const app=application,game=app.core.game,visited=[];
+  tick(app,40);
+  for(const [selection,title]of [[4,'选项'],[3,'游戏说明'],[2,'保存回放']]){
+    tap(app,Keys.PAUSE);tick(app,12);assert(game.paused&&game.pauseVisual.phase===6,'Public Pause opens its normal menu');
+    for(let i=0;i<selection;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
+    if(selection===2){tick(app,34);tap(app,Keys.UP);tap(app,Keys.SHOOT);}
+    tick(app,22);assert(app.page?.title===title,`Pause opens ${title}`);visited.push(title);
+    const frozen=game.snapshot();tick(app,12);tap(app,Keys.BOMB);
+    assert(app.page===null&&game.paused&&game.pauseVisual.phase===6&&game.pauseVisual.panelVisible,'Closing external page restores its public Pause owner');
+    assert(game.frame===frozen.frame,'External page freezes gameplay');
+    tap(app,Keys.PAUSE);tick(app,16);assert(!game.paused,'Returned menu resumes gameplay with Esc');
+    yield;
+  }
+  result={kind:'pause-external-pages',frames:app.frame,visited,memoryWrites:writes,snapshot:game.snapshot()};
+}
+function* pausePageReplay(){
+  application=make({autostart:true,invincible:true});const app=application,source=app.core.game,visited=[];
+  tick(app,100);
+  for(const [selection,title]of [[4,'选项'],[3,'游戏说明'],[2,'保存回放']]){
+    tap(app,Keys.PAUSE);tick(app,12);for(let i=0;i<selection;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
+    if(selection===2){tick(app,34);tap(app,Keys.UP);tap(app,Keys.SHOOT);}
+    tick(app,22);
+    assert(app.page?.title===title,`Recording opens real Pause ${title}`);visited.push(title);
+    const recordedBefore=source.recorder.frames;tick(app,40);app.update(Keys.BOMB);
+    assert(source.recorder.frames===recordedBefore,'External UI inputs never enter the gameplay input stream');
+    assert(source.pauseVisual.phase===6,'External UI closes through the public callback');
+    app.update(0);
+    tap(app,Keys.PAUSE);tick(app,16);assert(!source.paused,'Recording returns through public Pause resume');yield;
+  }
+  while(source.recorder.frames<1800){app.update(0);if(source.recorder.frames%128===0)yield;}
+  const recorded=source.recorder.toJSON(),expected=source.snapshot(),progress=JSON.stringify(app.storage.progress),beforeWrites=writes;
+  app.playbackSource=recorded;app.core.start(recorded.config);const playing=app.core.game;
+  for(let i=0;i<recorded.frames;i++){app.update(0);assert(app.page===null,'Replayed external requests cannot leave a live UI page freezing gameplay');if(i%128===127)yield;}
+  assert(playing.playback.desync===null&&stateHash(playing.snapshot())===stateHash(expected),'Deferred external-close callbacks reproduce every recorded waiting/restoration frame');
+  app.update(0);assert(app.replayFinished,'Pause/page replay reaches App completion');
+  assert(JSON.stringify(app.storage.progress)===progress&&writes===beforeWrites,'Pause/page replay does not mutate progress');
+  result={kind:'pause-page-replay',frames:recorded.frames,applicationFrames:app.frame,visited,config:recorded.config,inputRuns:recorded.runs,checkpoints:recorded.checkpoints,
+    checkedFinalHash:stateHash(expected),replayFinalHash:stateHash(playing.snapshot()),snapshot:expected,memoryWrites:writes};
+}
+function* replayControls(){
+  application=make({autostart:true,invincible:true});const app=application;
+  for(let i=0;i<1200;i++){app.update(i%160<80?Keys.LEFT:Keys.RIGHT);if(i%128===127)yield;}
+  const recorded=app.core.game.recorder.toJSON();app.playbackSource=recorded;app.core.start(recorded.config);const game=app.core.game;
+  tick(app,100);const position=game.playback.frame;tap(app,Keys.PAUSE);
+  assert(app.page&&game.playback.frame===position,'Live Esc opens a replay control page without consuming recorded inputs');
+  tick(app,20);assert(game.playback.frame===position,'Replay control page freezes the recorded stream');app.update(Keys.SHOOT);
+  assert(app.page===null&&game.playback.frame===position,'Z resumes without consuming an extra recorded frame');
+  tick(app,1);assert(game.playback.frame===position+1,'Normal replay advances exactly one input per application update');
+  const speedPosition=game.playback.frame;tick(app,10,Keys.FOCUS);assert(game.playback.frame===speedPosition+20,'Live Shift advances two recorded inputs per update');
+  while(!app.replayFinished){app.update(0);if(game.playback.frame%128===0)yield;}
+  assert(game.playback.desync===null,'Live controls preserve actual replay checkpoints');
+  app.replayFinished=false;app.playbackSource=recorded;app.core.start(recorded.config);tick(app,20);tap(app,Keys.PAUSE);tick(app,12);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
+  assert(app.core.mode==='title'&&app.page===null,'Live control menu exits replay to title');
+  const damaged=JSON.parse(JSON.stringify(recorded));damaged.checkpoints[0].hash='00000000';app.playbackSource=damaged;app.core.start(damaged.config);
+  for(let i=0;i<600;i++){app.update(0);if(i%128===127)yield;}
+  assert(app.page?.title==='回放无法继续'&&app.core.game.playback.desync?.frame===600,'A damaged checkpoint stops on a friendly replay result page');
+  const stopped=app.core.game.playback.frame;tick(app,15);assert(app.core.game.playback.frame===stopped,'A stopped replay consumes no further input');tap(app,Keys.SHOOT);assert(app.core.mode==='title','Damaged replay can return to title');
+  result={kind:'replay-controls',frames:recorded.frames,applicationFrames:app.frame,checkedFrames:recorded.frames,checkpoints:recorded.checkpoints,memoryWrites:writes,snapshot:app.snapshot()};
+}
+function* gameOverExternalPages(){
+  memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
+  memory.set('userdata/guiming-progress.json',JSON.stringify({scores:[{character:0,difficulty:1,mode:'normal',score:12345678}]}));
+  application=make({autostart:true});const app=application,game=app.core.game,visited=[];
+  let frames=0;while(!(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6)&&frames<3000){app.update(0);frames++;if(frames%128===0)yield;}
+  assert(game.paused&&game.pauseVisual instanceof TouhouGameOver,'Real road miss opens the public GameOver owner');
+  for(const [selection,title]of [[4,'选项'],[3,'游戏说明'],[2,'保存回放']]){
+    let steps=0;while(game.pauseVisual.selection!==selection&&steps++<6)tap(app,Keys.DOWN);assert(game.pauseVisual.selection===selection,'GameOver choice remains available');
+    tap(app,Keys.SHOOT);tick(app,22);assert(app.page?.title===title,`GameOver opens ${title}`);visited.push(title);
+    const position=game.frame;tick(app,12);tap(app,Keys.BOMB);
+    assert(app.page===null&&game.pauseVisual.phase===6&&game.pauseVisual.panelVisible,'Closing external utility restores its public GameOver result menu');assert(game.frame===position,'GameOver utility freezes gameplay');yield;
+  }
+  let steps=0;while(game.pauseVisual.selection!==0&&steps++<6)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,16);
+  assert(!game.paused&&game.session.continues===1&&game.player.highScore===12345678,'Continue after utility pages restores play and preserves the previous high score');
+  result={kind:'gameover-external-pages',frames:app.frame,visited,memoryWrites:writes,snapshot:game.snapshot()};
+}
+function* manualSave(){
+  memory.set('userdata/guiming-settings.json',JSON.stringify({autoSaveReplay:false}));
+  application=make({autostart:true,testing:false,invincible:true});const app=application;tick(app,40);tap(app,Keys.PAUSE);tick(app,12);
+  for(let i=0;i<2;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,34);tap(app,Keys.UP);tap(app,Keys.SHOOT);tick(app,22);
+  assert(app.page?.title==='保存回放','Public Pause Save Replay choice opens the manual save page');tick(app,12);tap(app,Keys.SHOOT);
+  assert(app.core.mode==='title'&&app.storage.replays.length===1,'Manual force save exits to title even when automatic saving is disabled');
+  assert(memory.has('userdata/guiming-replays.json'),'Production save writes only to the fixture userdata adapter');
+  const data=JSON.parse(memory.get('userdata/guiming-replays.json'));assert(data.length===1&&data[0].replay.frames>0,'Saved replay includes the actual recorder input stream');
+  result={kind:'manual-save',frames:app.frame,replayFrames:data[0].replay.frames,memoryWrites:writes,snapshot:app.snapshot()};
+}
+function* replayTermination(){
+  const ended=[];
+  for(const [choice,action]of [[5,'restart'],[1,'exit']]){
+    memory.clear();application=make({autostart:true,testing:false,invincible:true});const app=application,source=app.core.game;
+    for(let i=0;i<620;i++){app.update(0);if(i%128===127)yield;}
+    tap(app,Keys.PAUSE);tick(app,12);assert(source.paused&&source.pauseVisual.phase===6,'Termination is chosen through the real public Pause menu');
+    for(let i=0;i<choice;i++)tap(app,Keys.DOWN);assert(source.pauseVisual.selection===choice,`Pause selects ${action}`);tap(app,Keys.SHOOT);tick(app,34);
+    assert(source.pauseVisual.phase===7&&source.pauseVisual.count===2,'Public termination opens its Yes/No confirmation');tap(app,Keys.UP);tap(app,Keys.SHOOT);
+    let tail=0;while(app.core.game===source&&tail++<80)app.update(0);
+    assert(source.destroyed&&app.core.game!==source,`Recorded ${action} performs its live scene transition`);
+    assert(action==='restart'?app.core.mode==='game'&&!!app.core.game.recorder:app.core.mode==='title',`Live ${action} keeps its actual application behavior`);
+    const recorded=app.storage.replays[0]?.replay;
+    assert(recorded?.frames>620&&recorded.checkpoints.some(point=>point.frame===600),'Real saved replay retains Pause confirmation inputs and a prior simulation checkpoint');
+    // Match the real replay selector: settle any just-created live restart
+    // before measuring read-only playback, then enter the replay scene.
+    app.core.game?.saveRun({aborted:true});
+    const progress=JSON.stringify(app.storage.progress),beforeWrites=writes,beforePlays=app.storage.progress.plays,beforeReplays=app.storage.replays.length;
+    app.page=null;app.playbackSource=recorded;app.core.start(recorded.config);const playing=app.core.game;
+    assert(!playing.recorder&&playing.playback,'Actual playback has no new recorder');
+    for(let i=0;i<recorded.frames;i++){
+      app.update(0);assert(app.core.game===playing&&!playing.destroyed&&!playing.recorder,`Recorded ${action} cannot launch a live run or leave the replay scene`);
+      assert(playing.playback.frame===i+1,`Recorded ${action} consumes each saved input exactly once`);if(i%128===127)yield;
+    }
+    assert(playing.playback.finished&&playing.playback.desync===null,`Recorded ${action} reaches the end of its full verified input stream`);
+    app.update(0);assert(app.page?.title==='回放结束'&&app.page.rows[0].label.includes('校验通过'),'Production playback displays the normal successful replay completion page');
+    const stopped=playing.playback.frame;tick(app,12);assert(playing.playback.frame===stopped&&app.core.game===playing,'Completion page freezes the finished replay');
+    assert(writes===beforeWrites&&app.storage.progress.plays===beforePlays&&app.storage.replays.length===beforeReplays&&JSON.stringify(app.storage.progress)===progress,'Playback termination creates no play, replay or progress writes');
+    ended.push({action,frames:recorded.frames,playedFrames:playing.playback.frame,checkpoints:recorded.checkpoints,plays:beforePlays,replayCount:beforeReplays,writesDuringPlayback:writes-beforeWrites,completion:app.page.title,snapshot:playing.snapshot()});
+    tick(app,12);tap(app,Keys.BOMB);assert(app.core.mode==='title'&&writes===beforeWrites,'Completed replay returns to title without saving a new run');app.destroy();application=null;yield;
+  }
+  result={kind:'replay-termination',frames:ended.reduce((sum,value)=>sum+value.frames,0),ended,memoryWrites:writes};
+}
 function* ui(){
   application=make({unlockAll:true});const app=application,visited=[];
   function menuReady(){tick(app,140);assert(app.core.menu.state==='main'&&app.core.menu.phase===2,'Title menu ready');}
   function main(index){menuReady();for(let i=0;i<index;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,23);}
   function close(){tick(app,12);tap(app,Keys.BOMB);assert(app.page===null,'X returns from page');}
+  function startNormal(label){
+    main(0);assert(app.core.menu.state==='difficulty'&&app.core.menu.difficulty>=0&&app.core.menu.difficulty<=3,`${label}: Normal restores four-difficulty selection`);
+    tick(app,10);tap(app,Keys.SHOOT);tick(app,16);assert(app.core.menu.state==='character',`${label}: Normal reaches character selection`);
+    tick(app,10);tap(app,Keys.SHOOT);tick(app,100);const config=app.core.game.config;
+    assert(app.core.mode==='game'&&config.mode==='normal'&&config.stageId===1&&config.spellId===null&&config.difficulty<=3&&app.core.game.currentStage.id===1,`${label}: Actual normal game begins at stage one without an old practice/Extra selection`);
+    assert(config.seed===210721,`${label}: New run restores the explicit application seed`);visited.push(label);app.leaveGame();
+  }
   main(0);assert(app.core.menu.state==='difficulty','Title Z enters difficulty');visited.push('title','difficulty');
   tick(app,10);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,16);assert(app.core.menu.state==='character','Difficulty Z enters character');visited.push('character');
   tick(app,10);tap(app,Keys.RIGHT);assert(app.core.menu.selection===1,'Character input selects Marisa');
   tap(app,Keys.SHOOT);tick(app,100);assert(app.core.mode==='game'&&app.core.game.config.character===1&&app.core.game.config.difficulty===2,'Input selection launches chosen self and difficulty through public scene transition');visited.push('title-game-transition');app.leaveGame();
+  main(1);assert(app.core.menu.state==='character'&&app.core.menu.difficulty===4,'Extra enters its fixed-difficulty character selector');tick(app,10);tap(app,Keys.BOMB);tick(app,12);
+  assert(app.core.menu.state==='main'&&Object.keys(app.extraSelection).length===0,'Cancelled Extra returns to a clean main menu');startNormal('normal-after-extra-cancel');
   main(2);assert(app.page?.rows.length===6,'Stage practice has six stages');visited.push('stage-practice');tick(app,10);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.core.menu.state==='difficulty'&&app.extraSelection.stageId===2,'Stage choice reaches shared selectors');
-  tick(app,10);tap(app,Keys.BOMB);tick(app,10);
+  tick(app,10);tap(app,Keys.BOMB);tick(app,10);assert(Object.keys(app.extraSelection).length===0,'Cancelled stage practice clears its business selection');startNormal('normal-after-stage-practice-cancel');
   main(3);assert(app.page?.rows.length===34,'Practice contains all 34 main and midboss cards');visited.push('spell-practice');tick(app,10);for(let i=0;i<31;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.core.menu.state==='character'&&app.extraSelection.stageId===7,'Extra midboss card reaches character selector');
   tick(app,10);tap(app,Keys.BOMB);tick(app,12);assert(app.core.menu.state==='main','Extra character cancellation returns to title');
+  assert(Object.keys(app.extraSelection).length===0,'Cancelled Extra card clears its business selection');startNormal('normal-after-extra-card-cancel');
   main(3);tick(app,10);for(let i=0;i<31;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
   assert(app.core.mode==='game'&&app.core.game.config.spellId===ALL_SPELLS[31].id&&app.core.game.difficulty===4,'Extra midboss practice launches through public transition with difficulty four');visited.push('midboss-spell-practice-game');app.leaveGame();
+  startNormal('normal-after-extra-card-game');
+  main(2);tick(app,10);for(let i=0;i<2;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,10);tap(app,Keys.SHOOT);tick(app,16);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
+  assert(app.core.mode==='game'&&app.core.game.config.mode==='stage-practice'&&app.core.game.config.stageId===3,'Actual stage practice begins at selected stage');visited.push('stage-practice-game');app.leaveGame();startNormal('normal-after-stage-practice-game');
+  main(1);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
+  assert(app.core.mode==='game'&&app.core.game.config.mode==='extra'&&app.core.game.config.stageId===7&&app.core.game.config.spellId===null&&app.core.game.currentStage.id===7,'Actual Extra begins at stage seven without an old card selection');visited.push('extra-game-after-practice');app.leaveGame();startNormal('normal-after-extra-game');
   for(const [index,name] of [[5,'records'],[6,'music'],[7,'options'],[8,'manual'],[4,'replay']]){
     main(index);assert(app.page,`${name} opens through title input`);visited.push(name);tick(app,12);
     if(name==='records'){
@@ -152,12 +295,13 @@ function* ui(){
   main(4);tick(app,12);tap(app,Keys.SHOOT);assert(app.playbackSource===sample,'Replay selection passes real recorder format into application');tick(app,100);assert(app.replayFinished,'Selected replay completes after the shared scene transition');visited.push('replay-playback');
   result={kind:'ui',visited,frames:app.frame,memoryWrites:writes,snapshot:app.snapshot()};
 }
-const runner=scenario.kind==='campaign'?campaign():scenario.kind==='replay'?replay():scenario.kind==='continuation-replay'?continuationReplay():scenario.kind==='ui'?ui():null;
+const runners={campaign,replay,'continuation-replay':continuationReplay,ui,'pause-external-pages':pauseExternalPages,'pause-page-replay':pausePageReplay,'replay-controls':replayControls,'gameover-external-pages':gameOverExternalPages,'manual-save':manualSave,'replay-termination':replayTermination};
+const runner=runners[scenario.kind]?.()??null;
 let started=null;
 return{
   update(){if(result)return;const first=started===null;started??=Date.now();try{
     if(first){const path=`integration/native-roundtrip-${native.backend}.json`,value=JSON.stringify({game:'touhou21',backend:native.backend,fixture:'native-path-roundtrip'});native.writeText(path,value);assert(native.readText(`userdata/${path}`)===value,'Actual native writeText/readText path semantics round-trip');}
-    if(!runner)throw new Error('Unknown QA scenario');const status=runner.next();if(status.done){result.passed=true;result.nativeUserDataRoundTrip=true;result.elapsedMs=Date.now()-started;application?.destroy();}
+    if(!runner)throw new Error('Unknown QA scenario');const status=runner.next();if(status.done){result.passed=true;result.sceneUpdateCalls=sceneUpdateCalls;result.applicationUpdateCalls=applicationUpdateCalls;result.nativeUserDataRoundTrip=true;result.elapsedMs=Date.now()-started;application?.destroy();}
   }catch(error){result={passed:false,kind:scenario.kind,error:error.stack??String(error),snapshot:application?.snapshot()??null,elapsedMs:Date.now()-started,memoryWrites:writes};application?.destroy();}},
   render:()=>[],snapshot:()=>result??{passed:false,error:'Fixture did not update'},
 };

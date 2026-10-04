@@ -4,7 +4,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {Keys} from '@ts-stg/thlib';
-import {STAGES,ALL_SPELLS} from '../src/content.js';
+import {STAGES,ALL_SPELLS,PLAYERS,ENDINGS} from '../src/content.js';
 
 const root=path.resolve(import.meta.dirname,'..'),out=path.join(root,'reports/visual');
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(path.join(root,'build'),{recursive:true});
@@ -15,6 +15,7 @@ const base={autostart:true,invincible:true};
 const cases=[
   {id:'title',preRoll:150},
   ...['difficulty','character','music','manual','options','spells','practice','replays','records'].map(page=>({id:page,options:{page,unlockAll:true},preRoll:35})),
+  {id:'manual-long-bio',options:{page:'manual'},readingIndex:13,preRoll:35},
   {id:'select-marisa',options:{page:'character'},preRoll:35,input:{20:Keys.RIGHT}},
   {id:'scene-cover',preRoll:18,actions:[{frame:0,type:'play'}]},
   {id:'scene-reveal',preRoll:60,actions:[{frame:0,type:'play'}]},
@@ -36,6 +37,11 @@ for(const card of ALL_SPELLS){const stage=STAGES.find(stage=>stage.spells.includ
   if(stage.spells[0]===card)continue;
   cases.push({id:`card-${card.id}`,options:{...base,mode:'spell-practice',stageId:stage.id,spellId:card.id,difficulty:stage.id===7?4:3},until:{state:'combat'},phaseRoll:card.survival?900:420});
 }
+for(const [character,player] of PLAYERS.entries())for(const ending of ['good','bad','extra']){
+  const closeFrame=(ENDINGS[player.id][ending].length+3)*80;
+  const input=Object.fromEntries(Array.from({length:closeFrame/80},(_,i)=>[(i+1)*80,Keys.SHOOT]));
+  cases.push({id:`ending-flow-${player.id}-${ending}`,actions:[{frame:0,type:'ending',result:{...result,character,ending,mode:ending==='extra'?'extra':'normal',difficulty:ending==='extra'?4:1,replaySaved:true}}],input,preRoll:closeFrame+30});
+}
 const sha=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const parity=state=>{const copy=structuredClone(state);delete copy.backend;return copy;};
 const report=[];
@@ -49,6 +55,7 @@ for(const scenario of cases.filter(value=>!filter||filter.includes(value.id))){
     fs.writeFileSync(prefix+'.log',(child.stdout??'')+(child.stderr??''));
     if(child.error)throw child.error;assert.equal(child.status,0,`${scenario.id}/${backend}: ${child.stderr}`);
     const state=JSON.parse(fs.readFileSync(prefix+'.json','utf8'));
+    if(scenario.id.startsWith('ending-flow-')){assert.equal(state.mode,'title');assert.equal(state.page,null,'Ending, staff and result return to the real title owner');}
     if(scenario.id==='stage-transition')assert.ok(state.scene.stageTransition,'Native stage cover is active');
     if(scenario.until){const director=state.scene.director;assert.ok(director,scenario.id);for(const [key,value] of Object.entries(scenario.until))if(key!=='spellId'){
       if(scenario.id!=='stage-transition')assert.equal(director[key],value,`${scenario.id}: ${key}`);

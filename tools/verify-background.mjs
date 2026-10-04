@@ -53,4 +53,3 @@ globalThis.__tsstg_game={
 }
 fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({passed:true,sourceSha256:hash(path.join(root,'src/background.js')),
   binarySha256:hash(binary),results,scope:'Original world-space meshes, camera, painter ordering, portrait viewport and backend parity. No original executable run.'},null,2)+'\n');
-

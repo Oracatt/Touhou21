@@ -39,7 +39,7 @@ pwsh -NoProfile -File tools/setup-local.ps1 -VerifyOnly
 - 原创中文主菜单、九人立绘、七套 Boss 动画图集、剧情与结局、17 首原创合成 BGM，以及附带创作评语的音乐室。
 - 关卡练习开放已经到达的本篇关卡；符卡练习开放已经遇见的全部 34 张符卡，包括 Extra 中 Boss 的符卡。
 - 玩家记录包含最近 30 次结果，以及按自机、四难度 / Extra 分组的符卡成绩，分别统计实战与符卡练习的收取次数、尝试次数。
-- 最近 20 次输入回放可在回放鉴赏中播放。输入、种子、续关事件、初始配置、最高分显示数据与校验点随回放保存；播放使用录制时的脚本后端及内容版本。V8 回放通过 `Play.cmd` 播放，QuickJS 回放通过 `Play-QuickJS.cmd` 播放。
+- 最近 20 次输入回放可在回放鉴赏中播放。Esc 可暂停、恢复或退出，按住 Shift 以 2 倍速播放。输入、种子、续关事件、初始配置、最高分显示数据与校验点随回放保存；播放使用录制时的脚本后端及内容版本。V8 回放通过 `Play.cmd` 播放，QuickJS 回放通过 `Play-QuickJS.cmd` 播放。
 - 设置、解锁、成绩与回放保存在本作 `userdata/`，与引擎演示分离。选项可调整 BGM / 音效音量、初始生命和自动保存回放。回放播放不写入新的成绩与解锁。
 
 ## 开发与验证
@@ -52,9 +52,14 @@ npm run verify:engine
 npm run audit
 npm run verify
 npm run verify:visual
+node tools/measure-performance.mjs
 ```
 
 `verify:engine` 检查本地私有依赖是否仍符合锁定快照；追加 `-- --check-source` 可同时检查本地源引擎。`audit` 检查业务导入、资源清单、依赖边界及 Git 排除规则。`verify` 以 V8 / QuickJS 实际运行完整流程；`verify:visual` 检查实际渲染画面。报告写入忽略的 `reports/`。自动通关验证用于检查流程、状态与两后端一致性，不能替代人工弹幕难度、画面和听感评测。
+
+默认 V8 的已测战斗每帧平均工作耗时为 2.81～3.78 ms。测试方法、QuickJS 对照与适用范围见 [性能实测](docs/PERFORMANCE.md)。
+
+实际验收项目、原生流程与画面报告范围见 [验收记录](docs/VERIFICATION.md)。
 
 ## 来源与许可
 

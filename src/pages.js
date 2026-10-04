@@ -41,7 +41,7 @@ export class ReadingPage {
     const page=this.pages[this.index],heading=page.title??'',lines=page.lines??page;
     if(heading)this.text.draw(draw,heading,67,122,{size:27,width:820,height:62,color:0xd8cba7ff});
     const values=Array.isArray(lines)?lines:[String(lines)];
-    for(let i=0;i<values.length;i++)this.text.draw(draw,typeof values[i]==='string'?values[i]:values[i].text??'',70,190+i*54,{size:21,width:815,height:65,color:0xd1dce4ff});
+    for(let i=0;i<values.length;i++){const y=190+i*68;this.text.draw(draw,typeof values[i]==='string'?values[i]:values[i].text??'',70,y,{size:21,width:815,height:i===values.length-1?Math.max(65,600-y):65,color:0xd1dce4ff});}
     this.text.draw(draw,`${this.index+1} / ${this.pages.length}　　Z / → 下一页　← 上一页　X 返回`,70,632,{size:18,width:820,height:45,color:0x9fb5c9ff});return draw;}
   snapshot(){return{page:this.title,index:this.index,pages:this.pages.length};}
 }
@@ -66,7 +66,8 @@ export class EndingPage {
       for(let i=0;i<lines.length;i++)this.text.draw(draw,lines[i],0,210+i*53,{size:i?23:25,width:960,height:52,align:'center',color:i===6?0xffe4a6ff:0xc8d5e0ff});
     }else{
       this.text.draw(draw,'归名之旅　完成',0,100,{size:48,width:960,height:85,align:'center',color:0xffe4a6ff});
-      const stats=[`${PLAYERS[this.result.character].name}　${this.result.mode==='extra'?'Extra':GAME.difficultyNames[this.result.difficulty]}`,`Score　${String(Math.trunc(this.result.score*10)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}`,`符卡收取　${this.result.captures.filter(card=>card.captured).length} / ${this.result.captures.length}`,`续关　${this.result.continues}`,this.result.ending==='good'?'Extra 已开放；记录与回放已保存。':'记录与回放已保存。'];
+      const saved=this.result.replaySaved?'记录与回放已保存。':'记录已保存；本局未自动保存回放。';
+      const stats=[`${PLAYERS[this.result.character].name}　${this.result.mode==='extra'?'Extra':GAME.difficultyNames[this.result.difficulty]}`,`Score　${String(Math.trunc(this.result.score*10)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}`,`符卡收取　${this.result.captures.filter(card=>card.captured).length} / ${this.result.captures.length}`,`续关　${this.result.continues}`,`${this.result.ending==='good'?'Extra 已开放；':''}${saved}`];
       for(let i=0;i<stats.length;i++)this.text.draw(draw,stats[i],0,252+i*57,{size:25,width:960,height:55,align:'center'});
       this.text.draw(draw,'Z 返回标题',0,621,{size:23,width:960,height:50,align:'center',color:0xe0bc80ff});
     }return draw;}
