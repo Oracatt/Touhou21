@@ -1,0 +1,2561 @@
+{
+  "engine": "TS-STG",
+  "library": "@ts-stg/thlib",
+  "source": "D:/AIWorkspace/TS-STG",
+  "commit": "40db0ae0fa59f659d3677c212035d9c9509fe527",
+  "backend": "v8",
+  "supportedBackends": [
+    "v8",
+    "quickjs"
+  ],
+  "executableSha256": "F06C80BF000F3C4B1C32B823DA3867E3F9A3D7E68F0044976AA52A7A8F11CCD5",
+  "sourceModified": false,
+  "dependencies": "Private byte-pinned local snapshots only. Imported common reference materials retain their original notices and are excluded from the original-code MIT grant.",
+  "format": "touhou21-engine-lock-v1",
+  "thlibSha256": "a4106eab16121cfce7e4d123ede07648e247eb471014a3f0132e3ee9041a6b88",
+  "runtimeSha256": "f2551802395cc37b361f778cb40d7d2967b24d03b6d6442b29c255c7bbbab295",
+  "thlibFiles": [
+    {
+      "path": "LICENSE",
+      "bytes": 1412,
+      "sha256": "2d850da09e70f7eca03eec14702a217465119a977419cce11dc013c4b54c4dd5"
+    },
+    {
+      "path": "assets/touhou-common/NOTICE.md",
+      "bytes": 5636,
+      "sha256": "bf3c953ff61e7917f04cefea23e49d0dbcf9c9e031e9366cc9a9258e79ce7a0a"
+    },
+    {
+      "path": "assets/touhou-common/anm/ascii_960.json",
+      "bytes": 177893,
+      "sha256": "09ce865591e21b6b21a6a81ff0634bc48f0f3b435454718ed65b4ff6a9831d37"
+    },
+    {
+      "path": "assets/touhou-common/anm/bullet.json",
+      "bytes": 645482,
+      "sha256": "ee596b6b60d2f0f698a5b24c8e0fe349def61ed3d2d6fa4b5778a44d92f1b06d"
+    },
+    {
+      "path": "assets/touhou-common/anm/effect.json",
+      "bytes": 242895,
+      "sha256": "c503f260688bd960ce135da0a82076024ed3be253ec710b3c383550ed21fefd3"
+    },
+    {
+      "path": "assets/touhou-common/anm/enemy.json",
+      "bytes": 345346,
+      "sha256": "e6490abf936647ae1462db2b0ee09fead9eee9054d8af986ce148f039b799ca6"
+    },
+    {
+      "path": "assets/touhou-common/anm/front.json",
+      "bytes": 728069,
+      "sha256": "68a580bd9b7ef8a04a661244e15985abdf11061af47fd1971641418f36e5349d"
+    },
+    {
+      "path": "assets/touhou-common/anm/pl00.json",
+      "bytes": 90699,
+      "sha256": "a09e594931c6bb6507fadd38ddcd56d61f19a91bd1532cd965d660139fb922ca"
+    },
+    {
+      "path": "assets/touhou-common/anm/pl01.json",
+      "bytes": 86729,
+      "sha256": "44e9bfc683c82192071813db3777832a2430c9e7289e8d734950d9284c3c8001"
+    },
+    {
+      "path": "assets/touhou-common/anm/screenswitch.json",
+      "bytes": 12132,
+      "sha256": "0334eb669654d7dbb2704dd2af01ad6daa48fdfe5c17d94300abb551892f2ebd"
+    },
+    {
+      "path": "assets/touhou-common/anm/text.json",
+      "bytes": 143667,
+      "sha256": "045f243547d6f48d819f6e9f4ea00b8116208ee4fe3f2d7258377ebdf7963775"
+    },
+    {
+      "path": "assets/touhou-common/anm/title.json",
+      "bytes": 199863,
+      "sha256": "3a0422da7a0658eba1eeeb0970ae3d030f5e089ab41aeff644189b695b005e81"
+    },
+    {
+      "path": "assets/touhou-common/audio/manifest.json",
+      "bytes": 12350,
+      "sha256": "eff79f76b96d0fb15cd5b6b04b251fe66a2506ccd63d9eb6f050a1cdd231384b"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_bonus.wav",
+      "bytes": 45336,
+      "sha256": "c40a1c57b3d73c75e1a508884bee3ce472508a7f9a6af60db8ac6eec7d0c1da3"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_bonus2.wav",
+      "bytes": 45336,
+      "sha256": "d7943c70dba49574e45f66f1ed697000b66288e791834cd82b6527270c03e985"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_bonus4.wav",
+      "bytes": 45434,
+      "sha256": "2317c334c5112501a9fbe9073960fbddeaafdbff913d16e48713843bb2eb4327"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_boon00.wav",
+      "bytes": 35408,
+      "sha256": "c957004db6a32b3cb965631a2fa9f599b8bbe9881774aa227f597f183000a050"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_boon01.wav",
+      "bytes": 142782,
+      "sha256": "860f9041b48d95ed867261495c31ad094c4c26b25b2132b65a76b637822e6dda"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_cancel00.wav",
+      "bytes": 13652,
+      "sha256": "ca2ea7b33553c10458a943303ee90a8fb8bd24f483f92903e6612fe753d45294"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_cardget.wav",
+      "bytes": 222864,
+      "sha256": "825b2e9657219a3800add15dde3346ba95455c10e55fa7953b5c547816ac96ab"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_cat00.wav",
+      "bytes": 84260,
+      "sha256": "2ce7c84a41a87b94980b3076b6060e325a8a4f4e97f7024836e0689197a99123"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_ch00.wav",
+      "bytes": 87564,
+      "sha256": "a62988fcb445777ed15a36ce28eee1c9f8542adaebd5bd1c87ff4550c9816128"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_ch01.wav",
+      "bytes": 60286,
+      "sha256": "b00a682f3099cb8ba8f2e2861c607167de7015e447749ee9ed13c64c958eadc7"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_ch02.wav",
+      "bytes": 44314,
+      "sha256": "c07f1381ee5ab35a118d130a66ee79c265cb39b13879d532f8feb72e061acfad"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_ch03.wav",
+      "bytes": 26590,
+      "sha256": "59d31683dc8dcbbcc1f02e96b774d5b48dbe49ac20ee5a1030d9684f5e21edd3"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_damage00.wav",
+      "bytes": 6772,
+      "sha256": "65005a55fc76953ae5953a158a9cf3ef8970bf69552328ebbc9f2d073db1a8f6"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_damage01.wav",
+      "bytes": 27028,
+      "sha256": "ea007e46843e724aed7454be86229f6b00b97c9a5464a58bd7d3c364f80254a8"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_don00.wav",
+      "bytes": 142782,
+      "sha256": "096a573464381647330372815b3697221eb44b3a27cf6ac19a1d4e3f79d4bc9e"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_enep00.wav",
+      "bytes": 228474,
+      "sha256": "4aab7ce3774ee93026515d1859671bad91d6ea3b1cacfc9cd45d9c0cb2dca6d7"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_enep01.wav",
+      "bytes": 230300,
+      "sha256": "4f24499e56320d672061076a3e63b0a0466c82baf83974ea3f8f84420096521a"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_enep02.wav",
+      "bytes": 232708,
+      "sha256": "9ac545959d56ad995220007eb90a82b3cabd3d73ef18846d3c4d5d547a7bf362"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_etbreak.wav",
+      "bytes": 10810,
+      "sha256": "ff3e23a04267053246cef25067b7f227326f241ee67ff14f553d3c8fd6c7d1c4"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_extend.wav",
+      "bytes": 70188,
+      "sha256": "1cf15b01b3480309c6e469ffe1aa80f1aa36b3b34de3535260190e0fb7c9b722"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_extend2.wav",
+      "bytes": 27674,
+      "sha256": "f3d1c6f737e0d52141750b2d124e52fe3110a1b2d277b6a68f3a1aca4040a16b"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_fault.wav",
+      "bytes": 405156,
+      "sha256": "6c180644a6b68b7d0980dd4359fea5ece74615ff0789b472e7a027172abe9b74"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_graze.wav",
+      "bytes": 4542,
+      "sha256": "cca0bb46e2936548e582ebd94c995174f3a565839f32ac2950bba9459b1499e9"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_gun00.wav",
+      "bytes": 134694,
+      "sha256": "08b2ef872dcf04ce23f12559399640d3064283cf33f69b4b02b6490a557a9a0e"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_invalid.wav",
+      "bytes": 62950,
+      "sha256": "e747b6b52e036fc1e6141da79eaeefecb0bd1dee555aa6a7cf50d77de252c967"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_item00.wav",
+      "bytes": 7378,
+      "sha256": "4368fac39524f00236c476feab41084c95bba5cb8c5496af538cee8cd9551e50"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_kira00.wav",
+      "bytes": 35222,
+      "sha256": "3e00ab7cef811a3ee71252a4968183750a558e04a873f81f451477edd8a61666"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_kira01.wav",
+      "bytes": 21940,
+      "sha256": "efc36ce49509bdadf4e8587f71b54f6162c8516091ca84c100fee2f8816ef632"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_kira02.wav",
+      "bytes": 25782,
+      "sha256": "e4399c45fa320195b97279378a10223801559294d1b2c91bf0ad0d7f6981516d"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_lazer00.wav",
+      "bytes": 22182,
+      "sha256": "d9a3c2a404a1ca06c344c8efe5f8a912dc5c1265ce6ddd653d14a92d6d0aa9f7"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_lazer01.wav",
+      "bytes": 24182,
+      "sha256": "21c5c1d0eb8635564a4cc620a3c0437b8042c3b2f4723322d3ba7b7afa8ccaab"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_lazer02.wav",
+      "bytes": 17768,
+      "sha256": "f1b20302842b7ecd31d1094d65d73a1686386a37e102ae09aeb5b4079c206a07"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_nep00.wav",
+      "bytes": 224926,
+      "sha256": "2a7560aa679941c48b992bec677cb2420379171850efc9f8a07959d702afe023"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_nodamage.wav",
+      "bytes": 13358,
+      "sha256": "8d19805532f902a87efb95c944957e8bad7406917e26a03cdf6a656b3d5a7c67"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_ok00.wav",
+      "bytes": 10876,
+      "sha256": "78ca9f9fdfe69ff24581c8c2a3c226e5b62eff175330f9bef25a49b490e46815"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_pause.wav",
+      "bytes": 133676,
+      "sha256": "5d69f408049765fb1e4c3361b5dd8e49e646adba63767b7995cdf9dd7625f235"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_pin00.wav",
+      "bytes": 35410,
+      "sha256": "99ddb5329f5f825a8a32dfff743274ca20cc851cd904cb2f36f4ec0b1e18b8ff"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_pin01.wav",
+      "bytes": 125670,
+      "sha256": "78af4f8bf3e3cfa220e0b14f8993f8634f2df4952538d89f3627260f98323872"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_pldead00.wav",
+      "bytes": 60852,
+      "sha256": "571c1272aa9ea1d82779f897021226959888f6a915a7b20fdab59de3af6df2b8"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_plst00.wav",
+      "bytes": 3596,
+      "sha256": "3af00e5bc936626bb52cc14b472ca726269a30ab5a6d44d482437fc0611c233f"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_power0.wav",
+      "bytes": 88052,
+      "sha256": "6aa7237c5fe2f69e420a7397d0e95e3e5f662091640822d8957df6236f6cf3bf"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_power1.wav",
+      "bytes": 30412,
+      "sha256": "0817535be3608754e065b289753fcd7a7cb7f5b0591e2888dd95afb4d259556e"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_powerup.wav",
+      "bytes": 367106,
+      "sha256": "8f371aa483160793834df66f54e978d6ff4812b619b72f4eb9e6f94b4abe2016"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_select00.wav",
+      "bytes": 1146,
+      "sha256": "3e4face4547ffde93b387e5d64183179d718a1c4ebff1c34fc98f94c945592a3"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_slash.wav",
+      "bytes": 54782,
+      "sha256": "0b81607ea9f2f7edd72cd92114548ee3f075c834c0ec3451062dd382501e806a"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_tan00.wav",
+      "bytes": 15100,
+      "sha256": "f29bffaef4186fb2ba2bf8d1ecbe1c689f036bb9d742606465268229686da87e"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_tan01.wav",
+      "bytes": 15100,
+      "sha256": "50579bd19596b5dd0258e63a3c27b395d0c75ad9a5a1eb5f9ca612e89a26ead6"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_tan02.wav",
+      "bytes": 11708,
+      "sha256": "790d9c5759912489aa2ad94c9df25a08f999ea2fb40dde2e7a370f866c8645f0"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_tan03.wav",
+      "bytes": 88938,
+      "sha256": "baea985540a9f9b021e9cf0c5445dbe6a0360af411d6cd79e8735ad707ce6b51"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_timeout.wav",
+      "bytes": 19390,
+      "sha256": "b96ffd1f914d0e1597b04189ca2044a06378e53c91d18dfbcbc947a4a2dde21f"
+    },
+    {
+      "path": "assets/touhou-common/audio/se_timeout2.wav",
+      "bytes": 19388,
+      "sha256": "7223e92514a21ea2ca7a5a99f715afaa4b9d324de0db7f081b6046eb6ce600c2"
+    },
+    {
+      "path": "assets/touhou-common/bullet-styles.json",
+      "bytes": 26435,
+      "sha256": "71a43ebbf6b935004b54ed61b3c28ce65f03967ce2e7a76062649836dbebe7b2"
+    },
+    {
+      "path": "assets/touhou-common/manifest.json",
+      "bytes": 618987,
+      "sha256": "dc6357483ae54aef857d3f0e77e2d7410adcdda0b8951e9e883fea16a1167824"
+    },
+    {
+      "path": "assets/touhou-common/prefabs.json",
+      "bytes": 216896,
+      "sha256": "bbdb2e53626e252ea4789dd42531daf5080be5835c1033fb972f3eee6d8094e5"
+    },
+    {
+      "path": "assets/touhou-common/shots/pl00.json",
+      "bytes": 29424,
+      "sha256": "8062199fcf78f37e45c35e5cbf664a456fb462ae90f639ef527df3a16fffef98"
+    },
+    {
+      "path": "assets/touhou-common/shots/pl01.json",
+      "bytes": 13619,
+      "sha256": "f6b52168f6050bb407952a28c02eda558f1eb2b151f4ad66399faae12ebc04b6"
+    },
+    {
+      "path": "assets/touhou-common/textures/ascii_960/entry-0.png",
+      "bytes": 70600,
+      "sha256": "3708f7b35c46de3852085797143ba54103041159c14113f49f80f5a76f81c5ae"
+    },
+    {
+      "path": "assets/touhou-common/textures/ascii_960/entry-1.png",
+      "bytes": 12809,
+      "sha256": "5e4ad2acc121274d52931356ad6a76177457069a30beca6a27e345d751b01d28"
+    },
+    {
+      "path": "assets/touhou-common/textures/ascii_960/entry-2.png",
+      "bytes": 17266,
+      "sha256": "6606d50420f1d71dac8b69ac1c1f04ebad76d98e824a6c596b6a9b9b8fe18584"
+    },
+    {
+      "path": "assets/touhou-common/textures/ascii_960/entry-3.png",
+      "bytes": 18327,
+      "sha256": "f8b763380df17f7d05976adee85be6ed24ef0fa44cd7f6be24237001abd5aaf8"
+    },
+    {
+      "path": "assets/touhou-common/textures/ascii_960/entry-4.png",
+      "bytes": 26337,
+      "sha256": "bc086a377989aa1fdc672fda8df9562dd9867e940f65d24966ea269e4705e30c"
+    },
+    {
+      "path": "assets/touhou-common/textures/ascii_960/entry-5.png",
+      "bytes": 9436,
+      "sha256": "4246bf06802e2f3697c3de14b47068ddca1e007d6a3bc2f29132e9a221fd1dea"
+    },
+    {
+      "path": "assets/touhou-common/textures/ascii_960/entry-6.png",
+      "bytes": 10302,
+      "sha256": "73cdfd386f7e1cf901e91df49f13f8331c312dd43c66c391e37e758999c2a3bf"
+    },
+    {
+      "path": "assets/touhou-common/textures/ascii_960/entry-7.png",
+      "bytes": 15309,
+      "sha256": "42435963cb46b7069f2a40146ccb983136a2cbb4a8072fcdd02798e216bfa11a"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-0.png",
+      "bytes": 107020,
+      "sha256": "159058cea0fda9b6b47fc7c16dec9a71e035fce869f4b749aa08d55d976167ea"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-1.png",
+      "bytes": 82034,
+      "sha256": "22418c3f7794428edae3ba14c64b6594c6cf4d46f701b96305cbbe0c9a9b9b1f"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-2.png",
+      "bytes": 57949,
+      "sha256": "976a2f761e70f3e94581f736184219a539f0b06d797319a7f4f079a1b16475e3"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-3.png",
+      "bytes": 11393,
+      "sha256": "880b6599c0514029eb75d0170e21fbe83eac67b7a7634ac55265a98d0097a536"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-4.png",
+      "bytes": 31676,
+      "sha256": "0396724f956b4798bc5e04913f22c472057dd26c01d0bac885958cea3e9322bb"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-5.png",
+      "bytes": 11401,
+      "sha256": "5c73bb54aa21ba4c620fb9881287aa24ae8c9da2ab1ff7fed92ecf461ac7e520"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-6.png",
+      "bytes": 57666,
+      "sha256": "bdad4ff96b7623107cf1743eb2de4a2b4f438489ab39ad1b524b6e8de8ba4817"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-7.png",
+      "bytes": 32098,
+      "sha256": "9bdd755ecd00a93acfe71e4f1f3305dfe406a2e5fa279cddc5fb3ebd9d948541"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-8.png",
+      "bytes": 59232,
+      "sha256": "f402e0d3238348b56501a8e8715bc7587f947f830c7c3a29b8055841ed84f2f7"
+    },
+    {
+      "path": "assets/touhou-common/textures/bullet/entry-9.png",
+      "bytes": 42634,
+      "sha256": "3116df53f6edb472cc02c5c06d412f918492dddbce5106309d9112d03f05c016"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-1.png",
+      "bytes": 37622,
+      "sha256": "cd1124fe65c91216b7008a7d6b49051f16588d128c3d885351d06355249ddd1c"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-10.png",
+      "bytes": 14503,
+      "sha256": "d32b7f7e202e4d2993fafa00fdc0cc042a348c362b7faea34e48d04d6a13f618"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-11.png",
+      "bytes": 1348,
+      "sha256": "d0d00cfa4bba7e1da725ac144df979efd32b98266059b538056c3d817ec88cdb"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-12.png",
+      "bytes": 1933,
+      "sha256": "e5d5738af725fe5a09a2541b19ff8cad31c5ac93827b71c3af654e92f4477fb1"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-2.png",
+      "bytes": 6319,
+      "sha256": "6d0378af509da4bb54cbc63d6c5418d509f77476cfdc0ef359c2ca1ba8d8c860"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-3.png",
+      "bytes": 16113,
+      "sha256": "25f7e97c3f8ba5f7f013264032c5ee3f9e1d1bc5b5352d89f90e1aaf8209c616"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-4.png",
+      "bytes": 34653,
+      "sha256": "20dfa3c55bab1ef3a0e5c0958834c77f3c3336d2ca01822b5989ac753e41e024"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-5.png",
+      "bytes": 2059,
+      "sha256": "ff76a1736233fbf6787bf3f88c7fe8cd7d75749e5d73a8baf1b4bce8859b3d8d"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-6.png",
+      "bytes": 99396,
+      "sha256": "6fed7262887dd0cdacc7ef006a26418a6012f8ac5f5ce76d17ddadda9a8daa95"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-7.png",
+      "bytes": 3135,
+      "sha256": "0e20a8250827d053dcaada48232ff83e4e81b70110dc5b0eb514cf81c65e867b"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-8.png",
+      "bytes": 1779,
+      "sha256": "d828751e65c3331c0b5c450397407eb486aa257768f0a3a3cb380b6f2c280f1d"
+    },
+    {
+      "path": "assets/touhou-common/textures/effect/entry-9.png",
+      "bytes": 28199,
+      "sha256": "71536289c889d5149f63a2bdc6bccbf0fbb44696e9c3fa56ecc9a61ad4371c0c"
+    },
+    {
+      "path": "assets/touhou-common/textures/enemy/entry-0.png",
+      "bytes": 335373,
+      "sha256": "16b7bbeb22c5102a2f5f9fce10950bfe4b5e3ab74413be02a3eee3849d115bf6"
+    },
+    {
+      "path": "assets/touhou-common/textures/enemy/entry-1.png",
+      "bytes": 29670,
+      "sha256": "be890b3c5edc2842f0bb54ef1b9faead297a760b9bcec5d7a2466450d5bf307b"
+    },
+    {
+      "path": "assets/touhou-common/textures/enemy/entry-2.png",
+      "bytes": 28965,
+      "sha256": "89e6d30811c36645ee0e5bb5ede1f6935d103cef006474038e77c9ecc0c4fbdb"
+    },
+    {
+      "path": "assets/touhou-common/textures/enemy/entry-3.png",
+      "bytes": 127905,
+      "sha256": "9618569e20710717814fc1f2c21aab82b21f04d24df1a659db421fe545319a4c"
+    },
+    {
+      "path": "assets/touhou-common/textures/enemy/entry-4.png",
+      "bytes": 338693,
+      "sha256": "335d14b651cc1ed42f2391db956beec09d4ab2d0c3d69d3c9c0760eb2951fa37"
+    },
+    {
+      "path": "assets/touhou-common/textures/enemy/entry-5.png",
+      "bytes": 38594,
+      "sha256": "104cef61735cbc233e48b7391843e49bf1b408e59dbc9acd8280715733f88453"
+    },
+    {
+      "path": "assets/touhou-common/textures/enemy/entry-6.png",
+      "bytes": 40767,
+      "sha256": "cc2a20878abcb02d617bc201d2df38320572b615d88f1d6262e886062e23142b"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-0.png",
+      "bytes": 1353286,
+      "sha256": "f9af6e5c75b097b808611f1b1816e88e3cba8c99764c07b543c4d61f7afc2fd7"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-10.png",
+      "bytes": 29423,
+      "sha256": "7963fd2bc4d20add24f0545c73e1e81c0af40f5acab5e8d2b115f91cc8ad3e48"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-11.png",
+      "bytes": 210,
+      "sha256": "17dbea7737e86a1fbea3cef9cda88dd19994fb1518fa53c1960116951d854508"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-2.png",
+      "bytes": 8836,
+      "sha256": "4187d9d761d1de8bc68cce3b3e22156ac8ed9d66850d8b4471498a33cf8a674c"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-3.png",
+      "bytes": 129906,
+      "sha256": "b157237a245e25be419c7f4094d8cfa8eac435bab63c1055993adc76891fdf9a"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-4.png",
+      "bytes": 29490,
+      "sha256": "6e5fd2585d87f7d253335717675f61110a90f6e2ba9bce372920ea8b0c57366f"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-5.png",
+      "bytes": 40848,
+      "sha256": "d3a3229aba9c578904437c48eefafb66c5d7656da68e1be9554aeb2a03282c2b"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-7.png",
+      "bytes": 2819,
+      "sha256": "f3f5f1d879a8d8eefe8c8f1fc021c26722a3521a712243ebd909728f7ac8e812"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-8.png",
+      "bytes": 34356,
+      "sha256": "423a58886ffc26ed0c0e53bb8322200dcf5fccebf2ce429f354a1314e280c7f4"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/entry-9.png",
+      "bytes": 2414,
+      "sha256": "b40050f12b4957c19484de6c96f457ffe12a6de36be06d535c55fac6c5197b2f"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-0.png",
+      "bytes": 65135,
+      "sha256": "740c12912d775c4f094cdca97f9319165f5ebf06befe725ca30c8b827decd26f"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-1.png",
+      "bytes": 3612,
+      "sha256": "b854a9bf53bd48e1fce22c43bce7a7063ebd951ad34cf34d6336ccf559a77265"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-10.png",
+      "bytes": 73086,
+      "sha256": "73251ae58525958069cd30dd2ede6a5dd909aeea526854072d1e448fcdbde8fc"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-11.png",
+      "bytes": 70869,
+      "sha256": "1486ce5d9a23db3505eaab2ca6bb1b66525aa8f654b4da27acc1e66d24270e52"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-2.png",
+      "bytes": 18115,
+      "sha256": "3d72880333c457bdac592cef006781b3b6e11405eeaf07924ecb15019abdd290"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-24.png",
+      "bytes": 414244,
+      "sha256": "60244e64f2e4d2d8692e8f148b9a10fb5eb35aa6c55cb33f154085d6645ccb96"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-3.png",
+      "bytes": 70431,
+      "sha256": "efc6f8368668107617f566e4c681046e07a13da7575082fc215353f36b73adbc"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-4.png",
+      "bytes": 73509,
+      "sha256": "978b598730092ca5d28480f895dd0afd61ec7c241b22d17fa4080750aebe605b"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-5.png",
+      "bytes": 71769,
+      "sha256": "6042285fb891f1138ac50672f3994cb18fe974605ce0765bf4bf327f1266fddc"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-6.png",
+      "bytes": 71379,
+      "sha256": "6c7e67ed3735ffb0a226757879e60815fb025a52f214454989f811a63c85d32d"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-7.png",
+      "bytes": 70554,
+      "sha256": "e6a5def175e6f5abbe89cd07c050c707325b45dca28a09d47fb4aa5c2d819561"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-8.png",
+      "bytes": 70480,
+      "sha256": "52a27f6ff8ee17a56efd90c8e72e75036d4469c65d6c896a5624dd9ba2afd0c3"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl00/entry-9.png",
+      "bytes": 71679,
+      "sha256": "a57b8c535c163f2b016c9c2ed91aef51456271b662610f2b8658d7847cfdb49b"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-0.png",
+      "bytes": 62230,
+      "sha256": "a2059f5440fd01e9ccd72dcb73b63bb881c307f52b3410afcee6264288005ae4"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-1.png",
+      "bytes": 14172,
+      "sha256": "a58070c5fde8636513f01844a3139961c15f7189b3b033d6a13d48ba98e2cb2c"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-10.png",
+      "bytes": 65011,
+      "sha256": "ecb4ab5bfee7294be3fec99c3f268992b0e2f31d05c2062f2443e916b1b6e9e5"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-11.png",
+      "bytes": 66284,
+      "sha256": "c4ab89077f94d8c5bdf0a6c9de3e1fdca22ccdaee68e6607554ce0e007c7503d"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-12.png",
+      "bytes": 67866,
+      "sha256": "7e17dea52e993cfdaf24ceb7f25edbe9f618488829bd305a7f8f8e6889c930ac"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-13.png",
+      "bytes": 65383,
+      "sha256": "eb20eda2ed9cef56f332b8c9d29d89b6dcf96ab37564edfa0550630867d00a40"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-2.png",
+      "bytes": 36588,
+      "sha256": "d626f97f379ddfb0c91c8c90315b7c1bd51bf3b92369c398708ac1fc80b12b74"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-26.png",
+      "bytes": 387641,
+      "sha256": "d976db46103a6b0be2036b1b10a8ed1449562bdf2d697f2272156aec2395a7f9"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-3.png",
+      "bytes": 29220,
+      "sha256": "6d0a6ace4bbec240ca2c2a158d8f21bdf7af169aab23e349f1820ca1d08dcda7"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-5.png",
+      "bytes": 65579,
+      "sha256": "dfbc3e3228558de076cfdd50dd0244508c37a64c175ed47ec54bb35f5c651b8c"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-6.png",
+      "bytes": 68615,
+      "sha256": "0723c6775e5dd44ee83d57f0461c9d4bbaf9ff7f01c0a54e1cea63ae246f576f"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-7.png",
+      "bytes": 66372,
+      "sha256": "d39455dc09ce753653c392cc89bd68daf0d11ee5f2c3eac6544afc2b354371a7"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-8.png",
+      "bytes": 65438,
+      "sha256": "c017d69340df8e58a0748fe0b803884504ce5c7bbbdda6a956889ddab8e331b1"
+    },
+    {
+      "path": "assets/touhou-common/textures/pl01/entry-9.png",
+      "bytes": 65689,
+      "sha256": "e543f32e61db2b57bdbb434a08911fddf7b384868fde4ad4ba3dfdfd88f22462"
+    },
+    {
+      "path": "assets/touhou-common/textures/screenswitch/entry-0.png",
+      "bytes": 2507,
+      "sha256": "c7bbab113b2ca8e92921af442d7004f203475955a6f138977978a6a8d2f621ef"
+    },
+    {
+      "path": "assets/touhou-common/textures/screenswitch/entry-1.png",
+      "bytes": 475087,
+      "sha256": "9d402e2967c9403a419687b6f3fb910a96652ef73224d9ae05a23a702a58c439"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-10.png",
+      "bytes": 59317,
+      "sha256": "281953c13b795aaed175e86c7731d92f63da32f7902a7f36def0094fffc6cf1b"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-11.png",
+      "bytes": 64293,
+      "sha256": "0d88cb4a0f400a0827fece9fd3971763fae122647f5fb34fa66ca1b40b94ce5f"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-12.png",
+      "bytes": 50939,
+      "sha256": "37569571d6260a8342ada69cfeef19aaf1ebe0aaae1ac8d6ed4c98894a28546b"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-13.png",
+      "bytes": 66543,
+      "sha256": "6a23c6b04aefe2eab7a2007579825e34cf2a16e2b14e9e63aeea7a5e5a6ca074"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-14.png",
+      "bytes": 74924,
+      "sha256": "cab042039a851996752676ea66786cecb114aa4514d65631c7ce6e4274ad471c"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-15.png",
+      "bytes": 72515,
+      "sha256": "7797cfc21e418879ea0cc65f2fff230957cccfe16901451777d8030f2ce36e08"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-16.png",
+      "bytes": 72621,
+      "sha256": "e1842062b08ba7b55e7d2758864fa6de537e24beb4c23fc2b1ab3693c4d2730b"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-17.png",
+      "bytes": 143529,
+      "sha256": "28c49f06377955b292d88c4196e4bc7cf8b740044accdf825f731ac351f1f7ed"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-18.png",
+      "bytes": 394724,
+      "sha256": "93b779fe8a967d6fc21dfa38fe95b0990344488a72d235347d334258c23ddb10"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-23.png",
+      "bytes": 376661,
+      "sha256": "fab492990d41b1121e347e699f37fe861b7f506a41b1c75617492f2b4cc18eeb"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-28.png",
+      "bytes": 47423,
+      "sha256": "2e261f9c14bc21dddfb390a1842e90a3c9adfe950307761e06bbc204bd7ba47b"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-29.png",
+      "bytes": 53348,
+      "sha256": "2c885b9c9d0b5339f58abd1c643de79dae59b4cbb1bd93a337c27f5215de07cb"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-4.png",
+      "bytes": 67133,
+      "sha256": "5e98147f0e51813402e4e86fc6ceb5e64d336b7ba2f072b68dad3363f804862d"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-5.png",
+      "bytes": 65744,
+      "sha256": "df648bb47261e9dc2a708063c64d275ca3e8748444e367707420a9de653ce1ad"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-6.png",
+      "bytes": 72559,
+      "sha256": "c31c89ee0c3c3bb4b22bc263a52197885e7e93d8227d3e365e442860c0346b80"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-7.png",
+      "bytes": 66669,
+      "sha256": "aa394ed8333d7c70fba1885b9d95c551a0ed1dec79b1fa25628ada6e9dc44550"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-8.png",
+      "bytes": 68891,
+      "sha256": "974c35a40cb32608cfb6fcc0f176c768e87a20cd2a8e1d8cd20568cdb4ae5105"
+    },
+    {
+      "path": "assets/touhou-common/textures/title/entry-9.png",
+      "bytes": 62059,
+      "sha256": "05762a328faab3395e61ae1e2438cf38f46622c1d71104bde1fd877ac20d3ec2"
+    },
+    {
+      "path": "package.json",
+      "bytes": 763,
+      "sha256": "7edbd81109279cd565d0806fc0ac8bc205c3239068ea4c596bd249d01fee0c1b"
+    },
+    {
+      "path": "src/animation.js",
+      "bytes": 3944,
+      "sha256": "e233aed1ef29484e552932892a8e23bb94eaef2e34d47d88f8b2fa4da82b7971"
+    },
+    {
+      "path": "src/bomb-geometry.d.ts",
+      "bytes": 633,
+      "sha256": "77d1b6b786ff35570547085c02d1dd082801f96e6e215a5dbe736b4ef47b7cc3"
+    },
+    {
+      "path": "src/bomb-geometry.js",
+      "bytes": 2875,
+      "sha256": "2d7cc3cac76203e542376f255f290eb7a9958362583deed740ec87710bddf61c"
+    },
+    {
+      "path": "src/boss.js",
+      "bytes": 5428,
+      "sha256": "2cf7a7c724aa578242a8bc868f620e24334054e64e66395ce09b47af2f5889f8"
+    },
+    {
+      "path": "src/bullet-presets.d.ts",
+      "bytes": 2135,
+      "sha256": "ee5abc2a9bb2c3be764e165cb347de6a733705e58cf7388be0ea58d54a5277c6"
+    },
+    {
+      "path": "src/bullet-presets.js",
+      "bytes": 4567,
+      "sha256": "1a4deb0462243bf28a62ee4c3a6faab599d2c04afe7f8f0a5af46d64ff5ce244"
+    },
+    {
+      "path": "src/bullets.js",
+      "bytes": 9130,
+      "sha256": "1b4be0663499113cf73318bf1cccbbce27ae03d0f2b0bebd0c62b16925b487bb"
+    },
+    {
+      "path": "src/core.d.ts",
+      "bytes": 12451,
+      "sha256": "0c9941d49d1fb35f7db54e2a649d9081d3d14e1be86bb677583dfc04f3c7b450"
+    },
+    {
+      "path": "src/effects.js",
+      "bytes": 1819,
+      "sha256": "a935223b3c89475bd5c0bc20cf976f1daaf5b1870f98d16c3417448b8a21713f"
+    },
+    {
+      "path": "src/enemy.js",
+      "bytes": 2143,
+      "sha256": "e25f0103e986996bce0e330eb7e7a882b5c6f3e7256b2e52df3442f4da5756e1"
+    },
+    {
+      "path": "src/float32.d.ts",
+      "bytes": 640,
+      "sha256": "429650c43ca11e3adb93de003d1e5ab1ca9f3aa71cd32c382cb93129bccdfe62"
+    },
+    {
+      "path": "src/float32.js",
+      "bytes": 736,
+      "sha256": "780e0878502e5a3d9c2aa35645960855533160cd72796599448b3d908365f011"
+    },
+    {
+      "path": "src/game.js",
+      "bytes": 22970,
+      "sha256": "02166021f911f78567506e94b0b1e90698d15572f6f154230d1afc9d31d224bb"
+    },
+    {
+      "path": "src/grid-mesh.d.ts",
+      "bytes": 1386,
+      "sha256": "e768137afa793c021f1a23179171264728ede1c431e78c7d560b319a414e1f40"
+    },
+    {
+      "path": "src/grid-mesh.js",
+      "bytes": 5322,
+      "sha256": "07267e7fb637093c9e3a9c3546ea436fb41f89fdbdfdb6c639b32b06d7f509e4"
+    },
+    {
+      "path": "src/index.d.ts",
+      "bytes": 18197,
+      "sha256": "c47b4997459a7ddb57bf16f28c2fa283f01c27a69b545f6ef4d11266b9bd1b87"
+    },
+    {
+      "path": "src/index.js",
+      "bytes": 990,
+      "sha256": "1b577fcc7b1c2af6d2273c2b42545196224decd484a066354f243edb5057a778"
+    },
+    {
+      "path": "src/input.js",
+      "bytes": 642,
+      "sha256": "c28870584dc71202d8bbc8194fad9947aeb862350e8cba7a69495206bf7a438e"
+    },
+    {
+      "path": "src/items.js",
+      "bytes": 4240,
+      "sha256": "59b5106c42d40a5cb03ea9354a6507f6e2ee5596855925fdd7441732974094ba"
+    },
+    {
+      "path": "src/lasers.js",
+      "bytes": 7178,
+      "sha256": "f0afdf24687cde9be27cd306b15cd2cec0370f97689fb1ff05feeb211519fd49"
+    },
+    {
+      "path": "src/layered-render.d.ts",
+      "bytes": 1148,
+      "sha256": "53eab028f7f58e7a155d283e4fe00d16d551b2e78ab7e6418433a82649894cb7"
+    },
+    {
+      "path": "src/layered-render.js",
+      "bytes": 3394,
+      "sha256": "2aa7bbdc83166660336206e4f2d753b7025986ce48eeef00b26be334b2dbd77f"
+    },
+    {
+      "path": "src/math.js",
+      "bytes": 3068,
+      "sha256": "a9afa0373bbc02266d4727c34e1b46726020d11935bcc0266b6c36e12f7d7995"
+    },
+    {
+      "path": "src/menu.js",
+      "bytes": 3364,
+      "sha256": "f62b6931f30c5f796a08085d63a02a659600fd05e058f75f179696abf7d5cc8c"
+    },
+    {
+      "path": "src/native-host.d.ts",
+      "bytes": 4282,
+      "sha256": "57fdc26ffdc7bd4003b3cb53fa5aa5abdc12ec426599e68f35e4c3db00cbccd8"
+    },
+    {
+      "path": "src/patterns.js",
+      "bytes": 3431,
+      "sha256": "03470de6b36c002d3b4f7a46a21c75ef0d438ce263ae109d2be5b1ec47d4a7e8"
+    },
+    {
+      "path": "src/player-characters.d.ts",
+      "bytes": 253,
+      "sha256": "094d897702dc292c7e8a57ed4d6ebbef30aa532a7e8e175e0aabbf7cdc10f16e"
+    },
+    {
+      "path": "src/player-characters.js",
+      "bytes": 1158,
+      "sha256": "02fdcc34225e4e8abae61b3db8385cf4ba3278a239910ae60adc27b0ed4a4884"
+    },
+    {
+      "path": "src/player-presentation.d.ts",
+      "bytes": 1435,
+      "sha256": "e194a9dfe7e2018268530aa61ea6eb77a253db9ad370f21982c721cde6e21993"
+    },
+    {
+      "path": "src/player-presentation.js",
+      "bytes": 8832,
+      "sha256": "e8e1de6b4cc048490206f96cc804d81ce266561005c13141cc77b92d61936380"
+    },
+    {
+      "path": "src/player.js",
+      "bytes": 15386,
+      "sha256": "993caa461c52db0edff285f202a67b9ead2a24e4266e58c094f21086456356f8"
+    },
+    {
+      "path": "src/radial-distortion.d.ts",
+      "bytes": 1534,
+      "sha256": "d0f9d00e61df5324663c69c989a7930e2b23c1f30ead60644028634a6c111a53"
+    },
+    {
+      "path": "src/radial-distortion.js",
+      "bytes": 4500,
+      "sha256": "9c1b15eb589a3521c796e4ea92977bdc5b7534be0d7738ed7e8aba5716de4349"
+    },
+    {
+      "path": "src/render.js",
+      "bytes": 4256,
+      "sha256": "87ee9d855c3099b7e13fb82bf3baf7e12d97cb53dc5acacf0ed5a503120b570e"
+    },
+    {
+      "path": "src/repeating-input.d.ts",
+      "bytes": 1145,
+      "sha256": "871c1970742c62801bd9699bc43bf14b0c1ff6fae258849328eba32e99323df4"
+    },
+    {
+      "path": "src/repeating-input.js",
+      "bytes": 3311,
+      "sha256": "5f3e12f19ad1cae16ec1aa4e84e0c5761e04296f12e82398a4098567bd1c4f9a"
+    },
+    {
+      "path": "src/replay.js",
+      "bytes": 3970,
+      "sha256": "23fe9d7c55ffb7b078e4d5800d9eea07bb2d31b28239dcb2a32e50a3b03e6e42"
+    },
+    {
+      "path": "src/resources.js",
+      "bytes": 1833,
+      "sha256": "d90821c7f9beb3bc81bfafe461d7b7d382d07523487a790e49a4c98e94d0fc42"
+    },
+    {
+      "path": "src/spell-presentation.d.ts",
+      "bytes": 1746,
+      "sha256": "9b31505e3e040238d363ec4970e9b980ea4ce798a4d6cbeee85d78cb97141a30"
+    },
+    {
+      "path": "src/spell-presentation.js",
+      "bytes": 7221,
+      "sha256": "e178022705ff758e89df1b8fe6475beba1c17389e022b3e6b37eb07aed0974a1"
+    },
+    {
+      "path": "src/sprite-atlas.d.ts",
+      "bytes": 3216,
+      "sha256": "e09db25e7d5954498b7bfcd0ad8fdb90227381b906371d3661ace2e43559b673"
+    },
+    {
+      "path": "src/sprite-atlas.js",
+      "bytes": 9574,
+      "sha256": "4e52d46b63a257ca4bef98af9c3f74440a14df7da41f4fa50a273a7c70eca19d"
+    },
+    {
+      "path": "src/stage.js",
+      "bytes": 3785,
+      "sha256": "d8649af9fe4be04812773b44d27b03ae029dc6b3f09f1f318485177b00eca27e"
+    },
+    {
+      "path": "src/task.js",
+      "bytes": 3418,
+      "sha256": "a03229ec8356888694031f467cead759693fda72c1911ab51aeb155519727434"
+    },
+    {
+      "path": "src/touhou/anm-interpolation.d.ts",
+      "bytes": 597,
+      "sha256": "34641e0638f626eacbbb91054abb98ea1d0ecaa3f320f178166a117e441f6eeb"
+    },
+    {
+      "path": "src/touhou/anm-interpolation.js",
+      "bytes": 5421,
+      "sha256": "00f566e2df7a9d133c8c7a7d10c156ab236cc901d6c4f630c272d58f0ec4f053"
+    },
+    {
+      "path": "src/touhou/anm-projection.d.ts",
+      "bytes": 1235,
+      "sha256": "f2806cf46e627b0ad988f429992384eb60e45919b3207a396e047200fe3d50f1"
+    },
+    {
+      "path": "src/touhou/anm-projection.js",
+      "bytes": 11000,
+      "sha256": "8c50e0f5368e317be3ca97d3be5225907f23778694378a9b2bbeb462800881b9"
+    },
+    {
+      "path": "src/touhou/anm-render.d.ts",
+      "bytes": 291,
+      "sha256": "312323d69b2bd2f594af40c8750e008ecf3bc5ea041ac6295a2979933221d34c"
+    },
+    {
+      "path": "src/touhou/anm-render.js",
+      "bytes": 20240,
+      "sha256": "e3b92ab34b0743c71448677bba44c3d48660d70bce5e9eee8892231cbc571efa"
+    },
+    {
+      "path": "src/touhou/anm-vm.d.ts",
+      "bytes": 222,
+      "sha256": "cb3a127e93efcd14fcd40d26474ff95a1d166ee1bf77cf8a75af2ec96342f59c"
+    },
+    {
+      "path": "src/touhou/anm-vm.js",
+      "bytes": 36597,
+      "sha256": "016650bce602faa7df0fb974282af98d17ddac7050da1f1cc4bd9ba1892da36d"
+    },
+    {
+      "path": "src/touhou/anm.d.ts",
+      "bytes": 5377,
+      "sha256": "d6faaca944bf7acf9a79055269ad6fcb94b7d96ed87c3bd89d41094042aae936"
+    },
+    {
+      "path": "src/touhou/anm.js",
+      "bytes": 5219,
+      "sha256": "74178a52fbcb324e65913b9dbcce76ef9c114ace0307d20a6fe9a5d4f7e15ed9"
+    },
+    {
+      "path": "src/touhou/application.d.ts",
+      "bytes": 2876,
+      "sha256": "d3db40a859e74261852705f9dc3c9dc230dd0a465b9a1bc71a1b802908e19848"
+    },
+    {
+      "path": "src/touhou/application.js",
+      "bytes": 8835,
+      "sha256": "5b897d2a0679cdb7f767e94f7a09ed720ae9cc10eb729647c375c74b185916f6"
+    },
+    {
+      "path": "src/touhou/audio.d.ts",
+      "bytes": 836,
+      "sha256": "c47f677a9b27bdbd6efa0a08df47712985a4622b7630d0fbc8455b4055595ad9"
+    },
+    {
+      "path": "src/touhou/audio.js",
+      "bytes": 2403,
+      "sha256": "2d097dc8c8bbb1ead5d86d669762108473ca198f72b78bb469fadbe5389cab18"
+    },
+    {
+      "path": "src/touhou/bombs.d.ts",
+      "bytes": 874,
+      "sha256": "8d5a582e0a205d2115168b7f07fa6b0243df68c89f45a6cf6d9c76be0807c336"
+    },
+    {
+      "path": "src/touhou/bombs.js",
+      "bytes": 11565,
+      "sha256": "de7155b4444ed31e208cb2f1b3a6035efbc0af471dcadfcabb8c6c4e6284714f"
+    },
+    {
+      "path": "src/touhou/boss-death.d.ts",
+      "bytes": 1798,
+      "sha256": "7915e24ea3fbb5f83cc19cc16ae25225e305f6ae88becb82954cdfd6eeed44f2"
+    },
+    {
+      "path": "src/touhou/boss-death.js",
+      "bytes": 3510,
+      "sha256": "d2f5b8f443f6cc99159b06ef33381f249329d7a08ff6908fa3f86bcdad0f5476"
+    },
+    {
+      "path": "src/touhou/boss-defeat.d.ts",
+      "bytes": 2441,
+      "sha256": "457a7176681b99a1b71201965fa174b2ccd4adb03d9e98c5167a9390e6e06849"
+    },
+    {
+      "path": "src/touhou/boss-defeat.js",
+      "bytes": 4150,
+      "sha256": "2543bb19d3116dd60f2a32cdf44f74413fba16baedcbb68540a44d762113d3fc"
+    },
+    {
+      "path": "src/touhou/boss-entrance.d.ts",
+      "bytes": 1780,
+      "sha256": "d1ef614d998f31ee775f01db4012041bd9d7cf2a10c36d45ccabf6161591da19"
+    },
+    {
+      "path": "src/touhou/boss-entrance.js",
+      "bytes": 6034,
+      "sha256": "133dc9a40776f7df783e87f2fe9ff78d0e86f788fab6b9622a0be0455a9ae8cf"
+    },
+    {
+      "path": "src/touhou/boss-hud.d.ts",
+      "bytes": 2484,
+      "sha256": "177c6cf81e393ab902f801df5929ee8316745b187af90d547063c48980af9630"
+    },
+    {
+      "path": "src/touhou/boss-hud.js",
+      "bytes": 11482,
+      "sha256": "98753bbdbf31def8b403b1404456f50018efab93f0806e9dd21676931e2b8f4c"
+    },
+    {
+      "path": "src/touhou/boss-phase-clear.d.ts",
+      "bytes": 1130,
+      "sha256": "4ca0f464be36479840a250103a99ae5c777eee7c9533730386dad5533c5ff4ac"
+    },
+    {
+      "path": "src/touhou/boss-phase-clear.js",
+      "bytes": 1280,
+      "sha256": "cdd96d038de2ceb4085723a488285b2a3e3f1f868d2647058029e7aeca35493f"
+    },
+    {
+      "path": "src/touhou/boss-phase-plan.d.ts",
+      "bytes": 1210,
+      "sha256": "e37f70eadba8dba93af61a3f94d4f1d7bcd726b3467b5cf571969d6b583a61c9"
+    },
+    {
+      "path": "src/touhou/boss-phase-plan.js",
+      "bytes": 4626,
+      "sha256": "785ba2349da1778432f6a298465a0607bf245ae7fc089ff28261fa84d66f5bd3"
+    },
+    {
+      "path": "src/touhou/boss-phase-timeline.d.ts",
+      "bytes": 1430,
+      "sha256": "b438732a2b130c4f4b171b25158ec33cd14df883221024c0a4b40d5b1951f96f"
+    },
+    {
+      "path": "src/touhou/boss-phase-timeline.js",
+      "bytes": 3141,
+      "sha256": "eabffc3138d089f6d5e4ea3a35d7cb3ad561df20950653a985e09b3189085829"
+    },
+    {
+      "path": "src/touhou/boss-presentation.d.ts",
+      "bytes": 5973,
+      "sha256": "1eb357522a00fa46eb21a818c663a73d1e0ffcbcb9b8577a5c72511aaa5446db"
+    },
+    {
+      "path": "src/touhou/boss-presentation.js",
+      "bytes": 22579,
+      "sha256": "52d5b8d5a0ed0ff3caccb108ddd98882e3416ffffe699bf6558eb200b1cc358e"
+    },
+    {
+      "path": "src/touhou/bullet-clear-wave.d.ts",
+      "bytes": 1638,
+      "sha256": "6fadff15a961fd5ba2c559bd07a2e7155ccc0276819d4be04af9c7df38872276"
+    },
+    {
+      "path": "src/touhou/bullet-clear-wave.js",
+      "bytes": 2772,
+      "sha256": "82117103f2ea5b9f9ab3dd3db1eae4fa164976021b7047312bddad378e32a97b"
+    },
+    {
+      "path": "src/touhou/bullet-collision.d.ts",
+      "bytes": 2415,
+      "sha256": "e104d50ef37256a6d7fc4ef3dc2d2d86ff0f089528b1d6a737dc04b92c85fca2"
+    },
+    {
+      "path": "src/touhou/bullet-collision.js",
+      "bytes": 3902,
+      "sha256": "8a780150c3eb1b90a0a11d0877eb20cbdfd784c550c77459b23356acb184977a"
+    },
+    {
+      "path": "src/touhou/bullet-patterns.d.ts",
+      "bytes": 888,
+      "sha256": "ee604f06d36906f2e0e9c3af74b8c5941f7fc66f10ddf1e4c1d6b678e313d12f"
+    },
+    {
+      "path": "src/touhou/bullet-patterns.js",
+      "bytes": 5512,
+      "sha256": "76d1a84e4e97db1e553af2d161e1d66179b08ed3a3f8b4e6165c29643fc14ece"
+    },
+    {
+      "path": "src/touhou/bullet-presentation.d.ts",
+      "bytes": 2048,
+      "sha256": "906712c8a8963a2799c815c7a64315801d09f423acecaba620de168897f4b32e"
+    },
+    {
+      "path": "src/touhou/bullet-presentation.js",
+      "bytes": 6992,
+      "sha256": "25a0d8bb9b724c5341847c32b9b31bf3e2ddf9bd21a5bb9263f0dc6dfc9c751b"
+    },
+    {
+      "path": "src/touhou/bullet-style-data.d.ts",
+      "bytes": 116,
+      "sha256": "dac391d972fcba6258d19e069802ee9f72fad83b16bfc01ff5439ac2c1862960"
+    },
+    {
+      "path": "src/touhou/bullet-style-data.js",
+      "bytes": 26436,
+      "sha256": "b5fbfdb790f994eea3ee900cb38472f2d2f26c319a1d890036baa011fba39ed3"
+    },
+    {
+      "path": "src/touhou/bullets.d.ts",
+      "bytes": 2995,
+      "sha256": "f5f9b667b2d9d6bf91009a0f381a24d3e4adb45881ff167395197434900ff337"
+    },
+    {
+      "path": "src/touhou/bullets.js",
+      "bytes": 27465,
+      "sha256": "331c492fb2ae53e859e714488ccb87ecf69bce7eb77746bb44e0c4d01c019d2e"
+    },
+    {
+      "path": "src/touhou/converging-particles.d.ts",
+      "bytes": 454,
+      "sha256": "e99a4b2e93bfdf93156a28f3eaffe984560654d2608acf993e381239de4cdbb2"
+    },
+    {
+      "path": "src/touhou/converging-particles.js",
+      "bytes": 4294,
+      "sha256": "8bccd7d00956ce5faa7b17c48d42ddab899627b5c619c080b3211cb3ffb9d716"
+    },
+    {
+      "path": "src/touhou/damage.d.ts",
+      "bytes": 1183,
+      "sha256": "92a4d53bc5a13dff8b0bcc75648e8b6767364c7471aa7657c24f1b3173ca7851"
+    },
+    {
+      "path": "src/touhou/damage.js",
+      "bytes": 4433,
+      "sha256": "69050c32f2338fb1ec9d103f807bab7346170ce4bef8cbcfac1b90584f188f61"
+    },
+    {
+      "path": "src/touhou/dialogue.d.ts",
+      "bytes": 5073,
+      "sha256": "3deced19929ca1b36e47cc9727cb73fccb5e9d7c66a895a098cdea0b9bfdcb74"
+    },
+    {
+      "path": "src/touhou/dialogue.js",
+      "bytes": 18038,
+      "sha256": "5686bf6248e58c7214786063df57fb77553129a1a98fd793ca771d7251a2ed85"
+    },
+    {
+      "path": "src/touhou/distortion.d.ts",
+      "bytes": 1344,
+      "sha256": "f625d37070a509a641493dd7bb216fb616c38208b00fc442dce9797ba56636f2"
+    },
+    {
+      "path": "src/touhou/distortion.js",
+      "bytes": 4434,
+      "sha256": "218a3347de84a1dbc5c860ca949e3b450081ef11ccf289ec581c05d81befb21a"
+    },
+    {
+      "path": "src/touhou/enemy.d.ts",
+      "bytes": 3735,
+      "sha256": "b20623a0a5b33cab11f1144759961f3639ab2aaef67095ecc39394a9d16b1256"
+    },
+    {
+      "path": "src/touhou/enemy.js",
+      "bytes": 11197,
+      "sha256": "20d54f7f68a42b10804b9932f5a3b3e8d5a9314d8eff1f106c78bb819790e6b0"
+    },
+    {
+      "path": "src/touhou/font.d.ts",
+      "bytes": 841,
+      "sha256": "e0708f334924c1ac33f25cf47241d9f13d21b407fbce8a7767cd8a2c43e5cbaa"
+    },
+    {
+      "path": "src/touhou/font.js",
+      "bytes": 6610,
+      "sha256": "6c451dc80c525099c78343d6dd3b5c5882fe20f170da2c98e49e871f5e4297c0"
+    },
+    {
+      "path": "src/touhou/game-over.d.ts",
+      "bytes": 2704,
+      "sha256": "fadf4098746a8d1b83c99d0f435a9ad048c0bfc147af64a6d5e6b5c363590567"
+    },
+    {
+      "path": "src/touhou/game-over.js",
+      "bytes": 12847,
+      "sha256": "fccb091ed3a0b5a26d5338d6f9213324dc209441044afd17ceff3056f3cb9eb3"
+    },
+    {
+      "path": "src/touhou/game.d.ts",
+      "bytes": 4824,
+      "sha256": "78c99d360fb8fb4572617b0b382fefcea7370a8a8a97e88dac171b92a5706545"
+    },
+    {
+      "path": "src/touhou/game.js",
+      "bytes": 18141,
+      "sha256": "214d00f00d8f070e810ece98e3253748b6e132b82a8954d6caa414a6744e1ccb"
+    },
+    {
+      "path": "src/touhou/gameplay-compositor.d.ts",
+      "bytes": 1028,
+      "sha256": "6fdf4cec4007fb5b8b34dcefb7874517251a908e91a50528836fdfaa343dab24"
+    },
+    {
+      "path": "src/touhou/gameplay-compositor.js",
+      "bytes": 6916,
+      "sha256": "04039c31b3cdda99e7ac749cc45f708e97b355316510d38c34c37064ec6ee466"
+    },
+    {
+      "path": "src/touhou/hud.d.ts",
+      "bytes": 1216,
+      "sha256": "c711c58dad4f5a913373f2ef276595b9cc1a9f9c7a3e954f4950043c32f5f4f9"
+    },
+    {
+      "path": "src/touhou/hud.js",
+      "bytes": 8672,
+      "sha256": "f6aef1f7301155d88cff5fae6bd5c9b43c4fe520c15bcd7fc9af5b215609d2ca"
+    },
+    {
+      "path": "src/touhou/index.d.ts",
+      "bytes": 1955,
+      "sha256": "e3cf952c68ab11ce6ffc375d0c5b005668e21d876dba63ee9e18f4e3a3b777b1"
+    },
+    {
+      "path": "src/touhou/index.js",
+      "bytes": 1955,
+      "sha256": "76aaafefbd86e2d1f9c7b7446c44c9a085fcd092f01a1217d2b0b1fe52f28f19"
+    },
+    {
+      "path": "src/touhou/items.d.ts",
+      "bytes": 3644,
+      "sha256": "ee6864d32aeec2893f973e4de37c49701f6e55d3ecb8b9e87274991e0e2cd377"
+    },
+    {
+      "path": "src/touhou/items.js",
+      "bytes": 17506,
+      "sha256": "95cac7dc8d693c31e88731698750a921c65917599c07562980c6eca5a428c464"
+    },
+    {
+      "path": "src/touhou/laser-cancellation.d.ts",
+      "bytes": 1202,
+      "sha256": "c7ea73e6af3a7e0ea650c1eb2c583924b5acceea70bfc2c1e30d20433dd2a2ca"
+    },
+    {
+      "path": "src/touhou/laser-cancellation.js",
+      "bytes": 6606,
+      "sha256": "b5fcf5565f6259671b76729f7dcd6dee351cf67de820f5988ab37b9bfc220094"
+    },
+    {
+      "path": "src/touhou/laser-collision.d.ts",
+      "bytes": 3411,
+      "sha256": "bb8459871f711246cf76655ea46a3139c179b8d6eea412556fd49664429a4b72"
+    },
+    {
+      "path": "src/touhou/laser-collision.js",
+      "bytes": 5913,
+      "sha256": "9b1db7e40f1ba7c02ccb26136f206db381fa2141760860cae132431f27ff3f1d"
+    },
+    {
+      "path": "src/touhou/lasers.d.ts",
+      "bytes": 3887,
+      "sha256": "3e9d9fdddddb7f706f2ccb4aeed2beae8a06e4c11b30b20c8053862a1cf08814"
+    },
+    {
+      "path": "src/touhou/lasers.js",
+      "bytes": 24665,
+      "sha256": "edb557564764a4c99f1648aa9dc86048fe253a1e2b7fdee24daaacbe48fb5ec2"
+    },
+    {
+      "path": "src/touhou/math.d.ts",
+      "bytes": 1031,
+      "sha256": "99c70f7bdafc22c25505951b20bd88aded761703d174001cb881731bdb18670a"
+    },
+    {
+      "path": "src/touhou/math.js",
+      "bytes": 3622,
+      "sha256": "b54aa719e1215975f74dbdba3b93c589901177744a096cd4c1341dc797babcc3"
+    },
+    {
+      "path": "src/touhou/menu.d.ts",
+      "bytes": 1699,
+      "sha256": "4261f6e639f2bbe46971ddd1eaa2e9809d97a8084d5b5a7cc00126e75385f5d0"
+    },
+    {
+      "path": "src/touhou/menu.js",
+      "bytes": 9241,
+      "sha256": "bdc2fc4243539183fc12ae5a5d64fdbc034ca12727fa4342fc84514146ba5e8b"
+    },
+    {
+      "path": "src/touhou/music-caption.d.ts",
+      "bytes": 1337,
+      "sha256": "89f261614117df15df0699f46af446a07035426c3ac39eeed5789c9379ae14c6"
+    },
+    {
+      "path": "src/touhou/music-caption.js",
+      "bytes": 4851,
+      "sha256": "e4642a69c6b5318ec364080237298397754752a56d3c4d112510ae22af9882e7"
+    },
+    {
+      "path": "src/touhou/music-fade.d.ts",
+      "bytes": 1020,
+      "sha256": "5fc6cc49784563b3ecbe6254ec134445f913bea6c8e8afe25db85109edb6e29a"
+    },
+    {
+      "path": "src/touhou/music-fade.js",
+      "bytes": 1934,
+      "sha256": "9ef82253132966f2fd2e355d03cf993b5ce305311a7d7ad690017916cd2ec641"
+    },
+    {
+      "path": "src/touhou/pause-capture.d.ts",
+      "bytes": 1226,
+      "sha256": "c3998eb8185a38868f2d6f85f6cbe31ce3ad921a358ae711771435cf3c5a8cc9"
+    },
+    {
+      "path": "src/touhou/pause-capture.js",
+      "bytes": 5454,
+      "sha256": "b76892a831929c9808bfa9470d48d05d0d5633807c19029243eec1cd09945b1c"
+    },
+    {
+      "path": "src/touhou/pause.d.ts",
+      "bytes": 1199,
+      "sha256": "f2ef0de2ca31425ef20242cb2211742574f708b1a7cf815821675a3a7989c25b"
+    },
+    {
+      "path": "src/touhou/pause.js",
+      "bytes": 6460,
+      "sha256": "3f7b8db62c78ab25dd77c5e6c3b6ebd48d7a13b7209388e0251a01c900cd1b48"
+    },
+    {
+      "path": "src/touhou/player-data.d.ts",
+      "bytes": 181,
+      "sha256": "4aec1e97cef4467d3b08c0f4b6117ee109309a511afa338f1d52387b276e0541"
+    },
+    {
+      "path": "src/touhou/player-data.js",
+      "bytes": 43631,
+      "sha256": "7c5b53a7b35c861ba7a09fb524b53f73d56823f4767df3da1a3c44e9ca5c3509"
+    },
+    {
+      "path": "src/touhou/player.d.ts",
+      "bytes": 5056,
+      "sha256": "58d8dc23093f74ad4eb2265a73dc5c498d631ef6e92197cb57fcc222ab94c089"
+    },
+    {
+      "path": "src/touhou/player.js",
+      "bytes": 25194,
+      "sha256": "e97b5628a64ce41a0b332395b854a5180fea6d71a7b1f23c01ad9a2ca5f8a77e"
+    },
+    {
+      "path": "src/touhou/prefabs.d.ts",
+      "bytes": 2213,
+      "sha256": "d513768ae5fa382bb52cfa6762b8ce172de76718bb590b0dfa6b13a703bb4b97"
+    },
+    {
+      "path": "src/touhou/prefabs.js",
+      "bytes": 6003,
+      "sha256": "b93c4b802a8ad69ad2662f088b1e35d275fc269eb30be158a5e62884a4571cd7"
+    },
+    {
+      "path": "src/touhou/render-order.d.ts",
+      "bytes": 117,
+      "sha256": "e85637de938dfb752a2a63382667112ed0b55e83080b574772fd0601c70949bd"
+    },
+    {
+      "path": "src/touhou/render-order.js",
+      "bytes": 1265,
+      "sha256": "6780ee70f4f5ad5a8c91e1c2d50f994dfd35d19a3084282c94799f25a7435192"
+    },
+    {
+      "path": "src/touhou/render-queue.d.ts",
+      "bytes": 977,
+      "sha256": "966756bb088df599b67de914c62e008265df81f89c2199c3eca376e31cd42719"
+    },
+    {
+      "path": "src/touhou/render-queue.js",
+      "bytes": 1588,
+      "sha256": "7380cd5984889f2d6ef49a9e6432ccb921d8de63597adaba1393165ea418f860"
+    },
+    {
+      "path": "src/touhou/resources.d.ts",
+      "bytes": 2092,
+      "sha256": "4d612cef5bbdb1ca3878f25b3d660fb9fc401ecb0b8d3f38cfe16817cb66952e"
+    },
+    {
+      "path": "src/touhou/resources.js",
+      "bytes": 6278,
+      "sha256": "358c252b3062fb6c28c1eb09393f034ade25c742cb4c4a5bce427e03678d2292"
+    },
+    {
+      "path": "src/touhou/scene-transition.d.ts",
+      "bytes": 1095,
+      "sha256": "eafa8f018028e59dceff5f3098e872d9d6930c3e66ad3e612cc22147ab829413"
+    },
+    {
+      "path": "src/touhou/scene-transition.js",
+      "bytes": 3601,
+      "sha256": "a2ca4e5cacd6c33c3ba3c3fada0062bd5223d898baacc0c2af61e9af15a12150"
+    },
+    {
+      "path": "src/touhou/screen-shake.d.ts",
+      "bytes": 527,
+      "sha256": "8b13ea179d796aa668fa5ce74ab833ae815c420a95d439745ce072f8d35321ad"
+    },
+    {
+      "path": "src/touhou/screen-shake.js",
+      "bytes": 1488,
+      "sha256": "7186fbaa060660e37a562dd01498ca97c4414e82f865955a0742aa1bf2c22243"
+    },
+    {
+      "path": "src/touhou/short-line.d.ts",
+      "bytes": 699,
+      "sha256": "3b05641f15ee8a78ac03ef5f8dc077b5c512bb7ea134bb78b750b2c3ac82fa1a"
+    },
+    {
+      "path": "src/touhou/short-line.js",
+      "bytes": 2868,
+      "sha256": "d848621c091196c57c18ed9cecb8cd399357c474cfa26c093125a25b0df0319f"
+    },
+    {
+      "path": "src/touhou/shot-data.d.ts",
+      "bytes": 920,
+      "sha256": "14dc668912aaa00da3c8e6cec76e19187adf66b6b08bbbd706b1a5fdca28a814"
+    },
+    {
+      "path": "src/touhou/shot-data.js",
+      "bytes": 905,
+      "sha256": "3c67765b70b9302ecaf332a97a96e9841a66761357bbed8c78acb82f6f8884bc"
+    },
+    {
+      "path": "src/touhou/shots.d.ts",
+      "bytes": 896,
+      "sha256": "b8b226957b8d33ceb31249b13717aed58e8acdfab0c834c69c4e48769c69457d"
+    },
+    {
+      "path": "src/touhou/shots.js",
+      "bytes": 10011,
+      "sha256": "7835bbd3f9f724d806be0ddd03810c92a4e220bf41549092c2e76872e58173a7"
+    },
+    {
+      "path": "src/touhou/spell.d.ts",
+      "bytes": 3393,
+      "sha256": "45e1c35fa95dcb2457bcc08819f575422a569763f1f6f8aa72bfba8cf44d3b78"
+    },
+    {
+      "path": "src/touhou/spell.js",
+      "bytes": 13632,
+      "sha256": "94e72b78c1357f105af3d6cae41368d9651de01decd527b963f3530fb24ba3ab"
+    },
+    {
+      "path": "src/touhou/stage-clear.d.ts",
+      "bytes": 2113,
+      "sha256": "396ea2c5c696a38121a0263ab041917ad306a5d30c1a3676e557272c4004ef66"
+    },
+    {
+      "path": "src/touhou/stage-clear.js",
+      "bytes": 4412,
+      "sha256": "a49a085b8804c372716ce3c1832344cea332d873bae8475c86e7762383b534d6"
+    },
+    {
+      "path": "src/touhou/stage-selection.d.ts",
+      "bytes": 1167,
+      "sha256": "8892432b88e65165fcabb90c2532df7f7662902c70324f461eed3e61a63ee7c8"
+    },
+    {
+      "path": "src/touhou/stage-selection.js",
+      "bytes": 3706,
+      "sha256": "5b45241e42998bb2cb537b5edb8c8d314a4f2a571173c7fdfce41dbde47b685b"
+    },
+    {
+      "path": "src/touhou/stage-transition.d.ts",
+      "bytes": 1296,
+      "sha256": "df6bb5de405697f0f22953f64e10698a0c39f4d97923caf2e1f206bb1a4d52dd"
+    },
+    {
+      "path": "src/touhou/stage-transition.js",
+      "bytes": 2738,
+      "sha256": "49024bbc756be843c8c694e947d0c97635b39289aa73e72fb5bcf0dc2dac8878"
+    },
+    {
+      "path": "src/touhou/text-renderer.d.ts",
+      "bytes": 1406,
+      "sha256": "dd2fc8191c5a35c2c2039d92ddc59d2af83e694f354faefb6d0235b6d112a370"
+    },
+    {
+      "path": "src/touhou/text-renderer.js",
+      "bytes": 6576,
+      "sha256": "8da2db8abaa5e501a7d75f6c5f2eb0ab12d98b4761874e0e7e8c762fb7761103"
+    },
+    {
+      "path": "src/touhou/title-background.d.ts",
+      "bytes": 562,
+      "sha256": "dea2624960c69576ce3b3f7c34739f4fbeea71cc55634bd6822f7ccd41382792"
+    },
+    {
+      "path": "src/touhou/title-background.js",
+      "bytes": 4194,
+      "sha256": "89af46bba8b1aea0be40b792c17219ac91edbfef53da3d3b77f6ef58787d5998"
+    },
+    {
+      "path": "src/world.js",
+      "bytes": 7423,
+      "sha256": "4590ca75cf5d58d714c8b4a86ac9a195a22446d0302b1fd11dd7e92492a81e4b"
+    }
+  ],
+  "runtimeFiles": [
+    {
+      "path": "LICENSE.TS-STG",
+      "source": "LICENSE",
+      "bytes": 1076,
+      "sha256": "54874c726261159d48ef83f5a595ddc68c43d7993d5496fff0a936e3500be58d"
+    },
+    {
+      "path": "THIRD_PARTY.md",
+      "source": "THIRD_PARTY.md",
+      "bytes": 5020,
+      "sha256": "c5fde4b65a061a343a0cede087c6d999064df2da2fe55f6f601848a6d5d285ab"
+    },
+    {
+      "path": "licenses/quickjs-LICENSE",
+      "source": "dist/TS-STG/licenses/quickjs-LICENSE",
+      "bytes": 1212,
+      "sha256": "98de27cc1e8c21a61cb242021aeb5b3711d694fab59fd75ad5b84c36b2c86b7e"
+    },
+    {
+      "path": "licenses/raylib-LICENSE",
+      "source": "dist/TS-STG/licenses/raylib-LICENSE",
+      "bytes": 877,
+      "sha256": "355bdd50936805f62f091da289f7ba467ea0711586a464ad755dcc73dcfb52a8"
+    },
+    {
+      "path": "licenses/raylib-external/RGFW.h",
+      "source": "dist/TS-STG/licenses/raylib-external/RGFW.h",
+      "bytes": 293229,
+      "sha256": "0716aeee572b9ac4f1ff32d7b4d0deedea3a6c0fb9fccff917111ac3324accc7"
+    },
+    {
+      "path": "licenses/raylib-external/cgltf.h",
+      "source": "dist/TS-STG/licenses/raylib-external/cgltf.h",
+      "bytes": 199324,
+      "sha256": "4c5094a5febd18852af0ba0971ad979e1ed2090f71b47b951ea3bf4c7e7b6d8f"
+    },
+    {
+      "path": "licenses/raylib-external/dirent.h",
+      "source": "dist/TS-STG/licenses/raylib-external/dirent.h",
+      "bytes": 5184,
+      "sha256": "0fdc24e938e17e7c6b905e1566731f2f76d133245e740edf6b39518deefb257e"
+    },
+    {
+      "path": "licenses/raylib-external/dr_flac.h",
+      "source": "dist/TS-STG/licenses/raylib-external/dr_flac.h",
+      "bytes": 525671,
+      "sha256": "3c579b159fb3d3dc639f7f5404fa373e515bcd2b6c7616cf0b297debd809ef76"
+    },
+    {
+      "path": "licenses/raylib-external/dr_mp3.h",
+      "source": "dist/TS-STG/licenses/raylib-external/dr_mp3.h",
+      "bytes": 181934,
+      "sha256": "7c8c65208151df60e1dcc33224f19fe7543f7f536710699378d7e8096bfff39e"
+    },
+    {
+      "path": "licenses/raylib-external/dr_wav.h",
+      "source": "dist/TS-STG/licenses/raylib-external/dr_wav.h",
+      "bytes": 351978,
+      "sha256": "d435cea2b6828840ba40d61e23247c41a335be1cefc2e5734a05e62fec1accb0"
+    },
+    {
+      "path": "licenses/raylib-external/glad.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glad.h",
+      "bytes": 557459,
+      "sha256": "220b47282d4aee2c9cd2cba21943c29c0684f1bd489ff66d36d7ea1d2e9418c3"
+    },
+    {
+      "path": "licenses/raylib-external/glad_gles2.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glad_gles2.h",
+      "bytes": 289641,
+      "sha256": "28755a633621b393045c67f750a2903b856364992f7b643a33436895bc227321"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/.mailmap",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/.mailmap",
+      "bytes": 384,
+      "sha256": "ed6914588dbbfc8802834cee0acb601ee960edbfaec6f713bd93124702e8395b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/GenerateMappings.cmake",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/GenerateMappings.cmake",
+      "bytes": 1653,
+      "sha256": "19f7b491f65c7d14f61c9d497af8dc83e4bb4fa9e079f7d56c0028ca17cf55f0"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/Info.plist.in",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/Info.plist.in",
+      "bytes": 1297,
+      "sha256": "19fe6a501764fc2f37f998a53d6422c1a64ea16c8e7c844153c617ab4cf6142b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/cmake_uninstall.cmake.in",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/cmake_uninstall.cmake.in",
+      "bytes": 1117,
+      "sha256": "e720f60e30bf9dcd6eafa092d3a8fe9eea48e038ce8a0cd8b41b5fc96ab69faf"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/glfw3.pc.in",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/glfw3.pc.in",
+      "bytes": 440,
+      "sha256": "90616f3779a2d7491e644b61d44a478b7c9cdfa06c3b8cb44c2ef2e515fc8008"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/glfw3Config.cmake.in",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/glfw3Config.cmake.in",
+      "bytes": 115,
+      "sha256": "0d266f3f8b0ae324404dc36a8ca8af01b5bf58d15b1ce806e9e318e895e9b755"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/i686-w64-mingw32-clang.cmake",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/i686-w64-mingw32-clang.cmake",
+      "bytes": 596,
+      "sha256": "9cf42de30ad84095801b2dff752df930c692680089d8f47c77f9445cdacece24"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/i686-w64-mingw32.cmake",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/i686-w64-mingw32.cmake",
+      "bytes": 588,
+      "sha256": "f26d94a113c02bba7cded9715bcf51a9d04ba40d497ccffc05b4ef256aa8399f"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/modules/FindEpollShim.cmake",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/modules/FindEpollShim.cmake",
+      "bytes": 747,
+      "sha256": "3689ad05d6b6460d2b5313130d3cb474ab195f6698690737582d3ee98cb4c942"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/modules/FindOSMesa.cmake",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/modules/FindOSMesa.cmake",
+      "bytes": 445,
+      "sha256": "0ab39cf837f390904cb4bf68db853346b53fa5d4dc047f554f188b44b4454643"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32-clang.cmake",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32-clang.cmake",
+      "bytes": 606,
+      "sha256": "7f2ea33c57c8726be2a1dfac703d2a4f7c3993c3345ce5c927f0fa1474fc2083"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32.cmake",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32.cmake",
+      "bytes": 598,
+      "sha256": "e68df045d9aa039fef4f984a7c8e48cd6ac3df8960adc960f6e45674d3f6cee3"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CMakeLists.txt",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMakeLists.txt",
+      "bytes": 5951,
+      "sha256": "9febf64a1d8cabfdb77c8cd5812232c65f58b8ad96271ef2975bde5058bdc344"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/CONTRIBUTORS.md",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CONTRIBUTORS.md",
+      "bytes": 5328,
+      "sha256": "3a196513663e7dac03434550ee923514fe5d147088ca087af38c0894a6f01bb3"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/LICENSE.md",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/LICENSE.md",
+      "bytes": 904,
+      "sha256": "149704059b5d0bf551637e50042dd4de9c2cae921021f6636298911e3a5f9462"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/README.md",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/README.md",
+      "bytes": 558,
+      "sha256": "db7e58b69359179469b6e1e586672868890fcbc26265a447c6e588f983820d31"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/getopt.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/getopt.c",
+      "bytes": 8053,
+      "sha256": "170fbc3e023f7a4499b3407c3633f8d4a2d8bcba9d8f3d90a44cc2316d75378d"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/getopt.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/getopt.h",
+      "bytes": 2136,
+      "sha256": "17999999aa29bca7239fee8d1c2fc98fb85682dc38d4f793b46e084f777401bd"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/glad/gl.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/gl.h",
+      "bytes": 326437,
+      "sha256": "372d175f3d334c59357828f01893fb140605ded6a285bf2977dcb0b9ee3b39ea"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/glad/gles2.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/gles2.h",
+      "bytes": 81113,
+      "sha256": "fc72c16afbcb8fdf4f6465a0894b6c3148ebf44328363bd69f5ba0d6c2ea8ca7"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/glad/vulkan.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/vulkan.h",
+      "bytes": 336197,
+      "sha256": "e9a5eb14a8cd7d7b5e8d57ab4431e21086d4d8f9f6c8e4958938aee5c9311b2b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/mingw/_mingw_dxhelper.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/_mingw_dxhelper.h",
+      "bytes": 3111,
+      "sha256": "f3145fbc30022e781a9836d72bd3a628a45495bda5b48f90983e9ae7ebe94b82"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/mingw/dinput.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/dinput.h",
+      "bytes": 112560,
+      "sha256": "72316ef3309b6a9b60d16f064a84fc5af6efd84546d69ac557b117bc398e3aab"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/mingw/xinput.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/xinput.h",
+      "bytes": 7950,
+      "sha256": "4f78d7a9df66252a02342dc874b786ed666f9c32b523ae3734d44d87e09fc0e7"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/fractional-scale-v1.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/fractional-scale-v1.xml",
+      "bytes": 4636,
+      "sha256": "5941de5d28f427ecdadddc8623a6f6af0a30b0ab4726847236ba7a7652b81316"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/idle-inhibit-unstable-v1.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/idle-inhibit-unstable-v1.xml",
+      "bytes": 4017,
+      "sha256": "c2ac9f002c6669ca6c02eb9b587b8e9108e3ce6deab4a2de58b576f4f864ca38"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/pointer-constraints-unstable-v1.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/pointer-constraints-unstable-v1.xml",
+      "bytes": 15451,
+      "sha256": "92553c58baa04931afcd409a9d947518b70bc986b847ccb1ef74f377779b0b5d"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/relative-pointer-unstable-v1.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/relative-pointer-unstable-v1.xml",
+      "bytes": 6584,
+      "sha256": "ab4930dd3084f732b6fdd12ee6dbd0a112a758ed8a57b170366391dbeb1a22ff"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/viewporter.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/viewporter.xml",
+      "bytes": 8232,
+      "sha256": "b327b824ff2799032aa852d9607f8db8f0f672474444812a3b0997d87aa5dd0b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/wayland.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/wayland.xml",
+      "bytes": 144896,
+      "sha256": "053bdb354709893dbfb5cee4ee6fbb3eadb4fed78e6d761bb7dc8f30513d6541"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/xdg-activation-v1.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-activation-v1.xml",
+      "bytes": 9016,
+      "sha256": "d8418be2d5738d50aff788bef1c7574f33f26659aa045447ff2ef9b78c58fe01"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/xdg-decoration-unstable-v1.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-decoration-unstable-v1.xml",
+      "bytes": 7089,
+      "sha256": "88e2d60f7ca8df5e034b816fb8a4b3f0b2abd6fc07b4ee6ca058a72404ea6904"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/deps/wayland/xdg-shell.xml",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-shell.xml",
+      "bytes": 60418,
+      "sha256": "b72112a7a1f9b2ad94ffa59468753ced568d6e7b2069df94a9d437e488b8506e"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/include/GLFW/glfw3.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/include/GLFW/glfw3.h",
+      "bytes": 241826,
+      "sha256": "aa370985f6b493bbe0358a36ab49f5780a6397c0209c6d98a62143dea595b73c"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/include/GLFW/glfw3native.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/include/GLFW/glfw3native.h",
+      "bytes": 21201,
+      "sha256": "40035881fdc02a9ab265c2086338f749a0411e1c15b68fada678fa34e8bd8958"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/CMakeLists.txt",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/CMakeLists.txt",
+      "bytes": 13945,
+      "sha256": "2cb9fd73457e14a751f12fac3556c576fcffb54e25c462b5aeb7fe76d4d94aae"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/cocoa_init.m",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_init.m",
+      "bytes": 24873,
+      "sha256": "666d656c1eb0b0023d7c57e2ec7326956a93f950977473eb7723364416ef4029"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/cocoa_joystick.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_joystick.h",
+      "bytes": 1849,
+      "sha256": "88fb37c0b8bbfea19343e75cfa7090eef7bed67c93bcd789af356ee6c2401210"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/cocoa_joystick.m",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_joystick.m",
+      "bytes": 15740,
+      "sha256": "eddd49dc3862a4e16be208c36e540f52fe7f987acf315c4d969eaa6ec32f09b0"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/cocoa_monitor.m",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_monitor.m",
+      "bytes": 19725,
+      "sha256": "296f1bc18f7f27677d33392282b543cc6275d4ff4dc39e08526331d0281d016e"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/cocoa_platform.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_platform.h",
+      "bytes": 12920,
+      "sha256": "b4d608d7fe69fe147ba600aee4700a9e0b40be225ae9abd698f711fdbf944320"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/cocoa_time.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_time.c",
+      "bytes": 1890,
+      "sha256": "a0094a28331172292a7c506935ee01adb0184d18e89e038ea471094781dd0ce4"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/cocoa_time.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_time.h",
+      "bytes": 1378,
+      "sha256": "596db814eaead6d4cf304fa6ae30688362ce98c9ee551eb3871c3cc166876804"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/cocoa_window.m",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_window.m",
+      "bytes": 60320,
+      "sha256": "a7572261f4c1c42c3d020dc0116b12d4c9f9c44161e186ea72e6b03ea1610f7b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/context.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/context.c",
+      "bytes": 25670,
+      "sha256": "839a96ff1dcc712129f9bcb9522b8d459b9d6a9b8d029ce32c729c523b9ea012"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/egl_context.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/egl_context.c",
+      "bytes": 29593,
+      "sha256": "933150523fa2cf24e8f3e7cd279b0d8308635f769e052f035e4088c4ebc83ccf"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/glfw.rc.in",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/glfw.rc.in",
+      "bytes": 771,
+      "sha256": "14f50b28f6d801c6a99549376face170970023ac139a33e4555affecfebe24f1"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/glx_context.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/glx_context.c",
+      "bytes": 23690,
+      "sha256": "e04e784373d59a3f3b08e3de15c8fbfef61c22b9325a2f3d9922a21cc4dd504e"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/init.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/init.c",
+      "bytes": 14504,
+      "sha256": "61ac2188518cae852bc2bfe0c0f2363dad365f8166099a3aa78a3c9ff8504654"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/input.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/input.c",
+      "bytes": 41395,
+      "sha256": "f5efbc7ec6a38a6c462cd2311dbe51616a4810c4dc8d1a2f735195e5cf72c753"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/internal.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/internal.h",
+      "bytes": 35817,
+      "sha256": "cc6e93eac5b9957c99bc90e95c34d62f184395345de33e554ab77c23a1148ae0"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/linux_joystick.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/linux_joystick.c",
+      "bytes": 12404,
+      "sha256": "4e9b95479d3df624d3a5de2b9d708f418cf7e0870c5f05ff2f1a1f88ec84e608"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/linux_joystick.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/linux_joystick.h",
+      "bytes": 2322,
+      "sha256": "af4e596d0ed1e7eed2699b6567d6ed46157f7c9887bfef15aad5ca15b2a17590"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/mappings.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/mappings.h",
+      "bytes": 257134,
+      "sha256": "e307abd1fee03029b8c4b1bdae93c0e90b0948ed0a41eacc93e6755f2f6c893b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/mappings.h.in",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/mappings.h.in",
+      "bytes": 5280,
+      "sha256": "4fba82df496c86a2364733716f214e5f73fbc40376a93e667cda9d877e085c79"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/monitor.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/monitor.c",
+      "bytes": 15194,
+      "sha256": "1671bbe37502419f08b8072e80a13a78494feea6c008ccb2727ebd44a43afd6a"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/nsgl_context.m",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/nsgl_context.m",
+      "bytes": 11919,
+      "sha256": "a0d683795265b18cd183be6a185742e44b866ee80c21d7fcc4ad4363c16d2832"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/null_init.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_init.c",
+      "bytes": 14437,
+      "sha256": "041b02232d5378e9a3ac3fd12da1e91f8276ef1459303e2094ee820e675a3dd1"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/null_joystick.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_joystick.c",
+      "bytes": 1753,
+      "sha256": "5da9465db10034b81b87c3722328bff7dfc3b4a94670cce71672b7d464fd6820"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/null_joystick.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_joystick.h",
+      "bytes": 1424,
+      "sha256": "ccd7bec0a32632b0fc81d1c085bba3b89e01a9dc4b6b28cde9ea394909fc700d"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/null_monitor.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_monitor.c",
+      "bytes": 5178,
+      "sha256": "12face8cf2462b5590d8f1ac5502184e0246696f5d5b117dddca3dfbb5658759"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/null_platform.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_platform.h",
+      "bytes": 11827,
+      "sha256": "a93596d5f503d0378de4c347f55d0cd63aad471022a09e3c474f516416520c0e"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/null_window.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_window.c",
+      "bytes": 18727,
+      "sha256": "23c6335ab4338d739d4d9f6ddea0283e7ae58fd0ddf2b7ad1e4b9d381b51bcdc"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/osmesa_context.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/osmesa_context.c",
+      "bytes": 11935,
+      "sha256": "2bb65aa05606a7bb652ee59fb481c45abb223795163fe9c57d808de3e082b09b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/platform.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/platform.c",
+      "bytes": 6332,
+      "sha256": "e80d556c9679c9d82719bc2b0469a711a01f9218492efbdf88e18a64f19b7dcd"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/platform.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/platform.h",
+      "bytes": 6421,
+      "sha256": "14498e12db44b36f695d5cacd2ca2763fd6d6c4d2c5ef3fdcfa103e79d54b49b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/posix_module.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_module.c",
+      "bytes": 1816,
+      "sha256": "e78e668d01a15695b1d44da660daf8c0fd1696cce1c9b5cca0a2e4e41d67dbe1"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/posix_poll.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_poll.c",
+      "bytes": 3044,
+      "sha256": "0432a56fef57a1cd39bee3c0c5120e17991ff8aa56ce8ce39ff1bdac425ce02a"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/posix_poll.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_poll.h",
+      "bytes": 1292,
+      "sha256": "4aaeb5ddcc8e8b617463d07d769264d359c8c508a5a9cc9a02b4b49f8dadb3a5"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/posix_thread.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_thread.c",
+      "bytes": 3245,
+      "sha256": "898502d86490e8c2e401a3de7a63e7c9566aa99333d676c5c4aaca69b35022b3"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/posix_thread.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_thread.h",
+      "bytes": 1674,
+      "sha256": "10e4679442f9650ec2f423572537a0326e972b8f0c02cfb5fb76c3cd107733cd"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/posix_time.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_time.c",
+      "bytes": 2206,
+      "sha256": "548431aa62bc3ead2a82c1f049fd53659b7a92c8702abaa9d9176a0583edadb2"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/posix_time.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_time.h",
+      "bytes": 1489,
+      "sha256": "eccea70e4ada8f6c0fcca9eeb5de01781d2422d28bfe63e795aeb74a7400125c"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/vulkan.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/vulkan.c",
+      "bytes": 11947,
+      "sha256": "5948e9f0b347640473d23f7dfd94cea82375149639f2cbd288491747312d3a33"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/wgl_context.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wgl_context.c",
+      "bytes": 27071,
+      "sha256": "48c2cad35265f7311146182ec4ad811f551929cb6847ef3a0653abbedec88bf8"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_init.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_init.c",
+      "bytes": 28564,
+      "sha256": "87ab2b407b742ca6e9a65e8cb88cc941b19d44b5e33a1fedc06015779b4ab3e6"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_joystick.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_joystick.c",
+      "bytes": 26711,
+      "sha256": "b9c95eed4eeed6eb64864fa031349de83e3421ab7a6c3dcd86cf80fd6b1ad8b1"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_joystick.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_joystick.h",
+      "bytes": 1870,
+      "sha256": "41cd05e7477314241c5aca9b840682a4ba4b82c358d401612ab83e5bce167c39"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_module.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_module.c",
+      "bytes": 1822,
+      "sha256": "58f0b4a96584b6ad582e90974b07ecbe9ed8d402cadbe54383afbb0ba37d6a0b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_monitor.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_monitor.c",
+      "bytes": 16993,
+      "sha256": "4645c2972d8dbf9e11e287b05333f6db585615541217e3dd5d61e9f9fca32e97"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_platform.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_platform.h",
+      "bytes": 25101,
+      "sha256": "f7b39efe79c9731762c9dd9848431e795a66fccc871d7ae72930c5e1aeed7c4c"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_thread.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_thread.c",
+      "bytes": 3085,
+      "sha256": "92ee8a23a6a729c2cff69975d2dfc46d019a2be0494d17b705495cd3042dcd36"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_thread.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_thread.h",
+      "bytes": 1956,
+      "sha256": "cefdd801463eb6901e3ebae02b8204e87e44bd06b2bdc562794dc890886ecc97"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_time.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_time.c",
+      "bytes": 1911,
+      "sha256": "16c54578192e06205a0dbe675ffc93f73df1d971ace8e81ad2a0ba868c99c4e6"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_time.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_time.h",
+      "bytes": 1703,
+      "sha256": "dabfeb7478945930cb6c4ded23cfe76f6e6577b68523c5d8ac2acb1b63b35b21"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/win32_window.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_window.c",
+      "bytes": 81254,
+      "sha256": "b7ab5cfb53bb86688033699859399f2a90433e08e6d1aa2dba19c15be8db7fb6"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/window.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/window.c",
+      "bytes": 35148,
+      "sha256": "c102fd119fd7423ca0cebd17c1fba722d7fe149ef689f09962f6ff79c82dd289"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/wl_init.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_init.c",
+      "bytes": 45125,
+      "sha256": "57e6a61e4d1cacaa9b9348cfe1bc58f378356fa901dd275005612da043b598cc"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/wl_monitor.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_monitor.c",
+      "bytes": 8627,
+      "sha256": "47161326acd583a0787a37927535ffdbe03561923f40a316d9f02b40c28ec16b"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/wl_platform.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_platform.h",
+      "bytes": 34576,
+      "sha256": "fb13b006ad8e13df67a8c267e880324f6f131e1d5cba8b072061e91efa30ee71"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/wl_window.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_window.c",
+      "bytes": 102558,
+      "sha256": "aee24f61801c2633d4b1218b7152ce3fd02c61285d6663a895f64df012e354a3"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/x11_init.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_init.c",
+      "bytes": 70569,
+      "sha256": "6c3cfc5c9910bb5ec95776426cfc702146a3f0c25ded3ed15519e446c720c04c"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/x11_monitor.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_monitor.c",
+      "bytes": 20136,
+      "sha256": "cd1c15c5fc684a58472ded4cbad3509f383c6d6611b4437d8469b54feedbdaab"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/x11_platform.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_platform.h",
+      "bytes": 44741,
+      "sha256": "c35ff50d31c47eee88a7613b8ff47611d6bd892657545b6d44b1911dc7b7466a"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/x11_window.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_window.c",
+      "bytes": 106419,
+      "sha256": "f983abbfaa1b503e62a71a15a98f2aef7ac4cde9411bb260d4fd0a759af0499a"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/xkb_unicode.c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/xkb_unicode.c",
+      "bytes": 22943,
+      "sha256": "57ddc9155229a445c1f6e1542fe3ddce8d4ad0c5d5f7f0c3da476d58fb5f650c"
+    },
+    {
+      "path": "licenses/raylib-external/glfw/src/xkb_unicode.h",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/xkb_unicode.h",
+      "bytes": 1288,
+      "sha256": "b80f53223f42108f4ff0fc51cb8e94c2c9b3ba87888760842958bf43bd4cd19a"
+    },
+    {
+      "path": "licenses/raylib-external/jar_mod.h",
+      "source": "dist/TS-STG/licenses/raylib-external/jar_mod.h",
+      "bytes": 51991,
+      "sha256": "48a056e21e97e408f3fbaea8cfed7b5aefcbfa66589f9d6400c2c9ee507c38c4"
+    },
+    {
+      "path": "licenses/raylib-external/jar_xm.h",
+      "source": "dist/TS-STG/licenses/raylib-external/jar_xm.h",
+      "bytes": 101770,
+      "sha256": "b0e00da94e525695d6f37469352c87e65cae08fcb24be3597bf9b3925904f203"
+    },
+    {
+      "path": "licenses/raylib-external/m3d.h",
+      "source": "dist/TS-STG/licenses/raylib-external/m3d.h",
+      "bytes": 305622,
+      "sha256": "0794a776a2b9d063061f0e85578a6ba51d7df17bc20d1d0bc7f9f701c520b87c"
+    },
+    {
+      "path": "licenses/raylib-external/miniaudio.h",
+      "source": "dist/TS-STG/licenses/raylib-external/miniaudio.h",
+      "bytes": 3985334,
+      "sha256": "60b53a3bfd81319bd23bc18aa728f75e4ae70d3c5c2993ebbf4fedf808a1e45e"
+    },
+    {
+      "path": "licenses/raylib-external/msf_gif.h",
+      "source": "dist/TS-STG/licenses/raylib-external/msf_gif.h",
+      "bytes": 35114,
+      "sha256": "bcf1fe3591fb9ea0e375c448dcc02fa4471fe3b143f7bab9ac0847afcf6807d0"
+    },
+    {
+      "path": "licenses/raylib-external/par_shapes.h",
+      "source": "dist/TS-STG/licenses/raylib-external/par_shapes.h",
+      "bytes": 72865,
+      "sha256": "d91d7bcddb6241f9938fb973eda5384f77c4e262ee25ee39954bf5641f4fa46e"
+    },
+    {
+      "path": "licenses/raylib-external/qoa.h",
+      "source": "dist/TS-STG/licenses/raylib-external/qoa.h",
+      "bytes": 23885,
+      "sha256": "386c0fdae62e9f78d453867ee618b3de9998b0289f82647ff88aa802b8fed483"
+    },
+    {
+      "path": "licenses/raylib-external/qoaplay.c",
+      "source": "dist/TS-STG/licenses/raylib-external/qoaplay.c",
+      "bytes": 10503,
+      "sha256": "6d974b4136f1cc473c4be7fcfac26ae34f1c3363abacada69e323dce407189a9"
+    },
+    {
+      "path": "licenses/raylib-external/qoi.h",
+      "source": "dist/TS-STG/licenses/raylib-external/qoi.h",
+      "bytes": 18314,
+      "sha256": "be17cb4ea880327f430107169d2df09e3ce82124a194f35358cef74bcc5a9ed7"
+    },
+    {
+      "path": "licenses/raylib-external/rl_gputex.h",
+      "source": "dist/TS-STG/licenses/raylib-external/rl_gputex.h",
+      "bytes": 36115,
+      "sha256": "47eb4b4d0e12cacdb3f48296ef799107ef7d43c88cd8e963302e73ac9479d2f3"
+    },
+    {
+      "path": "licenses/raylib-external/rprand.h",
+      "source": "dist/TS-STG/licenses/raylib-external/rprand.h",
+      "bytes": 11693,
+      "sha256": "52449d9a7fd1f2810470ed7db6528d12472f77e685a53105277e3ed24dd5f2d7"
+    },
+    {
+      "path": "licenses/raylib-external/sdefl.h",
+      "source": "dist/TS-STG/licenses/raylib-external/sdefl.h",
+      "bytes": 28019,
+      "sha256": "089a9a9e119e54ec02a6e87d904cb0c707fbfb2a6ecca3506ce80bc9e755c241"
+    },
+    {
+      "path": "licenses/raylib-external/sinfl.h",
+      "source": "dist/TS-STG/licenses/raylib-external/sinfl.h",
+      "bytes": 21581,
+      "sha256": "eb884c9e7188f05c5003a3add47c0b014647135310a7ae1fec4705ef2d203185"
+    },
+    {
+      "path": "licenses/raylib-external/stb_image.h",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_image.h",
+      "bytes": 283010,
+      "sha256": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
+    },
+    {
+      "path": "licenses/raylib-external/stb_image_resize2.h",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_image_resize2.h",
+      "bytes": 451105,
+      "sha256": "75eaf304de3b578f66023bd9182cfd33fb57bf2f74c86263219de0b0e02fe6b4"
+    },
+    {
+      "path": "licenses/raylib-external/stb_image_write.h",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_image_write.h",
+      "bytes": 71221,
+      "sha256": "cbd5f0ad7a9cf4468affb36354a1d2338034f2c12473cf1a8e32053cb6914a05"
+    },
+    {
+      "path": "licenses/raylib-external/stb_perlin.h",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_perlin.h",
+      "bytes": 17918,
+      "sha256": "17e688447a02776fe667e0b6a5d1155bf85c827a83f787ae2d44f57699274960"
+    },
+    {
+      "path": "licenses/raylib-external/stb_rect_pack.h",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_rect_pack.h",
+      "bytes": 20199,
+      "sha256": "6388366a30de57c1b4c29b6eed4ed1c7d758fc1443d2dd95cfce943370bb3aa1"
+    },
+    {
+      "path": "licenses/raylib-external/stb_truetype.h",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_truetype.h",
+      "bytes": 199192,
+      "sha256": "ecd30b05e0dd4fea3a13c26810dd9e1992dc379049482c393d5a19e6b5090aab"
+    },
+    {
+      "path": "licenses/raylib-external/stb_vorbis.c",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_vorbis.c",
+      "bytes": 192790,
+      "sha256": "4c7cb2ff1f7011e9d67950446b7eb9ca044f2e464d76bfbb0b84dd2e23e65636"
+    },
+    {
+      "path": "licenses/raylib-external/tinyobj_loader_c.h",
+      "source": "dist/TS-STG/licenses/raylib-external/tinyobj_loader_c.h",
+      "bytes": 45666,
+      "sha256": "3739fd5b3a91e7926ca6b28ed080623e59d7f9fc9b3b81a08394b5e02211308b"
+    },
+    {
+      "path": "licenses/raylib-external/vox_loader.h",
+      "source": "dist/TS-STG/licenses/raylib-external/vox_loader.h",
+      "bytes": 19540,
+      "sha256": "e881dd1dc8b8d8f71f067554ecd1c142fe06c004ff781518836980d17e4ab76b"
+    },
+    {
+      "path": "licenses/raylib-external/win32_clipboard.h",
+      "source": "dist/TS-STG/licenses/raylib-external/win32_clipboard.h",
+      "bytes": 13022,
+      "sha256": "7bd7e69843619520a279ad29003dd4dc737f76aa7a808d7925bffac2368c1f6c"
+    },
+    {
+      "path": "licenses/v8-sdk-manifest.json",
+      "source": "dist/TS-STG/licenses/v8-sdk-manifest.json",
+      "bytes": 4955,
+      "sha256": "3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac"
+    },
+    {
+      "path": "licenses/v8/V8-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-LICENSE",
+      "bytes": 3098,
+      "sha256": "81680185f0cb339021e3b73714499264de72f33b17cfdb0c14f400de6d95cf0e"
+    },
+    {
+      "path": "licenses/v8/V8-src-third_party-siphash-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-siphash-LICENSE",
+      "bytes": 6555,
+      "sha256": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673"
+    },
+    {
+      "path": "licenses/v8/V8-src-third_party-utf8-decoder-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-utf8-decoder-LICENSE",
+      "bytes": 1087,
+      "sha256": "3f712e5fbdfdbd5ee7d9b8c8152580220df55de47f4eba2f26c95c4de19ad096"
+    },
+    {
+      "path": "licenses/v8/V8-src-third_party-valgrind-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-valgrind-LICENSE",
+      "bytes": 2439,
+      "sha256": "ebf25b8ce59c9e8883acd1ca75b6fc121937ca034f666c4077d2be739d2e1622"
+    },
+    {
+      "path": "licenses/v8/V8-src-third_party-vtune-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-vtune-LICENSE",
+      "bytes": 2731,
+      "sha256": "cfe7599e45f340a35b4635090382897ca1526bc49b5e1889047f0168d131c415"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-colorama-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-colorama-LICENSE",
+      "bytes": 1492,
+      "sha256": "15137d6c822e3ab097093a33c3a39a9df699f373f6438867ad534ff60762a947"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-fp16-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-fp16-LICENSE",
+      "bytes": 1158,
+      "sha256": "c91377adafa2f498211a4fe017788e20c38892124673860f068f2919c289193d"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-glibc-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-glibc-LICENSE",
+      "bytes": 26526,
+      "sha256": "b634ab5640e258563c536e658cad87080553df6f34f62269a21d554844e58bfe"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-inspector_protocol-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-inspector_protocol-LICENSE",
+      "bytes": 1537,
+      "sha256": "450ebb9e9e50c2809d9ca581931fc8946d8d5aa0c8c35aae9ac471342fe4a88e"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-jsoncpp-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-jsoncpp-LICENSE",
+      "bytes": 2665,
+      "sha256": "76c45ece83a26117f86f4e349e7df118708e061e87225328fb478ce1e8b3eb86"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-re2-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-re2-LICENSE",
+      "bytes": 1558,
+      "sha256": "6040cda75d90b1738292a631d89934c411ef7ffd543c4d6a1b7edfc8edf29449"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-test262-harness-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-test262-harness-LICENSE",
+      "bytes": 2273,
+      "sha256": "6f773009a428850c799150b7e0f1806796486dc40302aac5c2fbf4d69a6e1839"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-v8-builtins-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-v8-builtins-LICENSE",
+      "bytes": 12763,
+      "sha256": "b9a6d9320b8f2693e8d41e496ce56caadacaddcca9be2a64a61749278f425cf2"
+    },
+    {
+      "path": "licenses/v8/V8-third_party-wasm-api-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-wasm-api-LICENSE",
+      "bytes": 11358,
+      "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+    },
+    {
+      "path": "licenses/v8/rusty_v8-LICENSE",
+      "source": "dist/TS-STG/licenses/v8/rusty_v8-LICENSE",
+      "bytes": 1078,
+      "sha256": "1c6356fb751d45f0c53093ebf8a7f5e580e802f51999178e19d60f3ec39e147d"
+    },
+    {
+      "path": "ts-stg.exe",
+      "source": "build/Release/ts-stg.exe",
+      "bytes": 23269376,
+      "sha256": "f06c80bf000f3c4b1c32b823da3867e3f9a3d7e68f0044976aa52a7a8f11ccd5"
+    }
+  ],
+  "thlibScope": "Explicit source/package/license/touhou-common allowlist. Other source package resources are not copied."
+}

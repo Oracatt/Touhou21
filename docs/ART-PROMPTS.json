@@ -1,0 +1,335 @@
+{
+  "project": "东方归名录",
+  "provenance": "Original game-specific images generated with built-in imagegen. Prompts describe broad visual characteristics, not a living artist's personal style. No commercial game art used as an input.",
+  "assets": [
+    {
+      "id": "stage01",
+      "file": "assets/art/stage01.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL vertical scrolling bullethell game stage backdrop, one distinct painted background, no game interface. A dusk forest road beside a Japanese fantasy village, vermilion paper lanterns hanging beside old wood signboards with completely blank plaques, a long winding ocher stone path viewed from high overhead leading forward toward the top, autumn trees and subtle amber fog, muted dark red-green-brown palette. Composition: portrait 2:3, 1024 x 1536, bird's-eye fantasy aerial terrain with a clear winding forward route and layered atmospheric depth; scenery detail chiefly on the edges, central play area visually quiet. Medium: restrained hand-painted ink and flat watercolor forms, subtle grain, delicate imperfect contours. Lighting and values: dark low contrast with subdued gentle highlights so bright colorful bullets will be readable. No characters, no bullets, no UI, no frames, no logos, no watermark, no readable lettering, no white empty margins, not a photograph, not glossy 3D. The picture extends all the way to every edge.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-3ea51194-a89c-4103-8184-869153ff2f06.png",
+      "mode": "RGB",
+      "transparent": false,
+      "reviewed": true,
+      "sha256": "631a4f2508c85f5b9346f3b3ec93a4b43e6fe0370a4efe30d46c324644cfd691",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": null,
+      "visibleBounds": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "transparentPixelRatio": 0,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "stage02",
+      "file": "assets/art/stage02.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL vertical scrolling bullethell game stage backdrop, one distinct painted background, no game interface. A rainy old bamboo courier road, a narrow blue ink-colored stream winding through forest, blank ivory letters drifting in the water, gray bamboo grove and old stone paving beside the stream, viewed from high overhead forward along the route toward the top, soft rain mist, muted dark indigo-cyan palette. Composition: portrait 2:3, 1024 x 1536, bird's-eye fantasy aerial terrain with a clear winding forward route and layered atmospheric depth; scenery detail chiefly on the edges, central play area visually quiet. Medium: restrained hand-painted ink and flat watercolor forms, subtle grain, delicate imperfect contours. Lighting and values: dark low contrast with subdued gentle highlights so bright colorful bullets will be readable. No characters, no bullets, no UI, no frames, no logos, no watermark, no readable lettering, no white empty margins, not a photograph, not glossy 3D. The picture extends all the way to every edge.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-60fecaaa-8019-4e84-b25a-f1d53ce5481b.png",
+      "mode": "RGB",
+      "transparent": false,
+      "reviewed": true,
+      "sha256": "5eb629c9d7b0b978c21380a5bc52b2f9a0cb914b484b64cd5718cfa5230a3519",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": null,
+      "visibleBounds": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "transparentPixelRatio": 0,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "stage03",
+      "file": "assets/art/stage03.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL vertical scrolling bullethell game stage backdrop, one distinct painted background, no game interface. A moonlit nameless ferry crossing, a jade dark river seen from high overhead, old stone riverbank steps and a small empty wooden ferry off to one side, blank paper ferry tickets and slow circular ripples, the water route winding forward toward the top, moon reflected very subtly, muted midnight blue and jade palette. Composition: portrait 2:3, 1024 x 1536, bird's-eye fantasy aerial terrain with a clear winding forward route and layered atmospheric depth; scenery detail chiefly on the edges, central play area visually quiet. Medium: restrained hand-painted ink and flat watercolor forms, subtle grain, delicate imperfect contours. Lighting and values: dark low contrast with subdued gentle highlights so bright colorful bullets will be readable. No characters, no bullets, no UI, no frames, no logos, no watermark, no readable lettering, no white empty margins, not a photograph, not glossy 3D. The picture extends all the way to every edge.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-5256a86d-b67b-4aa9-b5aa-37608ca8ca47.png",
+      "mode": "RGB",
+      "transparent": false,
+      "reviewed": true,
+      "sha256": "0ab917fdca2aa8bf679d13883eb5ccff8e5387955447b51e370890cda3af58a4",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": null,
+      "visibleBounds": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "transparentPixelRatio": 0,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "stage04",
+      "file": "assets/art/stage04.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL vertical scrolling bullethell game stage backdrop, one distinct painted background, no game interface. A forgotten old Japanese shrine grove devoted to weaving memories, plum-purple trees and ruined wooden weaving halls viewed from high overhead, faint fine spider-silk paths running between branches at the picture edges, a calm mauve stone courtyard and path winding forward to the top, tiny old prayer textiles and spindles near shrines, muted charcoal plum and antique gold. Composition: portrait 2:3, 1024 x 1536, bird's-eye fantasy aerial terrain with a clear forward route and layered atmospheric depth; scenery detail chiefly on the edges, central play area visually quiet. Medium: restrained hand-painted ink and flat watercolor forms, subtle grain, delicate imperfect contours. Lighting and values: dark low contrast with subdued gentle highlights so bright colorful bullets will be readable. No characters, no bullets, no UI, no frames, no logos, no watermark, no readable lettering, no white empty margins, not a photograph, not glossy 3D. The picture extends all the way to every edge.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-75e2b399-8069-4916-8c32-137af829a90a.png",
+      "mode": "RGB",
+      "transparent": false,
+      "reviewed": true,
+      "sha256": "046e4e41e9572d7263648474e3d35d418f6cdf20164d5ef682b46afea1961f2e",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": null,
+      "visibleBounds": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "transparentPixelRatio": 0,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "stage05",
+      "file": "assets/art/stage05.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL vertical scrolling bullethell game stage backdrop, one distinct painted background, no game interface. A mysterious blank-name library of wooden bookcases, tall dark ink-green book aisles seen from high overhead toward the upper central distance, many books with completely blank spine labels, a few blank ivory sheets drifting between shelves, lacquer-red seal blocks and wooden book carts at the edges, central reading aisle very calm, muted dark emerald, warm ivory and shadowed wood. Composition: portrait 2:3, 1024 x 1536, bird's-eye fantasy aerial terrain with a clear forward route and layered atmospheric depth; scenery detail chiefly on the edges, central play area visually quiet. Medium: restrained hand-painted ink and flat watercolor forms, subtle grain, delicate imperfect contours. Lighting and values: dark low contrast with subdued gentle highlights so bright colorful bullets will be readable. No characters, no bullets, no UI, no frames, no logos, no watermark, no readable lettering, no white empty margins, not a photograph, not glossy 3D. The picture extends all the way to every edge.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-e15795a7-40d5-4300-97e6-23683adfe339.png",
+      "mode": "RGB",
+      "transparent": false,
+      "reviewed": true,
+      "sha256": "83c2f0953a96676259cd4d35479fe4ef2e8c451d40ed7d15849495e2b7e33cf8",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": null,
+      "visibleBounds": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "transparentPixelRatio": 0,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "stage06",
+      "file": "assets/art/stage06.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL vertical scrolling bullethell game stage backdrop, one distinct painted background, no game interface. A silent celestial courtyard above dark dawn clouds, rows of completely blank ivory name tablets, narrow antique-gold walkways and delicate circular bell gates viewed from high overhead, ivory cloud islands and pale mint distance toward the upper central vanishing area, no inscriptions, the great space where objects are given names, muted dark blue-gray, subdued ivory and gold, restrained dark values even on the stone. Composition: portrait 2:3, 1024 x 1536, bird's-eye fantasy aerial terrain with a clear forward route and layered atmospheric depth; scenery detail chiefly on the edges, central play area visually quiet. Medium: restrained hand-painted ink and flat watercolor forms, subtle grain, delicate imperfect contours. Lighting and values: dark low contrast with subdued gentle highlights so bright colorful bullets will be readable. No characters, no bullets, no UI, no frames, no logos, no watermark, no readable lettering, no white empty margins, not a photograph, not glossy 3D. The picture extends all the way to every edge.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-442ba64c-9357-4d25-8e9f-079ed2ec3d7d.png",
+      "mode": "RGB",
+      "transparent": false,
+      "reviewed": true,
+      "sha256": "f77beb6839dfa2371e0d4fae9918a37edb8250e10f6bac46db15b29f844d1232",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": null,
+      "visibleBounds": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "transparentPixelRatio": 0,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "stage07",
+      "file": "assets/art/stage07.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL vertical scrolling bullethell game Extra stage backdrop, no game interface. A forgotten reverse side of the moon in a Japanese fantasy world, an endless midnight-indigo grove of shattered tall mirror gates and old wooden name plaques with completely blank faces, mirrors reflecting reversed lunar arches and faint pale moonlight, red echo strings joining mirror fragments along the edges, dark violet-blue ground route winding forward from bottom to top, viewed from high overhead with quiet central play area. Portrait 2:3, 1024 x 1536. Restrained hand-painted ink and flat watercolor forms, subtle grain, delicate imperfect contours, atmospheric fantasy aerial perspective. Dark low contrast with soft moonlit highlights so colorful bullets remain clear. No people, no monsters, no bullet, no UI, no frames, no logos, no watermark, no readable lettering, no white margins, no glossy 3D. Scenery extends all the way to the edges.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-669e2ebb-afd3-476a-90c6-04a80a2a29e6.png",
+      "mode": "RGB",
+      "transparent": false,
+      "reviewed": true,
+      "sha256": "c7d2f63629df5650e005e0fb0c13bfade5aee36ae19625e612bc4b53e34828fa",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": null,
+      "visibleBounds": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "transparentPixelRatio": 0,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "akari",
+      "file": "assets/portraits/akari.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL independent Japanese folklore PC bullethell-game dialogue portrait. A single adult woman, approximately seven heads tall with slightly lanky adult proportions and a small plainly drawn face, complete full body including hair tips, hands, all props, skirt hem and both shoes. Picture style: loose thin slightly irregular ink outlines, subtly awkward handmade drawing, concise clear eyes and mouth, flat bounded color shapes and at most a single restrained hard-edged shadow, bold unusual costume silhouette. Simple small facial features, no commercial polished anime facial rendering. Minimal surface texture; no watercolor wash, no paper-grain canvas, no glossy highlights, no realistic lighting, no gradient-shaded fabrics, no painterly strokes. Composition: portrait 2:3 at 1024 x 1536, upright fullbody three-quarter view centered in the middle, at least 8 percent completely empty margin at all four edges, props near body not outside margins. Actual transparent RGBA background; no ground, panel, aura, scenery, text, logos, watermark or shadow halo. Not chibi, not childlike, not photorealism. Subject: original lantern-object spirit woman, shoulder-length dark chestnut hair with slightly curled paper-like tips, two little copper bell clips on her right. Vermilion short outer jacket over cream lining, wide sleeves ending in angular hexagonal lantern-frame cuffs, dark brown knee-length pleated skirt with a few broken geometric signboard motifs, dark red cord-strapped wooden sandals. Left hand carries a small six-sided copper-framed paper lantern beside her body, lantern has a completely blank white label. Three plain little wooden doorway plaques at her waist. Cheerful confident half-smile, raised brow; compact wide-sleeved silhouette but adult anatomy. Flat vermilion, dark brown, warm ivory and copper palette. No actual letters on any item.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-a56402dd-9b79-4a96-922e-678541845271.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "reviewed": true,
+      "sha256": "58a5bfb6bdb8c44f7f58221a58c5ef40753b19b3e20b2a72b5d78e663d43600d",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "visibleBounds": [
+        65,
+        19,
+        947,
+        1520
+      ],
+      "transparentPixelRatio": 0.673013,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "shizuri",
+      "file": "assets/portraits/shizuri.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL independent Japanese folklore PC bullethell-game dialogue portrait. A single adult woman, approximately seven heads tall with slightly lanky adult proportions and a small plainly drawn face, complete full body including hair tips, hands, all props, skirt hem and both shoes. Picture style: loose thin slightly irregular ink outlines, subtly awkward handmade drawing, concise clear eyes and mouth, flat bounded color shapes and at most a single restrained hard-edged shadow, bold unusual costume silhouette. Simple small facial features, no commercial polished anime facial rendering. Minimal surface texture; no watercolor wash, no paper-grain canvas, no glossy highlights, no realistic lighting, no gradient-shaded fabrics, no painterly strokes. Composition: portrait 2:3 at 1024 x 1536, upright fullbody three-quarter view centered in the middle, at least 8 percent completely empty margin at all four edges, props near body not outside margins. Actual transparent RGBA background; no ground, panel, aura, scenery, text, logos, watermark or shadow halo. Not chibi, not childlike, not photorealism. Subject: original rain-courier woman, long mist-blue hair tied low behind her with a narrow white paper ribbon, a few long locks beside cheeks. Pale-blue and white short kimono raincoat, translucent pale shawl drawn as a very simple light color shape, angular folded-envelope sleeves; dark indigo long skirt decorated with sparse tiny raindrop and mail-route geometric lines. Holds a white bamboo-rib paper parasol tilted behind her shoulder, a few completely blank ivory envelopes hang underneath, other hand holds a slim rolled-letter tube. Parasol fits within the complete fullbody framing without hiding face. Tall relaxed silhouette and quiet gentle smile, not crying. Flat pale blue, ivory, deep indigo palette; no readable writing.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-6a50a43a-b7c9-4ff1-a2fc-34b79380c864.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "reviewed": true,
+      "sha256": "e89cb6a08d438d302a49d779cb0c67558b1023b6582e734dec8175e055139db8",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "visibleBounds": [
+        65,
+        28,
+        894,
+        1512
+      ],
+      "transparentPixelRatio": 0.67076,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "watari",
+      "file": "assets/portraits/watari.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL independent Japanese folklore PC bullethell-game dialogue portrait. A single adult woman, approximately seven heads tall with slightly lanky adult proportions and a small plainly drawn face, complete full body including hair tips, hands, all props, skirt hem and both shoes. Picture style: loose thin slightly irregular ink outlines, subtly awkward handmade drawing, concise clear eyes and mouth, flat bounded color shapes and at most a single restrained hard-edged shadow, bold unusual costume silhouette. Simple small facial features, no commercial polished anime facial rendering. Minimal surface texture; no watercolor wash, no paper-grain canvas, no glossy highlights, no realistic lighting, no gradient-shaded fabrics, no painterly strokes. Composition: portrait 2:3 at 1024 x 1536, upright fullbody three-quarter view centered in the middle, at least 8 percent completely empty margin at all four edges, props near body not outside margins. Actual transparent RGBA background; no ground, panel, aura, scenery, text, logos, watermark or shadow halo. Not chibi, not childlike, not photorealism. IMPORTANT CUTOUT FRAMING: figure and all props occupy at most 80% of picture height and 76% of picture width. Keep the uppermost hair well below y=140 and both shoes above y=1390. Leave large clean fully transparent empty padding; absolutely no glow, gradient cloud, black vignette or colored halo surrounding the outline. Subject: original cheerful ferrywoman, long deep-indigo hair in one loose braid with pale jade cloth at the braid tip, side-swept bangs and a small seashell hairclip. Jade-green practical short blouse, broad cream sash, navy-blue asymmetrical divided skirt/trousers with one cloth panel folded like a boat sail, sparse water-route geometric embroidery on collar. Right hand carries a SHORT wooden paddle slanted beside body within the frame, left holds a few completely blank ferry tickets; a small copper coin string and one tiny paper boat at waist. Grounded easy stance, mischievous broad smile. Flat jade, navy, ivory palette. Complete both ankles and simple indigo cloth shoes.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-42b47a47-a438-43bc-951c-5d8739a50a2e.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "reviewed": true,
+      "sha256": "7ae0f5bbc68e9a5ff0f6fe2284536cc7cda75b0e150ecb0babc3bfca1c1a46b1",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "visibleBounds": [
+        65,
+        150,
+        994,
+        1432
+      ],
+      "transparentPixelRatio": 0.74158,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "shino",
+      "file": "assets/portraits/shino.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL independent Japanese folklore PC bullethell-game dialogue portrait. A single adult woman, approximately seven heads tall with slightly lanky adult proportions and a small plainly drawn face, complete full body including hair tips, hands, all props, skirt hem and both shoes. Picture style: loose thin slightly irregular ink outlines, subtly awkward handmade drawing, concise clear eyes and mouth, flat bounded color shapes and at most a single restrained hard-edged shadow, bold unusual costume silhouette. Simple small facial features, no commercial polished anime facial rendering. Minimal surface texture; no watercolor wash, no paper-grain canvas, no glossy highlights, no realistic lighting, no gradient-shaded fabrics, no painterly strokes. Composition: portrait 2:3 at 1024 x 1536, upright fullbody three-quarter view centered in the middle, at least 8 percent completely empty margin at all four edges, props near body not outside margins. Actual transparent RGBA background; no ground, panel, aura, scenery, text, logos, watermark or shadow halo. Not chibi, not childlike, not photorealism. IMPORTANT CUTOUT FRAMING: figure and all props occupy at most 80% of picture height and 76% of picture width. Keep the uppermost hair well below y=140 and both shoes above y=1390. Leave large clean fully transparent empty padding; absolutely no glow, gradient cloud, black vignette or colored halo surrounding the outline. Subject: original elegant folklore spider-memory weaver woman with HUMAN body and NO actual spider legs. Plum-purple long hair, two low loose buns and trailing locks, fine antique-gold thread in the hair ornaments. Pale-gold and plum-purple layered kimono, broad curved sleeves shaped like weaving shuttles, purple obi sash with eight very small gold wire rings, skirt edge carries a sparse open grid. Holds a small wooden weaving shuttle; three fine pale-gold threads run between fingertips. Thin restrained wire loops beside shoulders hint at eightfold geometry but do not form an aura or web background. Gently amused narrow-eye smile. Flat plum, dark violet and pale-gold palette. Both feet in modest matching sandals visible.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-e87d7ef0-7905-4e36-b1ae-a24efac4c7f0.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "reviewed": true,
+      "sha256": "777f462b9458da30d6dbcc789d2b0587c40661dd7ca049793b654341efc041c6",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "visibleBounds": [
+        65,
+        37,
+        929,
+        1476
+      ],
+      "transparentPixelRatio": 0.642172,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "fusae",
+      "file": "assets/portraits/fusae.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL independent Japanese folklore PC bullethell-game dialogue portrait. A single adult woman, approximately seven heads tall with slightly lanky adult proportions and a small plainly drawn face, complete full body including hair tips, hands, all props, skirt hem and both shoes. Picture style: loose thin slightly irregular ink outlines, subtly awkward handmade drawing, concise clear eyes and mouth, flat bounded color shapes and at most a single restrained hard-edged shadow, bold unusual costume silhouette. Simple small facial features, no commercial polished anime facial rendering. Minimal surface texture; no watercolor wash, no paper-grain canvas, no glossy highlights, no realistic lighting, no gradient-shaded fabrics, no painterly strokes. Composition: portrait 2:3 at 1024 x 1536, upright fullbody three-quarter view centered in the middle, at least 8 percent completely empty margin at all four edges, props near body not outside margins. Actual transparent RGBA background; no ground, panel, aura, scenery, text, logos, watermark or shadow halo. Not chibi, not childlike, not photorealism. IMPORTANT CUTOUT FRAMING: figure and all props occupy at most 80% of picture height and 76% of picture width. Keep the uppermost hair well below y=140 and both shoes above y=1390. Leave large clean fully transparent empty padding; absolutely no glow, gradient cloud, black vignette or colored halo surrounding the outline. Subject: original solemn paper-shikigami librarian woman. Long straight ink-green hair to the waist, neat bangs, two geometric folded-paper square hairknots, slightly curled paper-edge hairtips. Dark ink-green high-collar outer robe, cream inner dress, narrow red waist cord; flat broad sleeves shaped like open book pages; sparse square vermilion seal-frame geometries on cuffs, no real religious writing. Left hand supports a thick completely blank book near waist, right hand holds a small square red seal stamp. Five blank ivory paper talismans float close to shoulder and sleeve within the character silhouette, not a background panel. Upright symmetrical dignified posture, small calm businesslike smile. Flat dark green, ivory and vermilion palette. Long dress and both dark-green slippers fully visible.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-2ccac9de-0bd7-4500-8b09-fb9b5cc0a0e4.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "reviewed": true,
+      "sha256": "9714eb6263c3d59a34ca58d6f70d6decc7df0d8a17a2305a348c742985cf2471",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "visibleBounds": [
+        51,
+        119,
+        938,
+        1464
+      ],
+      "transparentPixelRatio": 0.684458,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "kotone",
+      "file": "assets/portraits/kotone.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL independent Japanese folklore PC bullethell-game dialogue portrait. A single adult woman, approximately seven heads tall with slightly lanky adult proportions and a small plainly drawn face, complete full body including hair tips, hands, all props, skirt hem and both shoes. Picture style: loose thin slightly irregular ink outlines, subtly awkward handmade drawing, concise clear eyes and mouth, flat bounded color shapes and at most a single restrained hard-edged shadow, bold unusual costume silhouette. Simple small facial features, no commercial polished anime facial rendering. Minimal surface texture; no watercolor wash, no paper-grain canvas, no glossy highlights, no realistic lighting, no gradient-shaded fabrics, no painterly strokes. Composition: portrait 2:3 at 1024 x 1536, upright fullbody three-quarter view centered in the middle, at least 8 percent completely empty margin at all four edges, props near body not outside margins. Actual transparent RGBA background; no ground, panel, aura, scenery, text, logos, watermark or shadow halo. Not chibi, not childlike, not photorealism. IMPORTANT CUTOUT FRAMING: figure and all props occupy at most 80% of picture height and 76% of picture width. Keep uppermost hair or staff below y=140 and both shoes above y=1390. Leave large clean fully transparent empty padding; absolutely no glow, gradient cloud, black vignette or colored halo surrounding the outline. Subject: original gentle naming-goddess woman, long ivory-white hair with one pale mint lock, hair ends curve like book pages. Thin antique-gold haircrown with one very small hanging bell, modest crown not a halo. Ivory broad-sleeve ceremonial dress, pale mint inner layer, narrow gold edging, lower hem consists of six clearly separated blank-page-shaped cloth panels; a gold rope belt forms one circle at waist. Right hand holds a slim golden bell staff with a small circular ring near top; staff fits fully within the framed figure. Left hand gently supports an open completely blank book. Tall relaxed asymmetrical silhouette where staff, book and broad sleeve form a stable triangle; warm self-confident calm smile. Simple flat ivory, pale mint and antique gold colors. Both feet in modest pale-gold shoes clearly shown. No celestial background, no ornate jewels, no radiant glow.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-ff4f8d37-64c7-4275-b5f6-c02e693a7a5b.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "reviewed": true,
+      "sha256": "34a01a49e191076ae0af1b15d24a7b7f968d7b461fac11b77731c9f5f3e417da",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "visibleBounds": [
+        65,
+        23,
+        910,
+        1536
+      ],
+      "transparentPixelRatio": 0.65312,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    },
+    {
+      "id": "mio",
+      "file": "assets/portraits/mio.png",
+      "prompt": "Use case: stylized-concept. Asset type: ORIGINAL independent Japanese folklore PC bullethell-game dialogue portrait. A single adult woman, approximately seven heads tall with slightly lanky adult proportions and a small plainly drawn face, complete full body including hair tips, hands, all props, skirt hem and both shoes. Picture style: loose thin slightly irregular ink outlines, subtly awkward handmade drawing, concise clear eyes and mouth, flat bounded color shapes and at most a single restrained hard-edged shadow, bold unusual costume silhouette. Simple small facial features, no commercial polished anime facial rendering. Minimal surface texture; no watercolor wash, no paper-grain canvas, no glossy highlights, no realistic lighting, no gradient-shaded fabrics, no painterly strokes. Composition: portrait 2:3 at 1024 x 1536, upright fullbody three-quarter view centered in the middle, at least 8 percent completely empty margin at all four edges, props near body not outside margins. Actual transparent RGBA background; no ground, panel, aura, scenery, text, logos, watermark or shadow halo. Not chibi, not childlike, not photorealism. IMPORTANT CUTOUT FRAMING: figure and all props occupy at most 80% of picture height and 76% of picture width. Keep uppermost hair or staff below y=140 and both shoes above y=1390. Leave large clean fully transparent empty padding; absolutely no glow, gradient cloud, black vignette or colored halo surrounding the outline. Subject: original mischievous echo-spirit adult woman, silver-white slightly curled hair in two long braids with deep-indigo braid tips, tied by thin vermilion cords and small upside-down bells. White-and-indigo short ceremonial dress, a broad shoulder cape shaped like the reverse of a blank book page with vermilion lining, asymmetrical staggered skirt hem, one completely blank circular medallion at chest. Carries two small silver bells, one bell mouth downward and the other upward; a few thin red ribbons trace short echo arcs behind her shoulder but remain close to the figure. Lively off-center standing pose, slight head tilt and impish simple bright smile. Clear silhouette with twin braids and twin bells; complete legs and both navy ankle shoes. Flat ivory, indigo and a few vermilion accents; absolutely no written characters or symbols on the medallion.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-e50c93b3-e16a-4846-b7dd-e4ba994fa069.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "reviewed": true,
+      "sha256": "c1a420b19c371d414a209926f6d3d9f2783cd70b73cbdcdbbefca88623a273eb",
+      "width": 1024,
+      "height": 1536,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "visibleBounds": [
+        65,
+        36,
+        940,
+        1462
+      ],
+      "transparentPixelRatio": 0.724873,
+      "tool": "built-in imagegen",
+      "operation": "generate"
+    }
+  ]
+}

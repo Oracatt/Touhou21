@@ -1,0 +1,270 @@
+{
+  "format": "guiming-art-v1",
+  "alphaThreshold": 16,
+  "assets": {
+    "assets/art/stage01.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1536
+      },
+      "sha256": "631a4f2508c85f5b9346f3b3ec93a4b43e6fe0370a4efe30d46c324644cfd691"
+    },
+    "assets/art/stage02.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1536
+      },
+      "sha256": "5eb629c9d7b0b978c21380a5bc52b2f9a0cb914b484b64cd5718cfa5230a3519"
+    },
+    "assets/art/stage03.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1536
+      },
+      "sha256": "0ab917fdca2aa8bf679d13883eb5ccff8e5387955447b51e370890cda3af58a4"
+    },
+    "assets/art/stage04.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1536
+      },
+      "sha256": "046e4e41e9572d7263648474e3d35d418f6cdf20164d5ef682b46afea1961f2e"
+    },
+    "assets/art/stage05.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1536
+      },
+      "sha256": "83c2f0953a96676259cd4d35479fe4ef2e8c451d40ed7d15849495e2b7e33cf8"
+    },
+    "assets/art/stage06.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1536
+      },
+      "sha256": "f77beb6839dfa2371e0d4fae9918a37edb8250e10f6bac46db15b29f844d1232"
+    },
+    "assets/art/stage07.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1536
+      },
+      "sha256": "c7d2f63629df5650e005e0fb0c13bfade5aee36ae19625e612bc4b53e34828fa"
+    },
+    "assets/art/title.png": {
+      "width": 1448,
+      "height": 1086,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1448,
+        "height": 1086
+      },
+      "sha256": "4a629f57e02d7eaaee03b577b3d076e3b3ccb35a82c4985fe35502f30b683090"
+    },
+    "assets/portraits/akari.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 104,
+        "y": 21,
+        "width": 833,
+        "height": 1496
+      },
+      "sha256": "58a5bfb6bdb8c44f7f58221a58c5ef40753b19b3e20b2a72b5d78e663d43600d"
+    },
+    "assets/portraits/fusae.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 193,
+        "y": 122,
+        "width": 668,
+        "height": 1301
+      },
+      "sha256": "9714eb6263c3d59a34ca58d6f70d6decc7df0d8a17a2305a348c742985cf2471"
+    },
+    "assets/portraits/kotone.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 200,
+        "y": 172,
+        "width": 704,
+        "height": 1242
+      },
+      "sha256": "34a01a49e191076ae0af1b15d24a7b7f968d7b461fac11b77731c9f5f3e417da"
+    },
+    "assets/portraits/marisa.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 67,
+        "y": 14,
+        "width": 892,
+        "height": 1509
+      },
+      "sha256": "52494552cee9a2ecd05555895a0d44e83326269b7d15d48b7e9a960ae5a67584"
+    },
+    "assets/portraits/mio.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 142,
+        "y": 131,
+        "width": 745,
+        "height": 1315
+      },
+      "sha256": "c1a420b19c371d414a209926f6d3d9f2783cd70b73cbdcdbbefca88623a273eb"
+    },
+    "assets/portraits/reimu.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 34,
+        "y": 15,
+        "width": 947,
+        "height": 1495
+      },
+      "sha256": "013b71336998c22c6899c568dee45898fe568ad0fc90ba2920d4ff794cab9f50"
+    },
+    "assets/portraits/shino.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 106,
+        "y": 137,
+        "width": 819,
+        "height": 1275
+      },
+      "sha256": "777f462b9458da30d6dbcc789d2b0587c40661dd7ca049793b654341efc041c6"
+    },
+    "assets/portraits/shizuri.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 260,
+        "y": 30,
+        "width": 589,
+        "height": 1480
+      },
+      "sha256": "e89cb6a08d438d302a49d779cb0c67558b1023b6582e734dec8175e055139db8"
+    },
+    "assets/portraits/watari.png": {
+      "width": 1024,
+      "height": 1536,
+      "bounds": {
+        "x": 267,
+        "y": 155,
+        "width": 640,
+        "height": 1272
+      },
+      "sha256": "7ae0f5bbc68e9a5ff0f6fe2284536cc7cda75b0e150ecb0babc3bfca1c1a46b1"
+    },
+    "assets/sprites/akari.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 76,
+        "y": 34,
+        "width": 1629,
+        "height": 825
+      },
+      "sha256": "ab7e8c2f80fbd464e690cfd0170d3ffac9a6905e13377a2b3289171cd35edad2"
+    },
+    "assets/sprites/fusae.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 82,
+        "y": 77,
+        "width": 1631,
+        "height": 767
+      },
+      "sha256": "f29d34c8f56749169fad69cb00076d6b570d7a06b3f3037e6bb396eeb9740543"
+    },
+    "assets/sprites/kotone.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 109,
+        "y": 64,
+        "width": 1585,
+        "height": 770
+      },
+      "sha256": "552133644a4ac9681edf4ea686c33e62bc83f51dadd66be6e06c6ee9ae6ea76d"
+    },
+    "assets/sprites/mio.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 62,
+        "y": 44,
+        "width": 1655,
+        "height": 805
+      },
+      "sha256": "a8b496d2d08607f7b5df5332619266627734018b8aaeb7ef7e01e4b8f6870fac"
+    },
+    "assets/sprites/shino.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 122,
+        "y": 64,
+        "width": 1577,
+        "height": 763
+      },
+      "sha256": "6dcfc46e50bf9611265fe5c580621f73178da06608599eec07faeeefac0122b8"
+    },
+    "assets/sprites/shizuri.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 95,
+        "y": 34,
+        "width": 1605,
+        "height": 819
+      },
+      "sha256": "2131c635fa5e343e7a89667db62e19b1fc10cc8275a785461e11005800276aa2"
+    },
+    "assets/sprites/watari.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 112,
+        "y": 48,
+        "width": 1601,
+        "height": 803
+      },
+      "sha256": "5cfecce2f055e4cd32b1f292e26c57418d1cb02ad9b9d16da783cf8ace07fedb"
+    }
+  }
+}

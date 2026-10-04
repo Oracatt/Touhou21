@@ -1,0 +1,1211 @@
+{
+  "project": "东方归名录",
+  "provenance": "Each original Boss atlas is a built-in imagegen edit of its own game-specific portrait. PNG alpha and source bytes are preserved; no commercial game sprites or image-processing edits were used.",
+  "layout": "4 columns × 2 rows; row 0 idle 0–3, row 1 left 4–5 and right 6–7; integer cell boundaries account for tool-selected dimensions.",
+  "assets": [
+    {
+      "id": "akari",
+      "file": "assets/sprites/akari.png",
+      "reference": "assets/portraits/akari.png",
+      "prompt": "Edit request: transform the supplied original character reference into ONE production sprite atlas for a vertical PC bullethell game. The supplied portrait is a character-design reference: retain her exact hair colors, recognizable outfit, props and palette, but redraw as clean distant-view small pixel art game actors, not miniature illustrations. Make a wide 2:1 transparent RGBA PNG canvas, ideally 1024x512. EXACT layout: FOUR columns by TWO rows of equal square cells, eight sprites total, evenly spaced, no visible grid. At 1024x512, centers are x=128,384,640,896 and y=128,384. Each full-body sprite including props is approximately 90 pixels wide and 180 pixels tall inside its 256x256 cell, strictly centered, with large empty transparent gutter on all sides. No part may approach or cross a cell boundary. Fixed shared head/feet scale and consistent center pivot across frames. Small restrained color palette, readable pixel clusters, deliberate hard pixel edges, no soft antialias, no photographic or painterly texture. Row ONE: four similar idle-hover animation poses, subtle hair/dress/prop flutter progressing smoothly in a cycle. Row TWO: first two poses lean slightly LEFT with leftward hair flow, last two lean slightly RIGHT with rightward hair flow. Eight visibly different but coherent poses. Every head, hand, hem, shoe and carried prop complete, no cut-off. Actual transparent background with absolutely no aura, lighting halo, vignette, particles, mist, magic circles, scenery, shadow, lettering, cell numbers, labels, border or watermark. Other presentation effects will be drawn by the game. Character id: akari. Keep outfit and props from the supplied image; remove all portrait-background coloration and diffuse glow.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-c097f2d7-6ba1-42cf-a26c-c5ff158cfa5f.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "reviewed": true,
+      "width": 1774,
+      "height": 887,
+      "sha256": "ab7e8c2f80fbd464e690cfd0170d3ffac9a6905e13377a2b3289171cd35edad2",
+      "transparentPixelRatio": 0.678245,
+      "cells": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            77,
+            40,
+            369,
+            435
+          ],
+          "visibleBounds": [
+            75,
+            37,
+            371,
+            438
+          ]
+        },
+        {
+          "index": 1,
+          "x": 443,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            74,
+            35,
+            375,
+            435
+          ],
+          "visibleBounds": [
+            72,
+            32,
+            377,
+            438
+          ]
+        },
+        {
+          "index": 2,
+          "x": 887,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            78,
+            39,
+            375,
+            435
+          ],
+          "visibleBounds": [
+            77,
+            37,
+            377,
+            438
+          ]
+        },
+        {
+          "index": 3,
+          "x": 1330,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            74,
+            38,
+            371,
+            435
+          ],
+          "visibleBounds": [
+            72,
+            36,
+            374,
+            438
+          ]
+        },
+        {
+          "index": 4,
+          "x": 0,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            82,
+            37,
+            369,
+            415
+          ],
+          "visibleBounds": [
+            81,
+            35,
+            371,
+            418
+          ]
+        },
+        {
+          "index": 5,
+          "x": 443,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            88,
+            33,
+            368,
+            415
+          ],
+          "visibleBounds": [
+            85,
+            29,
+            371,
+            418
+          ]
+        },
+        {
+          "index": 6,
+          "x": 887,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            82,
+            34,
+            362,
+            415
+          ],
+          "visibleBounds": [
+            81,
+            30,
+            365,
+            417
+          ]
+        },
+        {
+          "index": 7,
+          "x": 1330,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            92,
+            33,
+            375,
+            415
+          ],
+          "visibleBounds": [
+            89,
+            30,
+            377,
+            418
+          ]
+        }
+      ],
+      "tool": "built-in imagegen",
+      "operation": "edit"
+    },
+    {
+      "id": "shizuri",
+      "file": "assets/sprites/shizuri.png",
+      "reference": "assets/portraits/shizuri.png",
+      "prompt": "Edit request: transform the supplied original character reference into ONE production sprite atlas for a vertical PC bullethell game. The supplied portrait is a character-design reference: retain her exact hair colors, recognizable outfit, props and palette, but redraw as clean distant-view small pixel art game actors, not miniature illustrations. Make a wide 2:1 transparent RGBA PNG canvas, ideally 1024x512. EXACT layout: FOUR columns by TWO rows of equal square cells, eight sprites total, evenly spaced, no visible grid. At 1024x512, centers are x=128,384,640,896 and y=128,384. Each full-body sprite including props is approximately 90 pixels wide and 180 pixels tall inside its 256x256 cell, strictly centered, with large empty transparent gutter on all sides. No part may approach or cross a cell boundary. Fixed shared head/feet scale and consistent center pivot across frames. Small restrained color palette, readable pixel clusters, deliberate hard pixel edges, no soft antialias, no photographic or painterly texture. Row ONE: four similar idle-hover animation poses, subtle hair/dress/prop flutter progressing smoothly in a cycle. Row TWO: first two poses lean slightly LEFT with leftward hair flow, last two lean slightly RIGHT with rightward hair flow. Eight visibly different but coherent poses. Every head, hand, hem, shoe and carried prop complete, no cut-off. Actual transparent background with absolutely no aura, lighting halo, vignette, particles, mist, magic circles, scenery, shadow, lettering, cell numbers, labels, border or watermark. Other presentation effects will be drawn by the game. Character id: shizuri. Keep outfit and props from the supplied image; remove all portrait-background coloration and diffuse glow.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-14506acf-7883-4f61-8487-e20f0566f6ab.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "reviewed": true,
+      "width": 1774,
+      "height": 887,
+      "sha256": "2131c635fa5e343e7a89667db62e19b1fc10cc8275a785461e11005800276aa2",
+      "transparentPixelRatio": 0.655347,
+      "cells": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            129,
+            35,
+            348,
+            438
+          ],
+          "visibleBounds": [
+            128,
+            32,
+            351,
+            441
+          ]
+        },
+        {
+          "index": 1,
+          "x": 443,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            123,
+            35,
+            349,
+            438
+          ],
+          "visibleBounds": [
+            120,
+            32,
+            352,
+            441
+          ]
+        },
+        {
+          "index": 2,
+          "x": 887,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            96,
+            35,
+            348,
+            438
+          ],
+          "visibleBounds": [
+            95,
+            32,
+            352,
+            439
+          ]
+        },
+        {
+          "index": 3,
+          "x": 1330,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            109,
+            35,
+            348,
+            438
+          ],
+          "visibleBounds": [
+            106,
+            32,
+            349,
+            441
+          ]
+        },
+        {
+          "index": 4,
+          "x": 0,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            96,
+            25,
+            340,
+            409
+          ],
+          "visibleBounds": [
+            93,
+            22,
+            343,
+            412
+          ]
+        },
+        {
+          "index": 5,
+          "x": 443,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            76,
+            26,
+            340,
+            409
+          ],
+          "visibleBounds": [
+            74,
+            25,
+            344,
+            410
+          ]
+        },
+        {
+          "index": 6,
+          "x": 887,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            98,
+            27,
+            377,
+            409
+          ],
+          "visibleBounds": [
+            96,
+            25,
+            378,
+            412
+          ]
+        },
+        {
+          "index": 7,
+          "x": 1330,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            96,
+            23,
+            369,
+            409
+          ],
+          "visibleBounds": [
+            93,
+            19,
+            372,
+            411
+          ]
+        }
+      ],
+      "tool": "built-in imagegen",
+      "operation": "edit"
+    },
+    {
+      "id": "watari",
+      "file": "assets/sprites/watari.png",
+      "reference": "assets/portraits/watari.png",
+      "prompt": "Edit request: transform the supplied original character reference into ONE production sprite atlas for a vertical PC bullethell game. The supplied portrait is a character-design reference: retain her exact hair colors, recognizable outfit, props and palette, but redraw as clean distant-view small pixel art game actors, not miniature illustrations. Make a wide 2:1 transparent RGBA PNG canvas, ideally 1024x512. EXACT layout: FOUR columns by TWO rows of equal square cells, eight sprites total, evenly spaced, no visible grid. At 1024x512, centers are x=128,384,640,896 and y=128,384. Each full-body sprite including props is approximately 90 pixels wide and 180 pixels tall inside its 256x256 cell, strictly centered, with large empty transparent gutter on all sides. No part may approach or cross a cell boundary. Fixed shared head/feet scale and consistent center pivot across frames. Small restrained color palette, readable pixel clusters, deliberate hard pixel edges, no soft antialias, no photographic or painterly texture. Row ONE: four similar idle-hover animation poses, subtle hair/dress/prop flutter progressing smoothly in a cycle. Row TWO: first two poses lean slightly LEFT with leftward hair flow, last two lean slightly RIGHT with rightward hair flow. Eight visibly different but coherent poses. Every head, hand, hem, shoe and carried prop complete, no cut-off. Actual transparent background with absolutely no aura, lighting halo, vignette, particles, mist, magic circles, scenery, shadow, lettering, cell numbers, labels, border or watermark. Other presentation effects will be drawn by the game. Character id: watari. Keep outfit and props from the supplied image; remove all portrait-background coloration and diffuse glow.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-b04bf03a-72e8-40da-932c-facbd70ee64a.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "reviewed": true,
+      "width": 1774,
+      "height": 887,
+      "sha256": "5cfecce2f055e4cd32b1f292e26c57418d1cb02ad9b9d16da783cf8ace07fedb",
+      "transparentPixelRatio": 0.689986,
+      "cells": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            120,
+            48,
+            378,
+            423
+          ],
+          "visibleBounds": [
+            117,
+            46,
+            381,
+            427
+          ]
+        },
+        {
+          "index": 1,
+          "x": 443,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            118,
+            48,
+            372,
+            424
+          ],
+          "visibleBounds": [
+            114,
+            46,
+            375,
+            425
+          ]
+        },
+        {
+          "index": 2,
+          "x": 887,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            118,
+            48,
+            371,
+            423
+          ],
+          "visibleBounds": [
+            115,
+            46,
+            374,
+            427
+          ]
+        },
+        {
+          "index": 3,
+          "x": 1330,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            117,
+            48,
+            382,
+            423
+          ],
+          "visibleBounds": [
+            114,
+            46,
+            385,
+            425
+          ]
+        },
+        {
+          "index": 4,
+          "x": 0,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            113,
+            45,
+            384,
+            404
+          ],
+          "visibleBounds": [
+            112,
+            44,
+            385,
+            407
+          ]
+        },
+        {
+          "index": 5,
+          "x": 443,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            91,
+            45,
+            385,
+            407
+          ],
+          "visibleBounds": [
+            88,
+            43,
+            387,
+            410
+          ]
+        },
+        {
+          "index": 6,
+          "x": 887,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            60,
+            45,
+            340,
+            404
+          ],
+          "visibleBounds": [
+            57,
+            43,
+            343,
+            408
+          ]
+        },
+        {
+          "index": 7,
+          "x": 1330,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            59,
+            45,
+            352,
+            407
+          ],
+          "visibleBounds": [
+            59,
+            44,
+            355,
+            410
+          ]
+        }
+      ],
+      "tool": "built-in imagegen",
+      "operation": "edit"
+    },
+    {
+      "id": "shino",
+      "file": "assets/sprites/shino.png",
+      "reference": "assets/portraits/shino.png",
+      "prompt": "Edit request: transform the supplied original character reference into ONE production sprite atlas for a vertical PC bullethell game. The supplied portrait is a character-design reference: retain her exact hair colors, recognizable outfit, props and palette, but redraw as clean distant-view small pixel art game actors, not miniature illustrations. Make a wide 2:1 transparent RGBA PNG canvas, ideally 1024x512. EXACT layout: FOUR columns by TWO rows of equal square cells, eight sprites total, evenly spaced, no visible grid. At 1024x512, centers are x=128,384,640,896 and y=128,384. Each full-body sprite including props is approximately 90 pixels wide and 180 pixels tall inside its 256x256 cell, strictly centered, with large empty transparent gutter on all sides. No part may approach or cross a cell boundary. Fixed shared head/feet scale and consistent center pivot across frames. Small restrained color palette, readable pixel clusters, deliberate hard pixel edges, no soft antialias, no photographic or painterly texture. Row ONE: four similar idle-hover animation poses, subtle hair/dress/prop flutter progressing smoothly in a cycle. Row TWO: first two poses lean slightly LEFT with leftward hair flow, last two lean slightly RIGHT with rightward hair flow. Eight visibly different but coherent poses. Every head, hand, hem, shoe and carried prop complete, no cut-off. Actual transparent background with absolutely no aura, lighting halo, vignette, particles, mist, magic circles, scenery, shadow, lettering, cell numbers, labels, border or watermark. Other presentation effects will be drawn by the game. Very important spacing: keep EVERY sprite a little smaller than the cells: at most 72% of square cell height and 68% of cell width, with at least 10% FULLY TRANSPARENT gap between the lowest shoe and the next row. Do not fill the whole cell. Preserve no background marks at the cell edges. Character id: shino. Keep outfit and props from the supplied image; simplify tiny details into readable pixel clusters. Remove all portrait glow. Staff, weaving threads, and paper talismans stay close to the body so every frame remains isolated.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-2d9c62a4-0dd3-438b-ac24-04d80f7d84af.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "reviewed": true,
+      "width": 1774,
+      "height": 887,
+      "sha256": "6dcfc46e50bf9611265fe5c580621f73178da06608599eec07faeeefac0122b8",
+      "transparentPixelRatio": 0.693381,
+      "cells": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            123,
+            67,
+            359,
+            425
+          ],
+          "visibleBounds": [
+            120,
+            64,
+            362,
+            429
+          ]
+        },
+        {
+          "index": 1,
+          "x": 443,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            110,
+            67,
+            365,
+            416
+          ],
+          "visibleBounds": [
+            107,
+            64,
+            368,
+            417
+          ]
+        },
+        {
+          "index": 2,
+          "x": 887,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            98,
+            67,
+            372,
+            433
+          ],
+          "visibleBounds": [
+            97,
+            64,
+            372,
+            434
+          ]
+        },
+        {
+          "index": 3,
+          "x": 1330,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            92,
+            65,
+            368,
+            420
+          ],
+          "visibleBounds": [
+            89,
+            62,
+            371,
+            421
+          ]
+        },
+        {
+          "index": 4,
+          "x": 0,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            132,
+            52,
+            379,
+            381
+          ],
+          "visibleBounds": [
+            130,
+            51,
+            382,
+            384
+          ]
+        },
+        {
+          "index": 5,
+          "x": 443,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            113,
+            53,
+            378,
+            383
+          ],
+          "visibleBounds": [
+            110,
+            52,
+            381,
+            386
+          ]
+        },
+        {
+          "index": 6,
+          "x": 887,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            78,
+            50,
+            327,
+            381
+          ],
+          "visibleBounds": [
+            75,
+            47,
+            330,
+            384
+          ]
+        },
+        {
+          "index": 7,
+          "x": 1330,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            66,
+            50,
+            326,
+            380
+          ],
+          "visibleBounds": [
+            63,
+            49,
+            329,
+            383
+          ]
+        }
+      ],
+      "tool": "built-in imagegen",
+      "operation": "edit"
+    },
+    {
+      "id": "fusae",
+      "file": "assets/sprites/fusae.png",
+      "reference": "assets/portraits/fusae.png",
+      "prompt": "Edit request: transform the supplied original character reference into ONE production sprite atlas for a vertical PC bullethell game. The supplied portrait is a character-design reference: retain her exact hair colors, recognizable outfit, props and palette, but redraw as clean distant-view small pixel art game actors, not miniature illustrations. Make a wide 2:1 transparent RGBA PNG canvas, ideally 1024x512. EXACT layout: FOUR columns by TWO rows of equal square cells, eight sprites total, evenly spaced, no visible grid. At 1024x512, centers are x=128,384,640,896 and y=128,384. Each full-body sprite including props is approximately 90 pixels wide and 180 pixels tall inside its 256x256 cell, strictly centered, with large empty transparent gutter on all sides. No part may approach or cross a cell boundary. Fixed shared head/feet scale and consistent center pivot across frames. Small restrained color palette, readable pixel clusters, deliberate hard pixel edges, no soft antialias, no photographic or painterly texture. Row ONE: four similar idle-hover animation poses, subtle hair/dress/prop flutter progressing smoothly in a cycle. Row TWO: first two poses lean slightly LEFT with leftward hair flow, last two lean slightly RIGHT with rightward hair flow. Eight visibly different but coherent poses. Every head, hand, hem, shoe and carried prop complete, no cut-off. Actual transparent background with absolutely no aura, lighting halo, vignette, particles, mist, magic circles, scenery, shadow, lettering, cell numbers, labels, border or watermark. Other presentation effects will be drawn by the game. Very important spacing: keep EVERY sprite a little smaller than the cells: at most 72% of square cell height and 68% of cell width, with at least 10% FULLY TRANSPARENT gap between the lowest shoe and the next row. Do not fill the whole cell. Preserve no background marks at the cell edges. Character id: fusae. Keep outfit and props from the supplied image; simplify tiny details into readable pixel clusters. Remove all portrait glow. Staff, weaving threads, and paper talismans stay close to the body so every frame remains isolated.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-4c751780-5323-49c9-9660-29f9d6e5b1d8.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "reviewed": true,
+      "width": 1774,
+      "height": 887,
+      "sha256": "f29d34c8f56749169fad69cb00076d6b570d7a06b3f3037e6bb396eeb9740543",
+      "transparentPixelRatio": 0.680224,
+      "cells": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            113,
+            77,
+            353,
+            413
+          ],
+          "visibleBounds": [
+            112,
+            74,
+            355,
+            416
+          ]
+        },
+        {
+          "index": 1,
+          "x": 443,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            105,
+            77,
+            355,
+            413
+          ],
+          "visibleBounds": [
+            102,
+            74,
+            358,
+            417
+          ]
+        },
+        {
+          "index": 2,
+          "x": 887,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            87,
+            78,
+            348,
+            413
+          ],
+          "visibleBounds": [
+            84,
+            77,
+            351,
+            416
+          ]
+        },
+        {
+          "index": 3,
+          "x": 1330,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            76,
+            77,
+            348,
+            413
+          ],
+          "visibleBounds": [
+            74,
+            74,
+            349,
+            414
+          ]
+        },
+        {
+          "index": 4,
+          "x": 0,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            83,
+            67,
+            352,
+            400
+          ],
+          "visibleBounds": [
+            82,
+            64,
+            354,
+            403
+          ]
+        },
+        {
+          "index": 5,
+          "x": 443,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            64,
+            67,
+            350,
+            400
+          ],
+          "visibleBounds": [
+            61,
+            65,
+            351,
+            403
+          ]
+        },
+        {
+          "index": 6,
+          "x": 887,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            96,
+            67,
+            379,
+            400
+          ],
+          "visibleBounds": [
+            95,
+            65,
+            382,
+            403
+          ]
+        },
+        {
+          "index": 7,
+          "x": 1330,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            101,
+            67,
+            383,
+            400
+          ],
+          "visibleBounds": [
+            98,
+            65,
+            385,
+            403
+          ]
+        }
+      ],
+      "tool": "built-in imagegen",
+      "operation": "edit"
+    },
+    {
+      "id": "kotone",
+      "file": "assets/sprites/kotone.png",
+      "reference": "assets/portraits/kotone.png",
+      "prompt": "Edit request: transform the supplied original character reference into ONE production sprite atlas for a vertical PC bullethell game. The supplied portrait is a character-design reference: retain her exact hair colors, recognizable outfit, props and palette, but redraw as clean distant-view small pixel art game actors, not miniature illustrations. Make a wide 2:1 transparent RGBA PNG canvas, ideally 1024x512. EXACT layout: FOUR columns by TWO rows of equal square cells, eight sprites total, evenly spaced, no visible grid. At 1024x512, centers are x=128,384,640,896 and y=128,384. Each full-body sprite including props is approximately 90 pixels wide and 180 pixels tall inside its 256x256 cell, strictly centered, with large empty transparent gutter on all sides. No part may approach or cross a cell boundary. Fixed shared head/feet scale and consistent center pivot across frames. Small restrained color palette, readable pixel clusters, deliberate hard pixel edges, no soft antialias, no photographic or painterly texture. Row ONE: four similar idle-hover animation poses, subtle hair/dress/prop flutter progressing smoothly in a cycle. Row TWO: first two poses lean slightly LEFT with leftward hair flow, last two lean slightly RIGHT with rightward hair flow. Eight visibly different but coherent poses. Every head, hand, hem, shoe and carried prop complete, no cut-off. Actual transparent background with absolutely no aura, lighting halo, vignette, particles, mist, magic circles, scenery, shadow, lettering, cell numbers, labels, border or watermark. Other presentation effects will be drawn by the game. Very important spacing: keep EVERY sprite a little smaller than the cells: at most 72% of square cell height and 68% of cell width, with at least 10% FULLY TRANSPARENT gap between the lowest shoe and the next row. Do not fill the whole cell. Preserve no background marks at the cell edges. Character id: kotone. Keep outfit and props from the supplied image; simplify tiny details into readable pixel clusters. Remove all portrait glow. Staff, weaving threads, and paper talismans stay close to the body so every frame remains isolated.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-27123849-1107-4b84-b59f-44ed237fd3fe.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "reviewed": true,
+      "width": 1774,
+      "height": 887,
+      "sha256": "552133644a4ac9681edf4ea686c33e62bc83f51dadd66be6e06c6ee9ae6ea76d",
+      "transparentPixelRatio": 0.671078,
+      "cells": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            138,
+            65,
+            343,
+            423
+          ],
+          "visibleBounds": [
+            135,
+            62,
+            346,
+            426
+          ]
+        },
+        {
+          "index": 1,
+          "x": 443,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            113,
+            73,
+            364,
+            423
+          ],
+          "visibleBounds": [
+            110,
+            70,
+            367,
+            426
+          ]
+        },
+        {
+          "index": 2,
+          "x": 887,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            125,
+            81,
+            357,
+            423
+          ],
+          "visibleBounds": [
+            122,
+            78,
+            360,
+            426
+          ]
+        },
+        {
+          "index": 3,
+          "x": 1330,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            112,
+            71,
+            349,
+            423
+          ],
+          "visibleBounds": [
+            109,
+            68,
+            350,
+            426
+          ]
+        },
+        {
+          "index": 4,
+          "x": 0,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            110,
+            49,
+            382,
+            389
+          ],
+          "visibleBounds": [
+            107,
+            47,
+            385,
+            393
+          ]
+        },
+        {
+          "index": 5,
+          "x": 443,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            84,
+            49,
+            373,
+            390
+          ],
+          "visibleBounds": [
+            79,
+            48,
+            377,
+            393
+          ]
+        },
+        {
+          "index": 6,
+          "x": 887,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            88,
+            51,
+            361,
+            389
+          ],
+          "visibleBounds": [
+            84,
+            48,
+            368,
+            394
+          ]
+        },
+        {
+          "index": 7,
+          "x": 1330,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            84,
+            53,
+            363,
+            388
+          ],
+          "visibleBounds": [
+            81,
+            52,
+            364,
+            393
+          ]
+        }
+      ],
+      "tool": "built-in imagegen",
+      "operation": "edit"
+    },
+    {
+      "id": "mio",
+      "file": "assets/sprites/mio.png",
+      "reference": "assets/portraits/mio.png",
+      "prompt": "Edit request: transform the supplied original character reference into ONE production sprite atlas for a vertical PC bullethell game. The supplied portrait is a character-design reference: retain her exact hair colors, recognizable outfit, props and palette, but redraw as clean distant-view small pixel art game actors, not miniature illustrations. Make a wide 2:1 transparent RGBA PNG canvas, ideally 1024x512. EXACT layout: FOUR columns by TWO rows of equal square cells, eight sprites total, evenly spaced, no visible grid. At 1024x512, centers are x=128,384,640,896 and y=128,384. Each full-body sprite including props is approximately 90 pixels wide and 180 pixels tall inside its 256x256 cell, strictly centered, with large empty transparent gutter on all sides. No part may approach or cross a cell boundary. Fixed shared head/feet scale and consistent center pivot across frames. Small restrained color palette, readable pixel clusters, deliberate hard pixel edges, no soft antialias, no photographic or painterly texture. Row ONE: four similar idle-hover animation poses, subtle hair/dress/prop flutter progressing smoothly in a cycle. Row TWO: first two poses lean slightly LEFT with leftward hair flow, last two lean slightly RIGHT with rightward hair flow. Eight visibly different but coherent poses. Every head, hand, hem, shoe and carried prop complete, no cut-off. Actual transparent background with absolutely no aura, lighting halo, vignette, particles, mist, magic circles, scenery, shadow, lettering, cell numbers, labels, border or watermark. Other presentation effects will be drawn by the game. Character id: mio. Preserve her twin white braids with indigo tips, inverted silver bells, blank circle brooch, white-and-indigo short dress with red-lined asymmetrical cape, thin red cords and navy shoes. Simplify details into clear few-color pixel clusters. Keep every sprite smaller than the cell: at most 72% of cell height and 68% of width, with fully transparent gutters around each figure. Remove all portrait glow. No red or blue chroma-key backdrop; actual transparent alpha cutout.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1083b-58b4-76f3-853a-dd07edea57c1\\exec-cf790422-c6d6-499e-8884-1a71e6e4d908.png",
+      "mode": "RGBA",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "reviewed": true,
+      "width": 1774,
+      "height": 887,
+      "sha256": "a8b496d2d08607f7b5df5332619266627734018b8aaeb7ef7e01e4b8f6870fac",
+      "transparentPixelRatio": 0.677395,
+      "cells": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            75,
+            48,
+            355,
+            427
+          ],
+          "visibleBounds": [
+            72,
+            45,
+            357,
+            431
+          ]
+        },
+        {
+          "index": 1,
+          "x": 443,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            79,
+            46,
+            378,
+            427
+          ],
+          "visibleBounds": [
+            76,
+            43,
+            379,
+            430
+          ]
+        },
+        {
+          "index": 2,
+          "x": 887,
+          "y": 0,
+          "width": 443,
+          "height": 443,
+          "solidBounds": [
+            62,
+            47,
+            381,
+            427
+          ],
+          "visibleBounds": [
+            59,
+            44,
+            383,
+            430
+          ]
+        },
+        {
+          "index": 3,
+          "x": 1330,
+          "y": 0,
+          "width": 444,
+          "height": 443,
+          "solidBounds": [
+            78,
+            44,
+            376,
+            424
+          ],
+          "visibleBounds": [
+            75,
+            41,
+            379,
+            427
+          ]
+        },
+        {
+          "index": 4,
+          "x": 0,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            63,
+            44,
+            344,
+            399
+          ],
+          "visibleBounds": [
+            59,
+            43,
+            347,
+            402
+          ]
+        },
+        {
+          "index": 5,
+          "x": 443,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            43,
+            49,
+            354,
+            396
+          ],
+          "visibleBounds": [
+            42,
+            45,
+            357,
+            398
+          ]
+        },
+        {
+          "index": 6,
+          "x": 887,
+          "y": 443,
+          "width": 443,
+          "height": 444,
+          "solidBounds": [
+            115,
+            46,
+            412,
+            405
+          ],
+          "visibleBounds": [
+            114,
+            44,
+            415,
+            408
+          ]
+        },
+        {
+          "index": 7,
+          "x": 1330,
+          "y": 443,
+          "width": 444,
+          "height": 444,
+          "solidBounds": [
+            88,
+            44,
+            387,
+            402
+          ],
+          "visibleBounds": [
+            85,
+            43,
+            390,
+            404
+          ]
+        }
+      ],
+      "tool": "built-in imagegen",
+      "operation": "edit"
+    }
+  ]
+}

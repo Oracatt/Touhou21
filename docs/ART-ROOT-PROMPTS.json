@@ -1,0 +1,26 @@
+{
+  "project": "东方归名录",
+  "assets": [
+    {
+      "id": "title",
+      "file": "assets/art/title.png",
+      "tool": "built-in imagegen",
+      "prompt": "Use case: illustration-story. Asset type: original 4:3 game title background painting for a Japanese folklore bullet-hell fan game, landscape 1536x1152. Scene: an old Shinto shrine gate on a still lake at blue twilight, dozens of blank cream paper name tags suspended from vermilion cords and small warm lanterns, distant quiet mountains, a winding path of floating calligraphy paper leading into a pale circular moon. The story is about names gently vanishing; show fading ink marks as abstract marks, no readable text. Delicate hand-drawn ink contours with restrained watercolor washes, early independent Japanese PC game illustration atmosphere, flat decorative shapes and slightly irregular brush texture. Composition: dramatic shrine gate and moon in the right half; the left half is calm darker indigo water and mist with generous empty space for a large title and vertical menu; bottom-left also readable. Palette: deep indigo, faded ivory, vermilion, warm muted gold; not glossy neon. Beautiful refined mysterious evening, not horror. No characters, no logos, no text, no UI, no border, no watermark. Render a finished painted background, not a mockup. Opaque background.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-26a01b9e-0ba9-420c-bcaf-356264abcf31.png"
+    },
+    {
+      "id": "reimu",
+      "file": "assets/portraits/reimu.png",
+      "tool": "built-in imagegen",
+      "prompt": "Edit this character portrait into a simpler original independent Japanese PC bullet-hell game character illustration. Preserve the exact character identity, iconic clothing colors, all props and recognizable costume. Replace the dense watercolor shading and paper grain with mostly plain flat color fills, a few simple hard-edge shadows, thin somewhat loose and irregular ink lines. Give an endearingly unpolished hand-drawn quality: a slightly slender elongated body, smaller lightly detailed face, simple large eyes with sparse highlights, modest uneven clothing folds and unusual decorative costume shapes. Reduce professional glossy anime polish, complex anatomy modeling and painted texture. Calm, slightly stiff standing pose, clear silhouette, classic independent folklore fantasy game mood. Keep one adult woman fully visible from head/hair/bow/hat to both shoes; preserve whole broom or gohei within frame, add sufficient transparent margins so nothing is cropped. Actual transparent RGBA background without glow, ground, text, panels, gradients or scenery. This is a new game asset, not a copy of any named artist's work.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-1d2ed80f-1e39-4991-8c18-0a0cb8315b48.png"
+    },
+    {
+      "id": "marisa",
+      "file": "assets/portraits/marisa.png",
+      "tool": "built-in imagegen",
+      "prompt": "Edit this character portrait into a simpler original independent Japanese PC bullet-hell game character illustration. Preserve the exact character identity, iconic clothing colors, all props and recognizable costume. Replace the dense watercolor shading and paper grain with mostly plain flat color fills, a few simple hard-edge shadows, thin somewhat loose and irregular ink lines. Give an endearingly unpolished hand-drawn quality: a slightly slender elongated body, smaller lightly detailed face, simple large eyes with sparse highlights, modest uneven clothing folds and unusual decorative costume shapes. Reduce professional glossy anime polish, complex anatomy modeling and painted texture. Calm, slightly stiff standing pose, clear silhouette, classic independent folklore fantasy game mood. Keep one adult woman fully visible from head/hair/bow/hat to both shoes; preserve whole broom or gohei within frame, add sufficient transparent margins so nothing is cropped. Actual transparent RGBA background without glow, ground, text, panels, gradients or scenery. This is a new game asset, not a copy of any named artist's work.",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-6f4040f1-4f48-4e55-96cb-d7f461716977.png"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+/packages/
+/runtime/
+/node_modules/
+/userdata/
+/reports/
+/build/
+*.log
+.env
+.env.*
+__pycache__/

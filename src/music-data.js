@@ -1,0 +1,232 @@
+/** Original game-specific BGM. Integer frames are the canonical loop positions. */
+export const MUSIC_TRACKS = Object.freeze([
+  {
+    "id": "title",
+    "title": "东方归名录之名路",
+    "file": "assets/music/title.wav",
+    "sampleRate": 32000,
+    "frames": 3220645,
+    "loopStartFrame": 247742,
+    "loopEndFrame": 3220645,
+    "duration": 100.645156,
+    "bpm": 124,
+    "description": "一条在晨雾里没有终点的路；钢琴主题由笛声回答。",
+    "sha256": "042e8922d9daefba464e8d639029ab28ae1b739b4061ba4ffcaea6fb533e0529"
+  },
+  {
+    "id": "stage01",
+    "title": "灯笼亮起以前",
+    "file": "assets/music/stage01.wav",
+    "sampleRate": 32000,
+    "frames": 2735342,
+    "loopStartFrame": 210411,
+    "loopEndFrame": 2735342,
+    "duration": 85.479438,
+    "bpm": 146,
+    "description": "村道灯火的轻快八分音符，隐藏在低音里的异变。",
+    "sha256": "9b08ac0c75d5e801b9299cefaf873ed1f6a9ef9e6e559e041cbe91167a29d135"
+  },
+  {
+    "id": "boss01",
+    "title": "借路的火，借名的影",
+    "file": "assets/music/boss01.wav",
+    "sampleRate": 32000,
+    "frames": 2527595,
+    "loopStartFrame": 194430,
+    "loopEndFrame": 2527595,
+    "duration": 78.987344,
+    "bpm": 158,
+    "description": "错拍的火苗与短促铜管，回应一个爱开玩笑的路口。",
+    "sha256": "f7fe79eedfa75e2e76830e3e900b46281e9ebbb1af64c96bf8c29d79cf4edeb5"
+  },
+  {
+    "id": "stage02",
+    "title": "雨滴写给远方的信",
+    "file": "assets/music/stage02.wav",
+    "sampleRate": 32000,
+    "frames": 2852571,
+    "loopStartFrame": 219429,
+    "loopEndFrame": 2852571,
+    "duration": 89.142844,
+    "bpm": 140,
+    "description": "玻璃般的雨声琶音和长笛，信封沿溪水漂向上游。",
+    "sha256": "657cd7da9ae1cf393aeea1fd7b3af61170720868783fb1d8d0076efabff3e452"
+  },
+  {
+    "id": "boss02",
+    "title": "无人签收的天晴",
+    "file": "assets/music/boss02.wav",
+    "sampleRate": 32000,
+    "frames": 2560000,
+    "loopStartFrame": 196923,
+    "loopEndFrame": 2560000,
+    "duration": 80,
+    "bpm": 156,
+    "description": "雨的急流变成行进曲；铜管与钟声轮流署名。",
+    "sha256": "ee8749fe97249ac8db08a423bef308e418b11a3cddcc02c08cb062a1690c1674"
+  },
+  {
+    "id": "stage03",
+    "title": "渡口没有写在地图上",
+    "file": "assets/music/stage03.wav",
+    "sampleRate": 32000,
+    "frames": 2893913,
+    "loopStartFrame": 222609,
+    "loopEndFrame": 2893913,
+    "duration": 90.434781,
+    "bpm": 138,
+    "description": "船桨的两拍摇摆与五声音阶，薄雾里的河岸不断后退。",
+    "sha256": "85f20dc14c9ec65da277c165c8c46775dd4d965a03fa12199de65bee67e155df"
+  },
+  {
+    "id": "boss03",
+    "title": "一文钱也渡不过的彼岸",
+    "file": "assets/music/boss03.wav",
+    "sampleRate": 32000,
+    "frames": 2662400,
+    "loopStartFrame": 204800,
+    "loopEndFrame": 2662400,
+    "duration": 83.2,
+    "bpm": 150,
+    "description": "逆流的切分钢琴，以及船夫很难掩饰的好奇心。",
+    "sha256": "459e1220285ee388a97a169204493d12120a98a5d726c8d389adbb76744d08dd"
+  },
+  {
+    "id": "stage04",
+    "title": "蛛丝上的旧日记",
+    "file": "assets/music/stage04.wav",
+    "sampleRate": 32000,
+    "frames": 2593247,
+    "loopStartFrame": 199481,
+    "loopEndFrame": 2593247,
+    "duration": 81.038969,
+    "bpm": 154,
+    "description": "交错的钟琴和键盘，记忆像丝线一样分岔又相遇。",
+    "sha256": "523499b0a8cc53b9af603853fdbe038ba0dbde95af953bcbe5d89b36f72646cd"
+  },
+  {
+    "id": "boss04",
+    "title": "八只脚书写的昨日",
+    "file": "assets/music/boss04.wav",
+    "sampleRate": 32000,
+    "frames": 2377143,
+    "loopStartFrame": 182857,
+    "loopEndFrame": 2377143,
+    "duration": 74.285719,
+    "bpm": 168,
+    "description": "细密十六分音符织网，旋律却执意走一条笔直的路。",
+    "sha256": "04be775d9e653a0ae12a74e6d46cb37c1e8c10a10505c49bf34b7d33bfaf87df"
+  },
+  {
+    "id": "stage05",
+    "title": "翻到无字的那一页",
+    "file": "assets/music/stage05.wav",
+    "sampleRate": 32000,
+    "frames": 2698378,
+    "loopStartFrame": 207568,
+    "loopEndFrame": 2698378,
+    "duration": 84.324313,
+    "bpm": 148,
+    "description": "纸札书架里的一支隐秘赋格，空白页仍然发出声音。",
+    "sha256": "0be0901efaf56b59ed24b59e3b2e20cced2ac3c80165991299751157cf6bf6d2"
+  },
+  {
+    "id": "boss05",
+    "title": "校勘者与消失的句号",
+    "file": "assets/music/boss05.wav",
+    "sampleRate": 32000,
+    "frames": 2435122,
+    "loopStartFrame": 187317,
+    "loopEndFrame": 2435122,
+    "duration": 76.097562,
+    "bpm": 164,
+    "description": "严整的主旋律被不规则的回答打断，像被擦掉的逗号。",
+    "sha256": "5fe20377c4be61e9333ab58aab5735447614c572bb3b1f9cdbfe3cb622e5dcb3"
+  },
+  {
+    "id": "stage06",
+    "title": "万物尚未开口的清晨",
+    "file": "assets/music/stage06.wav",
+    "sampleRate": 32000,
+    "frames": 2773333,
+    "loopStartFrame": 213333,
+    "loopEndFrame": 2773333,
+    "duration": 86.666656,
+    "bpm": 144,
+    "description": "明亮却不安的黎明；远处的铜管把短小动机放大成仪式。",
+    "sha256": "ee231692f21becfc9bc10596de7f209bb1eeaeb4b5558d7da9ca7bd4366b4289"
+  },
+  {
+    "id": "boss06",
+    "title": "给世界最后一个名字",
+    "file": "assets/music/boss06.wav",
+    "sampleRate": 32000,
+    "frames": 2321860,
+    "loopStartFrame": 178605,
+    "loopEndFrame": 2321860,
+    "duration": 72.558125,
+    "bpm": 172,
+    "description": "铜管长线、钢琴对位与半音转调，一个不愿被遗忘的祈祷。",
+    "sha256": "0b79834aecc4a3cd16a95433c1b62f9f7594df857186b80a64f15c189e236ae2"
+  },
+  {
+    "id": "extra",
+    "title": "今晚请用旧名字呼唤我",
+    "file": "assets/music/extra.wav",
+    "sampleRate": 32000,
+    "frames": 2465185,
+    "loopStartFrame": 189630,
+    "loopEndFrame": 2465185,
+    "duration": 77.037031,
+    "bpm": 162,
+    "description": "夜半旧称在空屋间回响；跳跃钟琴和安静的回声形成反差。",
+    "sha256": "cc08ab2ceb1ad5f71417cafff0650fff88dd260dff3bd346c4749f6e421f8df1"
+  },
+  {
+    "id": "bossExtra",
+    "title": "言灵在零点之后复活",
+    "file": "assets/music/bossExtra.wav",
+    "sampleRate": 32000,
+    "frames": 2269091,
+    "loopStartFrame": 174545,
+    "loopEndFrame": 2269091,
+    "duration": 70.909094,
+    "bpm": 176,
+    "description": "切分、呼应和上行半音；旧名字终于找到新的听众。",
+    "sha256": "e547233586cdfc67ee187ee82fa3566d6e2376e2efe4f902e7a9160ad4ede46d"
+  },
+  {
+    "id": "ending",
+    "title": "名字留在茶杯边",
+    "file": "assets/music/ending.wav",
+    "sampleRate": 32000,
+    "frames": 3328000,
+    "loopStartFrame": 256000,
+    "loopEndFrame": 3328000,
+    "duration": 104,
+    "bpm": 120,
+    "description": "回到神社后的钢琴小品，茶水里倒映着一个还记得的名字。",
+    "sha256": "012a400aea6212d46e5e8e9de534603e6afd1d2cc18d33746d24568f557ee5cc"
+  },
+  {
+    "id": "staff",
+    "title": "归名的旅途还没有结束",
+    "file": "assets/music/staff.wav",
+    "sampleRate": 32000,
+    "frames": 3025455,
+    "loopStartFrame": 232727,
+    "loopEndFrame": 3025455,
+    "duration": 94.545469,
+    "bpm": 132,
+    "description": "重逢的进行曲；响亮主题下仍有一条温柔的钢琴小路。",
+    "sha256": "fad29e4ddf0fd737801ac40a8fe0a7ed4302d395d3852fbb1dee5ef22a085ab4"
+  }
+].map(track => Object.freeze(track)));
+
+export function musicTrack(id) {
+  return MUSIC_TRACKS.find(track => track.id === id) ?? MUSIC_TRACKS[0];
+}
+
+export function musicLoopSeconds(track) {
+  return { start: track.loopStartFrame / track.sampleRate, end: track.loopEndFrame / track.sampleRate };
+}
