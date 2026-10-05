@@ -2,18 +2,18 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/AIWorkspace/TS-STG",
-  "commit": "40db0ae0fa59f659d3677c212035d9c9509fe527",
+  "commit": "aa3a2349d56779f4cc3f764c944f3e9786626aa3",
   "backend": "v8",
   "supportedBackends": [
     "v8",
     "quickjs"
   ],
-  "executableSha256": "F06C80BF000F3C4B1C32B823DA3867E3F9A3D7E68F0044976AA52A7A8F11CCD5",
+  "executableSha256": "9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d",
   "sourceModified": false,
   "dependencies": "Private byte-pinned local snapshots only. Imported common reference materials retain their original notices and are excluded from the original-code MIT grant.",
   "format": "touhou21-engine-lock-v1",
-  "thlibSha256": "a4106eab16121cfce7e4d123ede07648e247eb471014a3f0132e3ee9041a6b88",
-  "runtimeSha256": "f2551802395cc37b361f778cb40d7d2967b24d03b6d6442b29c255c7bbbab295",
+  "thlibSha256": "c81e67bbd3db0444a120c456d325e70a3ffaec5f493d36f8e2c6338472a86194",
+  "runtimeSha256": "37461ca11094be45b192a400b70183fbb332492c4f7eda8977a63eead3389697",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -1107,13 +1107,13 @@
     },
     {
       "path": "src/touhou/application.d.ts",
-      "bytes": 2876,
-      "sha256": "d3db40a859e74261852705f9dc3c9dc230dd0a465b9a1bc71a1b802908e19848"
+      "bytes": 3761,
+      "sha256": "a71dd1c8659cf4622ae5cc307e855f983117f47271e2f92b037f0c2c7ca9c328"
     },
     {
       "path": "src/touhou/application.js",
-      "bytes": 8835,
-      "sha256": "5b897d2a0679cdb7f767e94f7a09ed720ae9cc10eb729647c375c74b185916f6"
+      "bytes": 11872,
+      "sha256": "bfdbb5cd6b8e613891b378be19f66042e8a16e50f51cb3b3397edfe113c98ec9"
     },
     {
       "path": "src/touhou/audio.d.ts",
@@ -1166,14 +1166,24 @@
       "sha256": "133dc9a40776f7df783e87f2fe9ff78d0e86f788fab6b9622a0be0455a9ae8cf"
     },
     {
+      "path": "src/touhou/boss-escape.d.ts",
+      "bytes": 2054,
+      "sha256": "1a2a5388271498b89f2d779f0cca8351a4a442714d7c8de8f89eec3a5c73fa67"
+    },
+    {
+      "path": "src/touhou/boss-escape.js",
+      "bytes": 3849,
+      "sha256": "276936bd6b2c5ca9afa247458642a39609e7482fa50feafa0bb6dee7e5bb90c5"
+    },
+    {
       "path": "src/touhou/boss-hud.d.ts",
-      "bytes": 2484,
-      "sha256": "177c6cf81e393ab902f801df5929ee8316745b187af90d547063c48980af9630"
+      "bytes": 2597,
+      "sha256": "853e10d08f1487b938ada986a2ba0c7eff7cc9ebd0547f57e1cf2043ba2b638c"
     },
     {
       "path": "src/touhou/boss-hud.js",
-      "bytes": 11482,
-      "sha256": "98753bbdbf31def8b403b1404456f50018efab93f0806e9dd21676931e2b8f4c"
+      "bytes": 12347,
+      "sha256": "f33364f0f5d24dd9cd899ea255c46dcb3da99f6a38ae7e912d69425c92fed4c5"
     },
     {
       "path": "src/touhou/boss-phase-clear.d.ts",
@@ -1187,13 +1197,13 @@
     },
     {
       "path": "src/touhou/boss-phase-plan.d.ts",
-      "bytes": 1210,
-      "sha256": "e37f70eadba8dba93af61a3f94d4f1d7bcd726b3467b5cf571969d6b583a61c9"
+      "bytes": 1308,
+      "sha256": "7438643d7c2e7f9581bb4dfc577ad58586146ad3e471ee69f078814f0e7979cf"
     },
     {
       "path": "src/touhou/boss-phase-plan.js",
-      "bytes": 4626,
-      "sha256": "785ba2349da1778432f6a298465a0607bf245ae7fc089ff28261fa84d66f5bd3"
+      "bytes": 4815,
+      "sha256": "788411c63cbf2c3f6f29e514bec6b9697c9bf908636f773e7a643448de813fa1"
     },
     {
       "path": "src/touhou/boss-phase-timeline.d.ts",
@@ -1207,13 +1217,13 @@
     },
     {
       "path": "src/touhou/boss-presentation.d.ts",
-      "bytes": 5973,
-      "sha256": "1eb357522a00fa46eb21a818c663a73d1e0ffcbcb9b8577a5c72511aaa5446db"
+      "bytes": 6042,
+      "sha256": "6b4168a24708e407a447a962af2f6619484967e3a5e48eb198b8a5396118005d"
     },
     {
       "path": "src/touhou/boss-presentation.js",
-      "bytes": 22579,
-      "sha256": "52d5b8d5a0ed0ff3caccb108ddd98882e3416ffffe699bf6558eb200b1cc358e"
+      "bytes": 23304,
+      "sha256": "f9e05fe30e9083dc62567f86c020bcf766c7e5171d32ef07b79bb5b00145d78f"
     },
     {
       "path": "src/touhou/bullet-clear-wave.d.ts",
@@ -1267,13 +1277,13 @@
     },
     {
       "path": "src/touhou/bullets.d.ts",
-      "bytes": 2995,
-      "sha256": "f5f9b667b2d9d6bf91009a0f381a24d3e4adb45881ff167395197434900ff337"
+      "bytes": 3365,
+      "sha256": "462d282cd51120698a5f215ac75f4619bbcf02dd2db90bd640e0092d3c216c9d"
     },
     {
       "path": "src/touhou/bullets.js",
-      "bytes": 27465,
-      "sha256": "331c492fb2ae53e859e714488ccb87ecf69bce7eb77746bb44e0c4d01c019d2e"
+      "bytes": 28639,
+      "sha256": "3f99d47fa01b12ea5202d9d5eaf1431d5c6dbc47671bd9722c2aebc9b74d4057"
     },
     {
       "path": "src/touhou/converging-particles.d.ts",
@@ -1297,13 +1307,13 @@
     },
     {
       "path": "src/touhou/dialogue.d.ts",
-      "bytes": 5073,
-      "sha256": "3deced19929ca1b36e47cc9727cb73fccb5e9d7c66a895a098cdea0b9bfdcb74"
+      "bytes": 6136,
+      "sha256": "fb3e2e24084ede170ed29c0ce8c56d17a184686df5b4d66dcb71eeacb825c78c"
     },
     {
       "path": "src/touhou/dialogue.js",
-      "bytes": 18038,
-      "sha256": "5686bf6248e58c7214786063df57fb77553129a1a98fd793ca771d7251a2ed85"
+      "bytes": 20006,
+      "sha256": "0f98778051b7ede85811ca23c111008b8bb618c5ca980779912edb8efaac2180"
     },
     {
       "path": "src/touhou/distortion.d.ts",
@@ -1317,13 +1327,13 @@
     },
     {
       "path": "src/touhou/enemy.d.ts",
-      "bytes": 3735,
-      "sha256": "b20623a0a5b33cab11f1144759961f3639ab2aaef67095ecc39394a9d16b1256"
+      "bytes": 4365,
+      "sha256": "85990ae4c495471751a5e44a5760c771328ca49cd7689e58c06a56d4718ffda9"
     },
     {
       "path": "src/touhou/enemy.js",
-      "bytes": 11197,
-      "sha256": "20d54f7f68a42b10804b9932f5a3b3e8d5a9314d8eff1f106c78bb819790e6b0"
+      "bytes": 11795,
+      "sha256": "38c7ef1358a3b0bdf235517d437826a7d4887c79c9b1cca07417e537be764bf6"
     },
     {
       "path": "src/touhou/font.d.ts",
@@ -1337,23 +1347,23 @@
     },
     {
       "path": "src/touhou/game-over.d.ts",
-      "bytes": 2704,
-      "sha256": "fadf4098746a8d1b83c99d0f435a9ad048c0bfc147af64a6d5e6b5c363590567"
+      "bytes": 3395,
+      "sha256": "7cd3f9a8259248399daeecfba4f5fce4e67a7152daead3f6c7abf6c4a71a5e5d"
     },
     {
       "path": "src/touhou/game-over.js",
-      "bytes": 12847,
-      "sha256": "fccb091ed3a0b5a26d5338d6f9213324dc209441044afd17ceff3056f3cb9eb3"
+      "bytes": 13919,
+      "sha256": "ad9efea5c7e4dba891a4f0472edb37772fac8c1383135a89c910c00493ef1a2e"
     },
     {
       "path": "src/touhou/game.d.ts",
-      "bytes": 4824,
-      "sha256": "78c99d360fb8fb4572617b0b382fefcea7370a8a8a97e88dac171b92a5706545"
+      "bytes": 8479,
+      "sha256": "2d264a943030014285d89135c5109a72f1bbf6c7d854dc345596ae10245afac0"
     },
     {
       "path": "src/touhou/game.js",
-      "bytes": 18141,
-      "sha256": "214d00f00d8f070e810ece98e3253748b6e132b82a8954d6caa414a6744e1ccb"
+      "bytes": 27791,
+      "sha256": "9582ec55defbc9142bbeb8f0a2c5094d36750a75740452b0e316bec0fb9e0fd9"
     },
     {
       "path": "src/touhou/gameplay-compositor.d.ts",
@@ -1367,43 +1377,43 @@
     },
     {
       "path": "src/touhou/hud.d.ts",
-      "bytes": 1216,
-      "sha256": "c711c58dad4f5a913373f2ef276595b9cc1a9f9c7a3e954f4950043c32f5f4f9"
+      "bytes": 1752,
+      "sha256": "3e6ccd5c00fbb8d6c5418c27b262ff2df7a6f4f588c6f50f9d2d253569b07026"
     },
     {
       "path": "src/touhou/hud.js",
-      "bytes": 8672,
-      "sha256": "f6aef1f7301155d88cff5fae6bd5c9b43c4fe520c15bcd7fc9af5b215609d2ca"
+      "bytes": 11084,
+      "sha256": "561a1d0062a77448e6545d0fd43957322935494771e412b35fc04426b5e25589"
     },
     {
       "path": "src/touhou/index.d.ts",
-      "bytes": 1955,
-      "sha256": "e3cf952c68ab11ce6ffc375d0c5b005668e21d876dba63ee9e18f4e3a3b777b1"
+      "bytes": 2126,
+      "sha256": "88e8ff7a6e9990e0bfc682ba7290195977713f14e62bd7535aa69d0e207efa80"
     },
     {
       "path": "src/touhou/index.js",
-      "bytes": 1955,
-      "sha256": "76aaafefbd86e2d1f9c7b7446c44c9a085fcd092f01a1217d2b0b1fe52f28f19"
+      "bytes": 2126,
+      "sha256": "f2ff203b50c71dd3fc980f81512bc218ccd12f46dad9d66607aa62eef9b62bce"
     },
     {
       "path": "src/touhou/items.d.ts",
-      "bytes": 3644,
-      "sha256": "ee6864d32aeec2893f973e4de37c49701f6e55d3ecb8b9e87274991e0e2cd377"
+      "bytes": 4546,
+      "sha256": "2f6747491873019f30deb62d342e6914110a23c1f40a1c1c033484a5b5ade527"
     },
     {
       "path": "src/touhou/items.js",
-      "bytes": 17506,
-      "sha256": "95cac7dc8d693c31e88731698750a921c65917599c07562980c6eca5a428c464"
+      "bytes": 20010,
+      "sha256": "6f86203925c964adf25a6e1961968546831d927d44ce91d83c8fe7bbd5ea2980"
     },
     {
       "path": "src/touhou/laser-cancellation.d.ts",
-      "bytes": 1202,
-      "sha256": "c7ea73e6af3a7e0ea650c1eb2c583924b5acceea70bfc2c1e30d20433dd2a2ca"
+      "bytes": 1298,
+      "sha256": "bf18d2e7ee44b008c800081f11fa9eb943eb4d60e7f3d675cc5e4ff095693b22"
     },
     {
       "path": "src/touhou/laser-cancellation.js",
-      "bytes": 6606,
-      "sha256": "b5fcf5565f6259671b76729f7dcd6dee351cf67de820f5988ab37b9bfc220094"
+      "bytes": 7018,
+      "sha256": "3d493b7dae4d448e5b8acac563672e234da538237ff89a1ab37ae30b46ef5d4c"
     },
     {
       "path": "src/touhou/laser-collision.d.ts",
@@ -1417,13 +1427,13 @@
     },
     {
       "path": "src/touhou/lasers.d.ts",
-      "bytes": 3887,
-      "sha256": "3e9d9fdddddb7f706f2ccb4aeed2beae8a06e4c11b30b20c8053862a1cf08814"
+      "bytes": 4255,
+      "sha256": "0f1f6722b9e9833f948e5ceab372f0b9819b299b8048a15531880f87290edcf9"
     },
     {
       "path": "src/touhou/lasers.js",
-      "bytes": 24665,
-      "sha256": "edb557564764a4c99f1648aa9dc86048fe253a1e2b7fdee24daaacbe48fb5ec2"
+      "bytes": 25579,
+      "sha256": "fd7a3aea88ee2d7cd9c3b5842fd952c6d602277d9679cfc9adc895bcf929db2b"
     },
     {
       "path": "src/touhou/math.d.ts",
@@ -1437,13 +1447,13 @@
     },
     {
       "path": "src/touhou/menu.d.ts",
-      "bytes": 1699,
-      "sha256": "4261f6e639f2bbe46971ddd1eaa2e9809d97a8084d5b5a7cc00126e75385f5d0"
+      "bytes": 2999,
+      "sha256": "7333f80c53cc3efb9f57ffab8c4a650e608285f709b33fd44bc8097ab6d8ba94"
     },
     {
       "path": "src/touhou/menu.js",
-      "bytes": 9241,
-      "sha256": "bdc2fc4243539183fc12ae5a5d64fdbc034ca12727fa4342fc84514146ba5e8b"
+      "bytes": 13321,
+      "sha256": "49cabc83d6ffdf37010af9aec9a0aa15cb56b176aca7426831ccac1319ada146"
     },
     {
       "path": "src/touhou/music-caption.d.ts",
@@ -1486,6 +1496,16 @@
       "sha256": "3f7b8db62c78ab25dd77c5e6c3b6ebd48d7a13b7209388e0251a01c900cd1b48"
     },
     {
+      "path": "src/touhou/phase-sequence.d.ts",
+      "bytes": 1195,
+      "sha256": "4f26e9e65387fa289725d5963e2b0621be654399f4dfe4e711aa8dbfb53ea67c"
+    },
+    {
+      "path": "src/touhou/phase-sequence.js",
+      "bytes": 3561,
+      "sha256": "42b6538d526cd9fe4a8497b3f5a41b9f2ad79daa0e10531b1d3b557081744c72"
+    },
+    {
       "path": "src/touhou/player-data.d.ts",
       "bytes": 181,
       "sha256": "4aec1e97cef4467d3b08c0f4b6117ee109309a511afa338f1d52387b276e0541"
@@ -1496,14 +1516,34 @@
       "sha256": "7c5b53a7b35c861ba7a09fb524b53f73d56823f4767df3da1a3c44e9ca5c3509"
     },
     {
+      "path": "src/touhou/player-profile.d.ts",
+      "bytes": 176,
+      "sha256": "9b1e2b05702c6918cf02e7b1a398a7f437486c2b1e79627d9356a7a1ec6aa415"
+    },
+    {
+      "path": "src/touhou/player-profile.js",
+      "bytes": 584,
+      "sha256": "d3758e39ff20ff79ba43adb3c158f9787032bae2484abc964d8b01842542ee10"
+    },
+    {
+      "path": "src/touhou/player-rules.d.ts",
+      "bytes": 1017,
+      "sha256": "6e7bf28719ce41f3e4ebbdb5a05f8d55fd09af853b09d9d43f670b086702d982"
+    },
+    {
+      "path": "src/touhou/player-rules.js",
+      "bytes": 2928,
+      "sha256": "95e0f83dfec9245fe8f80a245a7b36207ebef3d1981d08afe630e9e73185e1d9"
+    },
+    {
       "path": "src/touhou/player.d.ts",
-      "bytes": 5056,
-      "sha256": "58d8dc23093f74ad4eb2265a73dc5c498d631ef6e92197cb57fcc222ab94c089"
+      "bytes": 6614,
+      "sha256": "a7ef4b2904151733268ae5b8b41fd13d6816d865d18cb6e7cb7aaf621d01b58f"
     },
     {
       "path": "src/touhou/player.js",
-      "bytes": 25194,
-      "sha256": "e97b5628a64ce41a0b332395b854a5180fea6d71a7b1f23c01ad9a2ca5f8a77e"
+      "bytes": 27652,
+      "sha256": "9b43db56fce0585ffa028da95e5c535ad72990dc1d6c837cbd108ff5664ecdc5"
     },
     {
       "path": "src/touhou/prefabs.d.ts",
@@ -1537,13 +1577,13 @@
     },
     {
       "path": "src/touhou/resources.d.ts",
-      "bytes": 2092,
-      "sha256": "4d612cef5bbdb1ca3878f25b3d660fb9fc401ecb0b8d3f38cfe16817cb66952e"
+      "bytes": 2808,
+      "sha256": "8a3d63b2bab099af7c1cde5ae8c146c6f7dc4cdc13dac0a818b0f643fe41d527"
     },
     {
       "path": "src/touhou/resources.js",
-      "bytes": 6278,
-      "sha256": "358c252b3062fb6c28c1eb09393f034ade25c742cb4c4a5bce427e03678d2292"
+      "bytes": 7475,
+      "sha256": "9103a3e5ea52a3319c9fd49521409a6478b6ab049b1b7fb42ff923d5b8f64c05"
     },
     {
       "path": "src/touhou/scene-transition.d.ts",
@@ -1582,28 +1622,28 @@
     },
     {
       "path": "src/touhou/shot-data.js",
-      "bytes": 905,
-      "sha256": "3c67765b70b9302ecaf332a97a96e9841a66761357bbed8c78acb82f6f8884bc"
+      "bytes": 1839,
+      "sha256": "d7a9a3dd81cf9b442bd733fef9c782ff2ff25bc710e8c5529a6bf95ac8de0cfa"
     },
     {
       "path": "src/touhou/shots.d.ts",
-      "bytes": 896,
-      "sha256": "b8b226957b8d33ceb31249b13717aed58e8acdfab0c834c69c4e48769c69457d"
+      "bytes": 1025,
+      "sha256": "e890f0c24742404bb1f44d2eea9216ee2912e29cd812113db2c918463e932467"
     },
     {
       "path": "src/touhou/shots.js",
-      "bytes": 10011,
-      "sha256": "7835bbd3f9f724d806be0ddd03810c92a4e220bf41549092c2e76872e58173a7"
+      "bytes": 11082,
+      "sha256": "14d070d8889a2027504b732374edaafadf66738132cb082ba8eb651ecd73717d"
     },
     {
       "path": "src/touhou/spell.d.ts",
-      "bytes": 3393,
-      "sha256": "45e1c35fa95dcb2457bcc08819f575422a569763f1f6f8aa72bfba8cf44d3b78"
+      "bytes": 3548,
+      "sha256": "8408a43fa1ad42c5c65ce5a069e7bdd5999f1305c5e5693a3cfc1d08a803d90e"
     },
     {
       "path": "src/touhou/spell.js",
-      "bytes": 13632,
-      "sha256": "94e72b78c1357f105af3d6cae41368d9651de01decd527b963f3530fb24ba3ab"
+      "bytes": 13803,
+      "sha256": "b6b40bf457b6067489224983f3404a57388f337dbec5754a645a89131f8ed10e"
     },
     {
       "path": "src/touhou/stage-clear.d.ts",
@@ -1656,6 +1696,16 @@
       "sha256": "89af46bba8b1aea0be40b792c17219ac91edbfef53da3d3b77f6ef58787d5998"
     },
     {
+      "path": "src/touhou/world.d.ts",
+      "bytes": 861,
+      "sha256": "52b9469ba430cf188ab5631c5fd0bdf8b2e5ff49790203e0b878caf50643f1d9"
+    },
+    {
+      "path": "src/touhou/world.js",
+      "bytes": 2476,
+      "sha256": "2955a4db47d7fbabbc7b33798be989583792d420a120692eab89d332e59f5f86"
+    },
+    {
       "path": "src/world.js",
       "bytes": 7423,
       "sha256": "4590ca75cf5d58d714c8b4a86ac9a195a22446d0302b1fd11dd7e92492a81e4b"
@@ -1664,898 +1714,1001 @@
   "runtimeFiles": [
     {
       "path": "LICENSE.TS-STG",
-      "source": "LICENSE",
       "bytes": 1076,
-      "sha256": "54874c726261159d48ef83f5a595ddc68c43d7993d5496fff0a936e3500be58d"
+      "sha256": "54874c726261159d48ef83f5a595ddc68c43d7993d5496fff0a936e3500be58d",
+      "source": "LICENSE"
+    },
+    {
+      "path": "PACKAGE.json",
+      "bytes": 3960,
+      "sha256": "44e21ecbe4077b89560123dc4d92d0fe5ddc128fadc717c7821742056f094283",
+      "source": "dist/TS-STG/PACKAGE.json"
     },
     {
       "path": "THIRD_PARTY.md",
-      "source": "THIRD_PARTY.md",
       "bytes": 5020,
-      "sha256": "c5fde4b65a061a343a0cede087c6d999064df2da2fe55f6f601848a6d5d285ab"
+      "sha256": "c5fde4b65a061a343a0cede087c6d999064df2da2fe55f6f601848a6d5d285ab",
+      "source": "THIRD_PARTY.md"
     },
     {
       "path": "licenses/quickjs-LICENSE",
-      "source": "dist/TS-STG/licenses/quickjs-LICENSE",
       "bytes": 1212,
-      "sha256": "98de27cc1e8c21a61cb242021aeb5b3711d694fab59fd75ad5b84c36b2c86b7e"
+      "sha256": "98de27cc1e8c21a61cb242021aeb5b3711d694fab59fd75ad5b84c36b2c86b7e",
+      "source": "dist/TS-STG/licenses/quickjs-LICENSE"
     },
     {
       "path": "licenses/raylib-LICENSE",
-      "source": "dist/TS-STG/licenses/raylib-LICENSE",
       "bytes": 877,
-      "sha256": "355bdd50936805f62f091da289f7ba467ea0711586a464ad755dcc73dcfb52a8"
+      "sha256": "355bdd50936805f62f091da289f7ba467ea0711586a464ad755dcc73dcfb52a8",
+      "source": "dist/TS-STG/licenses/raylib-LICENSE"
     },
     {
       "path": "licenses/raylib-external/RGFW.h",
-      "source": "dist/TS-STG/licenses/raylib-external/RGFW.h",
       "bytes": 293229,
-      "sha256": "0716aeee572b9ac4f1ff32d7b4d0deedea3a6c0fb9fccff917111ac3324accc7"
+      "sha256": "0716aeee572b9ac4f1ff32d7b4d0deedea3a6c0fb9fccff917111ac3324accc7",
+      "source": "dist/TS-STG/licenses/raylib-external/RGFW.h"
     },
     {
       "path": "licenses/raylib-external/cgltf.h",
-      "source": "dist/TS-STG/licenses/raylib-external/cgltf.h",
       "bytes": 199324,
-      "sha256": "4c5094a5febd18852af0ba0971ad979e1ed2090f71b47b951ea3bf4c7e7b6d8f"
+      "sha256": "4c5094a5febd18852af0ba0971ad979e1ed2090f71b47b951ea3bf4c7e7b6d8f",
+      "source": "dist/TS-STG/licenses/raylib-external/cgltf.h"
     },
     {
       "path": "licenses/raylib-external/dirent.h",
-      "source": "dist/TS-STG/licenses/raylib-external/dirent.h",
       "bytes": 5184,
-      "sha256": "0fdc24e938e17e7c6b905e1566731f2f76d133245e740edf6b39518deefb257e"
+      "sha256": "0fdc24e938e17e7c6b905e1566731f2f76d133245e740edf6b39518deefb257e",
+      "source": "dist/TS-STG/licenses/raylib-external/dirent.h"
     },
     {
       "path": "licenses/raylib-external/dr_flac.h",
-      "source": "dist/TS-STG/licenses/raylib-external/dr_flac.h",
       "bytes": 525671,
-      "sha256": "3c579b159fb3d3dc639f7f5404fa373e515bcd2b6c7616cf0b297debd809ef76"
+      "sha256": "3c579b159fb3d3dc639f7f5404fa373e515bcd2b6c7616cf0b297debd809ef76",
+      "source": "dist/TS-STG/licenses/raylib-external/dr_flac.h"
     },
     {
       "path": "licenses/raylib-external/dr_mp3.h",
-      "source": "dist/TS-STG/licenses/raylib-external/dr_mp3.h",
       "bytes": 181934,
-      "sha256": "7c8c65208151df60e1dcc33224f19fe7543f7f536710699378d7e8096bfff39e"
+      "sha256": "7c8c65208151df60e1dcc33224f19fe7543f7f536710699378d7e8096bfff39e",
+      "source": "dist/TS-STG/licenses/raylib-external/dr_mp3.h"
     },
     {
       "path": "licenses/raylib-external/dr_wav.h",
-      "source": "dist/TS-STG/licenses/raylib-external/dr_wav.h",
       "bytes": 351978,
-      "sha256": "d435cea2b6828840ba40d61e23247c41a335be1cefc2e5734a05e62fec1accb0"
+      "sha256": "d435cea2b6828840ba40d61e23247c41a335be1cefc2e5734a05e62fec1accb0",
+      "source": "dist/TS-STG/licenses/raylib-external/dr_wav.h"
     },
     {
       "path": "licenses/raylib-external/glad.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glad.h",
       "bytes": 557459,
-      "sha256": "220b47282d4aee2c9cd2cba21943c29c0684f1bd489ff66d36d7ea1d2e9418c3"
+      "sha256": "220b47282d4aee2c9cd2cba21943c29c0684f1bd489ff66d36d7ea1d2e9418c3",
+      "source": "dist/TS-STG/licenses/raylib-external/glad.h"
     },
     {
       "path": "licenses/raylib-external/glad_gles2.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glad_gles2.h",
       "bytes": 289641,
-      "sha256": "28755a633621b393045c67f750a2903b856364992f7b643a33436895bc227321"
+      "sha256": "28755a633621b393045c67f750a2903b856364992f7b643a33436895bc227321",
+      "source": "dist/TS-STG/licenses/raylib-external/glad_gles2.h"
     },
     {
       "path": "licenses/raylib-external/glfw/.mailmap",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/.mailmap",
       "bytes": 384,
-      "sha256": "ed6914588dbbfc8802834cee0acb601ee960edbfaec6f713bd93124702e8395b"
+      "sha256": "ed6914588dbbfc8802834cee0acb601ee960edbfaec6f713bd93124702e8395b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/.mailmap"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/GenerateMappings.cmake",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/GenerateMappings.cmake",
       "bytes": 1653,
-      "sha256": "19f7b491f65c7d14f61c9d497af8dc83e4bb4fa9e079f7d56c0028ca17cf55f0"
+      "sha256": "19f7b491f65c7d14f61c9d497af8dc83e4bb4fa9e079f7d56c0028ca17cf55f0",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/GenerateMappings.cmake"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/Info.plist.in",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/Info.plist.in",
       "bytes": 1297,
-      "sha256": "19fe6a501764fc2f37f998a53d6422c1a64ea16c8e7c844153c617ab4cf6142b"
+      "sha256": "19fe6a501764fc2f37f998a53d6422c1a64ea16c8e7c844153c617ab4cf6142b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/Info.plist.in"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/cmake_uninstall.cmake.in",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/cmake_uninstall.cmake.in",
       "bytes": 1117,
-      "sha256": "e720f60e30bf9dcd6eafa092d3a8fe9eea48e038ce8a0cd8b41b5fc96ab69faf"
+      "sha256": "e720f60e30bf9dcd6eafa092d3a8fe9eea48e038ce8a0cd8b41b5fc96ab69faf",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/cmake_uninstall.cmake.in"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/glfw3.pc.in",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/glfw3.pc.in",
       "bytes": 440,
-      "sha256": "90616f3779a2d7491e644b61d44a478b7c9cdfa06c3b8cb44c2ef2e515fc8008"
+      "sha256": "90616f3779a2d7491e644b61d44a478b7c9cdfa06c3b8cb44c2ef2e515fc8008",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/glfw3.pc.in"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/glfw3Config.cmake.in",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/glfw3Config.cmake.in",
       "bytes": 115,
-      "sha256": "0d266f3f8b0ae324404dc36a8ca8af01b5bf58d15b1ce806e9e318e895e9b755"
+      "sha256": "0d266f3f8b0ae324404dc36a8ca8af01b5bf58d15b1ce806e9e318e895e9b755",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/glfw3Config.cmake.in"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/i686-w64-mingw32-clang.cmake",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/i686-w64-mingw32-clang.cmake",
       "bytes": 596,
-      "sha256": "9cf42de30ad84095801b2dff752df930c692680089d8f47c77f9445cdacece24"
+      "sha256": "9cf42de30ad84095801b2dff752df930c692680089d8f47c77f9445cdacece24",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/i686-w64-mingw32-clang.cmake"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/i686-w64-mingw32.cmake",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/i686-w64-mingw32.cmake",
       "bytes": 588,
-      "sha256": "f26d94a113c02bba7cded9715bcf51a9d04ba40d497ccffc05b4ef256aa8399f"
+      "sha256": "f26d94a113c02bba7cded9715bcf51a9d04ba40d497ccffc05b4ef256aa8399f",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/i686-w64-mingw32.cmake"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/modules/FindEpollShim.cmake",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/modules/FindEpollShim.cmake",
       "bytes": 747,
-      "sha256": "3689ad05d6b6460d2b5313130d3cb474ab195f6698690737582d3ee98cb4c942"
+      "sha256": "3689ad05d6b6460d2b5313130d3cb474ab195f6698690737582d3ee98cb4c942",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/modules/FindEpollShim.cmake"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/modules/FindOSMesa.cmake",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/modules/FindOSMesa.cmake",
       "bytes": 445,
-      "sha256": "0ab39cf837f390904cb4bf68db853346b53fa5d4dc047f554f188b44b4454643"
+      "sha256": "0ab39cf837f390904cb4bf68db853346b53fa5d4dc047f554f188b44b4454643",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/modules/FindOSMesa.cmake"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32-clang.cmake",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32-clang.cmake",
       "bytes": 606,
-      "sha256": "7f2ea33c57c8726be2a1dfac703d2a4f7c3993c3345ce5c927f0fa1474fc2083"
+      "sha256": "7f2ea33c57c8726be2a1dfac703d2a4f7c3993c3345ce5c927f0fa1474fc2083",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32-clang.cmake"
     },
     {
       "path": "licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32.cmake",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32.cmake",
       "bytes": 598,
-      "sha256": "e68df045d9aa039fef4f984a7c8e48cd6ac3df8960adc960f6e45674d3f6cee3"
+      "sha256": "e68df045d9aa039fef4f984a7c8e48cd6ac3df8960adc960f6e45674d3f6cee3",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMake/x86_64-w64-mingw32.cmake"
     },
     {
       "path": "licenses/raylib-external/glfw/CMakeLists.txt",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMakeLists.txt",
       "bytes": 5951,
-      "sha256": "9febf64a1d8cabfdb77c8cd5812232c65f58b8ad96271ef2975bde5058bdc344"
+      "sha256": "9febf64a1d8cabfdb77c8cd5812232c65f58b8ad96271ef2975bde5058bdc344",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CMakeLists.txt"
     },
     {
       "path": "licenses/raylib-external/glfw/CONTRIBUTORS.md",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/CONTRIBUTORS.md",
       "bytes": 5328,
-      "sha256": "3a196513663e7dac03434550ee923514fe5d147088ca087af38c0894a6f01bb3"
+      "sha256": "3a196513663e7dac03434550ee923514fe5d147088ca087af38c0894a6f01bb3",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/CONTRIBUTORS.md"
     },
     {
       "path": "licenses/raylib-external/glfw/LICENSE.md",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/LICENSE.md",
       "bytes": 904,
-      "sha256": "149704059b5d0bf551637e50042dd4de9c2cae921021f6636298911e3a5f9462"
+      "sha256": "149704059b5d0bf551637e50042dd4de9c2cae921021f6636298911e3a5f9462",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/LICENSE.md"
     },
     {
       "path": "licenses/raylib-external/glfw/README.md",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/README.md",
       "bytes": 558,
-      "sha256": "db7e58b69359179469b6e1e586672868890fcbc26265a447c6e588f983820d31"
+      "sha256": "db7e58b69359179469b6e1e586672868890fcbc26265a447c6e588f983820d31",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/README.md"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/getopt.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/getopt.c",
       "bytes": 8053,
-      "sha256": "170fbc3e023f7a4499b3407c3633f8d4a2d8bcba9d8f3d90a44cc2316d75378d"
+      "sha256": "170fbc3e023f7a4499b3407c3633f8d4a2d8bcba9d8f3d90a44cc2316d75378d",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/getopt.c"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/getopt.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/getopt.h",
       "bytes": 2136,
-      "sha256": "17999999aa29bca7239fee8d1c2fc98fb85682dc38d4f793b46e084f777401bd"
+      "sha256": "17999999aa29bca7239fee8d1c2fc98fb85682dc38d4f793b46e084f777401bd",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/getopt.h"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/glad/gl.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/gl.h",
       "bytes": 326437,
-      "sha256": "372d175f3d334c59357828f01893fb140605ded6a285bf2977dcb0b9ee3b39ea"
+      "sha256": "372d175f3d334c59357828f01893fb140605ded6a285bf2977dcb0b9ee3b39ea",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/gl.h"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/glad/gles2.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/gles2.h",
       "bytes": 81113,
-      "sha256": "fc72c16afbcb8fdf4f6465a0894b6c3148ebf44328363bd69f5ba0d6c2ea8ca7"
+      "sha256": "fc72c16afbcb8fdf4f6465a0894b6c3148ebf44328363bd69f5ba0d6c2ea8ca7",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/gles2.h"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/glad/vulkan.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/vulkan.h",
       "bytes": 336197,
-      "sha256": "e9a5eb14a8cd7d7b5e8d57ab4431e21086d4d8f9f6c8e4958938aee5c9311b2b"
+      "sha256": "e9a5eb14a8cd7d7b5e8d57ab4431e21086d4d8f9f6c8e4958938aee5c9311b2b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/glad/vulkan.h"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/mingw/_mingw_dxhelper.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/_mingw_dxhelper.h",
       "bytes": 3111,
-      "sha256": "f3145fbc30022e781a9836d72bd3a628a45495bda5b48f90983e9ae7ebe94b82"
+      "sha256": "f3145fbc30022e781a9836d72bd3a628a45495bda5b48f90983e9ae7ebe94b82",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/_mingw_dxhelper.h"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/mingw/dinput.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/dinput.h",
       "bytes": 112560,
-      "sha256": "72316ef3309b6a9b60d16f064a84fc5af6efd84546d69ac557b117bc398e3aab"
+      "sha256": "72316ef3309b6a9b60d16f064a84fc5af6efd84546d69ac557b117bc398e3aab",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/dinput.h"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/mingw/xinput.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/xinput.h",
       "bytes": 7950,
-      "sha256": "4f78d7a9df66252a02342dc874b786ed666f9c32b523ae3734d44d87e09fc0e7"
+      "sha256": "4f78d7a9df66252a02342dc874b786ed666f9c32b523ae3734d44d87e09fc0e7",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/mingw/xinput.h"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/fractional-scale-v1.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/fractional-scale-v1.xml",
       "bytes": 4636,
-      "sha256": "5941de5d28f427ecdadddc8623a6f6af0a30b0ab4726847236ba7a7652b81316"
+      "sha256": "5941de5d28f427ecdadddc8623a6f6af0a30b0ab4726847236ba7a7652b81316",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/fractional-scale-v1.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/idle-inhibit-unstable-v1.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/idle-inhibit-unstable-v1.xml",
       "bytes": 4017,
-      "sha256": "c2ac9f002c6669ca6c02eb9b587b8e9108e3ce6deab4a2de58b576f4f864ca38"
+      "sha256": "c2ac9f002c6669ca6c02eb9b587b8e9108e3ce6deab4a2de58b576f4f864ca38",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/idle-inhibit-unstable-v1.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/pointer-constraints-unstable-v1.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/pointer-constraints-unstable-v1.xml",
       "bytes": 15451,
-      "sha256": "92553c58baa04931afcd409a9d947518b70bc986b847ccb1ef74f377779b0b5d"
+      "sha256": "92553c58baa04931afcd409a9d947518b70bc986b847ccb1ef74f377779b0b5d",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/pointer-constraints-unstable-v1.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/relative-pointer-unstable-v1.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/relative-pointer-unstable-v1.xml",
       "bytes": 6584,
-      "sha256": "ab4930dd3084f732b6fdd12ee6dbd0a112a758ed8a57b170366391dbeb1a22ff"
+      "sha256": "ab4930dd3084f732b6fdd12ee6dbd0a112a758ed8a57b170366391dbeb1a22ff",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/relative-pointer-unstable-v1.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/viewporter.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/viewporter.xml",
       "bytes": 8232,
-      "sha256": "b327b824ff2799032aa852d9607f8db8f0f672474444812a3b0997d87aa5dd0b"
+      "sha256": "b327b824ff2799032aa852d9607f8db8f0f672474444812a3b0997d87aa5dd0b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/viewporter.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/wayland.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/wayland.xml",
       "bytes": 144896,
-      "sha256": "053bdb354709893dbfb5cee4ee6fbb3eadb4fed78e6d761bb7dc8f30513d6541"
+      "sha256": "053bdb354709893dbfb5cee4ee6fbb3eadb4fed78e6d761bb7dc8f30513d6541",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/wayland.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/xdg-activation-v1.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-activation-v1.xml",
       "bytes": 9016,
-      "sha256": "d8418be2d5738d50aff788bef1c7574f33f26659aa045447ff2ef9b78c58fe01"
+      "sha256": "d8418be2d5738d50aff788bef1c7574f33f26659aa045447ff2ef9b78c58fe01",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-activation-v1.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/xdg-decoration-unstable-v1.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-decoration-unstable-v1.xml",
       "bytes": 7089,
-      "sha256": "88e2d60f7ca8df5e034b816fb8a4b3f0b2abd6fc07b4ee6ca058a72404ea6904"
+      "sha256": "88e2d60f7ca8df5e034b816fb8a4b3f0b2abd6fc07b4ee6ca058a72404ea6904",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-decoration-unstable-v1.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/deps/wayland/xdg-shell.xml",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-shell.xml",
       "bytes": 60418,
-      "sha256": "b72112a7a1f9b2ad94ffa59468753ced568d6e7b2069df94a9d437e488b8506e"
+      "sha256": "b72112a7a1f9b2ad94ffa59468753ced568d6e7b2069df94a9d437e488b8506e",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/deps/wayland/xdg-shell.xml"
     },
     {
       "path": "licenses/raylib-external/glfw/include/GLFW/glfw3.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/include/GLFW/glfw3.h",
       "bytes": 241826,
-      "sha256": "aa370985f6b493bbe0358a36ab49f5780a6397c0209c6d98a62143dea595b73c"
+      "sha256": "aa370985f6b493bbe0358a36ab49f5780a6397c0209c6d98a62143dea595b73c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/include/GLFW/glfw3.h"
     },
     {
       "path": "licenses/raylib-external/glfw/include/GLFW/glfw3native.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/include/GLFW/glfw3native.h",
       "bytes": 21201,
-      "sha256": "40035881fdc02a9ab265c2086338f749a0411e1c15b68fada678fa34e8bd8958"
+      "sha256": "40035881fdc02a9ab265c2086338f749a0411e1c15b68fada678fa34e8bd8958",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/include/GLFW/glfw3native.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/CMakeLists.txt",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/CMakeLists.txt",
       "bytes": 13945,
-      "sha256": "2cb9fd73457e14a751f12fac3556c576fcffb54e25c462b5aeb7fe76d4d94aae"
+      "sha256": "2cb9fd73457e14a751f12fac3556c576fcffb54e25c462b5aeb7fe76d4d94aae",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/CMakeLists.txt"
     },
     {
       "path": "licenses/raylib-external/glfw/src/cocoa_init.m",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_init.m",
       "bytes": 24873,
-      "sha256": "666d656c1eb0b0023d7c57e2ec7326956a93f950977473eb7723364416ef4029"
+      "sha256": "666d656c1eb0b0023d7c57e2ec7326956a93f950977473eb7723364416ef4029",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_init.m"
     },
     {
       "path": "licenses/raylib-external/glfw/src/cocoa_joystick.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_joystick.h",
       "bytes": 1849,
-      "sha256": "88fb37c0b8bbfea19343e75cfa7090eef7bed67c93bcd789af356ee6c2401210"
+      "sha256": "88fb37c0b8bbfea19343e75cfa7090eef7bed67c93bcd789af356ee6c2401210",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_joystick.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/cocoa_joystick.m",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_joystick.m",
       "bytes": 15740,
-      "sha256": "eddd49dc3862a4e16be208c36e540f52fe7f987acf315c4d969eaa6ec32f09b0"
+      "sha256": "eddd49dc3862a4e16be208c36e540f52fe7f987acf315c4d969eaa6ec32f09b0",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_joystick.m"
     },
     {
       "path": "licenses/raylib-external/glfw/src/cocoa_monitor.m",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_monitor.m",
       "bytes": 19725,
-      "sha256": "296f1bc18f7f27677d33392282b543cc6275d4ff4dc39e08526331d0281d016e"
+      "sha256": "296f1bc18f7f27677d33392282b543cc6275d4ff4dc39e08526331d0281d016e",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_monitor.m"
     },
     {
       "path": "licenses/raylib-external/glfw/src/cocoa_platform.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_platform.h",
       "bytes": 12920,
-      "sha256": "b4d608d7fe69fe147ba600aee4700a9e0b40be225ae9abd698f711fdbf944320"
+      "sha256": "b4d608d7fe69fe147ba600aee4700a9e0b40be225ae9abd698f711fdbf944320",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_platform.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/cocoa_time.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_time.c",
       "bytes": 1890,
-      "sha256": "a0094a28331172292a7c506935ee01adb0184d18e89e038ea471094781dd0ce4"
+      "sha256": "a0094a28331172292a7c506935ee01adb0184d18e89e038ea471094781dd0ce4",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_time.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/cocoa_time.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_time.h",
       "bytes": 1378,
-      "sha256": "596db814eaead6d4cf304fa6ae30688362ce98c9ee551eb3871c3cc166876804"
+      "sha256": "596db814eaead6d4cf304fa6ae30688362ce98c9ee551eb3871c3cc166876804",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_time.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/cocoa_window.m",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_window.m",
       "bytes": 60320,
-      "sha256": "a7572261f4c1c42c3d020dc0116b12d4c9f9c44161e186ea72e6b03ea1610f7b"
+      "sha256": "a7572261f4c1c42c3d020dc0116b12d4c9f9c44161e186ea72e6b03ea1610f7b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/cocoa_window.m"
     },
     {
       "path": "licenses/raylib-external/glfw/src/context.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/context.c",
       "bytes": 25670,
-      "sha256": "839a96ff1dcc712129f9bcb9522b8d459b9d6a9b8d029ce32c729c523b9ea012"
+      "sha256": "839a96ff1dcc712129f9bcb9522b8d459b9d6a9b8d029ce32c729c523b9ea012",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/context.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/egl_context.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/egl_context.c",
       "bytes": 29593,
-      "sha256": "933150523fa2cf24e8f3e7cd279b0d8308635f769e052f035e4088c4ebc83ccf"
+      "sha256": "933150523fa2cf24e8f3e7cd279b0d8308635f769e052f035e4088c4ebc83ccf",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/egl_context.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/glfw.rc.in",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/glfw.rc.in",
       "bytes": 771,
-      "sha256": "14f50b28f6d801c6a99549376face170970023ac139a33e4555affecfebe24f1"
+      "sha256": "14f50b28f6d801c6a99549376face170970023ac139a33e4555affecfebe24f1",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/glfw.rc.in"
     },
     {
       "path": "licenses/raylib-external/glfw/src/glx_context.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/glx_context.c",
       "bytes": 23690,
-      "sha256": "e04e784373d59a3f3b08e3de15c8fbfef61c22b9325a2f3d9922a21cc4dd504e"
+      "sha256": "e04e784373d59a3f3b08e3de15c8fbfef61c22b9325a2f3d9922a21cc4dd504e",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/glx_context.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/init.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/init.c",
       "bytes": 14504,
-      "sha256": "61ac2188518cae852bc2bfe0c0f2363dad365f8166099a3aa78a3c9ff8504654"
+      "sha256": "61ac2188518cae852bc2bfe0c0f2363dad365f8166099a3aa78a3c9ff8504654",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/init.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/input.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/input.c",
       "bytes": 41395,
-      "sha256": "f5efbc7ec6a38a6c462cd2311dbe51616a4810c4dc8d1a2f735195e5cf72c753"
+      "sha256": "f5efbc7ec6a38a6c462cd2311dbe51616a4810c4dc8d1a2f735195e5cf72c753",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/input.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/internal.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/internal.h",
       "bytes": 35817,
-      "sha256": "cc6e93eac5b9957c99bc90e95c34d62f184395345de33e554ab77c23a1148ae0"
+      "sha256": "cc6e93eac5b9957c99bc90e95c34d62f184395345de33e554ab77c23a1148ae0",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/internal.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/linux_joystick.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/linux_joystick.c",
       "bytes": 12404,
-      "sha256": "4e9b95479d3df624d3a5de2b9d708f418cf7e0870c5f05ff2f1a1f88ec84e608"
+      "sha256": "4e9b95479d3df624d3a5de2b9d708f418cf7e0870c5f05ff2f1a1f88ec84e608",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/linux_joystick.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/linux_joystick.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/linux_joystick.h",
       "bytes": 2322,
-      "sha256": "af4e596d0ed1e7eed2699b6567d6ed46157f7c9887bfef15aad5ca15b2a17590"
+      "sha256": "af4e596d0ed1e7eed2699b6567d6ed46157f7c9887bfef15aad5ca15b2a17590",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/linux_joystick.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/mappings.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/mappings.h",
       "bytes": 257134,
-      "sha256": "e307abd1fee03029b8c4b1bdae93c0e90b0948ed0a41eacc93e6755f2f6c893b"
+      "sha256": "e307abd1fee03029b8c4b1bdae93c0e90b0948ed0a41eacc93e6755f2f6c893b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/mappings.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/mappings.h.in",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/mappings.h.in",
       "bytes": 5280,
-      "sha256": "4fba82df496c86a2364733716f214e5f73fbc40376a93e667cda9d877e085c79"
+      "sha256": "4fba82df496c86a2364733716f214e5f73fbc40376a93e667cda9d877e085c79",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/mappings.h.in"
     },
     {
       "path": "licenses/raylib-external/glfw/src/monitor.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/monitor.c",
       "bytes": 15194,
-      "sha256": "1671bbe37502419f08b8072e80a13a78494feea6c008ccb2727ebd44a43afd6a"
+      "sha256": "1671bbe37502419f08b8072e80a13a78494feea6c008ccb2727ebd44a43afd6a",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/monitor.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/nsgl_context.m",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/nsgl_context.m",
       "bytes": 11919,
-      "sha256": "a0d683795265b18cd183be6a185742e44b866ee80c21d7fcc4ad4363c16d2832"
+      "sha256": "a0d683795265b18cd183be6a185742e44b866ee80c21d7fcc4ad4363c16d2832",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/nsgl_context.m"
     },
     {
       "path": "licenses/raylib-external/glfw/src/null_init.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_init.c",
       "bytes": 14437,
-      "sha256": "041b02232d5378e9a3ac3fd12da1e91f8276ef1459303e2094ee820e675a3dd1"
+      "sha256": "041b02232d5378e9a3ac3fd12da1e91f8276ef1459303e2094ee820e675a3dd1",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_init.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/null_joystick.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_joystick.c",
       "bytes": 1753,
-      "sha256": "5da9465db10034b81b87c3722328bff7dfc3b4a94670cce71672b7d464fd6820"
+      "sha256": "5da9465db10034b81b87c3722328bff7dfc3b4a94670cce71672b7d464fd6820",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_joystick.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/null_joystick.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_joystick.h",
       "bytes": 1424,
-      "sha256": "ccd7bec0a32632b0fc81d1c085bba3b89e01a9dc4b6b28cde9ea394909fc700d"
+      "sha256": "ccd7bec0a32632b0fc81d1c085bba3b89e01a9dc4b6b28cde9ea394909fc700d",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_joystick.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/null_monitor.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_monitor.c",
       "bytes": 5178,
-      "sha256": "12face8cf2462b5590d8f1ac5502184e0246696f5d5b117dddca3dfbb5658759"
+      "sha256": "12face8cf2462b5590d8f1ac5502184e0246696f5d5b117dddca3dfbb5658759",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_monitor.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/null_platform.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_platform.h",
       "bytes": 11827,
-      "sha256": "a93596d5f503d0378de4c347f55d0cd63aad471022a09e3c474f516416520c0e"
+      "sha256": "a93596d5f503d0378de4c347f55d0cd63aad471022a09e3c474f516416520c0e",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_platform.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/null_window.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_window.c",
       "bytes": 18727,
-      "sha256": "23c6335ab4338d739d4d9f6ddea0283e7ae58fd0ddf2b7ad1e4b9d381b51bcdc"
+      "sha256": "23c6335ab4338d739d4d9f6ddea0283e7ae58fd0ddf2b7ad1e4b9d381b51bcdc",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/null_window.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/osmesa_context.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/osmesa_context.c",
       "bytes": 11935,
-      "sha256": "2bb65aa05606a7bb652ee59fb481c45abb223795163fe9c57d808de3e082b09b"
+      "sha256": "2bb65aa05606a7bb652ee59fb481c45abb223795163fe9c57d808de3e082b09b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/osmesa_context.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/platform.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/platform.c",
       "bytes": 6332,
-      "sha256": "e80d556c9679c9d82719bc2b0469a711a01f9218492efbdf88e18a64f19b7dcd"
+      "sha256": "e80d556c9679c9d82719bc2b0469a711a01f9218492efbdf88e18a64f19b7dcd",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/platform.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/platform.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/platform.h",
       "bytes": 6421,
-      "sha256": "14498e12db44b36f695d5cacd2ca2763fd6d6c4d2c5ef3fdcfa103e79d54b49b"
+      "sha256": "14498e12db44b36f695d5cacd2ca2763fd6d6c4d2c5ef3fdcfa103e79d54b49b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/platform.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/posix_module.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_module.c",
       "bytes": 1816,
-      "sha256": "e78e668d01a15695b1d44da660daf8c0fd1696cce1c9b5cca0a2e4e41d67dbe1"
+      "sha256": "e78e668d01a15695b1d44da660daf8c0fd1696cce1c9b5cca0a2e4e41d67dbe1",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_module.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/posix_poll.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_poll.c",
       "bytes": 3044,
-      "sha256": "0432a56fef57a1cd39bee3c0c5120e17991ff8aa56ce8ce39ff1bdac425ce02a"
+      "sha256": "0432a56fef57a1cd39bee3c0c5120e17991ff8aa56ce8ce39ff1bdac425ce02a",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_poll.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/posix_poll.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_poll.h",
       "bytes": 1292,
-      "sha256": "4aaeb5ddcc8e8b617463d07d769264d359c8c508a5a9cc9a02b4b49f8dadb3a5"
+      "sha256": "4aaeb5ddcc8e8b617463d07d769264d359c8c508a5a9cc9a02b4b49f8dadb3a5",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_poll.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/posix_thread.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_thread.c",
       "bytes": 3245,
-      "sha256": "898502d86490e8c2e401a3de7a63e7c9566aa99333d676c5c4aaca69b35022b3"
+      "sha256": "898502d86490e8c2e401a3de7a63e7c9566aa99333d676c5c4aaca69b35022b3",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_thread.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/posix_thread.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_thread.h",
       "bytes": 1674,
-      "sha256": "10e4679442f9650ec2f423572537a0326e972b8f0c02cfb5fb76c3cd107733cd"
+      "sha256": "10e4679442f9650ec2f423572537a0326e972b8f0c02cfb5fb76c3cd107733cd",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_thread.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/posix_time.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_time.c",
       "bytes": 2206,
-      "sha256": "548431aa62bc3ead2a82c1f049fd53659b7a92c8702abaa9d9176a0583edadb2"
+      "sha256": "548431aa62bc3ead2a82c1f049fd53659b7a92c8702abaa9d9176a0583edadb2",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_time.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/posix_time.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_time.h",
       "bytes": 1489,
-      "sha256": "eccea70e4ada8f6c0fcca9eeb5de01781d2422d28bfe63e795aeb74a7400125c"
+      "sha256": "eccea70e4ada8f6c0fcca9eeb5de01781d2422d28bfe63e795aeb74a7400125c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/posix_time.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/vulkan.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/vulkan.c",
       "bytes": 11947,
-      "sha256": "5948e9f0b347640473d23f7dfd94cea82375149639f2cbd288491747312d3a33"
+      "sha256": "5948e9f0b347640473d23f7dfd94cea82375149639f2cbd288491747312d3a33",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/vulkan.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/wgl_context.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wgl_context.c",
       "bytes": 27071,
-      "sha256": "48c2cad35265f7311146182ec4ad811f551929cb6847ef3a0653abbedec88bf8"
+      "sha256": "48c2cad35265f7311146182ec4ad811f551929cb6847ef3a0653abbedec88bf8",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wgl_context.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_init.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_init.c",
       "bytes": 28564,
-      "sha256": "87ab2b407b742ca6e9a65e8cb88cc941b19d44b5e33a1fedc06015779b4ab3e6"
+      "sha256": "87ab2b407b742ca6e9a65e8cb88cc941b19d44b5e33a1fedc06015779b4ab3e6",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_init.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_joystick.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_joystick.c",
       "bytes": 26711,
-      "sha256": "b9c95eed4eeed6eb64864fa031349de83e3421ab7a6c3dcd86cf80fd6b1ad8b1"
+      "sha256": "b9c95eed4eeed6eb64864fa031349de83e3421ab7a6c3dcd86cf80fd6b1ad8b1",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_joystick.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_joystick.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_joystick.h",
       "bytes": 1870,
-      "sha256": "41cd05e7477314241c5aca9b840682a4ba4b82c358d401612ab83e5bce167c39"
+      "sha256": "41cd05e7477314241c5aca9b840682a4ba4b82c358d401612ab83e5bce167c39",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_joystick.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_module.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_module.c",
       "bytes": 1822,
-      "sha256": "58f0b4a96584b6ad582e90974b07ecbe9ed8d402cadbe54383afbb0ba37d6a0b"
+      "sha256": "58f0b4a96584b6ad582e90974b07ecbe9ed8d402cadbe54383afbb0ba37d6a0b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_module.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_monitor.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_monitor.c",
       "bytes": 16993,
-      "sha256": "4645c2972d8dbf9e11e287b05333f6db585615541217e3dd5d61e9f9fca32e97"
+      "sha256": "4645c2972d8dbf9e11e287b05333f6db585615541217e3dd5d61e9f9fca32e97",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_monitor.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_platform.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_platform.h",
       "bytes": 25101,
-      "sha256": "f7b39efe79c9731762c9dd9848431e795a66fccc871d7ae72930c5e1aeed7c4c"
+      "sha256": "f7b39efe79c9731762c9dd9848431e795a66fccc871d7ae72930c5e1aeed7c4c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_platform.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_thread.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_thread.c",
       "bytes": 3085,
-      "sha256": "92ee8a23a6a729c2cff69975d2dfc46d019a2be0494d17b705495cd3042dcd36"
+      "sha256": "92ee8a23a6a729c2cff69975d2dfc46d019a2be0494d17b705495cd3042dcd36",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_thread.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_thread.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_thread.h",
       "bytes": 1956,
-      "sha256": "cefdd801463eb6901e3ebae02b8204e87e44bd06b2bdc562794dc890886ecc97"
+      "sha256": "cefdd801463eb6901e3ebae02b8204e87e44bd06b2bdc562794dc890886ecc97",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_thread.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_time.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_time.c",
       "bytes": 1911,
-      "sha256": "16c54578192e06205a0dbe675ffc93f73df1d971ace8e81ad2a0ba868c99c4e6"
+      "sha256": "16c54578192e06205a0dbe675ffc93f73df1d971ace8e81ad2a0ba868c99c4e6",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_time.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_time.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_time.h",
       "bytes": 1703,
-      "sha256": "dabfeb7478945930cb6c4ded23cfe76f6e6577b68523c5d8ac2acb1b63b35b21"
+      "sha256": "dabfeb7478945930cb6c4ded23cfe76f6e6577b68523c5d8ac2acb1b63b35b21",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_time.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/win32_window.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_window.c",
       "bytes": 81254,
-      "sha256": "b7ab5cfb53bb86688033699859399f2a90433e08e6d1aa2dba19c15be8db7fb6"
+      "sha256": "b7ab5cfb53bb86688033699859399f2a90433e08e6d1aa2dba19c15be8db7fb6",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/win32_window.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/window.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/window.c",
       "bytes": 35148,
-      "sha256": "c102fd119fd7423ca0cebd17c1fba722d7fe149ef689f09962f6ff79c82dd289"
+      "sha256": "c102fd119fd7423ca0cebd17c1fba722d7fe149ef689f09962f6ff79c82dd289",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/window.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/wl_init.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_init.c",
       "bytes": 45125,
-      "sha256": "57e6a61e4d1cacaa9b9348cfe1bc58f378356fa901dd275005612da043b598cc"
+      "sha256": "57e6a61e4d1cacaa9b9348cfe1bc58f378356fa901dd275005612da043b598cc",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_init.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/wl_monitor.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_monitor.c",
       "bytes": 8627,
-      "sha256": "47161326acd583a0787a37927535ffdbe03561923f40a316d9f02b40c28ec16b"
+      "sha256": "47161326acd583a0787a37927535ffdbe03561923f40a316d9f02b40c28ec16b",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_monitor.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/wl_platform.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_platform.h",
       "bytes": 34576,
-      "sha256": "fb13b006ad8e13df67a8c267e880324f6f131e1d5cba8b072061e91efa30ee71"
+      "sha256": "fb13b006ad8e13df67a8c267e880324f6f131e1d5cba8b072061e91efa30ee71",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_platform.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/wl_window.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_window.c",
       "bytes": 102558,
-      "sha256": "aee24f61801c2633d4b1218b7152ce3fd02c61285d6663a895f64df012e354a3"
+      "sha256": "aee24f61801c2633d4b1218b7152ce3fd02c61285d6663a895f64df012e354a3",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/wl_window.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/x11_init.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_init.c",
       "bytes": 70569,
-      "sha256": "6c3cfc5c9910bb5ec95776426cfc702146a3f0c25ded3ed15519e446c720c04c"
+      "sha256": "6c3cfc5c9910bb5ec95776426cfc702146a3f0c25ded3ed15519e446c720c04c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_init.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/x11_monitor.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_monitor.c",
       "bytes": 20136,
-      "sha256": "cd1c15c5fc684a58472ded4cbad3509f383c6d6611b4437d8469b54feedbdaab"
+      "sha256": "cd1c15c5fc684a58472ded4cbad3509f383c6d6611b4437d8469b54feedbdaab",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_monitor.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/x11_platform.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_platform.h",
       "bytes": 44741,
-      "sha256": "c35ff50d31c47eee88a7613b8ff47611d6bd892657545b6d44b1911dc7b7466a"
+      "sha256": "c35ff50d31c47eee88a7613b8ff47611d6bd892657545b6d44b1911dc7b7466a",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_platform.h"
     },
     {
       "path": "licenses/raylib-external/glfw/src/x11_window.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_window.c",
       "bytes": 106419,
-      "sha256": "f983abbfaa1b503e62a71a15a98f2aef7ac4cde9411bb260d4fd0a759af0499a"
+      "sha256": "f983abbfaa1b503e62a71a15a98f2aef7ac4cde9411bb260d4fd0a759af0499a",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/x11_window.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/xkb_unicode.c",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/xkb_unicode.c",
       "bytes": 22943,
-      "sha256": "57ddc9155229a445c1f6e1542fe3ddce8d4ad0c5d5f7f0c3da476d58fb5f650c"
+      "sha256": "57ddc9155229a445c1f6e1542fe3ddce8d4ad0c5d5f7f0c3da476d58fb5f650c",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/xkb_unicode.c"
     },
     {
       "path": "licenses/raylib-external/glfw/src/xkb_unicode.h",
-      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/xkb_unicode.h",
       "bytes": 1288,
-      "sha256": "b80f53223f42108f4ff0fc51cb8e94c2c9b3ba87888760842958bf43bd4cd19a"
+      "sha256": "b80f53223f42108f4ff0fc51cb8e94c2c9b3ba87888760842958bf43bd4cd19a",
+      "source": "dist/TS-STG/licenses/raylib-external/glfw/src/xkb_unicode.h"
     },
     {
       "path": "licenses/raylib-external/jar_mod.h",
-      "source": "dist/TS-STG/licenses/raylib-external/jar_mod.h",
       "bytes": 51991,
-      "sha256": "48a056e21e97e408f3fbaea8cfed7b5aefcbfa66589f9d6400c2c9ee507c38c4"
+      "sha256": "48a056e21e97e408f3fbaea8cfed7b5aefcbfa66589f9d6400c2c9ee507c38c4",
+      "source": "dist/TS-STG/licenses/raylib-external/jar_mod.h"
     },
     {
       "path": "licenses/raylib-external/jar_xm.h",
-      "source": "dist/TS-STG/licenses/raylib-external/jar_xm.h",
       "bytes": 101770,
-      "sha256": "b0e00da94e525695d6f37469352c87e65cae08fcb24be3597bf9b3925904f203"
+      "sha256": "b0e00da94e525695d6f37469352c87e65cae08fcb24be3597bf9b3925904f203",
+      "source": "dist/TS-STG/licenses/raylib-external/jar_xm.h"
     },
     {
       "path": "licenses/raylib-external/m3d.h",
-      "source": "dist/TS-STG/licenses/raylib-external/m3d.h",
       "bytes": 305622,
-      "sha256": "0794a776a2b9d063061f0e85578a6ba51d7df17bc20d1d0bc7f9f701c520b87c"
+      "sha256": "0794a776a2b9d063061f0e85578a6ba51d7df17bc20d1d0bc7f9f701c520b87c",
+      "source": "dist/TS-STG/licenses/raylib-external/m3d.h"
     },
     {
       "path": "licenses/raylib-external/miniaudio.h",
-      "source": "dist/TS-STG/licenses/raylib-external/miniaudio.h",
       "bytes": 3985334,
-      "sha256": "60b53a3bfd81319bd23bc18aa728f75e4ae70d3c5c2993ebbf4fedf808a1e45e"
+      "sha256": "60b53a3bfd81319bd23bc18aa728f75e4ae70d3c5c2993ebbf4fedf808a1e45e",
+      "source": "dist/TS-STG/licenses/raylib-external/miniaudio.h"
     },
     {
       "path": "licenses/raylib-external/msf_gif.h",
-      "source": "dist/TS-STG/licenses/raylib-external/msf_gif.h",
       "bytes": 35114,
-      "sha256": "bcf1fe3591fb9ea0e375c448dcc02fa4471fe3b143f7bab9ac0847afcf6807d0"
+      "sha256": "bcf1fe3591fb9ea0e375c448dcc02fa4471fe3b143f7bab9ac0847afcf6807d0",
+      "source": "dist/TS-STG/licenses/raylib-external/msf_gif.h"
     },
     {
       "path": "licenses/raylib-external/par_shapes.h",
-      "source": "dist/TS-STG/licenses/raylib-external/par_shapes.h",
       "bytes": 72865,
-      "sha256": "d91d7bcddb6241f9938fb973eda5384f77c4e262ee25ee39954bf5641f4fa46e"
+      "sha256": "d91d7bcddb6241f9938fb973eda5384f77c4e262ee25ee39954bf5641f4fa46e",
+      "source": "dist/TS-STG/licenses/raylib-external/par_shapes.h"
     },
     {
       "path": "licenses/raylib-external/qoa.h",
-      "source": "dist/TS-STG/licenses/raylib-external/qoa.h",
       "bytes": 23885,
-      "sha256": "386c0fdae62e9f78d453867ee618b3de9998b0289f82647ff88aa802b8fed483"
+      "sha256": "386c0fdae62e9f78d453867ee618b3de9998b0289f82647ff88aa802b8fed483",
+      "source": "dist/TS-STG/licenses/raylib-external/qoa.h"
     },
     {
       "path": "licenses/raylib-external/qoaplay.c",
-      "source": "dist/TS-STG/licenses/raylib-external/qoaplay.c",
       "bytes": 10503,
-      "sha256": "6d974b4136f1cc473c4be7fcfac26ae34f1c3363abacada69e323dce407189a9"
+      "sha256": "6d974b4136f1cc473c4be7fcfac26ae34f1c3363abacada69e323dce407189a9",
+      "source": "dist/TS-STG/licenses/raylib-external/qoaplay.c"
     },
     {
       "path": "licenses/raylib-external/qoi.h",
-      "source": "dist/TS-STG/licenses/raylib-external/qoi.h",
       "bytes": 18314,
-      "sha256": "be17cb4ea880327f430107169d2df09e3ce82124a194f35358cef74bcc5a9ed7"
+      "sha256": "be17cb4ea880327f430107169d2df09e3ce82124a194f35358cef74bcc5a9ed7",
+      "source": "dist/TS-STG/licenses/raylib-external/qoi.h"
     },
     {
       "path": "licenses/raylib-external/rl_gputex.h",
-      "source": "dist/TS-STG/licenses/raylib-external/rl_gputex.h",
       "bytes": 36115,
-      "sha256": "47eb4b4d0e12cacdb3f48296ef799107ef7d43c88cd8e963302e73ac9479d2f3"
+      "sha256": "47eb4b4d0e12cacdb3f48296ef799107ef7d43c88cd8e963302e73ac9479d2f3",
+      "source": "dist/TS-STG/licenses/raylib-external/rl_gputex.h"
     },
     {
       "path": "licenses/raylib-external/rprand.h",
-      "source": "dist/TS-STG/licenses/raylib-external/rprand.h",
       "bytes": 11693,
-      "sha256": "52449d9a7fd1f2810470ed7db6528d12472f77e685a53105277e3ed24dd5f2d7"
+      "sha256": "52449d9a7fd1f2810470ed7db6528d12472f77e685a53105277e3ed24dd5f2d7",
+      "source": "dist/TS-STG/licenses/raylib-external/rprand.h"
     },
     {
       "path": "licenses/raylib-external/sdefl.h",
-      "source": "dist/TS-STG/licenses/raylib-external/sdefl.h",
       "bytes": 28019,
-      "sha256": "089a9a9e119e54ec02a6e87d904cb0c707fbfb2a6ecca3506ce80bc9e755c241"
+      "sha256": "089a9a9e119e54ec02a6e87d904cb0c707fbfb2a6ecca3506ce80bc9e755c241",
+      "source": "dist/TS-STG/licenses/raylib-external/sdefl.h"
     },
     {
       "path": "licenses/raylib-external/sinfl.h",
-      "source": "dist/TS-STG/licenses/raylib-external/sinfl.h",
       "bytes": 21581,
-      "sha256": "eb884c9e7188f05c5003a3add47c0b014647135310a7ae1fec4705ef2d203185"
+      "sha256": "eb884c9e7188f05c5003a3add47c0b014647135310a7ae1fec4705ef2d203185",
+      "source": "dist/TS-STG/licenses/raylib-external/sinfl.h"
     },
     {
       "path": "licenses/raylib-external/stb_image.h",
-      "source": "dist/TS-STG/licenses/raylib-external/stb_image.h",
       "bytes": 283010,
-      "sha256": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
+      "sha256": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_image.h"
     },
     {
       "path": "licenses/raylib-external/stb_image_resize2.h",
-      "source": "dist/TS-STG/licenses/raylib-external/stb_image_resize2.h",
       "bytes": 451105,
-      "sha256": "75eaf304de3b578f66023bd9182cfd33fb57bf2f74c86263219de0b0e02fe6b4"
+      "sha256": "75eaf304de3b578f66023bd9182cfd33fb57bf2f74c86263219de0b0e02fe6b4",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_image_resize2.h"
     },
     {
       "path": "licenses/raylib-external/stb_image_write.h",
-      "source": "dist/TS-STG/licenses/raylib-external/stb_image_write.h",
       "bytes": 71221,
-      "sha256": "cbd5f0ad7a9cf4468affb36354a1d2338034f2c12473cf1a8e32053cb6914a05"
+      "sha256": "cbd5f0ad7a9cf4468affb36354a1d2338034f2c12473cf1a8e32053cb6914a05",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_image_write.h"
     },
     {
       "path": "licenses/raylib-external/stb_perlin.h",
-      "source": "dist/TS-STG/licenses/raylib-external/stb_perlin.h",
       "bytes": 17918,
-      "sha256": "17e688447a02776fe667e0b6a5d1155bf85c827a83f787ae2d44f57699274960"
+      "sha256": "17e688447a02776fe667e0b6a5d1155bf85c827a83f787ae2d44f57699274960",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_perlin.h"
     },
     {
       "path": "licenses/raylib-external/stb_rect_pack.h",
-      "source": "dist/TS-STG/licenses/raylib-external/stb_rect_pack.h",
       "bytes": 20199,
-      "sha256": "6388366a30de57c1b4c29b6eed4ed1c7d758fc1443d2dd95cfce943370bb3aa1"
+      "sha256": "6388366a30de57c1b4c29b6eed4ed1c7d758fc1443d2dd95cfce943370bb3aa1",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_rect_pack.h"
     },
     {
       "path": "licenses/raylib-external/stb_truetype.h",
-      "source": "dist/TS-STG/licenses/raylib-external/stb_truetype.h",
       "bytes": 199192,
-      "sha256": "ecd30b05e0dd4fea3a13c26810dd9e1992dc379049482c393d5a19e6b5090aab"
+      "sha256": "ecd30b05e0dd4fea3a13c26810dd9e1992dc379049482c393d5a19e6b5090aab",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_truetype.h"
     },
     {
       "path": "licenses/raylib-external/stb_vorbis.c",
-      "source": "dist/TS-STG/licenses/raylib-external/stb_vorbis.c",
       "bytes": 192790,
-      "sha256": "4c7cb2ff1f7011e9d67950446b7eb9ca044f2e464d76bfbb0b84dd2e23e65636"
+      "sha256": "4c7cb2ff1f7011e9d67950446b7eb9ca044f2e464d76bfbb0b84dd2e23e65636",
+      "source": "dist/TS-STG/licenses/raylib-external/stb_vorbis.c"
     },
     {
       "path": "licenses/raylib-external/tinyobj_loader_c.h",
-      "source": "dist/TS-STG/licenses/raylib-external/tinyobj_loader_c.h",
       "bytes": 45666,
-      "sha256": "3739fd5b3a91e7926ca6b28ed080623e59d7f9fc9b3b81a08394b5e02211308b"
+      "sha256": "3739fd5b3a91e7926ca6b28ed080623e59d7f9fc9b3b81a08394b5e02211308b",
+      "source": "dist/TS-STG/licenses/raylib-external/tinyobj_loader_c.h"
     },
     {
       "path": "licenses/raylib-external/vox_loader.h",
-      "source": "dist/TS-STG/licenses/raylib-external/vox_loader.h",
       "bytes": 19540,
-      "sha256": "e881dd1dc8b8d8f71f067554ecd1c142fe06c004ff781518836980d17e4ab76b"
+      "sha256": "e881dd1dc8b8d8f71f067554ecd1c142fe06c004ff781518836980d17e4ab76b",
+      "source": "dist/TS-STG/licenses/raylib-external/vox_loader.h"
     },
     {
       "path": "licenses/raylib-external/win32_clipboard.h",
-      "source": "dist/TS-STG/licenses/raylib-external/win32_clipboard.h",
       "bytes": 13022,
-      "sha256": "7bd7e69843619520a279ad29003dd4dc737f76aa7a808d7925bffac2368c1f6c"
+      "sha256": "7bd7e69843619520a279ad29003dd4dc737f76aa7a808d7925bffac2368c1f6c",
+      "source": "dist/TS-STG/licenses/raylib-external/win32_clipboard.h"
     },
     {
       "path": "licenses/v8-sdk-manifest.json",
-      "source": "dist/TS-STG/licenses/v8-sdk-manifest.json",
       "bytes": 4955,
-      "sha256": "3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac"
+      "sha256": "3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac",
+      "source": "dist/TS-STG/licenses/v8-sdk-manifest.json"
     },
     {
       "path": "licenses/v8/V8-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-LICENSE",
       "bytes": 3098,
-      "sha256": "81680185f0cb339021e3b73714499264de72f33b17cfdb0c14f400de6d95cf0e"
+      "sha256": "81680185f0cb339021e3b73714499264de72f33b17cfdb0c14f400de6d95cf0e",
+      "source": "dist/TS-STG/licenses/v8/V8-LICENSE"
     },
     {
       "path": "licenses/v8/V8-src-third_party-siphash-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-siphash-LICENSE",
       "bytes": 6555,
-      "sha256": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673"
+      "sha256": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673",
+      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-siphash-LICENSE"
     },
     {
       "path": "licenses/v8/V8-src-third_party-utf8-decoder-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-utf8-decoder-LICENSE",
       "bytes": 1087,
-      "sha256": "3f712e5fbdfdbd5ee7d9b8c8152580220df55de47f4eba2f26c95c4de19ad096"
+      "sha256": "3f712e5fbdfdbd5ee7d9b8c8152580220df55de47f4eba2f26c95c4de19ad096",
+      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-utf8-decoder-LICENSE"
     },
     {
       "path": "licenses/v8/V8-src-third_party-valgrind-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-valgrind-LICENSE",
       "bytes": 2439,
-      "sha256": "ebf25b8ce59c9e8883acd1ca75b6fc121937ca034f666c4077d2be739d2e1622"
+      "sha256": "ebf25b8ce59c9e8883acd1ca75b6fc121937ca034f666c4077d2be739d2e1622",
+      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-valgrind-LICENSE"
     },
     {
       "path": "licenses/v8/V8-src-third_party-vtune-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-vtune-LICENSE",
       "bytes": 2731,
-      "sha256": "cfe7599e45f340a35b4635090382897ca1526bc49b5e1889047f0168d131c415"
+      "sha256": "cfe7599e45f340a35b4635090382897ca1526bc49b5e1889047f0168d131c415",
+      "source": "dist/TS-STG/licenses/v8/V8-src-third_party-vtune-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-colorama-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-colorama-LICENSE",
       "bytes": 1492,
-      "sha256": "15137d6c822e3ab097093a33c3a39a9df699f373f6438867ad534ff60762a947"
+      "sha256": "15137d6c822e3ab097093a33c3a39a9df699f373f6438867ad534ff60762a947",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-colorama-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-fp16-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-fp16-LICENSE",
       "bytes": 1158,
-      "sha256": "c91377adafa2f498211a4fe017788e20c38892124673860f068f2919c289193d"
+      "sha256": "c91377adafa2f498211a4fe017788e20c38892124673860f068f2919c289193d",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-fp16-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-glibc-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-glibc-LICENSE",
       "bytes": 26526,
-      "sha256": "b634ab5640e258563c536e658cad87080553df6f34f62269a21d554844e58bfe"
+      "sha256": "b634ab5640e258563c536e658cad87080553df6f34f62269a21d554844e58bfe",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-glibc-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-inspector_protocol-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-inspector_protocol-LICENSE",
       "bytes": 1537,
-      "sha256": "450ebb9e9e50c2809d9ca581931fc8946d8d5aa0c8c35aae9ac471342fe4a88e"
+      "sha256": "450ebb9e9e50c2809d9ca581931fc8946d8d5aa0c8c35aae9ac471342fe4a88e",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-inspector_protocol-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-jsoncpp-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-jsoncpp-LICENSE",
       "bytes": 2665,
-      "sha256": "76c45ece83a26117f86f4e349e7df118708e061e87225328fb478ce1e8b3eb86"
+      "sha256": "76c45ece83a26117f86f4e349e7df118708e061e87225328fb478ce1e8b3eb86",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-jsoncpp-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-re2-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-re2-LICENSE",
       "bytes": 1558,
-      "sha256": "6040cda75d90b1738292a631d89934c411ef7ffd543c4d6a1b7edfc8edf29449"
+      "sha256": "6040cda75d90b1738292a631d89934c411ef7ffd543c4d6a1b7edfc8edf29449",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-re2-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-test262-harness-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-test262-harness-LICENSE",
       "bytes": 2273,
-      "sha256": "6f773009a428850c799150b7e0f1806796486dc40302aac5c2fbf4d69a6e1839"
+      "sha256": "6f773009a428850c799150b7e0f1806796486dc40302aac5c2fbf4d69a6e1839",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-test262-harness-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-v8-builtins-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-v8-builtins-LICENSE",
       "bytes": 12763,
-      "sha256": "b9a6d9320b8f2693e8d41e496ce56caadacaddcca9be2a64a61749278f425cf2"
+      "sha256": "b9a6d9320b8f2693e8d41e496ce56caadacaddcca9be2a64a61749278f425cf2",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-v8-builtins-LICENSE"
     },
     {
       "path": "licenses/v8/V8-third_party-wasm-api-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/V8-third_party-wasm-api-LICENSE",
       "bytes": 11358,
-      "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+      "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08",
+      "source": "dist/TS-STG/licenses/v8/V8-third_party-wasm-api-LICENSE"
     },
     {
       "path": "licenses/v8/rusty_v8-LICENSE",
-      "source": "dist/TS-STG/licenses/v8/rusty_v8-LICENSE",
       "bytes": 1078,
-      "sha256": "1c6356fb751d45f0c53093ebf8a7f5e580e802f51999178e19d60f3ec39e147d"
+      "sha256": "1c6356fb751d45f0c53093ebf8a7f5e580e802f51999178e19d60f3ec39e147d",
+      "source": "dist/TS-STG/licenses/v8/rusty_v8-LICENSE"
     },
     {
       "path": "ts-stg.exe",
-      "source": "build/Release/ts-stg.exe",
-      "bytes": 23269376,
-      "sha256": "f06c80bf000f3c4b1c32b823da3867e3f9a3d7e68f0044976aa52a7a8f11ccd5"
+      "bytes": 23271424,
+      "sha256": "9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d",
+      "source": "build/Release/ts-stg.exe"
     }
   ],
-  "thlibScope": "Explicit source/package/license/touhou-common allowlist. Other source package resources are not copied."
+  "thlibScope": "Explicit source/package/license/touhou-common allowlist. Other source package resources are not copied.",
+  "nativeBuild": {
+    "configuration": "Release",
+    "executableSource": "build/Release/ts-stg.exe",
+    "packageSource": "dist/TS-STG/PACKAGE.json",
+    "packageSha256": "44e21ecbe4077b89560123dc4d92d0fe5ddc128fadc717c7821742056f094283",
+    "binarySha256": "9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d",
+    "sourceFiles": [
+      {
+        "path": "CMakeLists.txt",
+        "bytes": 16683,
+        "sha256": "d7ce0a46ee28aa425dc01219bd2fc055f6dd5287925a6ccb4002642046e90579"
+      },
+      {
+        "path": "native/include/tsstg/backend.hpp",
+        "bytes": 6282,
+        "sha256": "4a634edb2ef7d001f8728eb9bc520c0ef45538e6ad241b612a3f291d21a03f6f"
+      },
+      {
+        "path": "native/include/tsstg/geometry.hpp",
+        "bytes": 690,
+        "sha256": "43c5680a887bd685c9a2c28e34fe292040ab9ec418d4f9d4a4e979bde37f6d79"
+      },
+      {
+        "path": "native/include/tsstg/host.hpp",
+        "bytes": 597,
+        "sha256": "156273d2f829f691f37bd19baa70cb3d938ae9669c79bfeed80ee9258f617318"
+      },
+      {
+        "path": "native/include/tsstg/music_stream.hpp",
+        "bytes": 1508,
+        "sha256": "1d31fabaef1521f7d5db4213ea02ff86c626b2b7ba72f92f0aaa8bcd32086024"
+      },
+      {
+        "path": "native/include/tsstg/profile.hpp",
+        "bytes": 4021,
+        "sha256": "1786e65b1911ac9a9c5c1fdab9413d699d8d0ebea7a1f8a5e84ad305ee0bc363"
+      },
+      {
+        "path": "native/include/tsstg/text.hpp",
+        "bytes": 816,
+        "sha256": "829adfb8374920bf49bb6a4e276f5ad10cab21df387ba323810fa901eb1da83c"
+      },
+      {
+        "path": "native/src/geometry.cpp",
+        "bytes": 1247,
+        "sha256": "911314a7efe177ffd674b05edf14582447c36048083d1b50d08329685476284a"
+      },
+      {
+        "path": "native/src/host.cpp",
+        "bytes": 49295,
+        "sha256": "e926c7d8563bade4cb29b6dae7cba0f4458cd04e09a2731a1e6ee105fc7d25ee"
+      },
+      {
+        "path": "native/src/main.cpp",
+        "bytes": 3760,
+        "sha256": "33732373ffa226bf29d11265d910ced1578ecbe5aaf7ba846633d074a23d8d02"
+      },
+      {
+        "path": "native/src/quickjs_backend.cpp",
+        "bytes": 52269,
+        "sha256": "8f729bb591184924c1135da417e972bfa802615c5552d3ed86ae6490eece7a57"
+      },
+      {
+        "path": "native/src/text_gdi.cpp",
+        "bytes": 7669,
+        "sha256": "2c5f810083935998299504bb22031b5ada57bc9d62f945dc44868bba89416dde"
+      },
+      {
+        "path": "native/src/text_win32.cpp",
+        "bytes": 11379,
+        "sha256": "b8ce64406b68e021b413194b5953300ca0f2b6b5e954fca35140c08d238893e5"
+      },
+      {
+        "path": "native/src/v8_backend.cpp",
+        "bytes": 64702,
+        "sha256": "c262b4b026c349b017352398ac09c9aadc1f3ff8bccd5c72d5a3b2667d7e07a2"
+      },
+      {
+        "path": "native/windows.manifest",
+        "bytes": 368,
+        "sha256": "ae18e973ee276ee777cf40fa0ccf4c73e23ec0280d3abd4bca39f205145ebf9a"
+      }
+    ],
+    "sourceSha256": "db54fa242d1a9e2f76bf835d19be423ad6a91fd6194474800a23d837e6f0f998",
+    "dependencyLog": {
+      "source": "build/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
+      "sha256": "c74f34f9aeba94f6d722b821147665586ef1e8c5f30fccbc6f551c29151123af"
+    },
+    "hostObject": {
+      "source": "build/ts-stg.dir/Release/host.obj",
+      "sha256": "8888c9601cd4f342e3cf7d8e01c827ad98722ce53ae7892f168ffa242e9eab00"
+    },
+    "outputUtc": "2026-10-05T06:38:41.309Z",
+    "hostObjectUtc": "2026-10-05T06:38:40.467Z",
+    "latestSourceUtc": "2026-10-05T06:38:26.622Z",
+    "evidence": "Clean tracked source, complete native input hashes, later compile/link times, music-header compiler dependency, identical built/package binary and package manifest. This is local build evidence, not a reproducible-build attestation."
+  }
 }

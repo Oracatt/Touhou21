@@ -23,5 +23,5 @@ for file in sorted((root / 'assets').glob('**/*.png')):
             'sha256': hashlib.sha256(file.read_bytes()).hexdigest(),
         }
 target = root / 'assets/art-manifest.json'
-target.write_text(json.dumps({'format': 'guiming-art-v1', 'alphaThreshold': 16, 'assets': assets}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+target.write_text(json.dumps({'format': 'guiming-art-v1', 'alphaThreshold': 16, 'assets': assets}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
 print(f'Indexed {len(assets)} original PNG assets without pixel modifications.')

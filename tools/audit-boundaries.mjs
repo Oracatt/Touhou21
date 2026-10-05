@@ -52,8 +52,9 @@ export function auditBoundaries({root=PROJECT_ROOT,verifyDependencies=true}={}){
   // Game media are all independently catalogued here, rather than added to thlib.
   const art=JSON.parse(fs.readFileSync(inside(root,'assets/art-manifest.json'),'utf8'));
   assert.equal(art.format,'guiming-art-v1');const artPaths=Object.keys(art.assets).sort();
-  assert.deepEqual([...mediaFiles(root,'assets/art'),...mediaFiles(root,'assets/portraits'),...mediaFiles(root,'assets/sprites')].sort(),artPaths,'Art manifest is not the exact game-image inventory');
-  for(const file of artPaths){assert.match(file,/^assets\/(art|portraits|sprites)\/[^/]+\.png$/);assert.equal(shaFile(inside(root,file)),art.assets[file].sha256,`Game art hash changed: ${file}`);}
+  const artFolders=['art','portraits','sprites',...(fs.existsSync(inside(root,'assets/scenery'))?['scenery']:[])];
+  assert.deepEqual(artFolders.flatMap(folder=>mediaFiles(root,`assets/${folder}`)).sort(),artPaths,'Art manifest is not the exact game-image inventory');
+  for(const file of artPaths){assert.match(file,/^assets\/(art|portraits|sprites|scenery)\/[^/]+\.png$/);assert.equal(shaFile(inside(root,file)),art.assets[file].sha256,`Game art hash changed: ${file}`);}
   for(const character of [...PLAYERS,...CHARACTERS])assert.ok(art.assets[`assets/portraits/${character.id}.png`],'Character portrait is missing');
   for(const character of CHARACTERS)assert.ok(art.assets[`assets/sprites/${character.id}.png`],'Boss animation atlas is missing');
   for(const stage of STAGES)assert.ok(art.assets[`assets/art/stage${String(stage.id).padStart(2,'0')}.png`],'Stage far landscape is missing');

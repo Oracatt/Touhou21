@@ -53,7 +53,20 @@ export function readEngineLock(root=PROJECT_ROOT){
   assert.equal(inventoryDigest(lock.runtimeFiles),lock.runtimeSha256,'Invalid runtime inventory digest');
   for(const file of lock.runtimeFiles)safeRelative(file.source);
   const binary=lock.runtimeFiles.find(file=>file.path==='ts-stg.exe');assert.ok(binary);
-  assert.equal(binary.sha256,lock.executableSha256.toLowerCase());return lock;
+  assert.equal(binary.sha256,lock.executableSha256.toLowerCase());
+  if(lock.nativeBuild){
+    const build=lock.nativeBuild;assert.equal(build.configuration,'Release');
+    assert.equal(build.executableSource,binary.source);assert.equal(build.binarySha256,binary.sha256);
+    safeRelative(build.packageSource);assert.match(build.packageSha256,/^[a-f0-9]{64}$/);
+    assert.ok(Array.isArray(build.sourceFiles)&&build.sourceFiles.length>0);
+    const seen=new Set();for(const file of build.sourceFiles){safeRelative(file.path);assert.ok(!seen.has(file.path));seen.add(file.path);
+      assert.ok(Number.isSafeInteger(file.bytes)&&file.bytes>=0);assert.match(file.sha256,/^[a-f0-9]{64}$/);}
+    assert.equal(inventoryDigest(build.sourceFiles),build.sourceSha256,'Invalid native source inventory digest');
+    for(const entry of [build.hostObject,build.dependencyLog]){safeRelative(entry.source);assert.match(entry.sha256,/^[a-f0-9]{64}$/);}
+    const sdk=lock.runtimeFiles.find(file=>file.path==='PACKAGE.json');assert.ok(sdk,'Native build provenance must be retained');
+    assert.equal(sdk.source,build.packageSource);assert.equal(sdk.sha256,build.packageSha256);
+  }
+  return lock;
 }
 function compareTree(directory,expected,label){
   const actual=inventoryTree(directory);
@@ -76,6 +89,7 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
     const location=fs.realpathSync(source??lock.source);
     const commit=execFileSync('git',['-C',location,'rev-parse','HEAD'],{encoding:'utf8',windowsHide:true}).trim();
     assert.equal(commit,lock.commit,'Engine source commit differs from lock');
+    assert.equal(execFileSync('git',['-C',location,'status','--porcelain'],{encoding:'utf8',windowsHide:true}).trim(),'','Source engine has local modifications');
     // The local snapshot is an explicit subset of the public package. Only the
     // pinned entries are copied; unrelated source files are never swept in.
     for(const file of lock.thlibFiles){const sourceFile=inside(path.join(location,'packages/thlib'),file.path);
@@ -85,11 +99,20 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
     for(const file of lock.runtimeFiles){const sourceFile=inside(location,file.source);
       assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source runtime file size differs');
       assert.equal(shaFile(sourceFile),file.sha256,'Source runtime file hash differs');}
+    if(lock.nativeBuild){
+      for(const file of lock.nativeBuild.sourceFiles){const sourceFile=inside(location,file.path);
+        assert.equal(fs.statSync(sourceFile).size,file.bytes,'Native build source size differs');
+        assert.equal(shaFile(sourceFile),file.sha256,'Native build source hash differs');}
+      for(const entry of [lock.nativeBuild.hostObject,lock.nativeBuild.dependencyLog])
+        assert.equal(shaFile(inside(location,entry.source)),entry.sha256,'Native compiler evidence hash differs');
+      const allCode=inventoryTree(path.join(location,'packages/thlib/src')).map(file=>({...file,path:'src/'+file.path}));
+      assert.equal(inventoryDigest(allCode),inventoryDigest(lock.thlibFiles.filter(file=>file.path.startsWith('src/'))),'Snapshot does not contain all public thlib source');
+    }
     sourceVerified=true;
   }
   return{passed:true,commit:lock.commit,backend:lock.backend,supportedBackends:lock.supportedBackends,
     executableSha256:lock.executableSha256,thlibFiles:lock.thlibFiles.length,runtimeFiles:lock.runtimeFiles.length,
-    thlibSha256:lock.thlibSha256,runtimeSha256:lock.runtimeSha256,sourceVerified};
+    thlibSha256:lock.thlibSha256,runtimeSha256:lock.runtimeSha256,sourceVerified,nativeBuildRecorded:!!lock.nativeBuild};
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

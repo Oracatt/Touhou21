@@ -19,6 +19,15 @@ assert.ok(modes.every(mode=>['road','spell'].includes(mode)));
 const binary=path.join(root,'runtime/ts-stg.exe'),out=path.join(root,'reports/backgrounds'),scratch=path.join(root,'build/background-fixtures');
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(scratch,{recursive:true});
 const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex'),results=[];
+function compareState(a,b,location='$'){
+  if(typeof a==='number'&&typeof b==='number'){
+    if(Number.isInteger(a)&&Number.isInteger(b))assert.equal(a,b,location);
+    else assert.ok(Math.abs(a-b)<=1e-12*Math.max(1,Math.abs(a),Math.abs(b)),`${location}: ${a} != ${b}`);
+  }else if(a&&b&&typeof a==='object'&&typeof b==='object'){
+    assert.deepEqual(Object.keys(a),Object.keys(b),location);
+    for(const key of Object.keys(a))compareState(a[key],b[key],`${location}.${key}`);
+  }else assert.equal(a,b,location);
+}
 for(const stage of stages)for(const mode of modes){
   const entry=path.join(scratch,`stage${stage}-${mode}.js`);
   fs.writeFileSync(entry,`
@@ -48,8 +57,8 @@ globalThis.__tsstg_game={
     assert.equal(state.stats.spell,mode==='spell');assert.ok(state.stats.meshCalls>0&&state.stats.meshCalls<=7);
     runs.push({backend,state,pngSha256:hash(prefix+'.png'),log:(child.stdout??'').trim()});
   }
-  if(runs.length===2){assert.deepEqual(runs[0].state,runs[1].state);assert.equal(runs[0].pngSha256,runs[1].pngSha256);}
+  if(runs.length===2){compareState(runs[0].state,runs[1].state);assert.equal(runs[0].pngSha256,runs[1].pngSha256);}
   results.push({stage,mode,runs});console.log(`PASS stage ${stage} ${mode}`);
 }
-fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({passed:true,sourceSha256:hash(path.join(root,'src/background.js')),
-  binarySha256:hash(binary),results,scope:'Original world-space meshes, camera, painter ordering, portrait viewport and backend parity. No original executable run.'},null,2)+'\n');
+fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({passed:true,sourceSha256:hash(path.join(root,'src/background.js')),artManifestSha256:hash(path.join(root,'assets/art-manifest.json')),
+  binarySha256:hash(binary),results,stateComparison:'Exact keys, integers and nonnumeric values; relative 1e-12 tolerance for camera trigonometry. PNG hashes must be identical.',scope:'Original world-space textured planes, camera, painter ordering, portrait viewport and backend parity. No original executable run.'},null,2)+'\n');

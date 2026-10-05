@@ -1,0 +1,57 @@
+{
+  "tool": "Built-in image_gen",
+  "date": "2026-10-05",
+  "treatment": "Original RGBA PNG copied byte-for-byte; pixel values were not modified. Runtime directly samples measured atlas UV bounds.",
+  "prompts": "SCENERY-PROMPTS.json",
+  "assets": [
+    {
+      "path": "assets/scenery/stage01-atlas.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1083a-2845-7ba2-aff8-a897ac7768ea/exec-234669a8-c698-40e4-bd50-de4d32851bbe.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "c0310081a4f23af311ddedc5f05f998db337b7d9a6595f8de3b62f1fb292bb2e"
+    },
+    {
+      "path": "assets/scenery/stage02-atlas.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1083a-2845-7ba2-aff8-a897ac7768ea/exec-6a297e76-43d5-404d-ba77-cbc255a5952e.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "1b4c9216a15b3ab4a1473f9391c7649b226b319156d081a4cc5b829ae8a64243"
+    },
+    {
+      "path": "assets/scenery/stage03-atlas.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1083a-2845-7ba2-aff8-a897ac7768ea/exec-496c422b-e360-4c03-922b-fd007044d6b6.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "ad46cba6e0f242682afc9eaf043804c998df571fc329e13c337c5829b89ce080"
+    },
+    {
+      "path": "assets/scenery/stage04-atlas.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1083a-2845-7ba2-aff8-a897ac7768ea/exec-7530897e-ce41-4d90-a2e5-7b48052587b9.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "844b669dc93254a721a4ea58aa59705d96f3c5d9d17d56e317a35aba85733f21"
+    },
+    {
+      "path": "assets/scenery/stage05-atlas.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1083a-2845-7ba2-aff8-a897ac7768ea/exec-69ceec1e-b57d-407b-b9fc-2acdfd4af19f.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "50d3488a63e9f5f141aac46ea12ac744d0a0c7ec33b0863f8c3311ca3da07826"
+    },
+    {
+      "path": "assets/scenery/stage06-atlas.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1083a-2845-7ba2-aff8-a897ac7768ea/exec-a18021c4-9ef9-4f1a-9a1f-408bacba1e89.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "49ebab816d92757fe9c8aa750631f535b0428661319bf246594c546dd54a9b8c"
+    },
+    {
+      "path": "assets/scenery/stage07-atlas.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1083a-2845-7ba2-aff8-a897ac7768ea/exec-df3e9327-7a89-4c50-93d5-0bb0ff7ef255.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "9b0b7d0ed00de2a35068547f9fdce5eb051e49c8898eba79b9e94bec9301cfd4"
+    }
+  ]
+}

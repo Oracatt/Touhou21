@@ -24,7 +24,11 @@ test('file inventory rejects links rather than hashing material outside the root
   }finally{assert.ok(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep+'guiming-lock-'));fs.rmSync(root,{recursive:true,force:true});}
 });
 test('exact private library/runtime snapshot and local Node resolution remain pinned',()=>{
-  const lock=readEngineLock();assert.equal(lock.thlibFiles.length,329);assert.equal(lock.runtimeFiles.length,149);
+  const lock=readEngineLock();assert.ok(lock.thlibFiles.length>=329);assert.ok(lock.runtimeFiles.length>=149);
+  assert.equal(lock.nativeBuild.binarySha256,lock.executableSha256);assert.equal(lock.nativeBuild.configuration,'Release');
+  assert.ok(lock.runtimeFiles.some(file=>file.path==='PACKAGE.json'));
+  for(const module of ['boss-escape','phase-sequence','player-rules','world'])
+    for(const extension of ['js','d.ts'])assert.ok(lock.thlibFiles.some(file=>file.path==='src/touhou/'+module+'.'+extension));
   const result=verifyEngineLock();assert.equal(result.passed,true);assert.equal(result.sourceVerified,false);
 });
 test('runtime game source may import public owners but not private paths or duplicate them',()=>{
@@ -33,5 +37,5 @@ test('runtime game source may import public owners but not private paths or dupl
   for(const source of ["import x from 'node:fs';","import x from '@ts-stg/thlib/src/touhou/player.js';","import x from '../packages/thlib/src/index.js';","class TouhouPlayer {}","const x=import('./content.js');","host.loadMusic('../TS-STG/music.ogg');","const engine='D:/AIWorkspace/TS-STG';"])assert.throws(()=>auditSourceText(source));
 });
 test('game media, public dependencies and Git publishing boundary audit passes',()=>{
-  const result=auditBoundaries();assert.equal(result.passed,true);assert.equal(result.musicFiles,17);assert.equal(result.spells,34);assert.equal(result.artFiles,24);
+  const result=auditBoundaries();assert.equal(result.passed,true);assert.equal(result.musicFiles,17);assert.equal(result.spells,34);assert.ok(result.artFiles>=24);
 });

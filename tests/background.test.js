@@ -3,11 +3,12 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {DrawList} from '@ts-stg/thlib';
 import {BACKGROUND_VIEWPORT,StageBackground,cameraForStage,lookAt3d,multiply3d,perspective3d,project3d,transform3d,viewport3d} from '../src/background.js';
+import {SCENERY_ATLASES,sceneryRegion} from '../src/background-art.js';
 
 const close=(a,b,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`${a} != ${b}`);
 function artFixture(){
-  const unloads=[];
-  return{unloads,host:{createTexture:()=>91,unloadTexture:id=>unloads.push(id)},load:()=>({id:92,width:1,height:1}),
+  const unloads=[],loads=[];
+  return{unloads,loads,host:{createTexture:()=>{throw new Error('Scenery must use generated PNGs');},unloadTexture:id=>unloads.push(id)},load:path=>{loads.push(path);return{id:92,width:1024,height:1024};},
     background(draw){draw.rect(48,24,576,672,0x12343dff);}};
 }
 
@@ -41,11 +42,11 @@ test('clip coordinates map exactly onto the portrait playfield, outside the side
   assert.equal(BACKGROUND_VIEWPORT.canvasHeight,720);
 });
 
-test('all seven roads and spell arenas contain distinct volumetric landmarks',()=>{
+test('seven material-atlas roads and spell sets have distinct 3D landmarks and world depth',()=>{
   const background=new StageBackground({art:artFixture()}),roads=new Set(),arenas=new Set();
   const expected=['torii','bamboo','arched-bridge','loom','bookshelf','name-pillar','mirror-pillar'];
   for(let id=1;id<=7;id++){
-    background.setStage(id);assert.ok(background.geometry.features.has(expected[id-1]),`${id}/${expected[id-1]}`);
+    background.setStage(id);assert.ok(background.geometryVariants.some(mesh=>mesh.features.has(expected[id-1])),`${id}/${expected[id-1]}`);
     assert.ok(background.spellGeometry.features.has(expected[id-1]),`${id}/spell/${expected[id-1]}`);
     for(const [mesh,signatures] of [[background.geometry,roads],[background.spellGeometry,arenas]]){
       signatures.add(createHash('sha256').update(JSON.stringify(mesh.vertices)).digest('hex'));
@@ -71,9 +72,9 @@ test('native draw commands have valid UVs, finite MVPs and cached static vertice
   for(let id=1;id<=7;id++)for(const active of [false,true]){
     const draw=new DrawList();background.draw(draw,{frame:480,spell:{active}},{stage:id});
     const meshes=draw.commands.filter(command=>command[0]==='mesh3d');
-    assert.equal(meshes.length,active?1:7);assert.ok(background.stats.vertices<=10500);
+    assert.equal(meshes.length,active?1:7);assert.ok(background.stats.vertices<=600);
     for(const [,texture,vertices,indices,mvp] of meshes){
-      assert.equal(texture,91);assert.equal(mvp.length,16);assert.ok(mvp.every(Number.isFinite));
+      assert.equal(texture,92);assert.equal(mvp.length,16);assert.ok(mvp.every(Number.isFinite));
       assert.ok(vertices.every(v=>v.length===6&&v.every(Number.isFinite)&&v[3]>=0&&v[3]<=1&&v[4]>=0&&v[4]<=1));
       assert.ok(indices.length>0&&indices.length%3===0);
       assert.ok(indices.every(index=>Number.isInteger(index)&&index>=0&&index<vertices.length));
@@ -81,19 +82,21 @@ test('native draw commands have valid UVs, finite MVPs and cached static vertice
       assert.ok(cachedMeshes.some(mesh=>[...mesh.fogCache.values()].some(cached=>cached[0]===vertices[0])),'static vertices were rebuilt');
     }
     const source=background.geometry.vertices;background.setStage(id);assert.equal(background.geometry.vertices,source);
+    assert.ok(!draw.commands.some(command=>command[0]==='scissor'||command[0]==='scissorEnd'),'public compositor owns clipping');
   }
   background.destroy();
 });
 
-test('painter order includes translucent billboards without separate foreground overlays',()=>{
+test('painted cutouts and their ground share the same distance-sorted batch',()=>{
   const background=new StageBackground({art:artFixture()});background.setStage(5);
-  const mesh=background.geometry,forward=[.13,-.21,.97],extra={center:[0,8,13],indices:[0,1,2,0,2,3]};
-  const indices=mesh.orderedIndices(forward,[extra]);
-  const order=[],faces=mesh.faces.concat([{center:extra.center,indices:extra.indices.map(index=>index+mesh.vertices.length)}]);
+  const mesh=background.geometry,forward=[.13,-.21,.97];
+  const indices=mesh.orderedIndices(forward);
+  const order=[],layers=[],faces=mesh.faces;
   const byFirstIndex=new Map(faces.map(face=>[face.indices[0],face]));
-  for(let i=0;i<indices.length;){const face=byFirstIndex.get(indices[i]);assert.ok(face);order.push(face.center.reduce((sum,value,axis)=>sum+value*forward[axis],0));i+=face.indices.length;}
-  for(let i=1;i<order.length;i++)assert.ok(order[i]<=order[i-1]+1e-12);
-  assert.ok(indices.some(index=>index>=mesh.vertices.length));background.destroy();
+  for(let i=0;i<indices.length;){const face=byFirstIndex.get(indices[i]);assert.ok(face);order.push(face.center.reduce((sum,value,axis)=>sum+value*forward[axis],0));layers.push(face.layer);i+=face.indices.length;}
+  for(let i=1;i<order.length;i++){assert.ok(layers[i]>=layers[i-1]);if(layers[i]===layers[i-1])assert.ok(order[i]<=order[i-1]+1e-12);}
+  assert.ok(mesh.faces.some(face=>face.region==='ground'));assert.ok(mesh.faces.some(face=>face.region==='detail'));
+  assert.ok(mesh.faces.some(face=>face.region==='landmark'));background.destroy();
 });
 
 test('near-plane crossings remain homogeneous and bounded through the entire tile seam',()=>{
@@ -110,10 +113,50 @@ test('near-plane crossings remain homogeneous and bounded through the entire til
   background.destroy();
 });
 
-test('stage change releases CPU scenery caches; destruction only unloads the owned material once',()=>{
+test('stage changes release CPU scenery and leave borrowed texture ownership to GameArt',()=>{
   const art=artFixture(),background=new StageBackground({art});background.setStage(1);
   const mesh=background.geometry;background.draw(new DrawList(),{frame:200});assert.ok(mesh.fogCache.size>0);
   background.setStage(2);assert.notEqual(background.geometry,mesh);assert.notEqual(background.spellGeometry.label,'stage1-spell');
-  background.destroy();background.destroy();assert.deepEqual(art.unloads,[91]);
+  background.destroy();background.destroy();assert.deepEqual(art.unloads,[]);
+  assert.deepEqual(art.loads,['assets/scenery/stage01-atlas.png','assets/scenery/stage02-atlas.png']);
   assert.throws(()=>background.draw(new DrawList(),{frame:0}),/destroyed/);
+});
+
+test('the ground UV is continuous at every subdivision and atlas cells cannot sample their neighbours',()=>{
+  const background=new StageBackground({art:artFixture()});
+  for(let id=1;id<=7;id++){
+    background.setStage(id);
+    for(const mesh of [background.geometry,background.spellGeometry]){
+      const floors=mesh.faces.filter(face=>face.region==='ground');
+      for(let i=1;i<floors.length;i++){
+        const a=mesh.vertices[floors[i-1].indices[2]],b=mesh.vertices[floors[i].indices[0]];
+        close(a[2],b[2]);close(a[4],b[4]);
+      }
+    }
+    for(const region of ['ground','landmark','edge','detail']){
+      const [u0,v0,u1,v1]=sceneryRegion(id,region);assert.ok(u0<u1&&v0<v1);
+      assert.ok(Math.min(u0,u1)>=0&&Math.max(u0,u1)<=1&&Math.min(v0,v1)>=0&&Math.max(v0,v1)<=1);
+      for(const value of [u0,v0,u1,v1])assert.notEqual(value,.5,'bilinear texture reads could leak from neighbouring cells');
+    }
+  }
+  assert.equal(new Set(SCENERY_ATLASES.map(asset=>asset.path)).size,7);background.destroy();
+});
+
+test('all scene faces sample an authored atlas cell, including walls facing into a 3D corridor',()=>{
+  const background=new StageBackground({art:artFixture()});
+  for(let id=1;id<=7;id++){
+    background.setStage(id);
+    for(const mesh of [...background.geometryVariants,background.spellGeometry])for(const face of mesh.faces){
+      const [u0,v0,u1,v1]=sceneryRegion(id,face.region);
+      for(const index of new Set(face.indices)){const v=mesh.vertices[index];assert.ok(v[3]>=u0&&v[3]<=u1&&v[4]>=v0&&v[4]<=v1);}
+    }
+  }
+  background.setStage(5);
+  const shelves=background.geometry.faces.filter(face=>face.tag==='bookshelf');assert.equal(shelves.length,6);
+  for(const face of shelves){
+    const points=[...new Set(face.indices)].map(i=>background.geometry.vertices[i]);
+    assert.ok(Math.max(...points.map(p=>p[0]))-Math.min(...points.map(p=>p[0]))<.001,'bookshelf must face into the corridor, not face the camera');
+    assert.ok(Math.max(...points.map(p=>p[2]))-Math.min(...points.map(p=>p[2]))>16,'wall has actual world-space depth');
+  }
+  background.destroy();
 });

@@ -117,6 +117,18 @@ Assert-InventoryDigest $lock.thlibFiles $lock.thlibSha256
 Assert-InventoryDigest $lock.runtimeFiles $lock.runtimeSha256
 $commit = (& git -C $engineRoot rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $commit -ne $lock.commit) { throw 'Engine source commit differs from lock.' }
+$sourceChanges = @(& git -C $engineRoot status --porcelain)
+if ($LASTEXITCODE -ne 0 -or $sourceChanges.Count -ne 0) { throw 'Source engine has local modifications; no dependency files were changed.' }
+if ($lock.PSObject.Properties.Name -contains 'nativeBuild') {
+    Assert-InventoryDigest $lock.nativeBuild.sourceFiles $lock.nativeBuild.sourceSha256
+    foreach ($entry in $lock.nativeBuild.sourceFiles) { Assert-File (Resolve-ListedPath $engineRoot $entry.path) $entry 'Native build source' }
+    foreach ($entry in @($lock.nativeBuild.hostObject, $lock.nativeBuild.dependencyLog)) {
+        $evidenceFile = Resolve-ListedPath $engineRoot $entry.source
+        if ((Get-FileHash -LiteralPath $evidenceFile -Algorithm SHA256).Hash.ToLowerInvariant() -ne $entry.sha256) {
+            throw 'Native compiler evidence differs from the locked build.'
+        }
+    }
+}
 
 $sourceLibrary = Resolve-ListedPath $engineRoot 'packages/thlib'
 $libraryTarget = Assert-OwnedPath (Join-Path $projectRoot 'packages/thlib')

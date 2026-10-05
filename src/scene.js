@@ -158,7 +158,9 @@ export class CampaignScene extends TouhouGame {
     for(const bullet of this.bullets.bullets)if(bullet.state)this.bullets.retire(bullet);this.bullets.bullets.length=0;
     for(const laser of this.lasers.lasers)if(laser.alive)this.lasers.retire(laser);this.lasers.lasers.length=0;
     for(const item of this.items.items)if(item.state)this.items.retire(item);this.items.items.length=0;
-    for(const enemy of this.enemies){enemy.animation.destroy();for(const effect of enemy.effects)effect.destroy();}this.enemies.length=0;this.context.enemies=this.enemies;
+    // Retire through the facade so registered Boss holds, exits and actor-owned
+    // sequences cannot survive the covered stage transition.
+    for(const enemy of [...this.enemies])this.removeBoss(enemy);this.enemies.length=0;this.context.enemies=this.enemies;
     this.bossPresentation.stopCombat();this.bossPresentation.clearBoss();
   }
   openGameOver(mask=0){this.session.highScore=Math.max(this.session.highScore??0,this.player.highScore,this.player.score);return super.openGameOver(mask);}

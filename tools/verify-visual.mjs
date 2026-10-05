@@ -20,6 +20,7 @@ const cases=[
   {id:'scene-cover',preRoll:18,actions:[{frame:0,type:'play'}]},
   {id:'scene-reveal',preRoll:60,actions:[{frame:0,type:'play'}]},
   {id:'road',options:base,preRoll:480},
+  ...STAGES.map(stage=>({id:`road-${stage.id}`,options:{...base,mode:'stage-practice',stageId:stage.id,difficulty:stage.id===7?4:1},preRoll:1200})),
   {id:'black-fog',options:{...base,skipRoad:true},preRoll:28},
   {id:'dialogue-reimu',options:{...base,skipRoad:true},until:{state:'dialogue'},phaseRoll:80},
   {id:'dialogue-marisa',options:{...base,character:1,skipRoad:true,stageId:6,mode:'stage-practice'},until:{state:'dialogue'},phaseRoll:80},
@@ -66,4 +67,4 @@ for(const scenario of cases.filter(value=>!filter||filter.includes(value.id))){
   if(runs.length===2){assert.deepEqual(parity(runs[0].state),parity(runs[1].state),`${scenario.id} state parity`);if(!backendLabel)assert.equal(runs[0].pngSha256,runs[1].pngSha256,`${scenario.id} pixels parity`);}
   report.push({id:scenario.id,passed:true,pixelComparison:backendLabel?'Backend name intentionally differs':'Exact PNG equality',runs});console.log(`PASS ${scenario.id}`);
 }
-fs.writeFileSync(path.join(out,filter?'selected-report.json':'report.json'),JSON.stringify({passed:true,binarySha256:sha(path.join(root,'runtime/ts-stg.exe')),cases:report},null,2)+'\n');
+fs.writeFileSync(path.join(out,filter?'selected-report.json':'report.json'),JSON.stringify({passed:true,binarySha256:sha(path.join(root,'runtime/ts-stg.exe')),gameSourceSha256:Object.fromEntries(fs.readdirSync(path.join(root,'src')).filter(name=>name.endsWith('.js')).map(name=>[name,sha(path.join(root,'src',name))])),artManifestSha256:sha(path.join(root,'assets/art-manifest.json')),cases:report},null,2)+'\n');

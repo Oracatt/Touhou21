@@ -36,7 +36,7 @@ function prepare(){
   }
 }
 globalThis.__tsstg_game={
-  update(mask){nativeFrames++;if(!ready)prepare();else if(scenario.live)advance(mask);},
+  update(){nativeFrames++;if(!ready)prepare();else if(scenario.live)advance();},
   render:()=>ready&&(!scenario.captureFrame||nativeFrames===scenario.captureFrame)?application.render():[],
   snapshot(){if(!ready)throw new Error('QA frame budget exhausted');return application.snapshot();},
 };

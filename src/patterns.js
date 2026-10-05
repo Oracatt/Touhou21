@@ -289,12 +289,138 @@ export function updateNonspellPattern({game,boss,frame,difficulty=1,stageId=1,ph
   if(c.d.rank>=2&&c.every(150))c.fan(b.x,b.y,5,3.2,undefined,.07,3,15);
 }
 
-export function updateRoadEnemy({game,enemy,frame,difficulty=1,stageId=1,variant=0}){
-  const d=DIFFICULTY_PROFILES[difficulty]??DIFFICULTY_PROFILES[1],period=Math.max(38,Math.round((100-variant*9)*d.interval));
-  if(frame<38||frame%period!==0)return;
-  const angle=Math.atan2(game.player.y-enemy.y,game.player.x-enemy.x);
-  game.bullets.emit({x:enemy.x,y:enemy.y,pattern:variant%3===2?3:1,count:Math.max(2,Math.round((3+stageId+variant)*d.density)),
-    angle:variant%3===2?frame*.011:angle,angleStep:.11,speed:(1.5+stageId*.14)*d.speed,type:variant%2?3:0,
-    color:[2,6,12,4,1,14,7][stageId-1],commands:[birth,...(stageId>=4?[curve((variant%2?1:-1)*.004,80)]:[])],
-    minimumPlayerDistanceSquared:2304});
+export const ROAD_ATTACKS=Object.freeze([
+  'lantern-aim','ember-petals','wing-cross','rain-columns','rain-sweep','rain-stagger',
+  'ferry-current','ferry-cross','wake-chase','weft-thread','weaver-needle','memory-knot',
+  'paper-columns','paper-fold','seal-corners','bell-strike','bell-reply','bell-chorus',
+  'echo-stencil','echo-reverse','echo-chase',
+]);
+
+/** Road attacks are finite volleys tied to a body's route, rather than one
+ * timer-driven fan shared by every stage. Boss choreography above is separate. */
+export function updateRoadEnemy({game,enemy,frame:t,difficulty=1,stageId=1,attack,state={},index=0,side=1,onAttack}){
+  if(!ROAD_ATTACKS.includes(attack))throw new RangeError(`Undefined road attack ${attack}`);
+  const rank=Math.min(3,difficulty),d=DIFFICULTY_PROFILES[difficulty]??DIFFICULTY_PROFILES[1],x=enemy.x,y=enemy.y;
+  const at=(...times)=>times.includes(t),aim=()=>Math.atan2(game.player.y-y,game.player.x-x),down=Math.PI/2;
+  const report=(mechanism,parameters)=>onAttack?.({attack,mechanism,enemyId:enemy.id,stageId,age:t,...parameters});
+  let sounded=false;
+  const shot=(angle,speed,count=1,spread=.1,type=0,color=1,commands=[],mechanism='direct',origin={x,y})=>{
+    const parameters={...origin,angle,speed:speed*d.speed,pattern:1,count,angleStep:spread,type,color,
+      commands:[birth,...commands],shotSound:sounded?-1:21,minimumPlayerDistanceSquared:4096};
+    sounded=true;report(mechanism,parameters);return game.bullets.emit(parameters);
+  };
+  const beam=(angle,color=6,offset=0)=>{const p={x:x+offset,y,angle,width:5,length:560,color,type:0,delay:70,grow:18,sustain:55,shrink:22,sound:26};report('telegraphed-laser',p);return game.lasers.spawnInfinite(p);};
+  const count=base=>Math.max(1,base+(rank===0?-1:rank===3?1:0));
+  switch(attack){
+    case 'lantern-aim':
+      if(at(64,112,173)){shot(aim(),2.25,count(2),.07,0,2,[],'aimed-stream');
+        if(rank>=1)shot(down+side*.32,1.6,2,.2,3,12,[],'fixed-wing');
+        if(rank>=2)shot(aim()-side*.34,1.75,3,.12,0,14,[turn(side*.55,2.45,48)],'turning-wing');}
+      if(rank===3&&at(138,204))shot(aim(),2.7,2,.04,5,1,[],'offbeat-snipe');break;
+    case 'ember-petals':
+      if(at(91,145,202)){for(let petal=0;petal<(rank===0?3:5);petal++){
+        const a=down+(petal-2)*.31+side*(t===145?.12:-.12);
+        shot(a,1.55,count(2),.055,0,12,[curve(side*.007,95)],'curved-petals');}
+        if(rank>=1)shot(aim(),2.6,1,0,5,2,[],'petal-center-snipe');
+        if(rank>=2)shot(down,1.8,3,.23,3,1,[turn(-side*.65,2.7,60)],'folding-embers');}
+      if(rank===3&&at(175))shot(down,0,5,.22,2,14,[turn(down-side*.4,2.65,38,4)],'delayed-embers');break;
+    case 'wing-cross':
+      if(at(54,94,138)){shot(down+side*.64,2.05,count(4),.09,3,2,rank>=2?[turn(-side*.3,2.35,50)]:[],'crossing-wings');
+        if(rank>=1&&t===94)shot(aim(),2.7,1,0,5,12,[],'cross-snipe');}
+      if(rank===3&&at(170))shot(down-side*.45,2.5,4,.06,0,1,[],'counter-cross');break;
+    case 'rain-columns':
+      if(at(55,84,115,151,190)){shot(down,2.05,rank===0?1:2,.07,3,6,rank>=2?[curve(side*.006,100)]:[],'vertical-rain');
+        if(rank>=1&&at(115,190))shot(down-side*.25,1.65,2,.06,0,7,[],'slanted-rain');
+        if(rank===3&&t===151)shot(down,0,3,.1,3,15,[turn(down+side*.35,2.75,38,4)],'late-rain');}break;
+    case 'rain-sweep':
+      if(at(52,79,107,139,170)){state.aim??=aim();shot(state.aim+side*(t-107)*.004,2.3,count(2),.08,0,6,[],'swept-address');
+        if(rank>=1&&at(79,139))shot(down-side*.45,1.85,2,.12,3,7,[],'crosswind');
+        if(rank>=2&&t===107)shot(state.aim,1.15,4,.1,2,15,[turn(down+side*.42,2.55,55,4)],'wind-change');}
+      if(rank===3&&at(196))shot(state.aim??aim(),2.9,3,.04,5,6,[],'last-delivery');break;
+    case 'rain-stagger':
+      if(at(88,147,211)){state.aim=aim();for(let lane=0;lane<count(4);lane++)shot(state.aim+(lane-1.5)*.2,0,1,0,2,7,
+        [turn(down+side*(lane-1.5)*.12,2.2,35+lane*13,4)],'staggered-release');
+        if(rank>=1)shot(down,1.9,3,.24,3,6,[],'rain-frame');
+        if(rank>=2)shot(state.aim,2.1,3,.085,0,15,[curve(-side*.014,78)],'curling-letter');}
+      if(rank===3&&at(177))shot(aim(),2.75,3,.065,5,7,[],'receipt-snipe');break;
+    case 'ferry-current':
+      if(at(62,102,145,191)){shot(down+side*.4,1.95,count(3),.095,0,6,[curve(-side*.009,110)],'water-current');
+        if(rank>=1&&at(102,191))shot(down-side*.32,1.7,2,.12,3,12,[curve(side*.006,95)],'counter-current');
+        if(rank>=2&&t===145)shot(down,1.8,3,.17,2,7,[turn(side*.65,2.5,65)],'river-bend');}
+      if(rank===3&&at(228))shot(aim(),2.9,2,.05,5,14,[],'boat-wake-snipe');break;
+    case 'ferry-cross':
+      if(at(48,86,127,167)){shot(side<0?.48:Math.PI-.48,2.4,count(3),.065,3,12,
+        [turn(down,2.1,rank>=2?42:62,4)],'cross-then-down');
+        if(rank>=1&&at(86,167))shot(aim(),2.8,1,0,0,6,[],'ferry-snipe');
+        if(rank>=2&&t===127)shot(down-side*.45,1.6,3,.14,2,14,[curve(side*.011,90)],'sluice-return');}
+      if(rank===3&&at(200))shot(down+side*.4,2.6,4,.08,3,7,[],'second-crossing');break;
+    case 'wake-chase':
+      if(at(75,106,144,187)){if(t===75)state.aim=aim();shot(state.aim??aim(),1.95+(t-75)*.004,count(2),.065,0,14,[],'remembered-wake');
+        if(rank>=1&&at(106,187))shot(down+side*.3,1.8,3,.1,3,6,[],'wake-sides');
+        if(rank>=2&&t===144)shot(state.aim,1.1,3,.085,2,7,[turn(side*.55,2.65,60)],'wake-turn');}
+      if(rank===3&&at(220))shot(aim(),2.95,3,.06,5,12,[],'fresh-wake');break;
+    case 'weft-thread':
+      if(at(47,77,109,147,185)){shot(down+side*.68,2.15,count(3),.07,3,4,[],'diagonal-weft');
+        if(rank>=1&&at(77,147))shot(down-side*.3,1.75,2,.16,0,6,[],'vertical-warp');
+        if(rank>=2&&t===109)shot(down+side*.6,1.3,4,.1,2,15,[turn(-side*.75,2.4,55)],'folded-thread');}
+      if(rank===3&&at(212))shot(down-side*.55,2.4,4,.1,3,4,[],'cross-weft');break;
+    case 'weaver-needle':
+      if(at(76,124,176)){shot(aim(),2.8,count(2),.045,3,4,[],'needle-snipe');
+        if(rank>=1)shot(down+side*.4,1.55,4,.12,0,15,[],'needle-trail');
+        if(rank>=2&&t===124)beam(down-side*.28,6);}
+      if(rank===3&&at(208))shot(down,0,5,.16,2,4,[turn(down+side*.4,2.5,42,4)],'sleeping-needles');break;
+    case 'memory-knot':
+      if(at(91,158,223)){for(let k=0;k<count(5);k++){const a=k*TAU/5,origin={x:x+Math.cos(a)*24,y:y+Math.sin(a)*24};
+        shot(down+(k-2)*.18,0,1,0,2,4,[turn(down+(k-2)*.14,2.05,25+k*12,4)],'five-point-knot',origin);}
+        if(rank>=1)shot(aim(),2.5,2,.055,3,6,[],'knot-center');
+        if(rank>=2)shot(down,1.4,4,.2,0,15,[curve(side*.013,120)],'curling-weft');}
+      if(rank===3&&at(190))beam(down+side*.36,4);break;
+    case 'paper-columns':
+      if(at(80,123,172,220)){shot(down,1.95,count(3),.045,3,15,[],'index-column');
+        if(rank>=1&&at(123,220))shot(down+side*.42,1.5,2,.065,2,1,[],'annotation');
+        if(rank>=2&&t===172)shot(down,0,4,.1,3,15,[turn(down-side*.35,2.4,30+index*5,4)],'delayed-index');}
+      if(rank===3&&at(248))shot(aim(),2.8,3,.05,5,1,[],'index-snipe');break;
+    case 'paper-fold':
+      if(at(59,97,140,180)){shot(down+side*.66,2.15,count(4),.08,3,15,[turn(-side*.8,2.35,55)],'folded-paper');
+        if(rank>=1&&at(97,180))shot(down-side*.45,1.5,3,.12,2,1,[],'opposite-page');
+        if(rank>=2&&t===140)shot(aim(),2.75,3,.055,0,12,[],'margin-snipe');}
+      if(rank===3&&at(208))shot(down-side*.3,1.9,3,.1,3,15,[curve(side*.014,110)],'curled-margin');break;
+    case 'seal-corners':
+      if(at(93,164,231)){for(const corner of[-1,1])for(const row of[-1,1])shot(down+corner*.36,1.55,count(2),.065,2,1,
+        rank>=2?[turn(-corner*.55,2.25,58)]:[],'square-seal',{x:x+corner*28,y:y+row*24});
+        if(rank>=1)shot(aim(),2.65,2,.07,3,15,[],'seal-center');}
+      if(rank===3&&at(198))shot(down,0,5,.14,0,12,[turn(down-side*.45,2.5,40,4)],'late-stamp');break;
+    case 'bell-strike':
+      if(at(65,118,178)){for(let note=0;note<(rank===0?2:3);note++)shot(down+(note-1)*.23,1.6+note*.36,2,.055,0,14,[],'three-note-chord');
+        if(rank>=1)shot(aim(),2.45,1,0,5,12,[],'clear-note');
+        if(rank>=2)shot(down+side*.45,1.2,3,.09,2,7,[turn(-side*.7,2.45,58)],'bent-note');}
+      if(rank===3&&at(214))shot(down-side*.3,2.5,3,.065,3,14,[],'answer-note');break;
+    case 'bell-reply':
+      if(at(74,128,183)){if(t===74)state.aim=aim();shot(state.aim??aim(),2.3,count(2),.065,0,7,[],'remembered-answer');
+        if(rank>=1)shot(state.aim??aim(),0,2,.085,2,14,[turn(state.aim??aim(),2.6,42,4)],'delayed-answer');
+        if(rank>=2)shot(down-side*.5,1.6,3,.1,3,12,[curve(side*.012,98)],'side-voice');}
+      if(rank===3&&at(223))shot(aim(),2.95,2,.05,5,7,[],'new-answer');break;
+    case 'bell-chorus':
+      if(at(92,167,235)){for(let voice=0;voice<(rank===0?2:3);voice++)shot(down+(voice-1)*.35,1.5+voice*.25,count(3),.065,0,14,[],'chorus-voices');
+        if(rank>=1)beam(down+side*.25,12);
+        if(rank>=2)shot(aim(),1.35,4,.08,2,7,[turn(side*.65,2.7,55)],'chorus-turn');}
+      if(rank===3&&at(201))shot(down-side*.5,2.6,4,.075,3,14,[],'chorus-countervoice');break;
+    case 'echo-stencil':
+      if(at(84,145,214)){state.aim=aim();for(let cell=0;cell<count(4);cell++)shot(down+(cell-1.5)*.18,0,1,0,3,15,
+        [turn(down-side*.4,2.1,30+cell*14,4),turn(side*.75,2.75,75)],'echo-stencil');
+        if(rank>=1)shot(state.aim,2.4,2,.065,0,4,[],'stencil-center');
+        if(rank>=2)shot(down+side*.42,1.6,3,.1,2,6,[curve(-side*.014,110)],'stencil-return');}
+      if(rank===3&&at(180))beam(down-side*.28,4);break;
+    case 'echo-reverse':
+      if(at(55,98,146,194)){shot(down+side*.55,1.9,count(4),.08,0,4,[curve(-side*.012,110)],'reversed-current');
+        if(rank>=1)shot(down-side*.4,1.55,2,.12,3,6,[turn(side*.8,2.35,65)],'reverse-fold');
+        if(rank>=2&&at(98,194))shot(aim(),0,3,.065,2,15,[turn(aim(),2.8,36,4)],'late-old-name');}
+      if(rank===3&&at(224))shot(down-side*.62,2.55,4,.08,3,7,[],'counter-echo');break;
+    case 'echo-chase':
+      if(at(70,105,147,195)){state.aims??=[];state.aims.push(aim());if(state.aims.length>3)state.aims.shift();
+        shot(state.aims[0],2.15,count(2),.06,0,4,[],'oldest-aim');
+        if(rank>=1)shot(state.aims.at(-1),0,2,.06,2,6,[turn(state.aims.at(-1),2.65,45,4)],'late-new-aim');
+        if(rank>=2)shot(down+side*.5,1.5,3,.09,3,15,[turn(-side*.9,2.6,65)],'echo-crossing');}
+      if(rank===3&&at(226))shot(aim(),2.9,3,.05,5,7,[],'final-syllable');break;
+  }
 }

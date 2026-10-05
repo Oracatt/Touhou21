@@ -35,7 +35,8 @@ pwsh -NoProfile -File tools/setup-local.ps1 -VerifyOnly
 - 本篇六面包含完整道中、各面中 Boss、多段 Boss 战与 21 张符卡，提供 Easy / Normal / Hard / Lunatic 四种难度。
 - 任一自机在任一本篇难度不续关通关，即获得对应好结局并解锁 Extra。续关通关进入坏结局。
 - Extra 为独立固定难度，包含 3 张中 Boss 符卡、10 张主 Boss 符卡与双自机 Extra 结局。
-- 七个场景使用真实透视三维几何与动态相机：鸟居山路、雨竹溪流、渡口拱桥、织架庭院、立体书库、云端名柱与倒铃回廊。图片作为远景与纹理，场景建筑由 `mesh3d` 渲染；符卡具有独立三维背景。详见 [背景说明](docs/BACKGROUNDS.md)。
+- 七个场景使用绘制的地面纹理与透明建筑、植被面片构景：鸟居山路、雨竹溪流、渡口拱桥、织架庭院、书库、云端名柱与倒铃回廊。面片置于不同深度，通过透视相机、滚动和雾化形成空间；符卡另设场景布局与镜头。详见 [背景说明](docs/BACKGROUNDS.md)。
+- 道中采用七套独立的分段编队时间表，各面分别发展灯火、斜雨、双流水路、经纬针线、折页朱印、答铃与反向回声；移动路径、敌人分工、停顿与复合攻击随段落和难度变化。详见 [道中设计](docs/ROADS.md)。
 - 原创中文主菜单、九人立绘、七套 Boss 动画图集、剧情与结局、17 首原创合成 BGM，以及附带创作评语的音乐室。
 - 关卡练习开放已经到达的本篇关卡；符卡练习开放已经遇见的全部 34 张符卡，包括 Extra 中 Boss 的符卡。
 - 玩家记录包含最近 30 次结果，以及按自机、四难度 / Extra 分组的符卡成绩，分别统计实战与符卡练习的收取次数、尝试次数。
@@ -57,12 +58,12 @@ node tools/measure-performance.mjs
 
 `verify:engine` 检查本地私有依赖是否仍符合锁定快照；追加 `-- --check-source` 可同时检查本地源引擎。`audit` 检查业务导入、资源清单、依赖边界及 Git 排除规则。`verify` 以 V8 / QuickJS 实际运行完整流程；`verify:visual` 检查实际渲染画面。报告写入忽略的 `reports/`。自动通关验证用于检查流程、状态与两后端一致性，不能替代人工弹幕难度、画面和听感评测。
 
-默认 V8 的已测战斗每帧平均工作耗时为 2.81～3.78 ms。测试方法、QuickJS 对照与适用范围见 [性能实测](docs/PERFORMANCE.md)。
+默认后端为 V8；当前版本的实际场景耗时、QuickJS 对照与适用范围见 [性能实测](docs/PERFORMANCE.md)。
 
 实际验收项目、原生流程与画面报告范围见 [验收记录](docs/VERIFICATION.md)。
 
 ## 来源与许可
 
-本项目的原创代码与文档采用 [MIT 许可](LICENSE)。图像、音频、东方角色和私有依赖资源不包含在该许可授权范围内。新作图像由 imagegen 辅助制作，提示记录位于 `docs/ART-PROMPTS.json`、`docs/ART-ROOT-PROMPTS.json` 与 `docs/SPRITE-PROMPTS.json`；原创乐谱及合成实现记录于 [音乐说明](docs/MUSIC.md)、`assets/music/scores.json` 和 `tools/compose-music.mjs`。
+本项目的原创代码与文档采用 [MIT 许可](LICENSE)。图像、音频、东方角色和私有依赖资源不包含在该许可授权范围内。新作图像由 imagegen 辅助制作，立绘、标题和精灵的提示记录位于 `docs/ART-PROMPTS.json`、`docs/ART-ROOT-PROMPTS.json` 与 `docs/SPRITE-PROMPTS.json`，场景贴图来源记录见 [背景说明](docs/BACKGROUNDS.md)；原创乐谱及合成实现记录于 [音乐说明](docs/MUSIC.md)、`assets/music/scores.json` 和 `tools/compose-music.mjs`。
 
 thlib 私有快照中的公共弹幕、自机和 UI 等导入素材仍保留上海爱丽丝幻乐团 / ZUN 的原始权利与来源说明。“公共素材”指可供框架复用，不等于开源美术授权。本工作树不是可直接打包发行的商业资源授权包，公开源码应排除这些私有依赖；不包含锦上京的专属 Boss、魔石、舞台、标题画面或 BGM。具体发布边界及第三方许可见 [docs/RELEASE.md](docs/RELEASE.md)。

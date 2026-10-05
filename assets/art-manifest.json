@@ -189,6 +189,83 @@
       },
       "sha256": "7ae0f5bbc68e9a5ff0f6fe2284536cc7cda75b0e150ecb0babc3bfca1c1a46b1"
     },
+    "assets/scenery/stage01-atlas.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "c0310081a4f23af311ddedc5f05f998db337b7d9a6595f8de3b62f1fb292bb2e"
+    },
+    "assets/scenery/stage02-atlas.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1231,
+        "height": 1239
+      },
+      "sha256": "1b4c9216a15b3ab4a1473f9391c7649b226b319156d081a4cc5b829ae8a64243"
+    },
+    "assets/scenery/stage03-atlas.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1250,
+        "height": 1159
+      },
+      "sha256": "ad46cba6e0f242682afc9eaf043804c998df571fc329e13c337c5829b89ce080"
+    },
+    "assets/scenery/stage04-atlas.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1246,
+        "height": 1244
+      },
+      "sha256": "844b669dc93254a721a4ea58aa59705d96f3c5d9d17d56e317a35aba85733f21"
+    },
+    "assets/scenery/stage05-atlas.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1198,
+        "height": 1240
+      },
+      "sha256": "50d3488a63e9f5f141aac46ea12ac744d0a0c7ec33b0863f8c3311ca3da07826"
+    },
+    "assets/scenery/stage06-atlas.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1071,
+        "height": 1245
+      },
+      "sha256": "49ebab816d92757fe9c8aa750631f535b0428661319bf246594c546dd54a9b8c"
+    },
+    "assets/scenery/stage07-atlas.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1090,
+        "height": 1246
+      },
+      "sha256": "9b0b7d0ed00de2a35068547f9fdce5eb051e49c8898eba79b9e94bec9301cfd4"
+    },
     "assets/sprites/akari.png": {
       "width": 1774,
       "height": 887,

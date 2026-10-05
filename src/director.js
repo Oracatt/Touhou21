@@ -1,5 +1,6 @@
 import {TouhouBossPhasePlan,TouhouItemType,clearTouhouBossPhase,TouhouRNG} from '@ts-stg/thlib/touhou';
-import {updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern,updateRoadEnemy,STAGE_PATTERN_OFFSETS} from './patterns.js';
+import {updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern,STAGE_PATTERN_OFFSETS} from './patterns.js';
+import {createRoadPlan,spawnRoadFormation} from './roads.js';
 
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const MODES=new Set(['normal','extra','stage-practice','spell-practice']);
@@ -23,58 +24,43 @@ export class CampaignDirector{
   }
   attach(game){
     if(this.game)throw new Error('Director already attached');this.game=game;
-    this.originalStage=game.stage;this.originalEvent=game.onEvent;this.originalDefer=game.context.deferEnemyDefeat;
+    this.originalStage=game.stage;this.originalEvent=game.onEvent;
     this.originalInteraction={dialogue:game.context.dialogue,inputBlocked:game.context.inputBlocked,
       bossSuppressed:game.context.bossSuppressed,enemyContactBlocked:game.context.enemyContactBlocked};
     game.stage=(scene,frame)=>this.update(scene,frame);
     game.onEvent=(name,data)=>{this.onEvent(name,data,game);this.originalEvent?.(name,data);};
-    game.context.deferEnemyDefeat=(enemy,source)=>{
-      if(enemy!==this.boss)return this.originalDefer?.(enemy,source)??false;
-      if(this.state==='midboss-combat'){
-        if(this.midbossPhases?.length)this._finishMidbossPhase(game,{source});else this._finishMidboss(game,source);return true;}
-      if(this.state!=='combat')return true;
-      this._finishPhase(game,{defeated:true,source});return true;
-    };
     game.session.mode=this.mode==='spell-practice'?2:this.mode==='stage-practice'?1:0;
     game.spell.mode=game.session.mode;this._startStage(game);return this;
   }
   get stage(){return this.stages.find(stage=>stage.id===this.stageId);}
   get phase(){return this.phases[this.phaseIndex]??null;}
+  _onBossDefeated({boss,source}){
+    if(this.destroyed||boss!==this.boss)return;
+    if(this.state==='midboss-combat'){
+      if(this.midbossPhases?.length)this._finishMidbossPhase(this.game,{source});else this._finishMidboss(this.game,source);
+    }else if(this.state==='combat')this._finishPhase(this.game,{defeated:true,source});
+  }
   _startStage(game){
     const stage=this.stage;if(!stage)throw new RangeError(`Missing stage ${this.stageId}`);
     this.stageFrame=0;this.phaseFrame=0;this.phaseIndex=-1;this.midbossDone=false;this.boss=null;this.patternState={};
+    this.roadPlan=createRoadPlan(stage.id,stage.roadFrames);this.roadWaveIndex=0;this.roadSectionIndex=-1;
     game.session.stage=stage.id;game.spell.stage=stage.id;game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.context.dialogue=false;game.context.inputBlocked=false;
-    game.setBoss(null);game.stopBossCombat();this.callbacks.stageStart?.(stage);
+    game.setBoss(null);game.stopBossCombat();game.bossPresentation?.clearCharges();this.callbacks.stageStart?.(stage);
     this.callbacks.music?.(this.mode==='spell-practice'?stage.bgmBoss:stage.bgmStage);
     if(this.mode==='spell-practice')this._spawnBoss(game,{practice:true});else this.state='road';
   }
   _clear(game){
     clearTouhouBossPhase({x:this.boss?.x??0,y:this.boss?.y??128,cancelCircle:game.context.cancelCircle,
-      clearEnemies:()=>{for(const enemy of game.enemies)if(enemy!==this.boss&&enemy.alive){enemy.alive=false;enemy.animation.destroy();}
+      clearEnemies:()=>{for(const enemy of game.enemies)if(enemy!==this.boss&&enemy.alive)game.removeBoss(enemy);
         for(const enemy of game.enemies)if(enemy!==this.boss)for(const effect of enemy.effects??[])effect.destroy();},
-      stopAttack:()=>{this.patternState={};}});
+      stopAttack:()=>{this.patternState={};game.bossPresentation?.clearCharges();}});
   }
-  _spawnWave(game,variant){
-    const stageId=this.stageId,side=this.rng.unit()<.5?-1:1,number=variant===2?2:4+Math.min(3,stageId);
-    for(let i=0;i<number;i++){
-      const startX=variant===1?side*185:-160+i*320/Math.max(1,number-1),startY=-24-i*18;
-      const speed=1.05+stageId*.085,shootState={age:0};
-      const enemy=game.spawnEnemy({x:startX,y:startY,hp:115+stageId*35,radius:12,script:[0,5,10,15,25,53][(stageId+variant)%6],
-        deathBank:game.banks.effect,drop:[],damageInvulnerability:0,
-        onUpdate:actor=>{
-          if(this.state!=='road')return;const age=shootState.age++;
-          let x=startX,y=startY+age*speed;
-          if(variant===0)x=startX+22*Math.sin(age*.025+i*.8);
-          else if(variant===1){x=side*(185-age*.95);y=30+Math.sin(age*.011)*120+i*18;}
-          else{y=Math.min(100+i*45,startY+age*speed);if(age>245)y+=(age-245)*1.3;x=startX+40*Math.sin(age*.012);}
-          actorPosition(actor,x,y);updateRoadEnemy({game,enemy:actor,frame:age,difficulty:this.difficulty,stageId,variant});
-          if(age>420){actor.alive=false;actor.animation.destroy();}
-        },
-        onDefeat:actor=>game.items.spawnEnemyDrops(actor,{counts:{[TouhouItemType.POWER]:1,[TouhouItemType.POINT]:2},radius:18}),
-      });
-      enemy.kind='fairy';enemy.stageId=stageId;
-    }
+  _spawnRoadWave(game,wave){
+    const actors=spawnRoadFormation({game,wave,stageId:this.stageId,difficulty:this.difficulty,rng:this.rng,
+      isActive:()=>this.state==='road',canFire:()=>this.stageFrame<wave.fireUntil,onAttack:this.callbacks.roadAttack});
+    this.events.push({event:'road-wave',stage:this.stageId,waveId:wave.id,sectionId:wave.sectionId,
+      attack:wave.attack,formation:wave.formation,role:wave.role,count:actors.length,roadFrame:this.stageFrame,frame:this.totalClock});
   }
   _spawnMidboss(game){
     this._clear(game);this.midbossDone=true;this.state='midboss-enter';this.phaseFrame=0;
@@ -85,6 +71,7 @@ export class CampaignDirector{
     const hp=1900+this.stageId*350;
     const boss=game.spawnEnemy({x:150,y:20,hp,radius:16,script:30,directional:false,damageInvulnerability:0,
       deathBank:game.banks.effect,drop:[]});
+    game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
     boss.kind='midboss';boss.bossId=this.midbossSpec?.bossId??this.stage.bossId;boss.maximumHp=hp;boss.invulnerable=true;this.boss=boss;
     game.enterBoss(boss,{entrance:{mode:'flyIn',readyFrame:60,follow:boss}});
     game.setBossHud({name:this.stage.midbossName??this.stage.bossId,remainingSpells:0,dialogue:true,
@@ -94,7 +81,7 @@ export class CampaignDirector{
   _beginMidbossPhase(game,index){
     this.midbossPhaseIndex=index;this.phaseFrame=0;this.patternState={};this.state='midboss-combat';
     const phase=this.midbossPhases[index],boss=this.boss;boss.invulnerable=!!phase.spec.survival;
-    boss.prepareSpellHealth(phase.hp);boss.maximumHp=phase.hp;game.startBossCombat();
+    boss.prepareSpellHealth(phase.hp);boss.maximumHp=phase.hp;game.resumeBoss(boss);boss.invulnerable=!!phase.spec.survival;game.startBossCombat();
     game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({dialogue:false,remainingSpells:this.midbossPhases.length-index-1,
       healthBars:[{current:phase.hp,maximum:phase.hp,phaseHealth:phase.hp,markers:[],animateFill:false}]});
@@ -120,7 +107,7 @@ export class CampaignDirector{
     const boss=this.boss;this._clear(game);boss.invulnerable=true;
     game.items.spawnBossDrops(boss,{counts:{[TouhouItemType.LARGE_POWER]:2,[TouhouItemType.POINT]:5},centerType:TouhouItemType.BOMB_FRAGMENT});
     game.bossPresentation?.beginDeath({x:boss.x,y:boss.y,follow:null,delayFrames:0});
-    boss.defeat(source,{...game.context,deferEnemyDefeat:undefined,presentEnemyDeath:()=>true});
+    game.removeBoss(boss);
     game.stopBossCombat();game.setBoss(null);this.boss=null;
   }
   _buildPhases(){
@@ -145,6 +132,7 @@ export class CampaignDirector{
     this.phaseIndex=-1;this.phaseFrame=0;this.state='boss-enter';
     const boss=game.spawnEnemy({x:0,y:105,hp:this.phases[0].hp,radius:16,script:30,directional:false,
       deathBank:game.banks.effect,drop:[],damageInvulnerability:0});
+    game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
     boss.kind='boss';boss.bossId=this.phases[0].midboss?this.midbosses.find(entry=>entry.stageId===this.stageId)?.bossId??'fusae':this.stage.bossId;
     boss.invulnerable=true;this.boss=boss;
     game.enterBoss(boss,{entrance:{mode:practice?'flyIn':'blackFog',follow:boss}});
@@ -154,7 +142,7 @@ export class CampaignDirector{
   }
   _dialogue(game,kind,continuation,linesOverride=null){
     this.state='dialogue';this.dialogueKind=kind;this.dialogueContinuation=continuation;
-    game.stopBossCombat();game.context.bossSuppressed=true;game.context.enemyContactBlocked=true;
+    game.stopBossCombat();game.bossPresentation?.clearCharges();game.context.bossSuppressed=true;game.context.enemyContactBlocked=true;
     game.context.dialogue=true;game.context.inputBlocked=true;
     if(this.boss)this.boss.invulnerable=true;game.setBossHud({dialogue:true});
     const route=this.character?'marisa':'reimu',lines=linesOverride??this.stage.dialogues?.[route]?.[kind]??[];
@@ -172,6 +160,7 @@ export class CampaignDirector{
     this.phaseIndex=index;this.phaseFrame=0;this.patternState={};this.state='combat';const phase=this.phase,boss=this.boss;
     boss.primaryFlags&=~0x93;boss.invulnerable=!!phase.spec?.survival;
     boss.maximumHp=phase.hp;phase.spell?boss.prepareSpellHealth(phase.hp):boss.prepareNormalHealth(phase.hp);
+    game.resumeBoss(boss);boss.primaryFlags&=~0x93;boss.invulnerable=!!phase.spec?.survival;
     game.startBossCombat();game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({name:this.stage.bossName??this.stage.bossId,dialogue:false,...this.phasePlan.hudState(index)});
     // Ring fill must be finished before an attack begins. A shared ring carries
@@ -188,6 +177,7 @@ export class CampaignDirector{
     const phase=this.phase,final=this.phaseIndex===this.phases.length-1;
     if(final){
       this.state='boss-defeat';this.boss.invulnerable=true;this.finalResult={timeout,survival:!!phase.spec?.survival};
+      game.bossPresentation?.clearCharges();
       game.beginBossDefeat(this.boss,{source});this.finishing=false;return;
     }
     this.boss.invulnerable=true;
@@ -246,9 +236,14 @@ export class CampaignDirector{
     if(this.destroyed||this.completed)return;this.totalClock++;
     if(this.state==='road'){
       const t=this.stageFrame,roadFrames=this.stage.roadFrames;
-      if(t===0||t===Math.floor(roadFrames*.62))this.events.push({event:'road-section',stage:this.stageId,frame:this.totalClock});
-      if(t>80&&t%180===0&&t<roadFrames-180)this._spawnWave(game,Math.floor(t/540)%3);
-      if(t>900&&t%420===0&&t<roadFrames-240)this._spawnWave(game,(Math.floor(t/420)+1)%3);
+      while(this.roadSectionIndex+1<this.roadPlan.sections.length&&this.roadPlan.sections[this.roadSectionIndex+1].start<=t){
+        const section=this.roadPlan.sections[++this.roadSectionIndex];
+        this.events.push({event:'road-section',stage:this.stageId,sectionId:section.id,roadFrame:t,frame:this.totalClock});
+        this.callbacks.roadSection?.(section,{stage:this.stage,roadFrame:t});
+      }
+      while(this.roadWaveIndex<this.roadPlan.waves.length&&this.roadPlan.waves[this.roadWaveIndex].at<=t){
+        const wave=this.roadPlan.waves[this.roadWaveIndex++];if(wave.at===t)this._spawnRoadWave(game,wave);
+      }
       if(!this.midbossDone&&t>=(this.midbosses.find(entry=>entry.stageId===this.stageId)?.atFrame??Math.floor(roadFrames*.43))){this._spawnMidboss(game);return;}
       if(t>=roadFrames){this._spawnBoss(game);return;}this.stageFrame++;
     }else if(this.state==='midboss-enter'){
@@ -257,7 +252,7 @@ export class CampaignDirector{
       if(this.phaseFrame>=60&&game.bossPresentation.entranceReady){
         if(this.midbossPhases.length){const route=this.character?'marisa':'reimu';
           this._dialogue(game,'midboss',()=>this._beginMidbossPhase(game,0),this.midbossSpec?.dialogues?.[route]??[]);}
-        else{this.state='midboss-combat';this.phaseFrame=0;this.boss.invulnerable=false;game.startBossCombat();game.setBossHud({dialogue:false});
+        else{this.state='midboss-combat';this.phaseFrame=0;game.resumeBoss(this.boss);this.boss.invulnerable=false;game.startBossCombat();game.setBossHud({dialogue:false});
           game.bossPresentation?.beginCharge({color:['yellow','cyan','yellow','magenta','red','yellow','white'][this.stageId-1],
             follow:this.boss,releaseFrame:35,clock:()=>this.phaseFrame});}}
     }else if(this.state==='midboss-combat'){
@@ -301,6 +296,6 @@ export class CampaignDirector{
     rng:this.rng.state,totalClock:this.totalClock,pattern:this.phase?.spell?this.phase.spec.id:null};}
   destroy(){if(this.destroyed)return;this.destroyed=true;this.dialogueContinuation=null;this.stageContinuation=null;
     if(this.game){this.game.stage=this.originalStage;this.game.onEvent=this.originalEvent;
-      this.game.context.deferEnemyDefeat=this.originalDefer;Object.assign(this.game.context,this.originalInteraction);}
+      if(this.boss?.alive)this.game.removeBoss(this.boss);Object.assign(this.game.context,this.originalInteraction);}
   }
 }

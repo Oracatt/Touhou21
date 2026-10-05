@@ -40,6 +40,18 @@ const step=(game,director,{damage=false}={})=>{
   game.update(0);
 };
 
+test('covered stage cleanup cancels registered Boss holds and actor-owned sequences',()=>{
+  const f=sceneFixture(),boss=f.scene.director.boss;let executions=0;
+  f.scene.holdBoss(boss);
+  f.scene.runBossSequence(boss,(function*(){executions++;yield 1;executions++;})());
+  assert.equal(f.scene.isBossHeld(boss),true);
+  f.scene.cleanStageActors();f.scene.tasks.update(f.scene.context);
+  assert.equal(executions,0,'a retired stage cannot resume an old Boss script');
+  assert.equal(f.scene.bossRegistry.size,0);assert.equal(f.scene.bossHolds.size,0);
+  assert.equal(f.scene.bossEscapes.length,0);assert.equal(f.scene.context.boss,null);
+  assert.equal(f.scene.enemies.length,0);assert.equal(boss.alive,false);f.dispose();
+});
+
 test('every authored boss card has a distinct public-field choreography and valid original collision geometry',()=>{
   assert.equal(SPELL_PATTERNS.length,31);assert.equal(new Set(SPELL_PATTERNS.map(p=>p.id)).size,31);
   assert.deepEqual(STAGES.map(stage=>stage.spells.length),[2,3,3,4,4,5,10]);
