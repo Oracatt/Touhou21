@@ -7,7 +7,26 @@ import {fileURLToPath} from 'node:url';
 
 export const PROJECT_ROOT=path.resolve(import.meta.dirname,'..');
 export const shaFile=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+export const shaText=value=>createHash('sha256').update(value,'utf8').digest('hex');
 const ordinal=(a,b)=>a<b?-1:a>b?1:0;
+const git=(root,args)=>execFileSync('git',['-C',root,...args],{encoding:'utf8',windowsHide:true});
+export const ALLOWED_UNRELATED_SOURCE_CHANGES=Object.freeze(['start-spellcard-editor.cmd']);
+
+/** Only the reviewed editor launcher can be excluded from a source check.
+ * Its exact status and bytes are recorded; tracked SDK/native changes, staged
+ * edits, untracked files, deletions, renames and additional paths are refused. */
+export function inspectSourceState(source,{allowChanges=[],recorded=null}={}){
+  const allowed=recorded?.changes.map(entry=>entry.path)??allowChanges;
+  for(const name of allowed)assert.ok(ALLOWED_UNRELATED_SOURCE_CHANGES.includes(name),'Unreviewed source-change exception: '+name);
+  const changes=git(source,['status','--porcelain=v1','-z']).split('\0').filter(Boolean).map(line=>{
+    const status=line.slice(0,2),name=line.slice(3);
+    assert.ok(status===' M'&&allowed.includes(name),'Source engine has unapproved local modifications: '+line);
+    const file=inside(source,name),stat=fs.lstatSync(file);assert.ok(stat.isFile()&&!stat.isSymbolicLink(),'Excluded source file must be a regular file');
+    return{path:name,status,bytes:stat.size,sha256:shaFile(file),headBlob:git(source,['rev-parse','HEAD:'+name]).trim()};
+  });
+  if(recorded&&changes.length)assert.deepEqual(changes,recorded.changes,'Excluded source modification changed since it was recorded');
+  return{gitClean:changes.length===0,changes,policy:'Only the unstaged editor launcher is excluded; SDK, native inputs and copied files remain byte-pinned.'};
+}
 
 export function safeRelative(value){
   assert.equal(typeof value,'string','Locked path must be a string');
@@ -42,7 +61,13 @@ export function readEngineLock(root=PROJECT_ROOT){
   const lock=JSON.parse(fs.readFileSync(path.join(root,'engine.lock.json'),'utf8'));
   assert.equal(lock.format,'touhou21-engine-lock-v1');assert.equal(lock.engine,'TS-STG');assert.equal(lock.library,'@ts-stg/thlib');
   assert.match(lock.commit,/^[a-f0-9]{40}$/);assert.match(lock.executableSha256,/^[a-f0-9]{64}$/i);
-  assert.deepEqual(lock.supportedBackends,['v8','quickjs']);assert.equal(lock.backend,'v8');assert.equal(lock.sourceModified,false);
+  assert.deepEqual(lock.supportedBackends,['v8','quickjs']);assert.equal(lock.backend,'v8');assert.equal(typeof lock.sourceModified,'boolean');
+  if(lock.sourceState){
+    assert.equal(lock.sourceModified,!lock.sourceState.gitClean);assert.ok(Array.isArray(lock.sourceState.changes));
+    assert.equal(lock.sourceState.gitClean,lock.sourceState.changes.length===0);
+    for(const entry of lock.sourceState.changes){assert.ok(ALLOWED_UNRELATED_SOURCE_CHANGES.includes(entry.path));assert.equal(entry.status,' M');
+      assert.match(entry.sha256,/^[a-f0-9]{64}$/);assert.match(entry.headBlob,/^[a-f0-9]{40}$/);assert.ok(Number.isSafeInteger(entry.bytes)&&entry.bytes>=0);}
+  }else assert.equal(lock.sourceModified,false,'Modified source must carry its reviewed exception record');
   for(const files of [lock.thlibFiles,lock.runtimeFiles]){
     assert.ok(Array.isArray(files)&&files.length>0);const seen=new Set();
     for(const file of files){safeRelative(file.path);if(file.source)safeRelative(file.source);
@@ -51,7 +76,11 @@ export function readEngineLock(root=PROJECT_ROOT){
   }
   assert.equal(inventoryDigest(lock.thlibFiles),lock.thlibSha256,'Invalid library inventory digest');
   assert.equal(inventoryDigest(lock.runtimeFiles),lock.runtimeSha256,'Invalid runtime inventory digest');
-  for(const file of lock.runtimeFiles)safeRelative(file.source);
+  for(const file of lock.runtimeFiles){safeRelative(file.source);
+    if(file.generatedContent!==undefined){assert.equal(file.path,'PACKAGE.json','Only SDK metadata may be generated locally');
+      assert.equal(typeof file.generatedContent,'string');assert.equal(Buffer.byteLength(file.generatedContent),file.bytes);assert.equal(shaText(file.generatedContent),file.sha256);
+      assert.match(file.sourceSha256,/^[a-f0-9]{64}$/);const sdk=JSON.parse(file.generatedContent);
+      assert.equal(sdk.binarySha256,lock.executableSha256);assert.equal(sdk.derivedFor.commit,lock.commit);assert.equal(sdk.derivedFor.upstreamPackageSha256,file.sourceSha256);}}
   const binary=lock.runtimeFiles.find(file=>file.path==='ts-stg.exe');assert.ok(binary);
   assert.equal(binary.sha256,lock.executableSha256.toLowerCase());
   if(lock.nativeBuild){
@@ -65,6 +94,8 @@ export function readEngineLock(root=PROJECT_ROOT){
     for(const entry of [build.hostObject,build.dependencyLog]){safeRelative(entry.source);assert.match(entry.sha256,/^[a-f0-9]{64}$/);}
     const sdk=lock.runtimeFiles.find(file=>file.path==='PACKAGE.json');assert.ok(sdk,'Native build provenance must be retained');
     assert.equal(sdk.source,build.packageSource);assert.equal(sdk.sha256,build.packageSha256);
+    if(build.derivedPackage){assert.ok(sdk.generatedContent);assert.equal(sdk.sourceSha256,build.packageTemplateSha256);}
+    for(const entry of [...(build.objects??[]),...(build.linkInputs??[]),...(build.linkLog?[build.linkLog]:[])]){safeRelative(entry.source);assert.match(entry.sha256,/^[a-f0-9]{64}$/);}
   }
   return lock;
 }
@@ -89,7 +120,7 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
     const location=fs.realpathSync(source??lock.source);
     const commit=execFileSync('git',['-C',location,'rev-parse','HEAD'],{encoding:'utf8',windowsHide:true}).trim();
     assert.equal(commit,lock.commit,'Engine source commit differs from lock');
-    assert.equal(execFileSync('git',['-C',location,'status','--porcelain'],{encoding:'utf8',windowsHide:true}).trim(),'','Source engine has local modifications');
+    inspectSourceState(location,{recorded:lock.sourceState});
     // The local snapshot is an explicit subset of the public package. Only the
     // pinned entries are copied; unrelated source files are never swept in.
     for(const file of lock.thlibFiles){const sourceFile=inside(path.join(location,'packages/thlib'),file.path);
@@ -97,13 +128,14 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
       assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source library file size differs');
       assert.equal(shaFile(sourceFile),file.sha256,'Source library file hash differs');}
     for(const file of lock.runtimeFiles){const sourceFile=inside(location,file.source);
-      assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source runtime file size differs');
-      assert.equal(shaFile(sourceFile),file.sha256,'Source runtime file hash differs');}
+      if(file.generatedContent!==undefined)assert.equal(shaFile(sourceFile),file.sourceSha256,'Source SDK metadata template hash differs');
+      else{assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source runtime file size differs');
+        assert.equal(shaFile(sourceFile),file.sha256,'Source runtime file hash differs');}}
     if(lock.nativeBuild){
       for(const file of lock.nativeBuild.sourceFiles){const sourceFile=inside(location,file.path);
         assert.equal(fs.statSync(sourceFile).size,file.bytes,'Native build source size differs');
         assert.equal(shaFile(sourceFile),file.sha256,'Native build source hash differs');}
-      for(const entry of [lock.nativeBuild.hostObject,lock.nativeBuild.dependencyLog])
+      for(const entry of [lock.nativeBuild.hostObject,lock.nativeBuild.dependencyLog,...(lock.nativeBuild.objects??[]),...(lock.nativeBuild.linkInputs??[]),...(lock.nativeBuild.linkLog?[lock.nativeBuild.linkLog]:[])])
         assert.equal(shaFile(inside(location,entry.source)),entry.sha256,'Native compiler evidence hash differs');
       const allCode=inventoryTree(path.join(location,'packages/thlib/src')).map(file=>({...file,path:'src/'+file.path}));
       assert.equal(inventoryDigest(allCode),inventoryDigest(lock.thlibFiles.filter(file=>file.path.startsWith('src/'))),'Snapshot does not contain all public thlib source');
@@ -112,7 +144,8 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
   }
   return{passed:true,commit:lock.commit,backend:lock.backend,supportedBackends:lock.supportedBackends,
     executableSha256:lock.executableSha256,thlibFiles:lock.thlibFiles.length,runtimeFiles:lock.runtimeFiles.length,
-    thlibSha256:lock.thlibSha256,runtimeSha256:lock.runtimeSha256,sourceVerified,nativeBuildRecorded:!!lock.nativeBuild};
+    thlibSha256:lock.thlibSha256,runtimeSha256:lock.runtimeSha256,sourceVerified,nativeBuildRecorded:!!lock.nativeBuild,
+    sourceGitClean:lock.sourceState?.gitClean??true,recordedSourceChanges:lock.sourceState?.changes??[]};
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

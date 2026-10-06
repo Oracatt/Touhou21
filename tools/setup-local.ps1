@@ -89,6 +89,46 @@ function Assert-InventoryDigest($Entries, [string]$Expected) {
     if ($actual -ne $Expected) { throw 'The file inventory digest is invalid.' }
 }
 
+function Assert-SourceState {
+    $changes = @(& git -C $engineRoot status --porcelain=v1)
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect source Git state.' }
+    if ($changes.Count -eq 0) { return }
+    $record = @($lock.sourceState.changes)
+    if ($changes.Count -ne 1 -or $record.Count -ne 1 -or
+        $changes[0] -cne ' M start-spellcard-editor.cmd' -or
+        $record[0].path -cne 'start-spellcard-editor.cmd' -or $record[0].status -cne ' M' -or
+        $lock.sourceModified -ne $true -or $lock.sourceState.gitClean -ne $false) {
+        throw 'Source engine has unapproved local modifications; no dependency files were changed.'
+    }
+    $launcher = Resolve-ListedPath $engineRoot $record[0].path
+    Assert-File $launcher $record[0] 'Recorded unrelated editor launcher'
+    $blob = (& git -C $engineRoot rev-parse ('HEAD:' + $record[0].path)).Trim()
+    if ($LASTEXITCODE -ne 0 -or $blob -ne $record[0].headBlob) { throw 'Recorded source-launcher base differs.' }
+    if (@($lock.nativeBuild.sourceFiles | Where-Object { $_.path -eq $record[0].path }).Count -gt 0 -or
+        @($lock.runtimeFiles | Where-Object { $_.source -eq $record[0].path }).Count -gt 0) {
+        throw 'Source exception overlaps native or runtime inputs.'
+    }
+}
+
+function Assert-RuntimeSource($Entry) {
+    $sourceFile = Resolve-ListedPath $engineRoot $Entry.source
+    if ($Entry.PSObject.Properties.Name -contains 'generatedContent') {
+        if ($Entry.path -cne 'PACKAGE.json' -or $Entry.sourceSha256 -notmatch '^[a-f0-9]{64}$') { throw 'Only SDK metadata may be derived locally.' }
+        $text = [string]$Entry.generatedContent
+        $bytes = [Text.Encoding]::UTF8.GetBytes($text)
+        $sha = [Security.Cryptography.SHA256]::Create()
+        try { $hash = ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace('-', '').ToLowerInvariant() }
+        finally { $sha.Dispose() }
+        $sdk = $text | ConvertFrom-Json
+        if ($bytes.Length -ne $Entry.bytes -or $hash -ne $Entry.sha256 -or
+            $sdk.binarySha256 -ne $lock.executableSha256 -or $sdk.derivedFor.commit -ne $lock.commit -or
+            $sdk.derivedFor.upstreamPackageSha256 -ne $Entry.sourceSha256 -or
+            (Get-FileHash -LiteralPath $sourceFile -Algorithm SHA256).Hash.ToLowerInvariant() -ne $Entry.sourceSha256) {
+            throw 'Derived SDK metadata or its upstream template differs from lock.'
+        }
+    } else { Assert-File $sourceFile $Entry 'Read-only source runtime' }
+}
+
 function Assert-InstalledTree([string]$Directory, $Entries) {
     $missing = [Collections.Generic.List[object]]::new()
     $expected = @{}
@@ -117,12 +157,11 @@ Assert-InventoryDigest $lock.thlibFiles $lock.thlibSha256
 Assert-InventoryDigest $lock.runtimeFiles $lock.runtimeSha256
 $commit = (& git -C $engineRoot rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $commit -ne $lock.commit) { throw 'Engine source commit differs from lock.' }
-$sourceChanges = @(& git -C $engineRoot status --porcelain)
-if ($LASTEXITCODE -ne 0 -or $sourceChanges.Count -ne 0) { throw 'Source engine has local modifications; no dependency files were changed.' }
+Assert-SourceState
 if ($lock.PSObject.Properties.Name -contains 'nativeBuild') {
     Assert-InventoryDigest $lock.nativeBuild.sourceFiles $lock.nativeBuild.sourceSha256
     foreach ($entry in $lock.nativeBuild.sourceFiles) { Assert-File (Resolve-ListedPath $engineRoot $entry.path) $entry 'Native build source' }
-    foreach ($entry in @($lock.nativeBuild.hostObject, $lock.nativeBuild.dependencyLog)) {
+    foreach ($entry in @($lock.nativeBuild.hostObject, $lock.nativeBuild.dependencyLog) + @($lock.nativeBuild.objects) + @($lock.nativeBuild.linkInputs) + @($lock.nativeBuild.linkLog) | Where-Object { $null -ne $_ }) {
         $evidenceFile = Resolve-ListedPath $engineRoot $entry.source
         if ((Get-FileHash -LiteralPath $evidenceFile -Algorithm SHA256).Hash.ToLowerInvariant() -ne $entry.sha256) {
             throw 'Native compiler evidence differs from the locked build.'
@@ -134,7 +173,7 @@ $sourceLibrary = Resolve-ListedPath $engineRoot 'packages/thlib'
 $libraryTarget = Assert-OwnedPath (Join-Path $projectRoot 'packages/thlib')
 $runtimeTarget = Assert-OwnedPath (Join-Path $projectRoot 'runtime')
 foreach ($entry in $lock.thlibFiles) { Assert-File (Resolve-ListedPath $sourceLibrary $entry.path) $entry 'Read-only source library' }
-foreach ($entry in $lock.runtimeFiles) { Assert-File (Resolve-ListedPath $engineRoot $entry.source) $entry 'Read-only source runtime' }
+foreach ($entry in $lock.runtimeFiles) { Assert-RuntimeSource $entry }
 $missingLibrary = @(Assert-InstalledTree $libraryTarget $lock.thlibFiles)
 $missingRuntime = @(Assert-InstalledTree $runtimeTarget $lock.runtimeFiles)
 
@@ -172,13 +211,16 @@ foreach ($group in @(@{Entries=$missingLibrary;Source=$sourceLibrary;Target=$lib
         $sourceFile = Resolve-ListedPath $group.Source $sourceRelative
         $stageFile = Assert-OwnedPath (Join-Path $staging ($group.Stage + '/' + $entry.path))
         New-Item -ItemType Directory -Path (Split-Path -Parent $stageFile) -Force | Out-Null
-        Copy-Item -LiteralPath $sourceFile -Destination $stageFile
+        if ($entry.PSObject.Properties.Name -contains 'generatedContent') {
+            [IO.File]::WriteAllText($stageFile, [string]$entry.generatedContent, [Text.UTF8Encoding]::new($false))
+        } else { Copy-Item -LiteralPath $sourceFile -Destination $stageFile }
         Assert-File $stageFile $entry 'Staged dependency'
         $pending.Add(@{Stage=$stageFile;Target=(Resolve-ListedPath $group.Target $entry.path);Entry=$entry})
     }
 }
 $commitAfterCopy = (& git -C $engineRoot rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $commitAfterCopy -ne $lock.commit) { throw 'Engine source commit changed during copying.' }
+Assert-SourceState
 foreach ($item in $pending) {
     $targetFile = Assert-OwnedPath $item.Target
     $stageFile = Assert-OwnedPath $item.Stage

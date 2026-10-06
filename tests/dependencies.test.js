@@ -27,9 +27,22 @@ test('exact private library/runtime snapshot and local Node resolution remain pi
   const lock=readEngineLock();assert.ok(lock.thlibFiles.length>=329);assert.ok(lock.runtimeFiles.length>=149);
   assert.equal(lock.nativeBuild.binarySha256,lock.executableSha256);assert.equal(lock.nativeBuild.configuration,'Release');
   assert.ok(lock.runtimeFiles.some(file=>file.path==='PACKAGE.json'));
+  if(lock.nativeBuild.derivedPackage){const sdk=lock.runtimeFiles.find(file=>file.path==='PACKAGE.json');
+    assert.equal(sdk.sourceSha256,lock.nativeBuild.packageTemplateSha256);
+    assert.equal(JSON.parse(sdk.generatedContent).binarySha256,lock.executableSha256);
+    assert.ok(lock.nativeBuild.objects.length>=8);assert.ok(lock.nativeBuild.linkInputs.length>=3);}
   for(const module of ['boss-escape','phase-sequence','player-rules','world'])
     for(const extension of ['js','d.ts'])assert.ok(lock.thlibFiles.some(file=>file.path==='src/touhou/'+module+'.'+extension));
   const result=verifyEngineLock();assert.equal(result.passed,true);assert.equal(result.sourceVerified,false);
+});
+
+test('recorded source state and derived SDK metadata cannot be silently broadened or altered',()=>{
+  const lock=readEngineLock(),build=path.join(PROJECT_ROOT,'build');fs.mkdirSync(build,{recursive:true});
+  const fixture=fs.mkdtempSync(path.join(build,'lock-policy-verification-')),file=path.join(fixture,'engine.lock.json');
+  if(lock.sourceState?.changes.length){const invalid=structuredClone(lock);invalid.sourceState.changes[0].path='native/src/host.cpp';
+    fs.writeFileSync(file,JSON.stringify(invalid));assert.throws(()=>readEngineLock(fixture));}
+  if(lock.nativeBuild.derivedPackage){const invalid=structuredClone(lock);invalid.runtimeFiles.find(entry=>entry.path==='PACKAGE.json').generatedContent+=' ';
+    fs.writeFileSync(file,JSON.stringify(invalid));assert.throws(()=>readEngineLock(fixture));}
 });
 test('runtime game source may import public owners but not private paths or duplicate them',()=>{
   assert.deepEqual(auditSourceText("import {TouhouGame} from '@ts-stg/thlib/touhou';\nexport class Campaign extends TouhouGame {}"),['@ts-stg/thlib/touhou']);
