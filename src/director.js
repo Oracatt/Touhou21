@@ -81,6 +81,7 @@ export class CampaignDirector{
   _beginMidbossPhase(game,index){
     this.midbossPhaseIndex=index;this.phaseFrame=0;this.patternState={};this.state='midboss-combat';
     const phase=this.midbossPhases[index],boss=this.boss;boss.invulnerable=!!phase.spec.survival;
+    boss.motion.flags=0;boss.motion.speed=0;Object.assign(boss.motion.delta,{x:0,y:0,z:0});
     boss.prepareSpellHealth(phase.hp);boss.maximumHp=phase.hp;game.resumeBoss(boss);boss.invulnerable=!!phase.spec.survival;game.startBossCombat();
     game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({dialogue:false,remainingSpells:this.midbossPhases.length-index-1,
@@ -158,6 +159,7 @@ export class CampaignDirector{
   _beginPhase(game,index){
     if(index<0||index>=this.phases.length)throw new RangeError('Invalid phase transition');
     this.phaseIndex=index;this.phaseFrame=0;this.patternState={};this.state='combat';const phase=this.phase,boss=this.boss;
+    boss.motion.flags=0;boss.motion.speed=0;Object.assign(boss.motion.delta,{x:0,y:0,z:0});
     boss.primaryFlags&=~0x93;boss.invulnerable=!!phase.spec?.survival;
     boss.maximumHp=phase.hp;phase.spell?boss.prepareSpellHealth(phase.hp):boss.prepareNormalHealth(phase.hp);
     game.resumeBoss(boss);boss.primaryFlags&=~0x93;boss.invulnerable=!!phase.spec?.survival;
@@ -258,7 +260,7 @@ export class CampaignDirector{
     }else if(this.state==='midboss-combat'){
       if(this.midbossPhases.length)updateMidbossSpellPattern({game,boss:this.boss,frame:this.phaseFrame,difficulty:this.difficulty,
         spellIndex:this.midbossPhaseIndex,state:this.patternState});
-      else updateNonspellPattern({game,boss:this.boss,frame:this.phaseFrame,difficulty:this.difficulty,stageId:this.stageId,phaseIndex:0,state:this.patternState});
+      else updateNonspellPattern({game,boss:this.boss,frame:this.phaseFrame,difficulty:this.difficulty,stageId:this.stageId,phaseIndex:0,state:this.patternState,rng:this.rng});
       const hp=this.boss.maximumHp;game.setBossHud({healthBars:[{current:Math.max(0,this.boss.hp),maximum:hp,phaseHealth:this.boss.hp,markers:[]}]});
       this.phaseFrame++;if(!this.midbossPhases.length&&this.phaseFrame>1200)this._finishMidboss(game);
     }else if(this.state==='midboss-phase-wait'){
@@ -278,13 +280,13 @@ export class CampaignDirector{
       if(--this.waitFrames<=0)this._beginPhase(game,this.phaseIndex+1);
     }else if(this.state==='combat'){
       const phase=this.phase,boss=this.boss,t=this.phaseFrame;
-      const target=phase.spec?.survival?0:Math.sin(t*.006+this.phaseIndex*.9)*80;
-      if(t%240<75)actorPosition(boss,boss.x+(target-boss.x)*.028,boss.y+(100+Math.sin(this.phaseIndex)*18-boss.y)*.028);
+      // Each authored score owns its reposition/windup. Do not move every Boss
+      // on an unrelated universal clock while its aimed phrase is firing.
       const hud=this.phasePlan.hudState(this.phaseIndex,{hp:Math.max(0,boss.hp),maximumHp:phase.hp});
       if(!phase.spell)game.setBossHud({...hud,remainingFrames:Math.max(0,phase.duration-t)});
       else game.setBossHud(hud);
       if(phase.spell)(phase.midboss?updateMidbossSpellPattern:updateSpellPattern)({game,boss,frame:t,difficulty:this.difficulty,stageId:this.stageId,spellIndex:phase.spellIndex,state:this.patternState});
-      else updateNonspellPattern({game,boss,frame:t,difficulty:this.difficulty,stageId:this.stageId,phaseIndex:this.phaseIndex,state:this.patternState});
+      else updateNonspellPattern({game,boss,frame:t,difficulty:this.difficulty,stageId:this.stageId,phaseIndex:this.phaseIndex,state:this.patternState,rng:this.rng});
       this.phaseFrame++;
       if(!phase.spell&&this.phaseFrame>=phase.duration)this._finishPhase(game,{timeout:true});
     }

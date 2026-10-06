@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {DrawList} from '@ts-stg/thlib';
 import {BACKGROUND_VIEWPORT,StageBackground,cameraForStage,lookAt3d,multiply3d,perspective3d,project3d,transform3d,viewport3d} from '../src/background.js';
 import {SCENERY_ATLASES,sceneryRegion} from '../src/background-art.js';
+import {DynamicSpellBackground,SPELL_BACKGROUND_TIMING} from '../src/spell-background.js';
 
 const close=(a,b,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`${a} != ${b}`);
 function artFixture(){
@@ -70,21 +71,74 @@ test('camera flight and slower spell orbit are deterministic and continuously mo
 test('native draw commands have valid UVs, finite MVPs and cached static vertices',()=>{
   const background=new StageBackground({art:artFixture()});
   for(let id=1;id<=7;id++)for(const active of [false,true]){
-    const draw=new DrawList();background.draw(draw,{frame:480,spell:{active}},{stage:id});
+    background.setStage(id);const game={frame:480,spell:{active,id:2,age:{current:0}}};background.update(game);
+    game.frame=540;game.spell.age.current=60;background.update(game);
+    const draw=new DrawList();background.draw(draw,game);
     const meshes=draw.commands.filter(command=>command[0]==='mesh3d');
-    assert.equal(meshes.length,active?1:7);assert.ok(background.stats.vertices<=600);
+    assert.equal(meshes.length,active?8:7);assert.ok(background.stats.vertices<=1300);
     for(const [,texture,vertices,indices,mvp] of meshes){
       assert.equal(texture,92);assert.equal(mvp.length,16);assert.ok(mvp.every(Number.isFinite));
       assert.ok(vertices.every(v=>v.length===6&&v.every(Number.isFinite)&&v[3]>=0&&v[3]<=1&&v[4]>=0&&v[4]<=1));
       assert.ok(indices.length>0&&indices.length%3===0);
       assert.ok(indices.every(index=>Number.isInteger(index)&&index>=0&&index<vertices.length));
-      const cachedMeshes=active?[background.spellGeometry]:background.geometryVariants;
+      const cachedMeshes=[background.spellGeometry,...background.geometryVariants];
       assert.ok(cachedMeshes.some(mesh=>[...mesh.fogCache.values()].some(cached=>cached[0]===vertices[0])),'static vertices were rebuilt');
     }
     const source=background.geometry.vertices;background.setStage(id);assert.equal(background.geometry.vertices,source);
     assert.ok(!draw.commands.some(command=>command[0]==='scissor'||command[0]==='scissorEnd'),'public compositor owns clipping');
   }
   background.destroy();
+});
+
+test('seven Boss themes visibly animate authored textures independently of camera movement',()=>{
+  const signatures=new Set();
+  for(let id=1;id<=7;id++){
+    const background=new StageBackground({art:artFixture(),seed:771});background.setStage(id);
+    const game={frame:0,spell:{active:false}};background.update(game);
+    game.spell={active:true,id:34,age:{current:0}};game.frame=1;background.update(game);
+    game.frame=61;background.update(game);const a=new DrawList();background.draw(a,game);
+    game.frame=181;background.update(game);const b=new DrawList();background.draw(b,game);
+    const animatedA=a.commands.filter(command=>command[0]==='mesh'),animatedB=b.commands.filter(command=>command[0]==='mesh');
+    assert.ok(animatedA.length>=2&&animatedA.length<=3);assert.equal(animatedA.length,animatedB.length);
+    assert.notDeepEqual(animatedA,animatedB,'changing only a 3D camera is not texture animation');
+    const firstA=animatedA[0][2][0],firstB=animatedB[0][2][0];assert.ok(Math.hypot(firstA[0]-firstB[0],firstA[1]-firstB[1])>25,'motion must be plainly visible over two seconds');
+    signatures.add(createHash('sha256').update(JSON.stringify(animatedA)).digest('hex'));
+    for(const [,texture,vertices,indices]of animatedB){assert.equal(texture,92);assert.ok(vertices.every(v=>v.length===5&&v.every(Number.isFinite)&&v[2]>=0&&v[2]<=1&&v[3]>=0&&v[3]<=1));assert.ok(indices.every(i=>Number.isInteger(i)&&i>=0&&i<vertices.length));}
+    assert.ok(background.stats.meshCalls<=11&&background.stats.vertices<=1300);background.destroy();
+  }
+  assert.equal(signatures.size,7);
+});
+
+test('spell clock is seeded and reproducible; draw calls and pause cannot advance it',()=>{
+  const fixture=()=>new DynamicSpellBackground({art:artFixture(),seed:671}),a=fixture(),b=fixture();
+  const game={frame:10,spell:{active:false},context:{boss:{bossId:'shizuri'}}};a.update(game);b.update(game);
+  game.frame=11;game.spell={active:true,id:4,captureIndex:2,age:{current:0}};a.update(game);b.update(game);
+  game.frame=131;a.update(game);b.update(game);assert.deepEqual(a.snapshot(),b.snapshot());
+  const card=a.visibleCards()[0],drawA=new DrawList(),drawB=new DrawList();a.drawCard(drawA,card);b.drawCard(drawB,b.visibleCards()[0]);assert.deepEqual(drawA.commands,drawB.commands);
+  const snapshot=a.snapshot();a.update({...game,frame:1000,paused:true});a.drawCard(new DrawList(),card);assert.deepEqual(a.snapshot(),snapshot);
+  const background=new StageBackground({art:artFixture(),seed:671});background.setStage(2);background.update(game);
+  const first=new DrawList();background.draw(first,game);const paused={...game,paused:true,frame:999};background.update(paused);
+  const repeat=new DrawList();background.draw(repeat,paused,{clock:999});assert.deepEqual(first.commands,repeat.commands,'pause renders must keep every scenery layer frozen');background.destroy();
+  const different=new DynamicSpellBackground({art:artFixture(),seed:672});different.update({...game,spell:{...game.spell,age:{current:120}}});assert.notEqual(different.visibleCards()[0].phase,card.phase);
+  assert.ok(drawA.commands.some(command=>command[0]==='blendEnd'));assert.ok(!drawA.commands.some(command=>['scissor','scissorEnd','targetBegin','targetEnd'].includes(command[0])));
+  a.destroy();b.destroy();different.destroy();
+});
+
+test('spell entry and retirement fade over simulation frames; rapid changes stay bounded',()=>{
+  const background=new StageBackground({art:artFixture()});background.setStage(7);
+  const game={frame:0,spell:{active:false},context:{boss:{bossId:'fusae'}}};background.update(game);
+  game.frame=1;game.spell={active:true,id:22,age:{current:0}};background.update(game);
+  assert.equal(background.spellBackground.visibleCards().length,0);
+  game.frame=25;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
+  game.frame=49;background.update(game);const card=background.spellBackground.visibleCards()[0];assert.equal(card.style,5,'Extra midboss has her own theme');assert.equal(card.opacity,1);
+  game.frame=50;game.spell.active=false;background.update(game);assert.equal(background.spellBackground.visibleCards()[0].opacity,1);
+  game.frame=62;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
+  game.frame=74;background.update(game);assert.equal(background.spellBackground.visibleCards().length,0);
+  const road=new DrawList();background.draw(road,game);assert.equal(background.stats.meshCalls,7);
+  game.context.boss.bossId='mio';game.spell.active=true;
+  for(let i=0;i<8;i++){game.frame+=4;game.spell.id=30+i;background.update(game);assert.ok(background.spellBackground.cards.length<=SPELL_BACKGROUND_TIMING.maxCards);}
+  game.frame+=12;background.update(game);const draw=new DrawList();background.draw(draw,game);assert.ok(background.stats.meshCalls<=15);assert.ok(background.stats.vertices<2300);
+  background.setStage(1);assert.equal(background.spellBackground.cards.length,0);background.destroy();assert.equal(background.spellBackground.cards.length,0);
 });
 
 test('painted cutouts and their ground share the same distance-sorted batch',()=>{

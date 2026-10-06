@@ -1,6 +1,7 @@
 /** Hand-painted alpha panels in a real perspective world, not solid geometric
  * approximations of buildings. Scenery stays in this game's business layer. */
 import {SCENERY_ATLASES,sceneryRegion} from './background-art.js';
+import {DynamicSpellBackground} from './spell-background.js';
 export const BACKGROUND_VIEWPORT=Object.freeze({x:48,y:24,width:576,height:672,canvasWidth:960,canvasHeight:720});
 const TILE=48,NEAR=2,FAR=220,TAU=Math.PI*2;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -161,23 +162,39 @@ export function cameraForStage(stage,clock=0,spell=false){
   return{eye:[sway*(id===5?.65:2.3),t.height+lift,travel].map(Math.fround),target:[sway*.55+turn,id===6?3.5:2.7,travel+46].map(Math.fround),up:[Math.sin(roll),Math.cos(roll),0],fov:Math.fround(Math.PI*.30)};
 }
 export class StageBackground{
-  constructor({art}={}){if(!art?.load||!art?.background)throw new TypeError('StageBackground requires GameArt');this.art=art;this.viewport=viewport3d();this.stage=null;this.texture=null;this.geometry=null;this.geometryVariants=null;this.spellGeometry=null;this.stats=null;this.destroyed=false;}
+  constructor({art,seed=0}={}){if(!art?.load||!art?.background)throw new TypeError('StageBackground requires GameArt');this.art=art;this.viewport=viewport3d();this.stage=null;this.texture=null;this.geometry=null;this.geometryVariants=null;this.spellGeometry=null;this.spellSets=new Map();this.spellBackground=new DynamicSpellBackground({art,seed});this.stats=null;this.destroyed=false;}
   setStage(stage){
     if(this.destroyed)throw new Error('StageBackground is destroyed');const id=typeof stage==='number'?stage:stage?.id;if(!Number.isInteger(id)||id<1||id>7)throw new RangeError('Stage must be 1..7');if(this.stage?.id===id)return this;
-    this.stage=typeof stage==='number'?{id,background:`stage0${id}`}:stage;this.texture=this.art.load(SCENERY_ATLASES[id-1].path);this.geometryVariants=[0,1,2].map(v=>roadGeometry(id,v));this.geometry=this.geometryVariants[0];this.spellGeometry=spellGeometry(id);this.stats=null;return this;
+    this.stage=typeof stage==='number'?{id,background:`stage0${id}`}:stage;this.texture=this.art.load(SCENERY_ATLASES[id-1].path);this.geometryVariants=[0,1,2].map(v=>roadGeometry(id,v));this.geometry=this.geometryVariants[0];this.spellGeometry=spellGeometry(id);this.spellSets.clear();this.spellSets.set(id,this.spellGeometry);this.spellBackground.reset(id);this.stats=null;return this;
   }
+  /** Call after a successful unpaused game update. Rendering only samples
+   * this frame; neither pause renders nor multiple capture passes advance it. */
+  update(game,options={}){if(this.destroyed)throw new Error('StageBackground is destroyed');this.spellBackground.update(game,options);return this;}
   draw(draw,game,{stage=this.stage,clock=game?.frame??0}={}){
     if(this.destroyed)throw new Error('StageBackground is destroyed');if(stage)this.setStage(stage);if(!this.stage)throw new Error('StageBackground has no stage');if(!Number.isFinite(clock))throw new RangeError('Invalid visual clock');
-    const id=this.stage.id,spell=Boolean(game?.spell?.active),theme=THEMES[id-1],camera=cameraForStage(id,clock,spell);
-    draw.rect(48,24,576,672,theme.fog);this.art.background(draw,this.stage.background??`stage0${id}`,336,360,576,672,{alpha:spell?.22:.37,offset:0});
+    // Standalone consumers may draw an already-running card before their
+    // first update. This one-time initial sync is not a render-time ticker.
+    if(this.spellBackground.clock===null)this.update(game,{clock});
+    const visualClock=this.spellBackground.clock??clock,cards=this.spellBackground.visibleCards();
+    const id=this.stage.id,spell=Boolean(game?.spell?.active),theme=THEMES[id-1],camera=cameraForStage(id,visualClock,false);
+    draw.rect(48,24,576,672,theme.fog);this.art.background(draw,this.stage.background??`stage0${id}`,336,360,576,672,{alpha:.37,offset:0});
     const eye=[...camera.eye],target=[...camera.target];let first=0;
-    if(!spell){first=Math.floor(camera.eye[2]/TILE)-1;const origin=first*TILE;eye[2]-=origin;target[2]-=origin;}
+    first=Math.floor(camera.eye[2]/TILE)-1;const origin=first*TILE;eye[2]-=origin;target[2]-=origin;
     const forward=unit(sub(target,eye)),view=lookAt3d(eye,target,camera.up),vp=multiply3d(this.viewport,multiply3d(perspective3d(camera.fov),view));draw.sampler(this.texture.id,'bilinear','clamp','clamp');
     let meshCalls=0,vertices=0;
-    if(spell){const m=this.spellGeometry,v=m.fogVertices(1);draw.mesh3d(this.texture.id,v,m.orderedIndices(forward),vp);meshCalls++;vertices+=v.length;}
-    else for(let tile=6;tile>=0;tile--){const variant=((first+tile)%3+3)%3,m=this.geometryVariants[variant],v=m.fogVertices(tile<2?0:tile-1);draw.mesh3d(this.texture.id,v,m.orderedIndices(forward),multiply3d(vp,translation(0,0,tile*TILE)));meshCalls++;vertices+=v.length;}
-    draw.rect(48,24,576,672,spell?0x08101d33:0x08101d1d).rect(48,24,576,105,0x070e1818);
-    this.stats={stage:id,spell,meshCalls,vertices,camera,texture:SCENERY_ATLASES[id-1].path,features:[...(spell?this.spellGeometry:this.geometry).features].sort()};return this;
+    for(let tile=6;tile>=0;tile--){const variant=((first+tile)%3+3)%3,m=this.geometryVariants[variant],v=m.fogVertices(tile<2?0:tile-1);draw.mesh3d(this.texture.id,v,m.orderedIndices(forward),multiply3d(vp,translation(0,0,tile*TILE)));meshCalls++;vertices+=v.length;}
+    for(const card of cards){
+      const style=card.style,cardTheme=THEMES[style-1];
+      draw.rect(48,24,576,672,((cardTheme.fog&0xffffff00)|Math.round(card.opacity*226))>>>0);
+      let m=this.spellSets.get(style);if(!m){m=spellGeometry(style);this.spellSets.set(style,m);}
+      const spellCamera=cameraForStage(style,card.age,true),direction=unit(sub(spellCamera.target,spellCamera.eye));
+      const clip=multiply3d(this.viewport,multiply3d(perspective3d(spellCamera.fov),lookAt3d(spellCamera.eye,spellCamera.target,spellCamera.up)));
+      const source=m.fogVertices(1),v=card.opacity===1?source:source.map(vertex=>[...vertex.slice(0,5),((vertex[5]&0xffffff00)|Math.round((vertex[5]&255)*card.opacity))>>>0]);
+      const texture=this.art.load(SCENERY_ATLASES[style-1].path).id;draw.sampler(texture,'bilinear','clamp','clamp').mesh3d(texture,v,m.orderedIndices(direction),clip);meshCalls++;vertices+=v.length;
+      const dynamic=this.spellBackground.drawCard(draw,card);meshCalls+=dynamic.meshCalls;vertices+=dynamic.vertices;
+    }
+    draw.rect(48,24,576,672,cards.length?0x08101d3a:0x08101d1d).rect(48,24,576,105,0x070e1818);
+    this.stats={stage:id,spell,meshCalls,vertices,camera,texture:SCENERY_ATLASES[id-1].path,features:[...(cards.length?this.spellSets.get(cards.at(-1).style):this.geometry).features].sort(),dynamic:this.spellBackground.snapshot()};return this;
   }
-  destroy(){if(this.destroyed)return;this.destroyed=true;this.geometry=null;this.geometryVariants=null;this.spellGeometry=null;this.texture=null;this.stage=null;this.stats=null;/* GameArt owns the borrowed atlases. */}
+  destroy(){if(this.destroyed)return;this.destroyed=true;this.spellBackground.destroy();this.spellSets.clear();this.geometry=null;this.geometryVariants=null;this.spellGeometry=null;this.texture=null;this.stage=null;this.stats=null;/* GameArt owns the borrowed atlases. */}
 }

@@ -1,6 +1,6 @@
 {
   "name": "touhou21-names-beyond-the-boundary",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "东方归名录：基于 TS-STG 的原创东方同人弹幕游戏",
@@ -13,7 +13,8 @@
     "sync:engine": "node tools/sync-engine.mjs",
     "audit": "node tools/audit-boundaries.mjs",
     "verify:visual": "node tools/verify-visual.mjs",
-    "verify:background": "node tools/verify-background.mjs"
+    "verify:background": "node tools/verify-background.mjs",
+    "verify:routes": "node tools/verify-attack-routes.mjs"
   },
   "dependencies": { "@ts-stg/thlib": "file:packages/thlib" },
   "engines": { "node": ">=24" }

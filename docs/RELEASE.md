@@ -8,9 +8,13 @@
 
 ## 锁定快照
 
-依赖源为只读本地 `D:/AIWorkspace/TS-STG`，Git 提交为 `aa3a2349d56779f4cc3f764c944f3e9786626aa3`。`engine.lock.json` 完整列出 339 个 thlib 文件与 150 个运行时 / 许可文件；可执行程序 SHA-256 为 `9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d`。thlib 包含该提交全部公开 `src/` 代码、声明和选定的公共资源；运行时保留 SDK 的 `PACKAGE.json`、完整第三方许可和新原生程序，没有复制演示业务或源引擎仓库。
+依赖源为只读本地 `D:/AIWorkspace/TS-STG`，Git 提交为 `ad801fad7396000e2913c8dda4a813b7428698d2`。`engine.lock.json` 完整列出 341 个 thlib 文件与 150 个运行时 / 许可文件；可执行程序 SHA-256 为 `c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8`。thlib 包含该提交全部公开 `src/` 代码、声明和选定的公共资源；运行时保留完整第三方许可及新原生程序，没有复制演示业务、符卡编辑器或源引擎仓库。
 
-锁中 `nativeBuild` 保存原生输入文件的哈希、编译依赖日志和 host 对象哈希。此次采用源引擎现成 Release 构建：2026-10-05 06:38:40 UTC 编译 host 对象，06:38:41 UTC 链接程序；编译依赖日志包含新 `music_stream.hpp`，构建与 SDK 中程序字节一致，SDK 清单的程序哈希一致。结合干净的源 Git 和逐文件校验，这是本地构建匹配证据，不是可复现构建认证。
+锁中 `nativeBuild` 保存全部原生输入、八个编译对象、编译 / 链接依赖日志及三个本地静态库的哈希。此次采用源引擎现成 Release 构建：2026-10-05 10:58:11 UTC 编译 host 对象，11:39:52 UTC 编译最新 V8 对象，11:39:53 UTC 链接程序。逐个编译单元检查依赖文件时间不晚于对应对象，八个对象均在链接输入中，二进制晚于全部原生输入和对象。这是本地构建匹配证据，不是可复现构建认证。
+
+源 `dist/TS-STG` 尚保存旧程序（SHA-256 `9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d`），因此不能声称新构建与源 SDK 已一致。本作 `runtime/PACKAGE.json` 使用源 SDK 元数据模板在目标目录派生，替换程序哈希和时间，并加入提交、构建路径、旧模板及旧程序哈希的 `derivedFor` 记录。锁保存派生文件的完整文本及摘要，安装器能精确重建；源模板和源 SDK 程序均未修改。静态 V8 库哈希另与 SDK 模板记录核对。
+
+同步时源 Git 有且仅有未暂存的 `start-spellcard-editor.cmd` 用户修改：559 字节，SHA-256 `7121aa214d9f0e526f8c8188293cb07d93d6b9200600f8eab4c13e26fccd4901`。此启动文件不在原生、编译 / 链接、公共库或运行时输入中；工具仅允许显式指定的这个例外。锁如实记录 `sourceModified:true`、`sourceState.gitClean:false`、状态和内容哈希，操作结果记录 `sourceWritten:false`。任何其它源改动、暂存修改、删除、重命名或此文件内容变化均拒绝；也接受没有本地修改的同提交检出。没有 stash、reset 或写入源文件。
 
 每条文件记录包含相对路径、大小和 SHA-256；运行时文件还记录只读源位置。总清单摘要按路径排序，将 `路径 + NUL + 字节数 + NUL + 小写SHA-256 + LF` 的 UTF-8 内容整体计算 SHA-256。锁文件用于验证版本和内容一致性，不是资源使用授权。
 
@@ -27,13 +31,13 @@ node tools/verify-engine-smoke.mjs
 `setup-local.ps1` 只恢复锁定版本；`-WhatIf` 可预览安装操作，`-VerifyOnly` 不写文件。升级使用下面的同步工具，必须给出预期完整提交；不带 `--apply` 时只校验和预览。
 
 ```powershell
-node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit aa3a2349d56779f4cc3f764c944f3e9786626aa3
-node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit aa3a2349d56779f4cc3f764c944f3e9786626aa3 --apply
+node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit ad801fad7396000e2913c8dda4a813b7428698d2 --allow-source-change start-spellcard-editor.cmd --derive-sdk-manifest
+node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit ad801fad7396000e2913c8dda4a813b7428698d2 --allow-source-change start-spellcard-editor.cmd --derive-sdk-manifest --apply
 ```
 
-同步前必须通过旧快照校验、本地 Node 依赖连接、源 Git、完整公开源码及原生构建校验。本地已有修改、额外文件、错误连接或过期原生构建都会使操作停止。工具先在本项目 `build/engine-upgrade-*` 中暂存新文件，再复核并替换包；旧依赖目录和锁文件完整保留在同一暂存目录，失败时恢复旧目录。整个操作不删除用户数据、不写源引擎、不覆盖未经校验的本地修改。
+同步前必须通过旧快照校验、本地 Node 依赖连接、源 Git 的严格范围校验、完整公开源码及原生构建校验。默认不允许源修改或旧 SDK；上面两个选项分别授权这一启动脚本例外和经新构建验证后的目标 SDK 元数据派生，不是跳过依赖检查。本地依赖已有修改、额外文件、错误连接或过期原生构建都会使操作停止。工具先在本项目 `build/engine-upgrade-*` 中暂存新文件，再复核并替换包；旧依赖目录和锁文件完整保留在同一暂存目录，失败时恢复旧目录。整个操作不删除用户数据、不写源引擎、不覆盖未经校验的本地修改。
 
-新版公共框架支持可注入世界边界、自机策略、子系统工厂、自定义道具和场景；原灵梦、魔理沙预置仍保留原数值。Boss HP 耗尽会持有实体并通知业务，业务明确决定下一阶段、退场或最终爆炸；下一阶段需要恢复持有的 Boss。聚能与 combat 激活、清理也是独立调用。音乐重入修复仅改变原生缓存流的归零过程，输入、纹理和 `mesh3d` ABI 保持原接口。改变确定性行为的游戏升级应同步递增回放修订号。
+公开框架继续支持可注入世界边界、自机策略、子系统工厂、自定义道具和场景；原灵梦、魔理沙预置仍保留原数值。Boss HP 耗尽会持有实体并通知业务，业务明确决定下一阶段、退场或最终爆炸；下一阶段需要恢复持有的 Boss。聚能与 combat 激活、清理也是独立调用。此次新增公共 `TouhouMusicPlayer`、应用 / GameOver 的可选音乐播放器及 `bullets.emit(parameters,{random})`，旧调用形式兼容；Boss 死亡摇屏采样与场地合成节奏改变，符卡名层不继承摇屏。原生新增编辑器帧传输和 V8 动态导入错误传播修复，既有输入、纹理和 `mesh3d` ABI 保持原接口。改变确定性行为的游戏升级应同步递增回放修订号。
 
 `verify-setup.mjs` 在忽略的 `build/setup-verification-*` 目录执行真实恢复、幂等安装、缺失文件恢复和拒绝覆盖 / 路径检查，并保留测试目录供复查。同步测试同样在独立 `build/engine-sync-verification-*` 内验证拒绝覆盖本地修改、保留旧包和存档。`verify-engine-smoke.mjs` 在 V8 与 QuickJS 执行短时原生无窗口验证，检查公共预置自机/武器、世界、Boss 持有恢复、输入、纹理区域和 mesh 命令，报告存入 `reports/engine-upgrade/`；它不声称验证 GPU 像素或音乐实际听感。
 
@@ -57,6 +61,6 @@ node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit aa3a2349d5677
 
 默认 Git 排除 `packages/`、`runtime/`、`node_modules/`、`userdata/`、`reports/`、`build/`、日志与环境文件。公开源码包不得绕过这些规则把私有公共原作资源或用户存档混入。若未来制作可执行发行包，应使用具有明确发行权限的依赖资源，并保留运行时第三方许可；本地可运行不代表获得商业素材授权。此任务没有上传或发布发行包。
 
-本次引擎与道中更新将回放内容修订为 `GAME_REVISION = 2`（游戏版本 1.1.0）。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增该修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。
+本次引擎、非符与符卡节奏更新将回放内容修订为 `GAME_REVISION = 3`（游戏版本 1.2.0）。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增该修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。
 
 静态审计是范围检查：它验证公开导入、资源清单和排除规则；流程验证实际检查公共对象与状态。它们均不等同于对全部资源权利、游戏体验或未执行平台的保证。

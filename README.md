@@ -35,8 +35,9 @@ pwsh -NoProfile -File tools/setup-local.ps1 -VerifyOnly
 - 本篇六面包含完整道中、各面中 Boss、多段 Boss 战与 21 张符卡，提供 Easy / Normal / Hard / Lunatic 四种难度。
 - 任一自机在任一本篇难度不续关通关，即获得对应好结局并解锁 Extra。续关通关进入坏结局。
 - Extra 为独立固定难度，包含 3 张中 Boss 符卡、10 张主 Boss 符卡与双自机 Extra 结局。
-- 七个场景使用绘制的地面纹理与透明建筑、植被面片构景：鸟居山路、雨竹溪流、渡口拱桥、织架庭院、书库、云端名柱与倒铃回廊。面片置于不同深度，通过透视相机、滚动和雾化形成空间；符卡另设场景布局与镜头。详见 [背景说明](docs/BACKGROUNDS.md)。
+- 七个场景使用绘制的地面纹理与透明建筑、植被面片构景：鸟居山路、雨竹溪流、渡口拱桥、织架庭院、书库、云端名柱与倒铃回廊。符卡另有持续流动的底纹和主题层，包括环游门灯、雨信、水流、穿梭丝带、浮动纸札、云铃和镜像回声；进入与退出各自淡化，暂停冻结。详见 [背景说明](docs/BACKGROUNDS.md)。
 - 道中采用七套独立的分段编队时间表，各面分别发展灯火、斜雨、双流水路、经纬针线、折页朱印、答铃与反向回声；移动路径、敌人分工、停顿与复合攻击随段落和难度变化。详见 [道中设计](docs/ROADS.md)。
+- 七位 Boss 的非符各有自己的母题，后续组发展同一套攻击；准备期间移动，锁定目标后分批发射，再留下休止。符卡使用独立短句时钟，间隔保留仍在飞行的旧弹。详见 [非符设计](docs/NONSPELLS.md)与[符卡节奏](docs/SPELLS.md)。
 - 原创中文主菜单、九人立绘、七套 Boss 动画图集、剧情与结局、17 首原创合成 BGM，以及附带创作评语的音乐室。
 - 关卡练习开放已经到达的本篇关卡；符卡练习开放已经遇见的全部 34 张符卡，包括 Extra 中 Boss 的符卡。
 - 玩家记录包含最近 30 次结果，以及按自机、四难度 / Extra 分组的符卡成绩，分别统计实战与符卡练习的收取次数、尝试次数。
@@ -53,10 +54,11 @@ npm run verify:engine
 npm run audit
 npm run verify
 npm run verify:visual
+npm run verify:routes
 node tools/measure-performance.mjs
 ```
 
-`verify:engine` 检查本地私有依赖是否仍符合锁定快照；追加 `-- --check-source` 可同时检查本地源引擎。`audit` 检查业务导入、资源清单、依赖边界及 Git 排除规则。`verify` 以 V8 / QuickJS 实际运行完整流程；`verify:visual` 检查实际渲染画面。报告写入忽略的 `reports/`。自动通关验证用于检查流程、状态与两后端一致性，不能替代人工弹幕难度、画面和听感评测。
+`verify:engine` 检查本地私有依赖是否仍符合锁定快照；追加 `-- --check-source` 可同时检查本地源引擎。`audit` 检查业务导入、资源清单、依赖边界及 Git 排除规则。`verify` 以 V8 / QuickJS 实际运行完整流程；`verify:visual` 检查实际渲染画面；`verify:routes` 搜索符卡的真实低速输入路线，追加 `-- --kind all` 包含全部非符。报告写入忽略的 `reports/`。自动通关、路线搜索和截图各自验证不同范围，不能代替人工弹幕难度、画面和听感评测。
 
 默认后端为 V8；当前版本的实际场景耗时、QuickJS 对照与适用范围见 [性能实测](docs/PERFORMANCE.md)。
 

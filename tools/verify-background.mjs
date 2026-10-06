@@ -34,9 +34,9 @@ for(const stage of stages)for(const mode of modes){
 import {DrawList} from '@ts-stg/thlib';
 import {GameArt} from '../../src/art.js';
 import {StageBackground} from '../../src/background.js';
-const background=new StageBackground({art:new GameArt(tsstg)});let frame=0;
+const background=new StageBackground({art:new GameArt(tsstg),seed:2107});background.setStage(${stage});let frame=0;
 globalThis.__tsstg_game={
-  update(){frame++;},
+  update(){frame++;background.update({frame:480+frame,spell:{active:${mode==='spell'},id:${stage},age:{current:480+frame}}});},
   render(){const draw=new DrawList();draw.clear(0x07101cff).scissor(48,24,576,672);
     background.draw(draw,{frame:480+frame,spell:{active:${mode==='spell'}}},{stage:${stage}});
     draw.scissorEnd().rect(630,24,300,672,0x0e1927ff).text('REALTIME 3D',653,64,23,0xe4dcbbff)
@@ -54,11 +54,11 @@ globalThis.__tsstg_game={
     fs.writeFileSync(prefix+'.log',(child.stdout??'')+(child.stderr??''));
     if(child.error)throw child.error;assert.equal(child.status,0,`${backend}/${stage}/${mode}: ${child.stderr}`);
     const state=JSON.parse(fs.readFileSync(prefix+'.json','utf8'));assert.equal(state.stats.stage,stage);
-    assert.equal(state.stats.spell,mode==='spell');assert.ok(state.stats.meshCalls>0&&state.stats.meshCalls<=7);
+    assert.equal(state.stats.spell,mode==='spell');assert.ok(state.stats.meshCalls>0&&state.stats.meshCalls<=15);assert.ok(state.stats.vertices<2300);
     runs.push({backend,state,pngSha256:hash(prefix+'.png'),log:(child.stdout??'').trim()});
   }
   if(runs.length===2){compareState(runs[0].state,runs[1].state);assert.equal(runs[0].pngSha256,runs[1].pngSha256);}
   results.push({stage,mode,runs});console.log(`PASS stage ${stage} ${mode}`);
 }
-fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({passed:true,sourceSha256:hash(path.join(root,'src/background.js')),artManifestSha256:hash(path.join(root,'assets/art-manifest.json')),
+fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({passed:true,sourceSha256:Object.fromEntries(['background.js','background-art.js','spell-background.js'].map(name=>[name,hash(path.join(root,'src',name))])),artManifestSha256:hash(path.join(root,'assets/art-manifest.json')),
   binarySha256:hash(binary),results,stateComparison:'Exact keys, integers and nonnumeric values; relative 1e-12 tolerance for camera trigonometry. PNG hashes must be identical.',scope:'Original world-space textured planes, camera, painter ordering, portrait viewport and backend parity. No original executable run.'},null,2)+'\n');

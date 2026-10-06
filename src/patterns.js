@@ -1,6 +1,8 @@
 /** Original campaign attack choreography. The field owns movement, birth mist,
  * collision, grazing, bounds and cancellation; this module only authors shots. */
 import {touhouBulletCommand,touhouCurveSample} from '@ts-stg/thlib/touhou';
+import {updateThemedNonspell} from './nonspells.js';
+import {spellAttackClock,prepareSpellPhrase} from './spell-cadence.js';
 
 const TAU=Math.PI*2;
 const birth=touhouBulletCommand(1,{ints:[0]});
@@ -9,6 +11,21 @@ const curve=(angular,duration=90,acceleration=0)=>touhouBulletCommand(3,{floats:
 const accelerate=(acceleration,duration=90)=>touhouBulletCommand(3,{floats:[acceleration,0],ints:[duration]});
 const bounce=(count=1)=>touhouBulletCommand(6,{floats:[-999,384,448],ints:[count,12]});
 const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+
+// Difficulty belongs to this game's score. Scale later velocity changes too,
+// preserving the public command's angles, timing, modes and sentinel values.
+const commandWord=new DataView(new ArrayBuffer(4));
+function spellMotionCommands(commands,scale){
+  if(scale===1)return commands;
+  return commands.map(command=>{
+    const lane=command[8]===4?1:command[8]===3?0:-1;
+    if(lane<0)return command;
+    commandWord.setUint32(0,command[lane],true);const value=commandWord.getFloat32(0,true);
+    if(value<=-999990||value===0)return command;
+    commandWord.setFloat32(0,value*scale,true);
+    const words=command.slice();words[lane]=commandWord.getUint32(0,true);return words;
+  });
+}
 
 export const DIFFICULTY_PROFILES=Object.freeze([
   Object.freeze({density:.68,speed:.82,interval:1.24,rank:0}),
@@ -21,17 +38,17 @@ export const DIFFICULTY_PROFILES=Object.freeze([
 function attackContext(game,boss,frame,difficulty,state){
   const d=DIFFICULTY_PROFILES[difficulty]??DIFFICULTY_PROFILES[1];
   let shotSoundPlayed=false;
-  const every=period=>frame%Math.max(5,Math.round(period*d.interval))===0;
+  const every=(period,offset=0)=>frame>=offset&&(frame-offset)%Math.max(5,Math.round(period*d.interval))===0;
   const n=(base,min=3)=>Math.max(min,Math.round(base*d.density));
   const shoot=(x,y,angle,speed,type=0,color=1,commands=[])=>{
     const shotSound=shotSoundPlayed?-1:21;shotSoundPlayed=true;
     return game.bullets.emit({x,y,angle,speed:speed*d.speed,type,color,pattern:1,count:1,shotSound,
-      minimumPlayerDistanceSquared:1024,commands:[birth,...commands]});
+      minimumPlayerDistanceSquared:1024,commands:[birth,...spellMotionCommands(commands,d.speed)]});
   };
   const ring=(x,y,count,speed,angle=0,type=0,color=1,commands=[])=>game.bullets.emit({x,y,angle,speed:speed*d.speed,type,color,
-    pattern:3,count:n(count),shotSound:21,minimumPlayerDistanceSquared:1024,commands:[birth,...commands]});
+    pattern:3,count:n(count),shotSound:21,minimumPlayerDistanceSquared:1024,commands:[birth,...spellMotionCommands(commands,d.speed)]});
   const fan=(x,y,count,speed,angle=aim(x,y),spread=.12,type=0,color=1,commands=[])=>game.bullets.emit({x,y,angle,angleStep:spread,
-    speed:speed*d.speed,type,color,pattern:1,count:n(count),shotSound:21,minimumPlayerDistanceSquared:1024,commands:[birth,...commands]});
+    speed:speed*d.speed,type,color,pattern:1,count:n(count),shotSound:21,minimumPlayerDistanceSquared:1024,commands:[birth,...spellMotionCommands(commands,d.speed)]});
   const aim=(x=boss.x,y=boss.y)=>Math.atan2(game.player.y-y,game.player.x-x);
   const beam=(x,y,angle,{width=8,delay=60,sustain=100,color=6,angular=0}={})=>game.lasers.spawnInfinite({x,y,angle,width,
     length:600,color,type:0,delay,grow:20,sustain,shrink:24,angularVelocity:angular,sound:26});
@@ -49,73 +66,73 @@ function attackContext(game,boss,frame,difficulty,state){
 // asks the player to stream instead of standing inside one comfortable gap.
 function lanternPetals(c){const{boss:b,frame:t,every,ring,fan,d}=c;
   if(every(48))for(const side of[-1,1])ring(b.x+side*52,b.y+12,14,1.55,t*.011*side,0,side<0?2:12,[curve(side*.008,100)]);
-  if(every(110))fan(b.x,b.y,3,2.7,undefined,.19,5,1);
+  if(every(110,45))fan(b.x,b.y,3,2.7,undefined,.19,5,1);
   if(d.rank>=2&&every(96))ring(b.x,b.y,10,2.5,t*.009,3,14);
 }
 function paperFlames(c){const{boss:b,frame:t,every,shoot,n,fan,d}=c;
   if(every(80)){const count=n(18);for(let i=0;i<count;i++){const a=TAU*i/count+t*.01;
     shoot(b.x,b.y,a,2.6,3,i%2?1:12,[turn(Math.PI*.8,2.2,55)]);}}
-  if(every(145))fan(b.x,b.y,5,3.1,undefined,.105,0,2);
+  if(every(145,52))fan(b.x,b.y,5,3.1,undefined,.105,0,2);
   if(d.rank>=2&&every(40))shoot(b.x+Math.sin(t*.04)*75,b.y,Math.PI/2,2.8,4,14);
 }
 function addressRain(c){const{frame:t,every,shoot,n,fan,boss:b,d}=c;
-  if(every(20)){const count=n(11);const gap=80*Math.sin(t*.008);for(let i=0;i<count;i++){const x=-180+i*360/(count-1);
-    if(Math.abs(x-gap)>29)shoot(x,8,Math.PI/2+.14*Math.sin(t*.015),2.2,3,6);}}
-  if(every(115))fan(b.x,b.y,5,3,undefined,.1,0,15);
+  if(every(28)){const count=n(11);const gap=80*Math.sin(t*.006);for(let i=0;i<count;i++){const x=-180+i*360/(count-1);
+    if(Math.abs(x-gap)>34)shoot(x,8,Math.PI/2,2.2,3,6);}}
+  if(every(150,74))fan(b.x,b.y,3,2.65,undefined,.14,0,15);
   if(d.rank>=2&&every(80))fan(-170,100,7,2.5,.38,.13,2,7);
 }
 function postmarks(c){const{boss:b,frame:t,every,ring,shoot,n,d}=c;
-  if(every(100)){const centers=[{x:-100,y:80},{x:100,y:150},{x:0,y:220}];
+  if(every(150)){const centers=[{x:-108,y:70},{x:108,y:125},{x:0,y:170}];
     for(let k=0;k<centers.length;k++){const p=centers[k],count=n(13);for(let i=0;i<count;i++){
       const a=TAU*i/count;shoot(p.x+Math.cos(a)*40,p.y+Math.sin(a)*40,a,0,2,k*2+5,[turn(Math.PI/2,2.5,40+k*22,4)]);}}}
   if(d.rank>=2&&every(160))ring(b.x,b.y,22,1.7,t*.018,0,7);
 }
 function rainSignatures(c){const{boss:b,frame:t,every,shoot,n,beam,d}=c;
-  if(every(12)){for(const sign of[-1,1])for(let i=0;i<n(3,2);i++){
+  if(every(20)){for(const sign of[-1,1])for(let i=0;i<n(3,2);i++){
     const x=sign*(80+35*Math.sin(t*.025+i*.2));shoot(x,b.y+i*8,Math.PI/2+sign*.33,1.8,3,sign<0?5:7,[curve(sign*.009,130)]);}}
-  if(every(150))beam(b.x,b.y,Math.PI/2+.45*Math.sin(t*.018),{width:7,delay:75,sustain:85,color:6});
+  if(every(260,58))beam(b.x,b.y,Math.PI/2+.45*Math.sin(t*.018),{width:7,delay:80,sustain:65,color:6});
   if(d.rank>=2&&every(90))c.fan(b.x,b.y,5,3.2,undefined,.12,2,15);
 }
 function crossingTickets(c){const{frame:t,every,shoot,n,boss:b,fan,d}=c;
-  if(every(42)){const count=n(8);for(let i=0;i<count;i++){const y=32+i*16;
+  if(every(64)){const count=n(8);for(let i=0;i<count;i++){const y=32+i*13;
     shoot(-170,y,.48,2.5,3,12,[turn(Math.PI/2,2.2,52,4)]);
     shoot(170,y,Math.PI-.48,2.5,3,6,[turn(Math.PI/2,2.2,52,4)]);}}
-  if(every(150))fan(b.x,b.y,3,3.5,undefined,.16,5,14);
+  if(every(180,68))fan(b.x,b.y,3,3,undefined,.17,5,14);
   if(d.rank>=2&&every(84))c.ring(b.x,b.y,18,1.4,t*.006,0,9);
 }
 function tollGates(c){const{frame:t,every,shoot,n,beam,d}=c;
-  const gap=95*Math.sin(t*.005);
+  const gap=95*Math.sin(t*.003);
   if(every(70)){for(let i=0,count=n(26);i<count;i++){const x=-184+i*368/(count-1);
-    if(Math.abs(x-gap)>36)shoot(x,20,Math.PI/2,2.25,2,12);}}
-  if(every(160))for(const side of[-1,1])beam(clamp(gap+side*60,-175,175),20,Math.PI/2,{width:8,delay:65,sustain:55,color:14});
+    if(Math.abs(x-gap)>42)shoot(x,20,Math.PI/2,2.25,2,12);}}
+  if(every(280,40))for(const side of[-1,1])beam(clamp(gap+side*96,-175,175),20,Math.PI/2,{width:8,delay:85,sustain:55,color:14});
   if(d.rank>=2&&every(105))c.fan(0,105,7,2.8,undefined,.1,0,6);
 }
 function riverCursive(c){const{frame:t,every,ribbon,shoot,boss:b,d}=c;
-  if(every(85))for(const sign of[-1,1])ribbon(sign*95,25,Math.PI/2-sign*.42,sign*.008,2.5,sign<0?7:12);
-  if(every(22))shoot(b.x+Math.sin(t*.04)*65,b.y,Math.PI/2,2,0,15,[curve(Math.sin(t*.017)*.018,100)]);
+  if(every(150))for(const sign of[-1,1])ribbon(sign*120,25,Math.PI/2-sign*.34,sign*.006,2.35,sign<0?7:12);
+  if(every(32,24))shoot(b.x+Math.sin(t*.024)*65,b.y,Math.PI/2,2,0,15,[curve(Math.sin(t*.017)*.012,100)]);
   if(d.rank>=2&&every(125))c.ring(b.x,b.y,20,2,t*.018,3,6);
 }
 function eightSpokeWeb(c){const{boss:b,frame:t,every,beam,shoot,n,d}=c;
-  if(every(190)){const offset=Math.sin(t*.007)*.3;for(let i=0;i<8;i++)beam(b.x,b.y,TAU*i/8+offset,{width:6,delay:85,sustain:85,color:4});}
-  if(every(45)){const count=n(22);for(let i=0;i<count;i++){const a=TAU*i/count+t*.006;
+  if(every(300)){const offset=Math.sin(t*.007)*.3;for(let i=0;i<8;i++)beam(b.x,b.y,TAU*i/8+offset,{width:6,delay:90,sustain:65,color:4});}
+  if(every(64,30)){const count=n(22);for(let i=0;i<count;i++){const a=TAU*i/count+t*.006;
     shoot(b.x,b.y,a,1.8+((i%3)*.16),2,4,[curve((i%2?1:-1)*.003,140)]);}}
   if(d.rank>=2&&every(130))c.fan(b.x,b.y,5,3.1,undefined,.13,0,3);
 }
 function shuttleThreads(c){const{boss:b,frame:t,every,shoot,n,fan,d}=c;
-  if(every(28)){const sign=(Math.floor(t/140)&1)?1:-1;const count=n(9);
+  if(every(48)){const sign=(Math.floor(t/140)&1)?1:-1;const count=n(9);
     for(let i=0;i<count;i++)shoot(sign*175,25+i*20,sign<0?.43:Math.PI-.43,2.3,3,4,[turn(sign*.8,2.2,65)]);}
-  if(every(140))fan(b.x,b.y,7,2.6,undefined,.07,0,9);
+  if(every(180,62))fan(b.x,b.y,5,2.6,undefined,.1,0,9);
   if(d.rank>=2&&every(100))c.ribbon(b.x,b.y,Math.PI/2,.004*Math.sin(t*.01),3,4);
 }
 function stoppedMemory(c){const{boss:b,frame:t,every,ring,fan,d}=c;
-  if(every(125))ring(b.x,b.y,30,2.6,t*.023,3,3,[turn(-999999,0,35,4),turn(999999,2.6,50,1)]);
+  if(every(125))ring(b.x,b.y,30,2.6,t*.023,3,3,[turn(-999999,0,35,4),turn(999999,2.6,50,4)]);
   if(every(180))fan(b.x,b.y,5,3.2,undefined,.14,2,9);
   if(d.rank>=2&&every(125))ring(b.x,b.y,16,1.3,t*.015,0,15,[curve(-.014,180)]);
 }
 function knots(c){const{boss:b,frame:t,every,shoot,n,d}=c;
-  if(every(14)){const count=n(6);for(let i=0;i<count;i++){const a=t*.034+TAU*i/count;
+  if(every(22)){const count=n(6);for(let i=0;i<count;i++){const a=t*.023+TAU*i/count;
     shoot(b.x+Math.cos(a)*50,b.y+Math.sin(a)*25,a,1.8,2,i%2?4:10,[curve(-.017,160)]);}}
-  if(every(170))c.beam(b.x,b.y,c.aim(),{width:10,delay:80,sustain:55,color:4});
+  if(every(300,75))c.beam(b.x,b.y,c.aim(),{width:10,delay:90,sustain:55,color:4});
   if(d.rank>=2&&every(85))c.fan(b.x,b.y,5,2.8,undefined,.15,5,3);
 }
 function foldedForms(c){const{boss:b,frame:t,every,fan,ring,d}=c;
@@ -124,10 +141,10 @@ function foldedForms(c){const{boss:b,frame:t,every,fan,ring,d}=c;
   if(d.rank>=2&&every(90))c.beam(-140,50,.88,{width:7,delay:70,sustain:65,color:1});
 }
 function vermilionSeals(c){const{boss:b,frame:t,every,beam,shoot,n,d}=c;
-  if(every(165)){const x=clamp(c.game.player.x,-120,120);for(const side of[-1,1]){
-    beam(x+side*45,18,Math.PI/2,{width:9,delay:75,sustain:80,color:1});
-    beam(side*175,80,side<0?.6:Math.PI-.6,{width:7,delay:100,sustain:55,color:1});}}
-  if(every(35)){const count=n(9);for(let i=0;i<count;i++)shoot(b.x,b.y,Math.PI/2+(i-(count-1)/2)*.085,2.6,2,1,[curve(i%2?.006:-.006,85)]);}
+  if(every(300)){const x=clamp(c.game.player.x,-112,112);for(const side of[-1,1]){
+    beam(x+side*58,18,Math.PI/2,{width:9,delay:90,sustain:60,color:1});
+    if(d.rank>=2)beam(side*175,80,side<0?.6:Math.PI-.6,{width:7,delay:120,sustain:45,color:1});}}
+  if(every(52,35)){const count=n(7);for(let i=0;i<count;i++)shoot(b.x,b.y,Math.PI/2+(i-(count-1)/2)*.12,2.4,2,1,[curve(i%2?.004:-.004,85)]);}
   if(d.rank>=2&&every(120))c.ring(b.x,b.y,18,1.4,t*.021,0,15);
 }
 function foldedCranes(c){const{boss:b,frame:t,every,shoot,n,d}=c;
@@ -138,9 +155,9 @@ function foldedCranes(c){const{boss:b,frame:t,every,shoot,n,d}=c;
   if(d.rank>=2&&every(160))c.ribbon(-140,25,.75,.004,2.8,1);
 }
 function archiveColumns(c){const{frame:t,every,shoot,n,boss:b,d}=c;
-  if(every(36)){const gap=110*Math.sin(t*.012);for(let i=0,count=n(16);i<count;i++){
-    const x=-175+i*350/(count-1);if(Math.abs(x-gap)>30)shoot(x,18,Math.PI/2,1.9,3,(Math.floor(t/36)+i)%2?1:15,[accelerate(.009,120)]);}}
-  if(every(150))c.ring(b.x,b.y,16,2.2,t*.04,5,12);
+  if(every(48)){const gap=90*Math.sin(t*.005);for(let i=0,count=n(16);i<count;i++){
+    const x=-175+i*350/(count-1);if(Math.abs(x-gap)>40)shoot(x,18,Math.PI/2,1.9,3,(Math.floor(t/48)+i)%2?1:15,[accelerate(.006,100)]);}}
+  if(every(240,95))c.ring(b.x,b.y,12,1.9,t*.04,5,12);
   if(d.rank>=2&&every(90))c.fan(b.x,b.y,5,3.4,undefined,.13,0,1);
 }
 function nameStrokes(c){const{frame:t,every,shoot,n,boss:b,d}=c;
@@ -163,17 +180,17 @@ function counterfeitNames(c){const{boss:b,frame:t,every,shoot,n,fan,d}=c;
   if(d.rank>=2&&every(160))for(const s of[-1,1])c.ribbon(s*145,20,Math.PI/2-s*.4,s*.008,2.7,12);
 }
 function blankIndex(c){const{frame:t,every,shoot,n,d}=c;
-  if(every(26)){const gap=120*Math.sin(t*.006)+15*Math.sin(t*.031);
+  if(every(38)){const gap=100*Math.sin(t*.004)+12*Math.sin(t*.018);
     for(let i=0,count=n(24);i<count;i++){const x=-185+i*370/(count-1);
-      if(Math.abs(x-gap)>38)shoot(x,10,Math.PI/2,2.3,2,15);}}
-  if(every(130)){const gap=120*Math.sin((t+100)*.006);for(const sign of[-1,1])c.beam(clamp(gap+sign*55,-170,170),15,Math.PI/2,{width:6,delay:85,sustain:45,color:14});}
+      if(Math.abs(x-gap)>45)shoot(x,10,Math.PI/2,2.3,2,15);}}
+  if(every(300,48)){const gap=100*Math.sin((t+100)*.004);for(const sign of[-1,1])c.beam(clamp(gap+sign*94,-170,170),15,Math.PI/2,{width:6,delay:100,sustain:45,color:14});}
   if(d.rank>=2&&every(110))c.fan(0,90,3,3.3,undefined,.17,0,12);
 }
 function namingBloom(c){const{boss:b,frame:t,every,shoot,n,ring,d}=c;
-  if(every(10)){for(let k=0;k<n(5);k++){const a=TAU*k/n(5)+t*.02;
+  if(every(16)){for(let k=0;k<n(5);k++){const a=TAU*k/n(5)+t*.014;
     shoot(b.x,b.y,a,2.4+Math.sin(t*.04)*.5,0,12,[curve(-.008,120)]);}}
-  if(every(90))ring(b.x,b.y,22,1.3,t*.03,5,15,[accelerate(.007,100)]);
-  if(every(240))for(const sign of[-1,1])c.ribbon(b.x,b.y,Math.PI/2+sign*.8,sign*.006,2.8,14);
+  if(every(140,38))ring(b.x,b.y,18,1.3,t*.02,5,15,[accelerate(.007,100)]);
+  if(every(360,88))for(const sign of[-1,1])c.ribbon(b.x,b.y,Math.PI/2+sign*.8,sign*.006,2.8,14);
   if(d.rank>=2&&every(150))c.fan(b.x,b.y,7,3.7,undefined,.085,3,1);
 }
 
@@ -198,12 +215,12 @@ function fiveSyllables(c){const{boss:b,frame:t,every,shoot,n}=c;
   if(every(185))c.beam(b.x,b.y,c.aim(),{width:10,delay:90,sustain:65,color:4});
 }
 function oldCursive(c){const{frame:t,every,ribbon,boss:b,shoot}=c;
-  if(every(70))for(const sign of[-1,1])ribbon(sign*130,25,Math.PI/2-sign*.5,sign*.009,2.5,sign<0?4:6);
-  if(every(20))shoot(b.x,b.y,Math.PI/2+Math.sin(t*.08)*.9,2.5,3,15,[curve(Math.sin(t*.01)*.015,130)]);
+  if(every(160))for(const sign of[-1,1])ribbon(sign*140,25,Math.PI/2-sign*.4,sign*.006,2.4,sign<0?4:6);
+  if(every(28,28))shoot(b.x,b.y,Math.PI/2+Math.sin(t*.035)*.9,2.5,3,15,[curve(Math.sin(t*.01)*.01,130)]);
 }
 function erasedMargin(c){const{frame:t,every,shoot,n}=c;
-  if(every(45)){const gap=100*Math.sin(t*.011);for(let i=0,count=n(28);i<count;i++){
-    const x=-182+i*364/(count-1);if(Math.abs(x-gap)>34)shoot(x,10,Math.PI/2,2.15,0,15,[turn(Math.PI/2,2.9,70,4)]);}}
+  if(every(60)){const gap=90*Math.sin(t*.005);for(let i=0,count=n(28);i<count;i++){
+    const x=-182+i*364/(count-1);if(Math.abs(x-gap)>42)shoot(x,10,Math.PI/2,2.15,0,15,[turn(Math.PI/2,2.7,70,4)]);}}
   if(every(210))for(const s of[-1,1])c.beam(s*170,40,s<0?.7:Math.PI-.7,{width:7,delay:85,sustain:100,color:4});
 }
 function borderExpansion(c){const{boss:b,frame:t,every,shoot,n}=c;
@@ -223,7 +240,7 @@ function twinNames(c){const{frame:t,every,fan,ring,beam}=c;
   if(every(140))ring(0,80,24,1.5,t*.021,0,15);
 }
 function allForgottenNames(c){const{boss:b,frame:t,every,state}=c;
-  const chapter=Math.floor(t/480)%6;
+  const chapter=(state.phraseCycle??0)%6;
   // This final card quotes the journey's geometry in a new combined cadence.
   if(chapter===0)lanternPetals(c);
   else if(chapter===1)rainSignatures(c);
@@ -247,9 +264,9 @@ export const SPELL_PATTERNS=Object.freeze(functions.map((update,index)=>Object.f
 export const STAGE_PATTERN_OFFSETS=Object.freeze([0,2,5,8,12,16,21]);
 
 function archiveCopies(c){const{boss:b,frame:t,every,shoot,n}=c;
-  if(every(60)){const gap=100*Math.sin(t*.018);for(let i=0,count=n(18);i<count;i++){
-    const x=-174+i*348/(count-1);if(Math.abs(x-gap)>35)shoot(x,15,Math.PI/2,2.35,3,15,[turn(Math.PI/2+.12,2.8,75,4)]);}}
-  if(every(145))c.fan(b.x,b.y,5,3.1,undefined,.12,0,1);
+  if(every(72)){const gap=90*Math.sin(t*.006);for(let i=0,count=n(18);i<count;i++){
+    const x=-174+i*348/(count-1);if(Math.abs(x-gap)>42)shoot(x,15,Math.PI/2,2.35,3,15,[turn(Math.PI/2,2.65,75,4)]);}}
+  if(every(180,90))c.fan(b.x,b.y,3,3,undefined,.14,0,1);
 }
 function sealedEcho(c){const{boss:b,frame:t,every,shoot,n,beam}=c;
   if(every(95)){for(let i=0,count=n(26);i<count;i++){
@@ -269,24 +286,20 @@ export const MIDBOSS_PATTERNS=Object.freeze([
 ]);
 export function updateMidbossSpellPattern({game,boss,frame,difficulty=4,spellIndex=0,state={}}){
   const pattern=MIDBOSS_PATTERNS[spellIndex];if(!pattern)throw new RangeError('Undefined Extra midboss card');
-  if(frame>=60)pattern.update(attackContext(game,boss,frame-60,difficulty,state));return pattern.id;
+  const clock=spellAttackClock(31+spellIndex,frame);prepareSpellPhrase(boss,clock,state,{stageId:5,index:31+spellIndex});
+  if(clock.active)pattern.update(attackContext(game,boss,clock.frame,difficulty,state));return pattern.id;
 }
 
 export function updateSpellPattern({game,boss,frame,difficulty=1,stageId=1,spellIndex=0,state={}}){
   const index=(STAGE_PATTERN_OFFSETS[stageId-1]??0)+spellIndex;
   const pattern=SPELL_PATTERNS[index];if(!pattern)throw new RangeError(`Undefined spell geometry ${stageId}/${spellIndex}`);
-  if(frame>=60)pattern.update(attackContext(game,boss,frame-60,difficulty,state));
+  const clock=spellAttackClock(index,frame);prepareSpellPhrase(boss,clock,state,{stageId,index});
+  if(clock.active)pattern.update(attackContext(game,boss,clock.frame,difficulty,state));
   return pattern.id;
 }
 
-export function updateNonspellPattern({game,boss,frame,difficulty=1,stageId=1,phaseIndex=0,state={}}){
-  if(frame<35)return;const c=attackContext(game,boss,frame-35,difficulty,state);
-  const b=boss,t=frame-35,chapter=(stageId+phaseIndex)%7;
-  if(c.every(60))c.fan(b.x,b.y,3+chapter,2+stageId*.14,undefined,.105,chapter%2?3:0,[1,6,12,4,15,7,14][chapter]);
-  if(c.every(105))c.ring(b.x,b.y,12+stageId*2,1.2+stageId*.08,t*.011*(phaseIndex%2?1:-1),2,chapter%2?6:12,
-    chapter>=3?[curve((phaseIndex%2?1:-1)*.006,90)]:[]);
-  if(stageId>=3&&c.every(210))c.beam(b.x,b.y,c.aim()+.5,{width:6,delay:80,sustain:60,color:6});
-  if(c.d.rank>=2&&c.every(150))c.fan(b.x,b.y,5,3.2,undefined,.07,3,15);
+export function updateNonspellPattern({game,boss,frame,difficulty=1,stageId=1,phaseIndex=0,state={},rng}){
+  return updateThemedNonspell({game,boss,frame,difficulty,stageId,phaseIndex,state,rng});
 }
 
 export const ROAD_ATTACKS=Object.freeze([

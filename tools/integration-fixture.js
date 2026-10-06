@@ -62,17 +62,23 @@ function* replay(){
   const source=application.core.game;source.player.lives=5;source.recorder.config.startingLives=5;
   const events={hit:0,miss:0,bomb:0,pausedFrames:0,spellFinish:0},event=source.onEvent;
   source.onEvent=(name,data)=>{if(name in events)events[name]++;event?.(name,data);};
-  let frames=0;
+  let frames=0,bombInput=null;
   while(!application.finishedResult&&frames<6000){
     let mask=frames>=600?Keys.RIGHT:0;
     if(frames===400||frames===440)mask=Keys.PAUSE;
-    if(frames===1250)mask|=Keys.BOMB;
+    // Pattern edits change natural Miss times. Send one real X after recovery,
+    // rather than assuming a fixed frame cannot fall in the respawn entrance.
+    if(bombInput===null&&frames>=900&&events.miss>0&&!source.paused&&!source.context.inputBlocked&&
+      source.player.state===1&&source.player.canBomb(source.context)){
+      bombInput={applicationFrame:frames,gameFrame:source.frame,state:source.player.state,bombs:source.player.bombs};mask|=Keys.BOMB;
+    }
     application.update(mask);if(source.paused)events.pausedFrames++;frames++;
     assert(!source.pendingGameOver,'Replay sample retains enough stock to cross a natural card settlement');
     if(frames%128===0)yield;
   }
   assert(application.finishedResult,'Real public timer/damage must finish the card');
   assert(events.bomb>0,'Recorded X input must trigger a real public Bomb');
+  assert(bombInput?.state===1,'Single recorded X follows a real Miss and ordinary respawn recovery');
   assert(events.miss>0,'Original patterned bullets must cause a real collision and miss');
   assert(events.pausedFrames>0,'Recorded Esc input must exercise pause and resume');
   assert(events.spellFinish===1,'Sample crosses exactly one natural card settlement');
@@ -90,7 +96,7 @@ function* replay(){
   assert(playing.player.lives===stock,'Replay follows the same public misses and stock changes');
   application.update(0);assert(application.replayFinished,'App receives replay completion callback');
   assert(JSON.stringify(application.storage.progress)===progress&&writes===beforeWrites,'Replay changes no persistent progress');
-  result={kind:'replay',frames,events,config:recorded.config,inputRuns:recorded.runs,checkpoints:recorded.checkpoints,
+  result={kind:'replay',frames,events,bombInput,config:recorded.config,inputRuns:recorded.runs,checkpoints:recorded.checkpoints,
     checkedFinalHash:stateHash(expected),replayFinalHash:stateHash(playing.snapshot()),finished:source.finishedResult,identity:owners(playing),memoryWrites:writes};
 }
 function* continuationReplay(){
