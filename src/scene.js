@@ -5,6 +5,7 @@ import {CampaignDirector} from './director.js';
 import {StageBackground} from './background.js';
 import {BossSpriteCatalog} from './boss-sprites.js';
 import {GameFrameSkin} from './frame-skin.js';
+import {CampaignBossHud} from './campaign-boss-hud.js';
 import {GAME_REVISION} from './storage.js';
 
 const names=new Map(CHARACTERS.map(value=>[value.id,value.name]));
@@ -49,6 +50,7 @@ export class CampaignScene extends TouhouGame {
     if(!playbackSource&&!options.testing)storage.progress.spellRecords[recordNamespace]=records;
     const background=new StageBackground({art,seed:config.seed});
     super({...settings,character:config.character,difficulty:config.difficulty,seed:config.seed,
+      factories:{...settings.factories,bossHud:(hudOptions,game)=>new CampaignBossHud(hudOptions,game)},
       rng:settings.rng??new TouhouRNG(config.seed),visualRng:settings.visualRng??new TouhouRNG(config.seed^0x6d2b79f5),
       renderBackground:(draw,game)=>{background.draw(draw,game);game.stageTransition?.draw(draw,{x:48,y:24,width:576,height:672});},
       spellContext:{...settings.spellContext,...(host?.rasterizeBitmapText&&host?.encodeText?{
@@ -88,10 +90,6 @@ export class CampaignScene extends TouhouGame {
     };
     this.bossHud.drawName=(queue,name,style)=>{const label=names.get(this.context.boss?.bossId)??name;
       queue.enqueuePriority(style.drawPriority,draw=>this.text.draw(draw,label,76,18,{size:16,width:455,height:25,color:0xf8e8caff,alpha:(style.color>>>24)/255}));};
-    // The restored game facade overrides the inactive timer with -1. Keep the
-    // public HUD's authored nonspell clock at this consumer composition point.
-    const updateHud=this.bossHud.update.bind(this.bossHud);
-    this.bossHud.update=state=>updateHud({...state,remainingFrames:this.spell.active?state.remainingFrames:this.bossHudState.remainingFrames??-1});
     this.director=new CampaignDirector({stages,midbosses:MIDBOSSES,character:config.character,difficulty:config.difficulty,mode:config.mode,stageId:config.stageId,spellId:config.spellId,seed:config.seed,
       callbacks:{
         music:id=>music.play(id,true),stageStart:stage=>this.startStage(stage),
@@ -109,10 +107,22 @@ export class CampaignScene extends TouhouGame {
   }
   decorateBoss(enemy,{bossId,midboss}){
     enemy._spriteDirection=0;
-    enemy.draw=(queue,view)=>this.bossPresentation.drawBody(queue,(draw,bodyView)=>{
+    const renderBody=(draw,bodyView)=>{
       const x=(bodyView.x??336)+enemy.x*(bodyView.scale??1.5),y=(bodyView.y??24)+enemy.y*(bodyView.scale??1.5);
       this.bossSprites.draw(draw,enemy,bossId,{x,y,scale:bodyView.scale??1.5,height:midboss?55:68,color:enemy.hitThisFrame?0xffccccff:0xffffffff});
-    },{view,layer:7,order:0});
+    };
+    enemy.draw=(queue,view)=>{
+      if(!enemy.alive)return queue;
+      // The public escape intentionally clears the active presentation/HUD.
+      // Its held actor remains a visible body until the escape owner retires it.
+      if(this.bossEscapes.some(entry=>entry.enemy===enemy&&entry.sequence.alive)){
+        const bodyView={...view};
+        if(queue.enqueue)queue.enqueue(7,draw=>renderBody(draw,bodyView),{order:0});
+        else renderBody(queue,bodyView);
+        return queue;
+      }
+      return this.bossPresentation.drawBody(queue,renderBody,{view,layer:7,order:0});
+    };
   }
   spellStart(spec,{bossId,code}){
     if(spec&&!this.playback&&!this.options.testing){if(!this.storage.progress.seenSpells.includes(spec.id))this.storage.progress.seenSpells.push(spec.id);this.storage.saveProgress();}

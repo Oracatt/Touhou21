@@ -61,6 +61,6 @@ node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit ad801fad73960
 
 默认 Git 排除 `packages/`、`runtime/`、`node_modules/`、`userdata/`、`reports/`、`build/`、日志与环境文件。公开源码包不得绕过这些规则把私有公共原作资源或用户存档混入。若未来制作可执行发行包，应使用具有明确发行权限的依赖资源，并保留运行时第三方许可；本地可运行不代表获得商业素材授权。此任务没有上传或发布发行包。
 
-本次引擎、非符与符卡节奏更新将回放内容修订为 `GAME_REVISION = 3`（游戏版本 1.2.0）。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增该修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。
+当前 Boss 非符 HP、道中退场及计时修正将回放内容修订为 `GAME_REVISION = 4`（游戏版本 1.2.1），引擎锁仍保持上述快照。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增该修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。
 
 静态审计是范围检查：它验证公开导入、资源清单和排除规则；流程验证实际检查公共对象与状态。它们均不等同于对全部资源权利、游戏体验或未执行平台的保证。

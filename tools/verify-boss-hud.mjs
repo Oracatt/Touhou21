@@ -1,0 +1,35 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+
+const root=path.resolve(import.meta.dirname,'..'),out=path.join(root,'reports/boss-hud'),build=path.join(root,'build/boss-hud');
+fs.mkdirSync(out,{recursive:true});fs.mkdirSync(build,{recursive:true});
+const sha=file=>createHash('sha256').update(fs.readFileSync(path.resolve(root,file))).digest('hex');
+const sources=()=>Object.fromEntries(fs.readdirSync(path.join(root,'src')).filter(name=>name.endsWith('.js')).map(name=>[`src/${name}`,sha(`src/${name}`)]));
+const before=sources(),binary=sha('runtime/ts-stg.exe'),fixture=sha('tools/boss-hud-fixture.js'),frames=220,results=[];
+const ids=['main-nonspell','midboss-nonspell','spell-clock','dialogue-hidden','midboss-escape'];
+const normalise=value=>Array.isArray(value)?value.map(normalise):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([key])=>key!=='backend').map(([key,item])=>[key,normalise(item)])):value;
+function compare(a,b,label='$'){
+  if(typeof a==='number'&&typeof b==='number'){assert.ok(Math.abs(a-b)<=1e-12,`${label}: backend number difference`);}
+  else if(a&&b&&typeof a==='object'&&typeof b==='object'){assert.deepEqual(Object.keys(a).sort(),Object.keys(b).sort());for(const key of Object.keys(a))compare(a[key],b[key],`${label}.${key}`);}
+  else assert.equal(a,b,label);
+}
+for(const id of ids){
+  const scenario=`build/boss-hud/${id}.json`,entry=`build/boss-hud/${id}.js`,runs=[];
+  fs.writeFileSync(path.join(root,scenario),JSON.stringify({id,captureFrame:frames}));
+  fs.writeFileSync(path.join(root,entry),`import {createBossHudFixture} from '../../tools/boss-hud-fixture.js';\nglobalThis.__tsstg_game=createBossHudFixture('${scenario}');\n`);
+  for(const backend of ['v8','quickjs']){
+    const prefix=path.join(out,`${id}-${backend}`),child=spawnSync(path.join(root,'runtime/ts-stg.exe'),[entry,'--root',root,'--backend',backend,'--benchmark','--frames',String(frames),'--screenshot',prefix+'.png','--snapshot',prefix+'.json'],{cwd:root,encoding:'utf8',windowsHide:true,timeout:120000});
+    fs.writeFileSync(prefix+'.log',(child.stdout??'')+(child.stderr??''));if(child.error)throw child.error;
+    assert.equal(child.status,0,`${id}/${backend}: ${child.stderr}`);
+    const state=JSON.parse(fs.readFileSync(prefix+'.json','utf8'));assert.equal(state.passed,true);assert.equal(state.id,id);
+    runs.push({backend,state,pngSha256:sha(prefix+'.png')});
+  }
+  compare(normalise(runs[0].state),normalise(runs[1].state),id);assert.equal(runs[0].pngSha256,runs[1].pngSha256,`${id}: exact PNG parity`);
+  results.push({id,passed:true,runs});console.log(`PASS ${id}: V8 + QuickJS / exact PNG parity`);
+  assert.deepEqual(sources(),before,'Production source remains frozen during targeted GPU verification');
+}
+assert.equal(sha('runtime/ts-stg.exe'),binary);assert.equal(sha('tools/boss-hud-fixture.js'),fixture);
+fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({passed:true,scope:'Five focused production HUD/body scenarios, two actual native GPU backends. No baseline reuse or full-campaign claim.',sourceHashes:before,binarySha256:binary,fixtureSha256:fixture,results},null,2)+'\n');

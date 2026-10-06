@@ -7,7 +7,9 @@ import {promisify} from 'node:util';
 import {createHash} from 'node:crypto';
 import {performance} from 'node:perf_hooks';
 
-const root=fileURLToPath(new URL('../',import.meta.url)),build=resolve(root,'build/integration'),reports=resolve(root,'reports/integration');
+const reportGroup=process.env.TOUHOU21_REPORT_GROUP??'';
+if(reportGroup&&!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(reportGroup))throw new Error('Native report group must be a simple directory name');
+const root=fileURLToPath(new URL('../',import.meta.url)),build=resolve(root,'build/integration'),reports=resolve(root,'reports/integration',reportGroup);
 mkdirSync(build,{recursive:true});mkdirSync(reports,{recursive:true});
 const started=performance.now(),cases=[];
 const binary=resolve(root,'runtime/ts-stg.exe'),binaryHash=createHash('sha256').update(readFileSync(binary)).digest('hex');
@@ -29,7 +31,7 @@ const previousPath=resolve(reports,reportName),previous=process.env.TOUHOU21_RES
 const canReuse=previous&&JSON.stringify(previous.verificationFixtureSha256)===JSON.stringify(fixtureHashes)&&JSON.stringify(previous.simulationSourceSha256??simulationHashes(previous.gameSourceSha256))===JSON.stringify(ruleHashes)&&JSON.stringify(previous.librarySha256)===JSON.stringify(libraryHashes)&&previous.executableSha256===binaryHash;
 const baselineName=process.env.TOUHOU21_BASELINE,baselinePath=baselineName?resolve(reports,`baseline-${baselineName}.json`):null;
 const baseline=baselinePath&&existsSync(baselinePath)?JSON.parse(readFileSync(baselinePath,'utf8')):null;
-const authoredMechanics=['src/director.js','src/patterns.js','src/nonspells.js','src/spell-cadence.js','src/roads.js','src/content.js','src/scene.js','src/storage.js'];
+const authoredMechanics=['src/director.js','src/patterns.js','src/nonspells.js','src/spell-cadence.js','src/roads.js','src/boss-health.js','src/campaign-boss-hud.js','src/content.js','src/scene.js','src/storage.js'];
 const baselineCompatible=baseline&&authoredMechanics.every(path=>baseline.gameSourceSha256[path]===sourceHashes[path])&&JSON.stringify(baseline.librarySha256)===JSON.stringify(libraryHashes)&&baseline.executableSha256===binaryHash;
 const backends=process.env.TOUHOU21_BACKENDS?.split(',')??['v8','quickjs'];
 const scenarios=[...Array.from({length:4},(_,difficulty)=>({id:`normal-reimu-${difficulty}`,kind:'campaign',options:{mode:'normal',character:0,difficulty}})),

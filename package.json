@@ -1,6 +1,6 @@
 {
   "name": "touhou21-names-beyond-the-boundary",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "type": "module",
   "description": "东方归名录：基于 TS-STG 的原创东方同人弹幕游戏",

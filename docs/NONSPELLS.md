@@ -2,6 +2,8 @@
 
 本次重做把七位Boss的普通攻击从同一套瞄准扇、圆环和激光循环中拆开。实现位于 [nonspells.js](../src/nonspells.js)，[patterns.js](../src/patterns.js)保留导演使用的 `updateNonspellPattern` 入口。内部风格ID用于开发和测试；非符仍是无符卡名的普通攻击，HP、时限、共享血环和切段结算继续由导演与公共thlib处理。
 
+v1.2.1 进一步调整非符实际 HP、道中 Boss 倒计时、退场与音效。HP 采用独立业务配置 [boss-health.js](../src/boss-health.js)，不会改变这里的发射短句或公共伤害单位；原作参考、真实射击时长和专项验收见 [BOSS-FLOW.md](BOSS-FLOW.md)。以下攻击路线数据是 v1.2.0 的编排验证记录，不能代替新版本的射击与流程验证。
+
 ## 参考与节奏
 
 只读参考本地原作脚本 `D:/AIWorkspace/Touhou20Reconstruction/scripts/recovered/ecl/st01bs.ecl.txt` 的 `Boss1`、`Boss1_at`、`Boss1_at2`，以及二面Boss对应普通攻击。参考的设计惯例是：先准备并保存瞄准角度，把出弹分成有限的短句，在短句之间等待，随后移动再等待，后续非符发展同一Boss母题。没有复制具体原作Boss图像、原作弹幕形状或ECL实现。

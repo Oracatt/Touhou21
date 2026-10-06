@@ -1,6 +1,7 @@
 import {TouhouBossPhasePlan,TouhouItemType,clearTouhouBossPhase,TouhouRNG} from '@ts-stg/thlib/touhou';
 import {updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern,STAGE_PATTERN_OFFSETS} from './patterns.js';
 import {createRoadPlan,spawnRoadFormation} from './roads.js';
+import {bossNonspellHealth,midbossNormalHealth} from './boss-health.js';
 
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const MODES=new Set(['normal','extra','stage-practice','spell-practice']);
@@ -21,6 +22,7 @@ export class CampaignDirector{
     this.waitFrames=0;this.boss=null;this.phases=[];this.phasePlan=null;this.patternState={};
     this.captures=[];this.completed=false;this.destroyed=false;this.dialogueContinuation=null;this.stageContinuation=null;
     this.midbossDone=false;this.finishing=false;this.finalResult=null;this.events=[];this.totalClock=0;
+    this.chargeCue=null;
   }
   attach(game){
     if(this.game)throw new Error('Director already attached');this.game=game;
@@ -65,10 +67,14 @@ export class CampaignDirector{
   _spawnMidboss(game){
     this._clear(game);this.midbossDone=true;this.state='midboss-enter';this.phaseFrame=0;
     this.midbossSpec=this.midbosses.find(entry=>entry.stageId===this.stageId);
+    this.midbossDuration=Math.round((this.midbossSpec?.seconds??25)*60);
+    if(!Number.isSafeInteger(this.midbossDuration)||this.midbossDuration<=0)throw new RangeError('Midboss time limit must be positive integer frames');
+    this.midbossExit=this.midbossSpec?.exit??((this.midbossSpec?.bossId??this.stage.bossId)===this.stage.bossId?'escape':'defeat');
+    if(!['escape','defeat'].includes(this.midbossExit))throw new RangeError('Unknown midboss exit');
     this.midbossPhases=(this.midbossSpec?.spells??[]).map((spec,spellIndex)=>({spell:true,spec,spellIndex,
       hp:2300+spellIndex*180,duration:Math.round(spec.seconds*60),code:32+spellIndex,midboss:true}));
     this.midbossPhaseIndex=0;
-    const hp=1900+this.stageId*350;
+    const hp=this.midbossPhases.length?this.midbossPhases[0].hp:midbossNormalHealth(this.stageId);
     const boss=game.spawnEnemy({x:150,y:20,hp,radius:16,script:30,directional:false,damageInvulnerability:0,
       deathBank:game.banks.effect,drop:[]});
     game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
@@ -86,7 +92,7 @@ export class CampaignDirector{
     game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({dialogue:false,remainingSpells:this.midbossPhases.length-index-1,
       healthBars:[{current:phase.hp,maximum:phase.hp,phaseHealth:phase.hp,markers:[],animateFill:false}]});
-    game.bossPresentation?.beginCharge({color:'red',follow:boss,releaseFrame:35,clock:()=>this.phaseFrame});
+    this._charge(game,'red');
     game.beginSpell({...this._spellPresentation(phase,boss,true),id:phase.code,name:phase.spec.name,
       duration:phase.duration,survival:!!phase.spec.survival,boss});
   }
@@ -94,22 +100,45 @@ export class CampaignDirector{
     const visual=this.callbacks.spellStart?.(phase.spec,{code:phase.code,stage:this.stage,boss,bossId:boss.bossId,midboss})??{};
     return{background:visual.background??null,portrait:visual.portrait??null,keepStageBackground:visual.keepStageBackground??true};
   }
+  _charge(game,color){
+    // st01bs Boss1: one ECL307 charge, sound54, wait60, one release.
+    const charge=game.bossPresentation?.beginCharge({color,follow:this.boss,repeatCount:1,releaseFrame:60,clock:()=>this.phaseFrame});
+    this.chargeCue=charge?{owner:charge,releasePlayed:false}:null;
+    if(charge)game.context.sound?.(54,this.boss.x);
+    return charge;
+  }
+  _releaseChargeSound(game){
+    const cue=this.chargeCue;
+    if(!cue)return;
+    if(cue.owner.stopped||!cue.owner.alive){this.chargeCue=null;return;}
+    if(!cue.releasePlayed&&cue.owner.release&&this.phaseFrame>=cue.owner.releaseFrame){
+      cue.releasePlayed=true;game.context.sound?.(6,this.boss?.x??cue.owner.position.x);
+    }
+  }
   _finishMidbossPhase(game,{timeout=false,source=null}={}){
     if(this.state!=='midboss-combat'||this.finishing)return;this.finishing=true;
     const phase=this.midbossPhases[this.midbossPhaseIndex];this.boss.invulnerable=true;
     if(game.spell.active){if(timeout)game.spell.timeout(game.context);else game.spell.capture(game.context);}
     this._clear(game);game.items.spawnBossDrops(this.boss,{counts:{[TouhouItemType.POWER]:4,[TouhouItemType.POINT]:5},
       timedOut:timeout,survival:!!phase.spec.survival,mode:game.session.mode});this.finishing=false;
-    if(this.midbossPhaseIndex+1<this.midbossPhases.length){this.state='midboss-phase-wait';this.waitFrames=60;}
-    else this._finishMidboss(game,source);
+    if(this.midbossPhaseIndex+1<this.midbossPhases.length){
+      game.context.sound?.(27,this.boss.x);this.state='midboss-phase-wait';this.waitFrames=60;
+    }
+    else this._finishMidboss(game,source,{timeout});
   }
-  _finishMidboss(game,source=null){
+  _finishMidboss(game,source=null,{timeout=false}={}){
     if(!['midboss-combat','midboss-phase-wait'].includes(this.state))return;this.state='midboss-exit';this.phaseFrame=0;
     const boss=this.boss;this._clear(game);boss.invulnerable=true;
-    game.items.spawnBossDrops(boss,{counts:{[TouhouItemType.LARGE_POWER]:2,[TouhouItemType.POINT]:5},centerType:TouhouItemType.BOMB_FRAGMENT});
-    game.bossPresentation?.beginDeath({x:boss.x,y:boss.y,follow:null,delayFrames:0});
-    game.removeBoss(boss);
-    game.stopBossCombat();game.setBoss(null);this.boss=null;
+    game.items.spawnBossDrops(boss,{counts:{[TouhouItemType.LARGE_POWER]:2,[TouhouItemType.POINT]:5},centerType:TouhouItemType.BOMB_FRAGMENT,
+      timedOut:timeout,mode:game.session.mode});
+    game.stopBossCombat();
+    if(this.midbossExit==='escape'||timeout){
+      game.beginBossEscape(boss,{source,target:{x:timeout?0:192,y:-32},duration:60,easing:4});
+      this.events.push({event:'midboss-retreat',stage:this.stageId,timeout,frame:this.totalClock});
+    }else{
+      game.bossPresentation?.beginDeath({x:boss.x,y:boss.y,follow:null,delayFrames:0});
+      game.removeBoss(boss);game.setBoss(null);this.boss=null;
+    }
   }
   _buildPhases(){
     const stage=this.stage;
@@ -123,7 +152,7 @@ export class CampaignDirector{
     }
     const phases=[];
     stage.spells.forEach((spec,spellIndex)=>{
-      phases.push({spell:false,hp:3000+stage.id*650+spellIndex*320,duration:(32+Math.min(18,stage.id*3))*60,spellIndex});
+      phases.push({spell:false,hp:bossNonspellHealth(stage.id,spellIndex),duration:(32+Math.min(18,stage.id*3))*60,spellIndex});
       phases.push({spell:true,spec,spellIndex,code:1+STAGE_PATTERN_OFFSETS[stage.id-1]+spellIndex,
         hp:1800+stage.id*220+spellIndex*110,duration:Math.round(spec.seconds*60)});
     });return phases;
@@ -168,8 +197,7 @@ export class CampaignDirector{
     // Ring fill must be finished before an attack begins. A shared ring carries
     // its remaining segment from nonspell into its spell without a new refill.
     if(index===0||!phase.spell)game.setBossHud({healthBars:this.phasePlan.hudState(index).healthBars.map(bar=>({...bar,animateFill:false}))});
-    game.bossPresentation?.beginCharge({color:['yellow','cyan','yellow','magenta','red','yellow','white'][this.stageId-1],
-      follow:boss,repeatCount:6,repeatInterval:4,releaseFrame:35,clock:()=>this.phaseFrame});
+    this._charge(game,['yellow','cyan','yellow','magenta','red','yellow','white'][this.stageId-1]);
     if(phase.spell)game.beginSpell({...this._spellPresentation(phase,boss,!!phase.midboss),id:phase.code,name:phase.spec.name,
       duration:phase.duration,survival:!!phase.spec.survival,boss});
     this.events.push({event:'phase-start',stage:this.stageId,index,spell:phase.spell,frame:this.totalClock});
@@ -184,6 +212,9 @@ export class CampaignDirector{
     }
     this.boss.invulnerable=true;
     if(phase.spell&&game.spell.active){if(timeout)game.spell.timeout(game.context);else game.spell.capture(game.context);}
+    // Ordinary ECL phase handoff (st01bs Boss2 / BossCard1). This is separate
+    // from the public successful-bonus sound46 and final Boss burst sound5.
+    game.context.sound?.(27,this.boss.x);
     this._clear(game);
     if(phase.spell)game.items.spawnBossDrops(this.boss,{counts:{[TouhouItemType.POWER]:5,[TouhouItemType.POINT]:6},
       centerType:phase.spellIndex%2?TouhouItemType.BOMB_FRAGMENT:TouhouItemType.LIFE_FRAGMENT,
@@ -205,6 +236,8 @@ export class CampaignDirector{
       if(this.state==='combat'&&!this.finishing)this._finishPhase(game,{timeout:data.timeout||game.spell.survival});
       else if(this.state==='midboss-combat'&&this.midbossPhases?.length&&!this.finishing)
         this._finishMidbossPhase(game,{timeout:data.timeout||game.spell.survival});
+    }else if(name==='bossescape'&&data.enemy===this.boss&&this.state==='midboss-exit'){
+      this.events.push({event:'midboss-escaped',stage:this.stageId,frame:this.totalClock});this.boss=null;
     }else if(name==='bossburst'&&data.enemy===this.boss&&this.state==='boss-defeat'){
       game.stopBossCombat();
       game.items.spawnBossDrops(data.enemy,{counts:{[TouhouItemType.LARGE_POWER]:3,[TouhouItemType.POINT]:12},
@@ -255,14 +288,13 @@ export class CampaignDirector{
         if(this.midbossPhases.length){const route=this.character?'marisa':'reimu';
           this._dialogue(game,'midboss',()=>this._beginMidbossPhase(game,0),this.midbossSpec?.dialogues?.[route]??[]);}
         else{this.state='midboss-combat';this.phaseFrame=0;game.resumeBoss(this.boss);this.boss.invulnerable=false;game.startBossCombat();game.setBossHud({dialogue:false});
-          game.bossPresentation?.beginCharge({color:['yellow','cyan','yellow','magenta','red','yellow','white'][this.stageId-1],
-            follow:this.boss,releaseFrame:35,clock:()=>this.phaseFrame});}}
+          this._charge(game,['yellow','cyan','yellow','magenta','red','yellow','white'][this.stageId-1]);}}
     }else if(this.state==='midboss-combat'){
       if(this.midbossPhases.length)updateMidbossSpellPattern({game,boss:this.boss,frame:this.phaseFrame,difficulty:this.difficulty,
         spellIndex:this.midbossPhaseIndex,state:this.patternState});
       else updateNonspellPattern({game,boss:this.boss,frame:this.phaseFrame,difficulty:this.difficulty,stageId:this.stageId,phaseIndex:0,state:this.patternState,rng:this.rng});
       const hp=this.boss.maximumHp;game.setBossHud({healthBars:[{current:Math.max(0,this.boss.hp),maximum:hp,phaseHealth:this.boss.hp,markers:[]}]});
-      this.phaseFrame++;if(!this.midbossPhases.length&&this.phaseFrame>1200)this._finishMidboss(game);
+      this.phaseFrame++;if(!this.midbossPhases.length&&this.phaseFrame>=this.midbossDuration)this._finishMidboss(game,null,{timeout:true});
     }else if(this.state==='midboss-phase-wait'){
       if(--this.waitFrames<=0)this._beginMidbossPhase(game,this.midbossPhaseIndex+1);
     }else if(this.state==='midboss-exit'){
@@ -290,6 +322,7 @@ export class CampaignDirector{
       this.phaseFrame++;
       if(!phase.spell&&this.phaseFrame>=phase.duration)this._finishPhase(game,{timeout:true});
     }
+    this._releaseChargeSound(game);
   }
   snapshot(){return{state:this.state,stageId:this.stageId,stageFrame:this.stageFrame,phaseFrame:this.phaseFrame,
     phaseIndex:this.phaseIndex,waitFrames:this.waitFrames,bossId:this.boss?.bossId??null,bossHp:this.boss?.hp??null,
