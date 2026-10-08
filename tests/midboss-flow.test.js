@@ -22,9 +22,13 @@ function fixture({stageId=1,midbosses=MIDBOSSES}={}){
 
 test('a recurring main Boss retreats through the public escape owner without a death burst',()=>{
   for(let stageId=1;stageId<=6;stageId++){
-    const f=fixture({stageId}),boss=f.director.boss,roadFrame=f.director.stageFrame;
-    f.game.bullets.emit({x:40,y:180,angle:Math.PI/2,speed:1,type:0,color:1,count:3,pattern:3});
-    boss.damage(100000,{type:'transition-test'},f.game.context);
+    const f=fixture({stageId}),boss=f.director.boss,roadFrame=f.director.stageFrame,phases=stageId===1?1:2;
+    for(let phase=0;phase<phases;phase++){
+      if(phase){for(let i=0;i<120&&f.director.state!=='midboss-combat';i++)f.game.update(0);assert.equal(f.game.spell.active,true,'the ordinary attack hands over to the midboss card');}
+      f.game.bullets.emit({x:40,y:180,angle:Math.PI/2,speed:1,type:0,color:1,count:3,pattern:3});
+      boss.damage(100000,{type:'transition-test'},f.game.context);
+      if(phase+1<phases)assert.equal(f.director.state,'midboss-phase-wait');
+    }
     assert.equal(f.director.state,'midboss-exit');assert.equal(f.director.boss,boss);
     assert.equal(f.game.context.boss,null,'HUD/combat ownership ends while the visible actor departs');
     assert.equal(boss.alive,true);assert.equal(f.game.bossDefeats.length,0);assert.equal(f.game.bossPresentation.deaths.length,0);

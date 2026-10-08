@@ -36,14 +36,19 @@ export const BOSS_NONSPELL_HEALTH=Object.freeze([
   Object.freeze([18000,18000,18000,18000,16000,16000,16000,16000,16000,16000]),
 ]);
 
-/** Normal midbosses have no subsequent spell threshold in this game's route.
- * Direct original references: st01mbs:24=11000, st02mbs:24=15000,
- * st04mbs:21=17000, st05mbs:21=22000. The reference has no corresponding
- * standalone stage-3 or stage-6 midboss; 16000 and 18000 are this game's
- * explicit pacing choices between its adjacent encounters.
- * Extra's three spell phases keep their independent spell HP configuration.
+/** Midboss ordinary attacks. Stage 1 keeps the direct st01mbs:24 budget of
+ * 11000 because its midboss has no card. From stage 2 the ordinary attack
+ * hands over to one midboss card, so its budget is this game's pacing choice:
+ * roughly two thirds of the earlier standalone values, before the card.
  */
-export const MIDBOSS_NORMAL_HEALTH=Object.freeze([11000,15000,16000,17000,22000,18000]);
+export const MIDBOSS_NORMAL_HEALTH=Object.freeze([11000,9000,10000,10500,12000,11000]);
+/** Visible spell HP of midboss cards (public spell health stores seven times
+ * this value). Extra keeps its earlier 2300 / 2480 / 2660 sequence. */
+export function midbossSpellHealth(stageId,spellIndex=0){
+  if(!Number.isInteger(stageId)||stageId<2||stageId>7)throw new RangeError('Midboss cards start at stage 2');
+  if(!Number.isInteger(spellIndex)||spellIndex<0)throw new RangeError('Unknown midboss card');
+  return stageId===7?2300+spellIndex*180:1500+stageId*150;
+}
 
 export function bossNonspellHealth(stageId,spellIndex){
   if(!Number.isInteger(stageId)||stageId<1||stageId>BOSS_NONSPELL_HEALTH.length)

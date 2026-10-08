@@ -10,7 +10,7 @@ import {searchAttackRoute,ATTACK_ROUTE_GRID,ATTACK_ROUTE_QA_VERSION} from './att
 
 const root=path.resolve(import.meta.dirname,'..');
 const sha=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const inputs=['src/content.js','src/patterns.js','src/spell-cadence.js','src/nonspells.js','engine.lock.json','tools/attack-routes.mjs','tools/verify-attack-routes.mjs'];
+const inputs=['src/content.js','src/patterns.js','src/danmaku.js',...fs.readdirSync(path.join(root,'src','attacks')).sort().map(file=>`src/attacks/${file}`),'engine.lock.json','tools/attack-routes.mjs','tools/verify-attack-routes.mjs'];
 export function attackRouteCases({kind='spell'}={}){
   assert.ok(['spell','nonspell','all'].includes(kind));const cases=[];
   for(const stage of STAGES){const difficulty=stage.id===7?4:1;
@@ -18,7 +18,7 @@ export function attackRouteCases({kind='spell'}={}){
     if(kind!=='spell')stage.spells.forEach((_,group)=>cases.push({id:`nonspell-${stage.id}-${group}`,kind:'nonspell',stageId:stage.id,phaseIndex:group*2,difficulty,frames:(32+Math.min(18,stage.id*3))*60}));
   }
   if(kind!=='nonspell')for(const midboss of MIDBOSSES)for(const [spellIndex,card]of(midboss.spells??[]).entries())
-    cases.push({id:card.id,name:card.name,kind:'midboss',stageId:midboss.stageId,spellIndex,difficulty:4,frames:Math.round(card.seconds*60)});
+    cases.push({id:card.id,name:card.name,kind:'midboss',stageId:midboss.stageId,spellIndex,difficulty:midboss.stageId===7?4:1,frames:Math.round(card.seconds*60)});
   return cases;
 }
 export function verifyAttackRoutes({kind='spell',ids=null,frames=null,difficulty=null,iterations=40,lookbacks=[64,96,32],output='reports/attack-routes/report.json'}={}){

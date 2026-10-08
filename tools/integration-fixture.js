@@ -52,7 +52,8 @@ function* campaign(){
   const expected=options.mode==='extra'?[7]:options.mode==='stage-practice'?[options.stageId]:[1,2,3,4,5,6];
   assert(JSON.stringify(visited)===JSON.stringify(expected),'Route visits every requested stage');
   for(const id of expected)assert(roadMax[id]>=STAGES[id-1].roadFrames,`Stage ${id} must run its whole real road`);
-  const count=options.mode==='extra'?13:options.mode==='stage-practice'?STAGES[options.stageId-1].spells.length:21;
+  const cards=id=>STAGES[id-1].spells.length+STAGES[id-1].midbossSpells.length;
+  const count=options.mode==='extra'?13:options.mode==='stage-practice'?cards(options.stageId):[1,2,3,4,5,6].reduce((n,id)=>n+cards(id),0);
   assert(game.director.captures.length===count,`Expected ${count} card settlements`);
   assert(writes===0,'QA route must not persist records or replays');
   result={kind:'campaign',frames,visited,roadMax,states,peak,identity,bodies,rendered,events:game.director.events,finished:application.finishedResult,snapshot:application.snapshot(),memoryWrites:writes};
@@ -271,11 +272,12 @@ function* ui(){
   assert(app.core.menu.state==='main'&&Object.keys(app.extraSelection).length===0,'Cancelled Extra returns to a clean main menu');startNormal('normal-after-extra-cancel');
   main(2);assert(app.page?.rows.length===6,'Stage practice has six stages');visited.push('stage-practice');tick(app,10);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.core.menu.state==='difficulty'&&app.extraSelection.stageId===2,'Stage choice reaches shared selectors');
   tick(app,10);tap(app,Keys.BOMB);tick(app,10);assert(Object.keys(app.extraSelection).length===0,'Cancelled stage practice clears its business selection');startNormal('normal-after-stage-practice-cancel');
-  main(3);assert(app.page?.rows.length===34,'Practice contains all 34 main and midboss cards');visited.push('spell-practice');tick(app,10);for(let i=0;i<31;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.core.menu.state==='character'&&app.extraSelection.stageId===7,'Extra midboss card reaches character selector');
+  const extraMidboss=ALL_SPELLS.findIndex(card=>card.id==='ex-mid-01');
+  main(3);assert(app.page?.rows.length===39,'Practice contains all 39 main and midboss cards');visited.push('spell-practice');tick(app,10);for(let i=0;i<extraMidboss;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.core.menu.state==='character'&&app.extraSelection.stageId===7,'Extra midboss card reaches character selector');
   tick(app,10);tap(app,Keys.BOMB);tick(app,12);assert(app.core.menu.state==='main','Extra character cancellation returns to title');
   assert(Object.keys(app.extraSelection).length===0,'Cancelled Extra card clears its business selection');startNormal('normal-after-extra-card-cancel');
-  main(3);tick(app,10);for(let i=0;i<31;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
-  assert(app.core.mode==='game'&&app.core.game.config.spellId===ALL_SPELLS[31].id&&app.core.game.difficulty===4,'Extra midboss practice launches through public transition with difficulty four');visited.push('midboss-spell-practice-game');app.leaveGame();
+  main(3);tick(app,10);for(let i=0;i<extraMidboss;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
+  assert(app.core.mode==='game'&&app.core.game.config.spellId===ALL_SPELLS[extraMidboss].id&&app.core.game.difficulty===4,'Extra midboss practice launches through public transition with difficulty four');visited.push('midboss-spell-practice-game');app.leaveGame();
   startNormal('normal-after-extra-card-game');
   main(2);tick(app,10);for(let i=0;i<2;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,10);tap(app,Keys.SHOOT);tick(app,16);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
   assert(app.core.mode==='game'&&app.core.game.config.mode==='stage-practice'&&app.core.game.config.stageId===3,'Actual stage practice begins at selected stage');visited.push('stage-practice-game');app.leaveGame();startNormal('normal-after-stage-practice-game');
@@ -286,7 +288,7 @@ function* ui(){
     if(name==='records'){
       app.storage.progress.spellRecords['0:1']={1:{captures:[2,3],attempts:[4,5]}};
       tap(app,Keys.SHOOT);assert(app.page?.rows.length===5,'Records open four difficulties and Extra');tick(app,12);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
-      assert(app.page?.rows.length===21,'Normal records list every main card');const detail=app.page.detail(app.page.row);assert(detail.includes('2 / 4')&&detail.includes('3 / 5'),'Records display the selected character/difficulty real and practice counters');visited.push('spell-records-main');
+      assert(app.page?.rows.length===26,'Normal records list every main and midboss card');const detail=app.page.detail(app.page.row);assert(detail.includes('2 / 4')&&detail.includes('3 / 5'),'Records display the selected character/difficulty real and practice counters');visited.push('spell-records-main');
       tick(app,12);tap(app,Keys.BOMB);tick(app,12);for(let i=0;i<4;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.page?.rows.length===13,'Extra records contain ten final Boss and three midboss cards');visited.push('spell-records-extra');
       tick(app,12);tap(app,Keys.BOMB);tick(app,12);tap(app,Keys.BOMB);assert(app.page?.title==='玩家记录','Nested record pages return to the player record page');
     }

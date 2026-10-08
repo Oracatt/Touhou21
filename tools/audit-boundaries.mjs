@@ -71,7 +71,7 @@ export function auditBoundaries({root=PROJECT_ROOT,verifyDependencies=true}={}){
   assert.ok(ignore.includes('.env')&&ignore.includes('.env.*'),'Environment files must be excluded');
   const tracked=execFileSync('git',['-C',root,'ls-files','-z'],{encoding:'utf8',windowsHide:true}).split('\0').filter(Boolean);
   for(const file of tracked)assert.ok(!PRIVATE_PREFIXES.some(prefix=>file.startsWith(prefix))&&!/(?:^|\/)\.env(?:\.|$)|\.log$|__pycache__\//.test(file),`Git contains private/generated/user data: ${file}`);
-  assert.equal(GAME.fanWork,true);assert.equal(STAGES.length,7);assert.equal(ALL_SPELLS.length,34);assert.equal(MIDBOSS_SPELLS.length,3);
+  assert.equal(GAME.fanWork,true);assert.equal(STAGES.length,7);assert.equal(ALL_SPELLS.length,39);assert.equal(MIDBOSS_SPELLS.length,8);
   const result={passed:true,scope:'Static import/resource/Git boundary checks; not a resource-rights grant or complete behaviour proof',
     sourceFiles:sources.length,publicImports:[...publicImports].sort(),artFiles:artPaths.length,musicFiles:MUSIC_TRACKS.length,
     stages:STAGES.length,spells:ALL_SPELLS.length,trackedFiles:tracked.length,dependencyCommit:dependency?.commit??lock.commit,

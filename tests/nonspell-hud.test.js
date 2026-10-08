@@ -50,7 +50,7 @@ test('main Boss nonspell clock follows the completed phase tick through the publ
 
 test('ordinary midboss uses its authored nonspell duration rather than an absent spell timer',()=>{
   const f=fixture({midboss:true});enterCombat(f,true);
-  assert.equal(f.game.director.midbossPhases.length,0);assert.equal(f.game.spell.active,false);
+  assert.equal(f.game.director.midbossPhase.spell,false);assert.equal(f.game.spell.active,false);
   assert.equal(f.game.director.midbossDuration,Math.round(f.game.director.midbossSpec.seconds*60));
   tick(f.game,17);checkClock(f.game,f.game.director.midbossDuration);f.dispose();
 });

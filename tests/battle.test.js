@@ -82,7 +82,18 @@ test('all four difficulties emit actual attacks, with Hard and Lunatic extra geo
     results.push({count:f.game.bullets.nextId,types:new Set(f.game.bullets.bullets.map(b=>b.type))});f.dispose();
   }
   assert.ok(results[0].count<results[1].count);assert.ok(results[1].count<results[2].count);assert.ok(results[2].count<results[3].count);
-  assert.ok(results[2].types.has(3),'Hard adds an independent layer of pointed bullets');
+  assert.ok(results[2].count>results[1].count*1.2,'Hard adds the inner door frames, not only speed');
+});
+
+test('breaking a moving nonspell clears its motion before the next spell opening',()=>{
+  const f=fixture(),g=f.game;
+  const director=new CampaignDirector({stages:STAGES,callbacks:{dialogue:(lines,{onComplete})=>onComplete()}}).attach(g);
+  director._spawnBoss(g);director._beginPhase(g,0);
+  const b=director.boss;b.motion.speed=2;b.motion.delta.x=2;b.motion.flags=16;
+  director._finishPhase(g,{defeated:true});
+  assert.equal(director.phase.spell,true);assert.equal(b.motion.speed,0);assert.equal(b.motion.flags,0);
+  assert.deepEqual(b.motion.delta,{x:0,y:0,z:0});
+  director.destroy();f.dispose();
 });
 
 test('dialogue freezes road and card clocks while the real player continues updating',()=>{
@@ -173,7 +184,7 @@ test('all six stages and Extra complete with original entities, stage continuati
     const snapshot=director.snapshot();director.destroy();f.dispose();return{visits,dialogs,music,finished,snapshot};
   }
   const main=run('normal');assert.deepEqual(main.visits,[1,2,3,4,5,6]);assert.equal(main.dialogs.length,12);
-  assert.equal(main.snapshot.captures.length,21);assert.equal(main.finished[0].ending,'good');
+  assert.equal(main.snapshot.captures.length,26);assert.equal(main.finished[0].ending,'good');
   assert.deepEqual(run('normal'),main,'fixed input and seed reproduce every phase and reward');
   const extra=run('extra');assert.deepEqual(extra.visits,[7]);assert.equal(extra.snapshot.captures.length,13);
   assert.ok(extra.dialogs.includes('7/midboss'));assert.deepEqual(extra.snapshot.captures.slice(0,3).map(card=>card.id),[32,33,34]);
@@ -188,12 +199,12 @@ test('practice selects exactly one stage or card and ordinary timeout settles as
   assert.equal(director.captures[0].timeout,true);director.destroy();f.dispose();
 });
 
-test('all 34 cards on four difficulties settle through the actual public spell clock, including survival cards',()=>{
+test('all 39 cards on four difficulties settle through the actual public spell clock, including survival cards',()=>{
   const stages=STAGES.map(stage=>({...stage,spells:stage.spells.map(spec=>({...spec,seconds:6}))}));
   const midbosses=MIDBOSSES.map(mid=>({...mid,spells:mid.spells.map(spec=>({...spec,seconds:6}))}));
   const catalog=[...stages.flatMap(stage=>stage.spells.map(spec=>({stageId:stage.id,spec}))),
     ...midbosses.flatMap(mid=>mid.spells.map(spec=>({stageId:mid.stageId,spec})))];
-  assert.equal(catalog.length,34);const ids=new Set();let checkedSurvival=0;
+  assert.equal(catalog.length,39);const ids=new Set();let checkedSurvival=0;
   for(let difficulty=0;difficulty<4;difficulty++)for(const {stageId,spec} of catalog){
     const f=fixture();const director=new CampaignDirector({stages,midbosses,mode:'spell-practice',stageId,spellId:spec.id,difficulty}).attach(f.game);
     for(let frame=0;frame<500&&!director.completed;frame++)step(f.game,director);
@@ -206,7 +217,7 @@ test('all 34 cards on four difficulties settle through the actual public spell c
     assert.equal(f.game.lasers.count,0,`${spec.id} no residual lasers`);
     director.destroy();f.dispose();
   }
-  assert.equal(ids.size,34);assert.ok(checkedSurvival>0);
+  assert.equal(ids.size,39);assert.ok(checkedSurvival>0);
 });
 
 test('cut-in uses the original ANM entry/drift/exit clock and destroys its private VM without unloading borrowed artwork',()=>{

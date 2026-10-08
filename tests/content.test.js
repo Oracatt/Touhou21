@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   GAME, PLAYERS, CHARACTERS, STAGES, ENDINGS, MIDBOSSES,
-  MIDBOSS_SPELLS, ALL_SPELLS, SPELL_BY_ID, CHARACTER_BY_ID, MUSIC_COMMENTS,
+  MIDBOSS_SPELLS, EXTRA_MIDBOSS_SPELLS, ALL_SPELLS, SPELL_BY_ID, CHARACTER_BY_ID, MUSIC_COMMENTS,
 } from '../src/content.js';
 import { MUSIC_TRACKS } from '../src/music-data.js';
 
@@ -22,13 +22,19 @@ test('campaign covers six connected stages and a separately identified Extra', (
   }
 });
 
-test('all 34 spell cards have distinct IDs, names and visual pattern definitions', () => {
+test('all 39 spell cards have distinct IDs, names, patterns and persistent record codes', () => {
   assert.deepEqual(STAGES.map((stage) => stage.spells.length), [2, 3, 3, 4, 4, 5, 10]);
-  assert.equal(MIDBOSS_SPELLS.length, 3);
-  assert.equal(ALL_SPELLS.length, 34);
-  assert.equal(SPELL_BY_ID.size, 34);
-  assert.equal(new Set(ALL_SPELLS.map((card) => card.name)).size, 34);
-  assert.equal(new Set(ALL_SPELLS.map((card) => card.pattern)).size, 34);
+  assert.deepEqual(STAGES.map((stage) => stage.midbossSpells.length), [0, 1, 1, 1, 1, 1, 3]);
+  assert.equal(MIDBOSS_SPELLS.length, 8);
+  assert.equal(ALL_SPELLS.length, 39);
+  assert.equal(SPELL_BY_ID.size, 39);
+  assert.equal(new Set(ALL_SPELLS.map((card) => card.name)).size, 39);
+  assert.equal(new Set(ALL_SPELLS.map((card) => card.pattern)).size, 39);
+  assert.deepEqual([...ALL_SPELLS.map((card) => card.code)].sort((a, b) => a - b), Array.from({ length: 39 }, (_, i) => i + 1));
+  const legacy = [...STAGES.flatMap((stage) => stage.spells), ...STAGES[6].midbossSpells];
+  legacy.forEach((card, index) => assert.equal(card.code, index + 1, `${card.id} keeps its v1 record code`));
+  for (const stage of STAGES) for (const card of [...stage.midbossSpells, ...stage.spells]) assert.equal(card.stageId, stage.id);
+  assert.deepEqual(ALL_SPELLS.slice(0, 3).map((card) => card.id), ['s01-01', 's01-02', 's02-mid'], 'practice lists cards in order of appearance');
   const motifs = new Set(['lantern', 'rain', 'ferry', 'weave', 'archive', 'name', 'echo']);
   for (const card of ALL_SPELLS) {
     assert.ok(/^.+「.+」$|^「.+」$/.test(card.name), card.name);
@@ -97,17 +103,20 @@ test('new Bosses have complete independent art briefs and relationships to the s
   }
 });
 
-test('mid-Boss schedule remains inside each road section and includes the Extra three-card encounter', () => {
+test('midbosses open with an ordinary attack, add a card from stage 2, and Extra keeps its three-card encounter', () => {
   assert.equal(MIDBOSSES.length, 7);
   for (const midboss of MIDBOSSES) {
     const stage = STAGES.find((entry) => entry.id === midboss.stageId);
-    assert.ok(midboss.atFrame > 0 && midboss.atFrame < stage.roadFrames);
+    assert.ok(midboss.atFrame > stage.roadFrames * .35 && midboss.atFrame < stage.roadFrames * .55);
+    assert.equal(midboss.atFrame, stage.midbossAt);
     assert.ok(CHARACTER_BY_ID.has(midboss.bossId));
     assert.equal(midboss.entrance, 'flyIn');
-    if (!stage.extra) assert.equal(midboss.spells.length, 0);
+    assert.equal(midboss.spells, stage.midbossSpells);
+    if (!stage.extra) { assert.equal(midboss.nonspell, true); assert.ok(midboss.seconds >= 20); assert.equal(midboss.bossId, stage.bossId); }
   }
-  assert.equal(MIDBOSSES[6].bossId, 'fusae');
-  assert.deepEqual(MIDBOSSES[6].spells, MIDBOSS_SPELLS);
+  assert.equal(MIDBOSSES[0].spells.length, 0, 'the first midboss is a short ordinary greeting');
+  assert.equal(MIDBOSSES[6].bossId, 'fusae');assert.equal(MIDBOSSES[6].nonspell, false);
+  assert.deepEqual(MIDBOSSES[6].spells, EXTRA_MIDBOSS_SPELLS);
   assert.ok(MIDBOSSES[6].dialogues.reimu.length >= 3);
   assert.ok(MIDBOSSES[6].dialogues.marisa.length >= 3);
 });

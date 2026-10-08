@@ -69,9 +69,9 @@ export class ProjectApplication {
   openStages(){this.page=new ListPage({...this.pageOptions('关卡练习'),rows:STAGES.filter(stage=>stage.id<=6).map(stage=>({label:stage.title,stage,locked:!this.options.unlockAll&&stage.id>this.storage.progress.stageUnlock})),
     detail:row=>row.locked?'到达此关后开放练习。':`${row.stage.subtitle}\n从完整道中开始，包含中 Boss、全部非符与符卡。`,
     onSelect:(row,page)=>{if(row.locked){page.message='尚未到达这一关。';return;}this.choosePractice({mode:'stage-practice',stageId:row.stage.id,spellId:null});}});}
-  openSpells(){const rows=ALL_SPELLS.map((spell,index)=>{const stage=STAGES.find(stage=>stage.spells.includes(spell))??STAGES[6];return{label:`${String(index+1).padStart(2,'0')}　${spell.name}`,spell,stage,locked:!this.options.unlockAll&&!this.storage.progress.seenSpells.includes(spell.id)};});
+  openSpells(){const rows=ALL_SPELLS.map((spell,index)=>{const stage=STAGES.find(stage=>stage.id===spell.stageId)??STAGES[6];return{label:`${String(index+1).padStart(2,'0')}　${spell.name}`,spell,stage,locked:!this.options.unlockAll&&!this.storage.progress.seenSpells.includes(spell.id)};});
     this.page=new ListPage({...this.pageOptions('符卡练习'),rows,visibleRows:9,
-      detail:row=>row.locked?'遇见此符卡后开放。':`${row.stage.title}　${row.spell.seconds}s${row.spell.survival?' · 耐久':''}\n${row.spell.description}`,
+      detail:row=>row.locked?'遇见此符卡后开放。':`${row.stage.title}${row.spell.midboss?'　道中':''}　${row.spell.seconds}s${row.spell.survival?' · 耐久':''}\n${row.spell.description}`,
       onSelect:(row,page)=>{if(row.locked){page.message='尚未遇见这张符卡。';return;}this.choosePractice({mode:'spell-practice',stageId:row.stage.id,spellId:row.spell.id});}});}
   openReplays(inGame=false,close){const rows=this.storage.replays.map((entry,index)=>({label:`${String(index+1).padStart(2,'0')}　${PLAYERS[entry.summary.character??0].name}　${entry.summary.difficulty===4||entry.summary.mode==='extra'?'Extra':GAME.difficultyNames[entry.summary.difficulty??1]}　${score(entry.summary.score??0)}`,entry}));
     this.page=new ListPage({...this.pageOptions('回放鉴赏',inGame,close),rows:rows.length?rows:[{label:'还没有回放记录。',empty:true}],
@@ -85,7 +85,7 @@ export class ProjectApplication {
       onSelect:row=>{if(row.spellRecords)this.openSpellRecords();}});}
   openSpellRecords(difficulty=null){
     if(difficulty===null){this.page=new ListPage({...this.pageOptions('符卡成绩 · 难度'),rows:[...GAME.difficultyNames,'Extra'].map((label,difficulty)=>({label,difficulty})),detail:()=> '分别统计灵梦与魔理沙在实战、符卡练习中的尝试与收取。',onClose:()=>this.openRecords(),onSelect:row=>this.openSpellRecords(row.difficulty)});return;}
-    const rows=ALL_SPELLS.map((spell,index)=>({label:`${String(index+1).padStart(2,'0')}　${spell.name}`,spell,code:index+1})).filter(row=>difficulty===4?row.code>21:row.code<=21);
+    const rows=ALL_SPELLS.map((spell,index)=>({label:`${String(index+1).padStart(2,'0')}　${spell.name}`,spell,code:spell.code})).filter(row=>difficulty===4?row.spell.stageId===7:row.spell.stageId<=6);
     this.page=new ListPage({...this.pageOptions(`符卡成绩 · ${difficulty===4?'Extra':GAME.difficultyNames[difficulty]}`),rows,
       detail:row=>PLAYERS.map((player,character)=>{const record=this.storage.progress.spellRecords[`${character}:${difficulty}`]?.[row.code];return`${player.name}　实战 ${record?.captures?.[0]??0} / ${record?.attempts?.[0]??0}　练习 ${record?.captures?.[1]??0} / ${record?.attempts?.[1]??0}`;}).join('\n')+'\n收取次数 / 尝试次数',onClose:()=>this.openSpellRecords()});
   }

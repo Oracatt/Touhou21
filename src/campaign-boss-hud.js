@@ -11,9 +11,8 @@ export class CampaignBossHud extends TouhouBossHud {
     // The public Game has already advanced the spell clock at this update point.
     // Forward its remaining time, including its original warning thresholds.
     if(game.spell?.active)return super.update({...state,timerHidden:!!state.timerHidden||!timerAllowed});
-    const phase=director?.state==='combat'?director.phase:null;
-    const duration=phase?.spell===false?phase.duration:
-      director?.state==='midboss-combat'&&!director.midbossPhases?.length?director.midbossDuration:null;
+    const phase=director?.state==='combat'?director.phase:director?.state==='midboss-combat'?director.midbossPhase:null;
+    const duration=phase?.spell===false?phase.duration:null;
     const nonspell=timerAllowed&&Number.isSafeInteger(duration)&&duration>0;
     return super.update({...state,remainingFrames:nonspell?Math.max(0,duration-director.phaseFrame):0,
       // -1 frame truncates to negative zero seconds in the public timer. An
