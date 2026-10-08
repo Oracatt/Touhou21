@@ -357,7 +357,7 @@ export const STAGES = [
     colors: ['#372F57', '#9A79B8', '#D5C58F'], background: 'stage04',
     bgmStage: 'stage04', bgmBoss: 'boss04', roadFrames: 5100, midbossAt: 2280,
     nonspellNames: ['经纬的起针', '隔着丝线的旧事', '解不开的小结'],
-    phaseLayout: 'NSNSSNS',
+    phaseLayout: 'NSNSNSS',
     midbossSpells: [
       spell('s04-mid', '缝符「先缝住影子的一针」', 'weave', 'weave_shadow', '针弹飞到自机周围排成一圈，停留片刻后一同向圆心缝合；两侧袖口持续洒下米弹。', 35),
     ],
@@ -474,7 +474,7 @@ export const STAGES = [
     colors: ['#7BAA9B', '#E7E0C1', '#D6B668'], background: 'stage06',
     bgmStage: 'stage06', bgmBoss: 'boss06', roadFrames: 3900, midbossAt: 1680,
     nonspellNames: ['最初的呼唤', '薄荷色的声纹', '无声的答复', '最后一页之前'],
-    phaseLayout: 'NSNSSNSNS',
+    phaseLayout: 'NSNSNSNSS',
     midbossSpells: [
       spell('s06-mid', '名札「请在空白处写上名字」', 'name', 'name_writing', '白札飞到空中写出一笔笔字划，停顿后按字形滴落成幕；带缺口的金铃环定时扩散。', 35),
     ],
@@ -545,7 +545,7 @@ export const STAGES = [
     colors: ['#1E2E56', '#B3BED0', '#BA4B60'], background: 'stage07',
     bgmStage: 'extra', bgmBoss: 'bossExtra', roadFrames: 5100, midbossAt: 2280,
     nonspellNames: ['说到一半的声音', '两声之间', '旧名轻叩', '墙上的回响', '半句玩笑', '回廊的重叠', '重播的声线', '听不到的名字'],
-    phaseLayout: 'NSNSNSSNSNSNSSNSNS',
+    phaseLayout: 'NSNSNSNSNSNSNSNSSS',
     midbossSpells: [
       spell('ex-mid-01', '抄札「只准借阅的旧名目录」', 'archive', 'archive_copy', '纸札成列落下，行至半途相邻两列交换车道；红札束定时瞄准自机。', 45),
       spell('ex-mid-02', '封印「回声不可携出之页」', 'archive', 'archive_echo_seal', '方形书页展开后被拉回封印，穿过中心再向另一侧展开；朱印成扇形盖向自机。', 50),

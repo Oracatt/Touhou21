@@ -16,7 +16,7 @@ test('campaign covers six connected stages and a separately identified Extra', (
   for (const stage of STAGES) {
     assert.ok(CHARACTER_BY_ID.has(stage.bossId), `missing Boss ${stage.bossId}`);
     assert.ok(stage.roadFrames >= 3000);
-    assert.match(stage.phaseLayout, /^N(?:S|NS)*$/, `${stage.id} opens with an unnamed attack; every unnamed attack leads into a card`);
+    assert.match(stage.phaseLayout, /^(?:NS)+S*$/, `${stage.id} every unnamed attack leads into a card; card-only phases come last`);
     assert.equal([...stage.phaseLayout].filter((kind) => kind === 'S').length, stage.spells.length, `${stage.id} one phase per card`);
     assert.equal([...stage.phaseLayout].filter((kind) => kind === 'N').length, stage.nonspellNames.length, `${stage.id} one name per unnamed attack`);
     assert.equal(stage.colors.length, 3);

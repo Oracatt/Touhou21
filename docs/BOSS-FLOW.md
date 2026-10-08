@@ -43,12 +43,12 @@
 | 一面 | `NSNS` | 2 / 2 |
 | 二面 | `NSNSS` | 2 / 3（最后两张符卡连续） |
 | 三面 | `NSNSNS` | 3 / 3 |
-| 四面 | `NSNSSNS` | 3 / 4 |
-| 五面 | `NSNSNSS` | 3 / 4 |
-| 六面 | `NSNSSNSNS` | 4 / 5 |
-| Extra | `NSNSNSSNSNSNSSNSNS` | 8 / 10 |
+| 四面 | `NSNSNSS` | 3 / 4（最后两张符卡连续） |
+| 五面 | `NSNSNSS` | 3 / 4（最后两张符卡连续） |
+| 六面 | `NSNSNSNSS` | 4 / 5（最后两张符卡连续） |
+| Extra | `NSNSNSNSNSNSNSNSSS` | 8 / 10（最后三张符卡连续） |
 
-符卡接符卡时，上一张符卡结算后进入 60 帧的交接，下一张符卡拥有独立的血环（共享血环只在「非符→符卡」时存在，`TouhouBossPhasePlan` 自动按此分组）；交接时下一阶段使用符卡血量，而不是普通血量。排布必须以 `N` 开头，每个 `N` 后面必须是 `S`，`S` 的个数等于 `spells.length`，`N` 的个数等于 `nonspellNames.length`，由 `tests/content.test.js` 检查。
+没有非符的符卡只出现在最后，每张独占一整条血条：前面先是若干「非符 + 符卡」对，最后才是连续的纯符卡。符卡接符卡时，上一张符卡结算后进入 60 帧的交接，下一张符卡拥有独立的血环（共享血环只在「非符→符卡」时存在，`TouhouBossPhasePlan` 自动按此分组）；交接时下一阶段使用符卡血量，而不是普通血量。排布必须以 `N` 开头，每个 `N` 后面必须是 `S`，`S` 的个数等于 `spells.length`，`N` 的个数等于 `nonspellNames.length`，由 `tests/content.test.js` 检查。
 
 ## 非符血量与共享血环
 
