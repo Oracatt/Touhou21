@@ -20,6 +20,7 @@ const cases=[
   {id:'scene-cover',preRoll:18,actions:[{frame:0,type:'play'}]},
   {id:'scene-reveal',preRoll:60,actions:[{frame:0,type:'play'}]},
   {id:'road',options:base,preRoll:480},
+  {id:'bgm-caption',options:base,preRoll:90},
   ...STAGES.map(stage=>({id:`road-${stage.id}`,options:{...base,mode:'stage-practice',stageId:stage.id,difficulty:stage.id===7?4:1},preRoll:1200})),
   {id:'prelude-monologue',options:{...base,skipRoad:true},until:{state:'dialogue'},phaseRoll:80},
   {id:'prelude-boss-appears',options:{...base,skipRoad:true},preRoll:112,input:{40:Keys.SHOOT,70:Keys.SHOOT}},

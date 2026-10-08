@@ -7,10 +7,12 @@ import {BossSpriteCatalog} from './boss-sprites.js';
 import {GameFrameSkin} from './frame-skin.js';
 import {CampaignBossHud} from './campaign-boss-hud.js';
 import {GAME_REVISION} from './storage.js';
+import {musicTrack} from './music-data.js';
 
 const names=new Map(CHARACTERS.map(value=>[value.id,value.name]));
 const stages=STAGES.map(value=>({...value,bossName:names.get(value.bossId),midbossName:names.get(MIDBOSSES.find(midboss=>midboss.stageId===value.id)?.bossId??value.bossId)}));
 const formatScore=value=>String(Math.trunc(value*10)).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const BGM_CAPTION_FRAMES=360;
 const clone=value=>JSON.parse(JSON.stringify(value));
 const rgba=value=>((value<<8)|(value>>>24))>>>0;
 const floatBits=new DataView(new ArrayBuffer(4));
@@ -63,7 +65,7 @@ export class CampaignScene extends TouhouGame {
     this.bossSprites=new BossSpriteCatalog({art});
     this.frameSkin=new GameFrameSkin({art,text});
     this.hud.roots[0].draw=queue=>this.frameSkin.draw(queue,this);
-    this.dialogue=null;this.stageClear=null;this.stageTransition=null;this.stageCaptionAge=0;this.currentStage=null;
+    this.dialogue=null;this.stageClear=null;this.stageTransition=null;this.stageCaptionAge=0;this.currentStage=null;this.bgmCaption=null;
     this.outerDraw=new DrawList();this.savedRun=false;this.replayDone=false;this.finishedResult=null;
     this.player.lives=storage.settings.startingLives;
     const initialHighScore=playbackSource?.config?.initialHighScore??Math.max(0,...storage.progress.scores.filter(result=>result.character===config.character&&result.difficulty===config.difficulty&&result.mode===config.mode).map(result=>result.score));
@@ -92,7 +94,7 @@ export class CampaignScene extends TouhouGame {
       queue.enqueuePriority(style.drawPriority,draw=>this.text.draw(draw,label,76,18,{size:16,width:455,height:25,color:0xf8e8caff,alpha:(style.color>>>24)/255}));};
     this.director=new CampaignDirector({stages,midbosses:MIDBOSSES,character:config.character,difficulty:config.difficulty,mode:config.mode,stageId:config.stageId,spellId:config.spellId,seed:config.seed,
       callbacks:{
-        music:id=>music.play(id,true),stageStart:stage=>this.startStage(stage),
+        music:id=>{music.play(id,true);this.bgmCaption={title:musicTrack(id).title,age:0};},stageStart:stage=>this.startStage(stage),
         bossSpawn:(enemy,metadata)=>this.decorateBoss(enemy,metadata),
         spellStart:(spec,metadata)=>this.spellStart(spec,metadata),
         dialogue:(lines,context)=>this.openDialogue(lines,context),
@@ -201,7 +203,7 @@ export class CampaignScene extends TouhouGame {
       const delta=previousBoss.x-previousBossX;previousBoss._spriteDirection=Math.abs(delta)>.15?Math.sign(delta):0;
     }
     if(!wasPaused&&!this.paused){
-      this.stageCaptionAge++;
+      this.stageCaptionAge++;if(this.bgmCaption&&++this.bgmCaption.age>=BGM_CAPTION_FRAMES)this.bgmCaption=null;
       if(this.dialogue?.active){this.dialogue.update(this.options.autoDialogue?Keys.FOCUS:mask);}
       if(this.dialogue?.complete){this.dialogue.dispose();this.dialogue=null;}
       if(this.stageClear?.alive)this.stageClear.update(this.options.autoStageClear?Keys.SHOOT:mask);
@@ -218,6 +220,8 @@ export class CampaignScene extends TouhouGame {
       this.text.draw(draw,this.currentStage.subtitle,58,213,{size:16,width:555,height:45,align:'center',alpha});}
     this.text.draw(draw,GAME.title,674,605,{size:34,width:268,height:60,font:this.text.titleFont,align:'center',color:0x62563eff});
     this.text.draw(draw,this.currentStage.location,651,660,{size:16,width:292,height:46,align:'center',color:0x59675cff});
+    if(this.bgmCaption){const {age,title}=this.bgmCaption;const alpha=Math.min(1,age/20,(BGM_CAPTION_FRAMES-age)/45);
+      this.text.draw(draw,`♪ ${title}`,324,664,{size:16,width:296,height:28,align:'right',color:0xf8e8caff,alpha});}
     this.stageClear?.draw(draw);this.dialogue?.draw(draw,{x:0,y:0,scale:1,screenScale:1.5});
     if(this.playback)this.text.draw(draw,'Replay',674,564,{size:20,width:230,height:42,align:'center',color:0xb6c7dfff});
     return draw.commands;
