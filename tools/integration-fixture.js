@@ -138,7 +138,7 @@ function* continuationReplay(){
 function* pauseExternalPages(){
   application=make({autostart:true,invincible:true});const app=application,game=app.core.game,visited=[];
   tick(app,40);
-  for(const [selection,title]of [[4,'选项'],[3,'游戏说明'],[2,'保存回放']]){
+  for(const [selection,title]of [[3,'游戏说明'],[2,'保存回放']]){
     tap(app,Keys.PAUSE);tick(app,12);assert(game.paused&&game.pauseVisual.phase===6,'Public Pause opens its normal menu');
     for(let i=0;i<selection;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
     if(selection===2){tick(app,34);tap(app,Keys.UP);tap(app,Keys.SHOOT);}
@@ -154,7 +154,7 @@ function* pauseExternalPages(){
 function* pausePageReplay(){
   application=make({autostart:true,invincible:true});const app=application,source=app.core.game,visited=[];
   tick(app,100);
-  for(const [selection,title]of [[4,'选项'],[3,'游戏说明'],[2,'保存回放']]){
+  for(const [selection,title]of [[3,'游戏说明'],[2,'保存回放']]){
     tap(app,Keys.PAUSE);tick(app,12);for(let i=0;i<selection;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
     if(selection===2){tick(app,34);tap(app,Keys.UP);tap(app,Keys.SHOOT);}
     tick(app,22);
@@ -202,7 +202,7 @@ function* gameOverExternalPages(){
   let frames=0,stageTrack=null;while(!(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6)&&frames<3000){if(!game.paused)stageTrack=app.music.current?.id;app.update(0);frames++;if(frames%128===0)yield;}
   assert(game.paused&&game.pauseVisual instanceof TouhouGameOver,'Real road miss opens the public GameOver owner');
   assert(stageTrack===STAGES[0].bgmStage&&app.music.current?.id==='playersScore'&&!app.music.paused,'GameOver interrupts the stage BGM with Player\'s Score');
-  for(const [selection,title]of [[4,'选项'],[3,'游戏说明'],[2,'保存回放']]){
+  for(const [selection,title]of [[3,'游戏说明'],[2,'保存回放']]){
     let steps=0;while(game.pauseVisual.selection!==selection&&steps++<6)tap(app,Keys.DOWN);assert(game.pauseVisual.selection===selection,'GameOver choice remains available');
     tap(app,Keys.SHOOT);tick(app,22);assert(app.page?.title===title,`GameOver opens ${title}`);visited.push(title);
     const position=game.frame;tick(app,12);tap(app,Keys.BOMB);
@@ -230,7 +230,7 @@ function* replayTermination(){
     memory.clear();application=make({autostart:true,testing:false,invincible:true});const app=application,source=app.core.game;
     for(let i=0;i<620;i++){app.update(0);if(i%128===127)yield;}
     tap(app,Keys.PAUSE);tick(app,12);assert(source.paused&&source.pauseVisual.phase===6,'Termination is chosen through the real public Pause menu');
-    for(let i=0;i<choice;i++)tap(app,Keys.DOWN);assert(source.pauseVisual.selection===choice,`Pause selects ${action}`);tap(app,Keys.SHOOT);tick(app,34);
+    for(let i=0;source.pauseVisual.selection!==choice&&i<6;i++)tap(app,Keys.DOWN);assert(source.pauseVisual.selection===choice,`Pause selects ${action}`);tap(app,Keys.SHOOT);tick(app,34);
     assert(source.pauseVisual.phase===7&&source.pauseVisual.count===2,'Public termination opens its Yes/No confirmation');tap(app,Keys.UP);tap(app,Keys.SHOOT);
     let tail=0;while(app.core.game===source&&tail++<80)app.update(0);
     assert(source.destroyed&&app.core.game!==source,`Recorded ${action} performs its live scene transition`);
@@ -258,6 +258,8 @@ function* replayTermination(){
 }
 function* ui(){
   application=make({unlockAll:true});const app=application,visited=[];
+  // Yield between real UI journeys. Thousands of simulated frames in one
+  // host callback would trip QuickJS's per-call watchdog despite valid input.
   function menuReady(){tick(app,140);assert(app.core.menu.state==='main'&&app.core.menu.phase===2,'Title menu ready');}
   function main(index){menuReady();for(let i=0;i<index;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,23);}
   function close(){tick(app,12);tap(app,Keys.BOMB);assert(app.page===null,'X returns from page');}
@@ -271,22 +273,22 @@ function* ui(){
   main(0);assert(app.core.menu.state==='difficulty','Title Z enters difficulty');visited.push('title','difficulty');
   tick(app,10);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,16);assert(app.core.menu.state==='character','Difficulty Z enters character');visited.push('character');
   tick(app,10);tap(app,Keys.RIGHT);assert(app.core.menu.selection===1,'Character input selects Marisa');
-  tap(app,Keys.SHOOT);tick(app,100);assert(app.core.mode==='game'&&app.core.game.config.character===1&&app.core.game.config.difficulty===2,'Input selection launches chosen self and difficulty through public scene transition');visited.push('title-game-transition');app.leaveGame();
+  tap(app,Keys.SHOOT);tick(app,100);assert(app.core.mode==='game'&&app.core.game.config.character===1&&app.core.game.config.difficulty===2,'Input selection launches chosen self and difficulty through public scene transition');visited.push('title-game-transition');app.leaveGame();yield;
   main(1);assert(app.core.menu.state==='character'&&app.core.menu.difficulty===4,'Extra enters its fixed-difficulty character selector');tick(app,10);tap(app,Keys.BOMB);tick(app,12);
-  assert(app.core.menu.state==='main'&&Object.keys(app.extraSelection).length===0,'Cancelled Extra returns to a clean main menu');startNormal('normal-after-extra-cancel');
+  assert(app.core.menu.state==='main'&&Object.keys(app.extraSelection).length===0,'Cancelled Extra returns to a clean main menu');startNormal('normal-after-extra-cancel');yield;
   main(2);assert(app.page?.rows.length===6,'Stage practice has six stages');visited.push('stage-practice');tick(app,10);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.core.menu.state==='difficulty'&&app.extraSelection.stageId===2,'Stage choice reaches shared selectors');
-  tick(app,10);tap(app,Keys.BOMB);tick(app,10);assert(Object.keys(app.extraSelection).length===0,'Cancelled stage practice clears its business selection');startNormal('normal-after-stage-practice-cancel');
+  tick(app,10);tap(app,Keys.BOMB);tick(app,10);assert(Object.keys(app.extraSelection).length===0,'Cancelled stage practice clears its business selection');startNormal('normal-after-stage-practice-cancel');yield;
   const extraMidboss=ALL_SPELLS.findIndex(card=>card.id==='ex-mid-01');
   main(3);assert(app.page?.rows.length===39,'Practice contains all 39 main and midboss cards');visited.push('spell-practice');tick(app,10);for(let i=0;i<extraMidboss;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.core.menu.state==='character'&&app.extraSelection.stageId===7,'Extra midboss card reaches character selector');
   tick(app,10);tap(app,Keys.BOMB);tick(app,12);assert(app.core.menu.state==='main','Extra character cancellation returns to title');
-  assert(Object.keys(app.extraSelection).length===0,'Cancelled Extra card clears its business selection');startNormal('normal-after-extra-card-cancel');
+  assert(Object.keys(app.extraSelection).length===0,'Cancelled Extra card clears its business selection');startNormal('normal-after-extra-card-cancel');yield;
   main(3);tick(app,10);for(let i=0;i<extraMidboss;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
   assert(app.core.mode==='game'&&app.core.game.config.spellId===ALL_SPELLS[extraMidboss].id&&app.core.game.difficulty===4,'Extra midboss practice launches through public transition with difficulty four');visited.push('midboss-spell-practice-game');app.leaveGame();
-  startNormal('normal-after-extra-card-game');
+  yield;startNormal('normal-after-extra-card-game');yield;
   main(2);tick(app,10);for(let i=0;i<2;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,10);tap(app,Keys.SHOOT);tick(app,16);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
-  assert(app.core.mode==='game'&&app.core.game.config.mode==='stage-practice'&&app.core.game.config.stageId===3,'Actual stage practice begins at selected stage');visited.push('stage-practice-game');app.leaveGame();startNormal('normal-after-stage-practice-game');
+  assert(app.core.mode==='game'&&app.core.game.config.mode==='stage-practice'&&app.core.game.config.stageId===3,'Actual stage practice begins at selected stage');visited.push('stage-practice-game');app.leaveGame();yield;startNormal('normal-after-stage-practice-game');yield;
   main(1);tick(app,10);tap(app,Keys.SHOOT);tick(app,100);
-  assert(app.core.mode==='game'&&app.core.game.config.mode==='extra'&&app.core.game.config.stageId===7&&app.core.game.config.spellId===null&&app.core.game.currentStage.id===7,'Actual Extra begins at stage seven without an old card selection');visited.push('extra-game-after-practice');app.leaveGame();startNormal('normal-after-extra-game');
+  assert(app.core.mode==='game'&&app.core.game.config.mode==='extra'&&app.core.game.config.stageId===7&&app.core.game.config.spellId===null&&app.core.game.currentStage.id===7,'Actual Extra begins at stage seven without an old card selection');visited.push('extra-game-after-practice');app.leaveGame();yield;startNormal('normal-after-extra-game');yield;
   for(const [index,name] of [[5,'records'],[6,'music'],[7,'options'],[8,'manual'],[4,'replay']]){
     main(index);assert(app.page,`${name} opens through title input`);visited.push(name);tick(app,12);
     if(name==='records'){
@@ -299,7 +301,7 @@ function* ui(){
     if(name==='music'){tap(app,Keys.DOWN);tap(app,Keys.SHOOT);assert(app.music.current.id===app.page.row.track.id,'Music selection loads requested authored BGM');assert(typeof app.page.detail(app.page.row)==='string','Music comment is text');}
     if(name==='options'){const previous=app.storage.settings.musicVolume;tap(app,Keys.RIGHT);assert(app.storage.settings.musicVolume===previous+5,'Option input changes settings');assert(memory.has('userdata/guiming-settings.json'),'Settings are saved only in QA memory');}
     if(name==='manual'){tap(app,Keys.RIGHT);assert(app.page.index===1,'Manual turns pages');tap(app,Keys.LEFT);assert(app.page.index===0,'Manual returns a page');}
-    close();
+    close();yield;
   }
   // Populate a valid recorded fixture, then choose it through the Replay page.
   const sample={format:'ts-stg-replay',version:1,config:{game:'guiming',revision:GAME_REVISION,backend:host.backend,character:0,difficulty:1,mode:'spell-practice',stageId:1,spellId:ALL_SPELLS[0].id,seed:210721,startingLives:2,initialSpellRecords:{},spellTimes:[]},frames:20,runs:[[0,20]],checkpoints:[]};

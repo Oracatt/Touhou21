@@ -48,8 +48,9 @@ export class ProjectApplication {
       // Recorded exit/retry is the last input of this recording. Keep its
       // playback scene until ReplayPlayer consumes EOF and verifies it.
       onExit:()=>{if(!this.core.game?.playback)this.leaveGame();},onRestart:()=>{if(this.core.game?.playback)return;this.core.game?.saveRun({aborted:true});this.playbackSource=null;this.core.start({...config,seed:this.options.seed??(Date.now()>>>0)});},
-      onReplay:context=>this.openExternalPage('replays',context),onOptions:context=>this.openExternalPage('options',context),onManual:context=>this.openExternalPage('manual',context),
-      gameOverOptions:{onReplay:context=>this.openExternalPage('replays',context),onOptions:context=>this.openExternalPage('options',context),onManual:context=>this.openExternalPage('manual',context)}};
+      onReplay:context=>this.openExternalPage('replays',context),onManual:context=>this.openExternalPage('manual',context),
+      pauseOptions:{hiddenChoices:['options']},
+      gameOverOptions:{hiddenChoices:['options'],onReplay:context=>this.openExternalPage('replays',context),onManual:context=>this.openExternalPage('manual',context)}};
   }
   leaveGame(){this.core.game?.saveRun({aborted:true});this.page=null;this.core.openMenu();}
   closePage({inGame=false,close}={}){this.page=null;if(inGame){close?.();return;}this.core.menu?.returnMain();this.music.play('title',true);}

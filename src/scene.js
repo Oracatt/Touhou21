@@ -1,5 +1,5 @@
 import {DrawList,Keys,ReplayRecorder,ReplayPlayer} from '@ts-stg/thlib';
-import {TouhouGame,TouhouDialogue,TouhouStageClear,TouhouStageTransition,TouhouRNG,AnmBank} from '@ts-stg/thlib/touhou';
+import {TouhouGame,TouhouDialogue,TouhouStageClear,TouhouStageTransition,TouhouRNG,AnmBank,TOUHOU_POINT_VALUE_PROFILES} from '@ts-stg/thlib/touhou';
 import {STAGES,MIDBOSSES,CHARACTERS,PLAYERS,GAME} from './content.js';
 import {CampaignDirector} from './director.js';
 import {StageBackground} from './background.js';
@@ -62,16 +62,16 @@ export class CampaignScene extends TouhouGame {
     const background=new StageBackground({art,seed:config.seed});
     const frameSkin=new GameFrameSkin({art});
     super({...settings,character:config.character,difficulty:config.difficulty,seed:config.seed,
-      systemOptions:{...settings.systemOptions,hud:{...settings.systemOptions?.hud,skin:frameSkin,
+      systemOptions:{...settings.systemOptions,
+        player:{...settings.systemOptions?.player,rules:{...TOUHOU_POINT_VALUE_PROFILES.classic,...settings.systemOptions?.player?.rules}},
+        hud:{...settings.systemOptions?.hud,skin:frameSkin,
         palette:{...settings.systemOptions?.hud?.palette,...HUD_NUMBER_PALETTE},replay:!!playbackSource}},
       factories:{...settings.factories,bossHud:(hudOptions,game)=>new CampaignBossHud(hudOptions,game)},
       rng:settings.rng??new TouhouRNG(config.seed),visualRng:settings.visualRng??new TouhouRNG(config.seed^0x6d2b79f5),
       renderBackground:(draw,game)=>{background.draw(draw,game);game.stageTransition?.draw(draw,{x:48,y:24,width:576,height:672});},
       spellContext:{...settings.spellContext,...(host?.rasterizeBitmapText&&host?.encodeText?{
-        createNameAnimation:(name,options)=>{const vm=resources.createNameAnimation(name,{...options,codePage:936},settings.banks.text),drawSelf=vm.drawSelf.bind(vm);
-          vm.drawSelf=(draw,view)=>{const priority=vm.drawPriority,alreadyClipped=priority>=10&&priority<=62||priority>=80&&priority<=83;
-            if(!alreadyClipped)draw.scissor(48,24,576,672);drawSelf(draw,view);if(!alreadyClipped)draw.scissorEnd();};return vm;}}:{})},
-      spellOptions:{...settings.spellOptions,records,fallbackRecords:{},viewIndex:config.character,playback:!!playbackSource,mode:config.mode==='spell-practice'?2:0},
+        createNameAnimation:(name,options)=>resources.createNameAnimation(name,{...options,codePage:936},settings.banks.text)}:{})},
+      spellOptions:{...settings.spellOptions,records,fallbackRecords:{},viewIndex:0,playback:!!playbackSource,mode:config.mode==='spell-practice'?2:0},
       gameOverOptions:{...settings.gameOverOptions,music:'playersScore',musicPlayer:music}});
     Object.assign(this,{resources,host,art,text,music,storage,config,options,background,frameSkin,onComplete,onReplayDone,onSpellPracticeEnd});
     this.bossSprites=new BossSpriteCatalog({art});

@@ -18,7 +18,7 @@ export function createHudArtFixture(scenarioPath){
   });
   const app=new ProjectApplication(host,{testing:true,fixedClock:true,seed:210909,autostart:true,invincible:true,autoDialogue:true,
     character:scenario.character,mode:scenario.mode,stageId:scenario.stageId,difficulty:scenario.stageId===7?4:1,
-    skipRoad:scenario.kind==='combat',spellId:scenario.kind==='spell'?STAGES[scenario.stageId-1].spells[0].id:null});
+    skipRoad:scenario.kind==='combat',spellId:scenario.kind==='spell'?scenario.spellId??STAGES[scenario.stageId-1].spells[0].id:null});
   assert(app.resources.locale==='zh-CN','The production App selects Chinese through the public resource API');
   const resourceRoot=app.resources.basePath,manifest=app.resources.manifest,localeDescriptor=manifest.locales?.['zh-CN']?.archives?.front;
   assert(localeDescriptor?.file,'Chinese front resources are explicitly declared by the public manifest');
@@ -78,9 +78,19 @@ export function createHudArtFixture(scenarioPath){
       };for(const child of vm.children??[])visit(child);};visit(menuOwner.panel);
     }
   };
-  let replayProof=null,layoutPreset=null,renderWarmup=null;
+  let replayProof=null,layoutPreset=null,renderWarmup=null,pointProof=null;
   function* prepare(){
-    if(scenario.kind==='replay'){
+    if(scenario.kind==='point-growth'){
+      for(let i=0;i<90;i++){advance();if(applicationUpdates%32===0)yield;}
+      const player=game.player;
+      assert(player.pointValue===10000&&player.graze===0,'A new game starts with the initial point value');
+      game.bullets.emit({count:11,x:player.x+30,y:player.y,speed:0});advance();
+      assert(player.graze===11&&player.pointValue===10010,'Real public bullet collisions award eleven grazes and one ten-point increase');
+      game.bullets.cancelCircle(player.x,player.y,640,{dropMode:0});
+      const score=player.score,item=game.items.spawn({type:2,x:player.x,y:player.y,state:3,speed:0});advance();
+      assert(item.state===0&&player.pointItems===1&&player.score-score===1001,'Real full-value blue point pays the displayed 10,010 points');
+      pointProof={graze:player.graze,pointValue:player.pointValue,pointItems:player.pointItems,displayedAward:(player.score-score)*10};
+    }else if(scenario.kind==='replay'){
       const recording=game;
       for(let i=0;i<240;i++){advance(i%60<20?Keys.FOCUS:0);if(i===89)recording.recorder.checkpoint(recording.snapshot());if(applicationUpdates%32===0)yield;}
       const replay=recording.recorder.toJSON();assert(replay.frames===240&&replay.checkpoints.length===1,'Real Scene recorder includes a frame90 checkpoint');
@@ -100,7 +110,10 @@ export function createHudArtFixture(scenarioPath){
       Object.assign(game.player,layoutPreset);game.hud.update(game.player);
     }else if(scenario.kind==='combat'||scenario.kind==='spell'){
       for(let i=0;game.director.state!=='combat';i++){assert(i<2500,'Real App reaches the requested Boss combat');advance();if(applicationUpdates%32===0)yield;}
-      if(scenario.kind==='spell')assert(game.spell.active,'Bright-stage sample uses a real active spell');
+      if(scenario.kind==='spell'){
+        assert(game.spell.active,'Spell sample uses a real active spell');
+        assert(game.spell.viewIndex===0&&game.spell.info[1]?.scriptId===22,'Both player characters use the single-field animated spell-name template');
+      }
       else assert(!game.director.phase.spell,'Requested real ordinary attack');
       for(let i=0;i<scenario.age;i++){advance();if(applicationUpdates%32===0)yield;}
     }else{
@@ -140,7 +153,8 @@ export function createHudArtFixture(scenarioPath){
     assert(memoryWrites===0&&JSON.stringify(app.storage.progress)===initialProgress,'Preparation leaves persistent progress and userdata untouched');
     observeHud();
     result={passed:true,id:scenario.id,backend:native.backend,applicationUpdates,inputs,memoryWrites,memoryUserdataKeys:[...memory.keys()].sort(),
-      actualState:app.snapshot(),layoutPreset,replayProof,renderWarmup,hudLayout:game.hud.layout,hudReplay:game.hud.replay,
+      actualState:app.snapshot(),layoutPreset,replayProof,renderWarmup,pointProof,hudLayout:game.hud.layout,hudReplay:game.hud.replay,
+      spellTitle:game.spell.active?{name:game.spell.name,age:game.spell.age.current,animations:game.spell.info.map(vm=>vm?.snapshot()??null)}:null,
       locale:{name:app.resources.locale,frontDescriptor:localeDescriptor,changedTexturePaths},menu:menuOwner?.snapshot()??null,
       menuEntry:scenario.kind==='gameover'?'Explicit public openGameOver API; no death/input reproduction':menuOwner?'Actual Esc and navigation input':null,
       commands:0,assetLoads,textCalls,numberCalls:[],replayCalls:[],statusCalls:[],skinCalls:[],menuCalls:[],
@@ -242,15 +256,25 @@ export function createHudArtFixture(scenarioPath){
         if(entry.source?.texturePath)assert(paths.includes(entry.source.texturePath),'The emitted ANM command uses its real source bitmap texture');
         const {commands:ignored,...data}=entry;return{...data,texturePaths:paths,commandStart:Math.min(...indices),commandEnd:Math.max(...indices)+1,paintedCommands:indices.length,bounds:paintedBounds(painted),visibleBounds:visibleBounds(painted,entry.source)};};
       result.numberCalls=numberCalls.map(submitted);result.statusCalls=statusCalls.map(submitted);result.replayCalls=replayCalls.map(submitted);result.menuCalls=menuCalls.map(submitted);
-      assert(result.statusCalls.some(value=>value.kind==='life')&&result.statusCalls.some(value=>value.kind==='bomb'),'Actual public life and Bomb stock sprites remain drawn');
+      // Spell practice starts on frame one; the original HUD stock scripts
+      // remain transparent for 60 frames, then fade in over another 40.
+      const earlySpell=scenario.kind==='spell'&&game.frame<=100;
+      if(!earlySpell)assert(result.statusCalls.some(value=>value.kind==='life')&&result.statusCalls.some(value=>value.kind==='bomb'),'Actual public life and Bomb stock sprites remain drawn');
+      result.hudEntering=earlySpell;
       for(const key of ['highScore','score','lives','bombs','power','pointValue','graze']){
         const label=result.statusCalls.find(value=>value.kind===`label-${key}`);
+        if(!label&&earlySpell)continue;
         assert(label,`Actual public ${key} image label remains drawn above the panel`);
         assert(label.priority===74,`The public ${key} label retains priority74`);
         assert(localizedTexturePaths.includes(label.source?.texturePath),`The public ${key} label comes from the selected front archive`);
       }
       assert(result.statusCalls.filter(value=>['label-highScore','label-score','label-lives','label-bombs','label-power'].includes(value.kind))
         .every(value=>changedTexturePaths.includes(value.source?.texturePath)),'Core status labels use real Chinese locale imagery');
+      const powerLabel=result.statusCalls.find(value=>value.kind==='label-power'),pointLabel=result.statusCalls.find(value=>value.kind==='label-pointValue'),grazeLabel=result.statusCalls.find(value=>value.kind==='label-graze');
+      if(!earlySpell){
+        assert(pointLabel.source.sourceRect.width===168&&pointLabel.source.sourceRect.height===36,'The complete original blue point icon and Chinese label cell are submitted');
+        assert(close(pointLabel.bounds.height,powerLabel.bounds.height)&&close(grazeLabel.bounds.height,powerLabel.bounds.height),'Point and Graze labels use the same native display height as Power');
+      }
       assert(!game.hud.roots.some(vm=>[101,102].includes(vm.scriptId)),'Default character-name artwork is disabled');
       for(const [key,y] of [['pointValue',204],['graze',226],['replay',274]])assert(game.hud.layout[key].y===y,`Public ${key} row retains its default source-screen origin`);
       assert(!Object.hasOwn(game.hud.labels,'replay'),'Replay has no replacement ANM label or generated image owner');
@@ -268,6 +292,7 @@ export function createHudArtFixture(scenarioPath){
         const rendered=result.replayCalls[0];assert(rendered.bounds&&!overlap(logoRect,rendered.bounds)&&contains({x:624,y:24,width:336,height:672},rendered.bounds),'Actual Replay glyphs stay inside the sidebar and above the logo');
       }
       if(menuOwner){
+        assert(!result.menuCalls.some(value=>[123,129].includes(value.scriptId)),'The untranslated Options row emits no pixels in the actual application');
         const decorations=result.menuCalls.filter(value=>value.priority===77),labels=result.menuCalls.filter(value=>value.priority===99);
         assert(decorations.length>0&&labels.length>0,'Actual public menu decoration77 and labels99 both emit');
         assert(Math.max(...decorations.map(value=>value.commandEnd))<=Math.min(...labels.map(value=>value.commandStart)),'Public menu text is submitted after all green decorations');
@@ -275,7 +300,7 @@ export function createHudArtFixture(scenarioPath){
         if(scenario.kind==='pause-confirm')for(const script of [0x8e,0x8f])assert(labels.some(value=>value.scriptId===script),'Both original Yes and No ANM choices are drawn');
         result.menuOrderCorrect=true;
       }else assert(result.menuCalls.length===0,'Unpaused samples do not render a pause/result panel');
-      if(!game.paused){
+      if(!game.paused&&!earlySpell){
         for(const [key,y] of [['pointValue',204],['graze',226]])assert(result.numberCalls.some(value=>value.options.y===y&&value.text===String(game.player[key]).replace(/\B(?=(\d{3})+(?!\d))/g,',')),`Actual public ${key} value uses its own row`);
         assert(!result.numberCalls.some(value=>value.options.y>226),'No extra status-value rows remain below graze');
         result.valueLabelClearance=[];

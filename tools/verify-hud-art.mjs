@@ -6,6 +6,7 @@ import {spawnSync} from 'node:child_process';
 
 const scenarios=[
   {id:'road-reimu',kind:'road',character:0,mode:'normal',stageId:1},
+  {id:'point-growth',kind:'point-growth',character:0,mode:'normal',stageId:1},
   {id:'nonspell-marisa',kind:'combat',character:1,mode:'stage-practice',stageId:1,age:310},
   {id:'spell-bright',kind:'spell',character:0,mode:'spell-practice',stageId:6,age:240},
   {id:'extra-nonspell',kind:'combat',character:1,mode:'extra',stageId:7,age:310},
@@ -13,6 +14,7 @@ const scenarios=[
   {id:'pause-confirm',kind:'pause-confirm',character:0,mode:'normal',stageId:1},
   {id:'gameover-result',kind:'gameover',character:1,mode:'normal',stageId:1},
   {id:'replay-long',kind:'replay',character:1,mode:'normal',stageId:1},
+  ...[0,15,30,60,90,120].map(age=>({id:`spell-name-${age}`,kind:'spell',character:1,mode:'spell-practice',stageId:7,spellId:'ex-09',age})),
 ];
 const options={label:'hud-art',ids:scenarios.map(value=>value.id),backends:['v8','quickjs']},args=process.argv.slice(2);
 for(let i=0;i<args.length;i++){

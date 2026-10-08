@@ -40,6 +40,27 @@ const step=(game,director,{damage=false}={})=>{
   game.update(0);
 };
 
+test('campaign selects public classic point scoring for real grazes and full-value blue pickups',()=>{
+  const f=sceneFixture({mode:'normal',spellId:null,options:{testing:true}}),game=f.scene;
+  try{
+    assert.equal(game.player.pointValue,10000);
+    game.bullets.emit({count:11,x:game.player.x+30,y:game.player.y,speed:0});game.update(0);
+    assert.deepEqual([game.player.graze,game.player.pointValue],[11,10010]);
+    game.bullets.cancelCircle(game.player.x,game.player.y,640,{dropMode:0});
+    const before=game.player.score,item=game.items.spawn({type:2,x:game.player.x,y:game.player.y,state:3,speed:0});game.update(0);
+    assert.equal(item.state,0);assert.equal(game.player.pointItems,1);
+    assert.equal((game.player.score-before)*10,game.player.pointValue,'Maximum pickup equals the HUD value');
+    assert.equal(game.snapshot().statistics.pointValue,10010,'Replay checksum includes the public score state');
+  }finally{f.dispose();}
+});
+
+test('both characters select the single-field animated spell name, independent of player identity',()=>{
+  for(const character of [0,1]){
+    const f=sceneFixture({character,options:{testing:true}});
+    try{assert.equal(f.scene.spell.viewIndex,0);}finally{f.dispose();}
+  }
+});
+
 test('covered stage cleanup cancels registered Boss holds and actor-owned sequences',()=>{
   const f=sceneFixture(),boss=f.scene.director.boss;let executions=0;
   f.scene.holdBoss(boss);

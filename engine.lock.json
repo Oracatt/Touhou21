@@ -2,7 +2,7 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/AIWorkspace/TS-STG",
-  "commit": "8ec53bbe23b6d2dc9e5b7c6d6d187510f252f5fd",
+  "commit": "aadf73824b5eb538c2a4bd2691b33b484cacf629",
   "backend": "v8",
   "supportedBackends": [
     "v8",
@@ -12,8 +12,8 @@
   "sourceModified": true,
   "dependencies": "Private byte-pinned local snapshots only. Imported common reference materials retain their original notices and are excluded from the original-code MIT grant.",
   "format": "touhou21-engine-lock-v1",
-  "thlibSha256": "5742cd4505472c2937529e61dd70fd9038e27f2f6751580d339ca0df8311ad7a",
-  "runtimeSha256": "29f4ab674c9f90b9586e94618e5c51b3a87c9fad4f32e8afc7c812095c07b305",
+  "thlibSha256": "6d7e676d214a3f562cbfd192c1edfed056642c339b5c6981d3ae408aebeee5bb",
+  "runtimeSha256": "53cbdc4b61e1f1fbe0df282f577caac3252c7c01da48e6a280de4fe61980fa1f",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -352,8 +352,8 @@
     },
     {
       "path": "assets/touhou-common/locales/zh-CN/anm/front.json",
-      "bytes": 732115,
-      "sha256": "9ff44d834666eabf0c852e3d84c01095da7b1b7b0eaa93d80b5eaf4c27d20459"
+      "bytes": 732067,
+      "sha256": "b18c94f9ea419d28e105244bb3242eb31e7b4902c7e41bece6a6e44fb1db1fb1"
     },
     {
       "path": "assets/touhou-common/locales/zh-CN/anm/title.json",
@@ -362,13 +362,13 @@
     },
     {
       "path": "assets/touhou-common/locales/zh-CN/source.json",
-      "bytes": 41672,
-      "sha256": "2293ac80d6450238768478066c12683765b3efbf56c9be6dd5c8f432637b6bff"
+      "bytes": 41726,
+      "sha256": "08212d4931be25bd18b0d149ec9f83a1cf966c7427653c304f140df498c03600"
     },
     {
       "path": "assets/touhou-common/locales/zh-CN/textures/front.png",
-      "bytes": 244510,
-      "sha256": "7bfbdac0218e94389481db2991b94b23501c56d9391b6781e2a677f4daa7bab8"
+      "bytes": 247294,
+      "sha256": "9bd7c4843baa37538e28bfaca28c36fa1f919cfdcff2be09c65d3ddb543425ce"
     },
     {
       "path": "assets/touhou-common/locales/zh-CN/textures/title.png",
@@ -377,8 +377,8 @@
     },
     {
       "path": "assets/touhou-common/manifest.json",
-      "bytes": 716555,
-      "sha256": "a20d55cd58880c423294845bf3cf8ab2015e6a1e1de59ba825ced07f7664afba"
+      "bytes": 716601,
+      "sha256": "49656ba5fc4748778ba9a0704eb76d027f2a212588c074d45de3d384dbaedc09"
     },
     {
       "path": "assets/touhou-common/prefabs.json",
@@ -1387,23 +1387,23 @@
     },
     {
       "path": "src/touhou/game-over.d.ts",
-      "bytes": 3574,
-      "sha256": "0936c94eeb60c13446a96bca40111b59602c290ca15233ae26e9f8c62e4424f9"
+      "bytes": 3767,
+      "sha256": "0b4a7404af2c6686ad86802e8c8eaee645bd5e5b0cd522598a4e9ac1b5e69e8a"
     },
     {
       "path": "src/touhou/game-over.js",
-      "bytes": 14747,
-      "sha256": "1c9798a7e8edceb707c6e29b68ac5eb8b46ea97931f84ecfcc019f7f75fdb067"
+      "bytes": 15324,
+      "sha256": "8180e2e136a01969c2300f044051c6214a62150e59b6556b82b576a9c53eeb8f"
     },
     {
       "path": "src/touhou/game.d.ts",
-      "bytes": 8479,
-      "sha256": "2d264a943030014285d89135c5109a72f1bbf6c7d854dc345596ae10245afac0"
+      "bytes": 8642,
+      "sha256": "b753d5450c2a83f121d9b530a8982e1b070ee1cdc8f00e5de38df7046ca8ad21"
     },
     {
       "path": "src/touhou/game.js",
-      "bytes": 27791,
-      "sha256": "9582ec55defbc9142bbeb8f0a2c5094d36750a75740452b0e316bec0fb9e0fd9"
+      "bytes": 27901,
+      "sha256": "6dd016628357c40035a0e9e40b3ee360c4f70de1d1bfbeb05787f6e0a8c00e76"
     },
     {
       "path": "src/touhou/gameplay-compositor.d.ts",
@@ -1437,13 +1437,13 @@
     },
     {
       "path": "src/touhou/index.d.ts",
-      "bytes": 2154,
-      "sha256": "e4819d193ea6b8058815cde5e012830fd72d7560cef7fe71fb29b75d8764805d"
+      "bytes": 2188,
+      "sha256": "61fa140c7117fa926e4cae7dc658d5a27d71605d3fe10716d9b8e8d3ad4835b4"
     },
     {
       "path": "src/touhou/index.js",
-      "bytes": 2154,
-      "sha256": "17adfe0d16287839343e7587524baa756b253e1d69c38c1cd5948c284a82ec6e"
+      "bytes": 2188,
+      "sha256": "ef7159b1e19946dbb8233da123242570150f689633ad28de0d6bbb7470518944"
     },
     {
       "path": "src/touhou/items.d.ts",
@@ -1452,8 +1452,8 @@
     },
     {
       "path": "src/touhou/items.js",
-      "bytes": 20010,
-      "sha256": "6f86203925c964adf25a6e1961968546831d927d44ce91d83c8fe7bbd5ea2980"
+      "bytes": 20173,
+      "sha256": "9d452a03681706e9d81cd46ed226ee3ae829eac1a8f280384599ed9b8f1a91a4"
     },
     {
       "path": "src/touhou/laser-cancellation.d.ts",
@@ -1494,6 +1494,16 @@
       "path": "src/touhou/math.js",
       "bytes": 3622,
       "sha256": "b54aa719e1215975f74dbdba3b93c589901177744a096cd4c1341dc797babcc3"
+    },
+    {
+      "path": "src/touhou/menu-choices.d.ts",
+      "bytes": 495,
+      "sha256": "6ee6c276ec4a1291022c96b3c0261e107535e8c319a1d15e73e72d74153d082f"
+    },
+    {
+      "path": "src/touhou/menu-choices.js",
+      "bytes": 2248,
+      "sha256": "6dfb4b5bba6bd7f3f5b8599876487e2035b5d2bac7bf8d22dbe73beab660eddd"
     },
     {
       "path": "src/touhou/menu.d.ts",
@@ -1547,13 +1557,13 @@
     },
     {
       "path": "src/touhou/pause.d.ts",
-      "bytes": 1199,
-      "sha256": "f2ef0de2ca31425ef20242cb2211742574f708b1a7cf815821675a3a7989c25b"
+      "bytes": 1467,
+      "sha256": "3dc773c00ac7ddabfa0cedaf06c8862426bdd7f53610a0e654ab341a30be38da"
     },
     {
       "path": "src/touhou/pause.js",
-      "bytes": 6696,
-      "sha256": "cc372e1539e2dcc3cbb5d2b3dfc1decbd29064a423d8003e5299a3f3aa620a65"
+      "bytes": 6999,
+      "sha256": "5a3d69f064a310295a7442914749f4cc26cd56c9d161c9e2b503544c06c36800"
     },
     {
       "path": "src/touhou/phase-sequence.d.ts",
@@ -1587,13 +1597,13 @@
     },
     {
       "path": "src/touhou/player-rules.d.ts",
-      "bytes": 1017,
-      "sha256": "6e7bf28719ce41f3e4ebbdb5a05f8d55fd09af853b09d9d43f670b086702d982"
+      "bytes": 1284,
+      "sha256": "b8877ae2b91103ad6e91cbe2201a0d66381bcbe96b2e2f89c801df020983eabf"
     },
     {
       "path": "src/touhou/player-rules.js",
-      "bytes": 2928,
-      "sha256": "95e0f83dfec9245fe8f80a245a7b36207ebef3d1981d08afe630e9e73185e1d9"
+      "bytes": 3168,
+      "sha256": "86d46bedc2b7d48dee13a15dbf2c5d7f76820c8cbdbc5620e57419fc714e24fc"
     },
     {
       "path": "src/touhou/player.d.ts",
@@ -1602,8 +1612,18 @@
     },
     {
       "path": "src/touhou/player.js",
-      "bytes": 27652,
-      "sha256": "9b43db56fce0585ffa028da95e5c535ad72990dc1d6c837cbd108ff5664ecdc5"
+      "bytes": 27901,
+      "sha256": "d80ee26015e4cbc3705790930e4dc8662887782a3ad66cb44abf747e2d802374"
+    },
+    {
+      "path": "src/touhou/point-value.d.ts",
+      "bytes": 1010,
+      "sha256": "abeb4185ca966fbae643154fb540f6d9c3184b5e5c5788806895a055455f2580"
+    },
+    {
+      "path": "src/touhou/point-value.js",
+      "bytes": 1894,
+      "sha256": "ce8f825ee00631a2fdb1ca4b83103f97f1c2e7ea1fa4765748ef169145584dbd"
     },
     {
       "path": "src/touhou/prefabs.d.ts",
@@ -1697,13 +1717,13 @@
     },
     {
       "path": "src/touhou/spell.d.ts",
-      "bytes": 3548,
-      "sha256": "8408a43fa1ad42c5c65ce5a069e7bdd5999f1305c5e5693a3cfc1d08a803d90e"
+      "bytes": 3721,
+      "sha256": "894a51c4a9d4b0b35c786ab2fca68462482cabfdf55405d4a0603241971d966d"
     },
     {
       "path": "src/touhou/spell.js",
-      "bytes": 13803,
-      "sha256": "b6b40bf457b6067489224983f3404a57388f337dbec5754a645a89131f8ed10e"
+      "bytes": 13960,
+      "sha256": "3ddcbb076a08809df4ffa8edc5b1da455d410113bece5eeb37015e3c93bc338e"
     },
     {
       "path": "src/touhou/stage-clear.d.ts",
@@ -1781,10 +1801,10 @@
     {
       "path": "PACKAGE.json",
       "bytes": 4319,
-      "sha256": "d4b4bf8f64b3493c3cdf1d2f75588e7c64fdc2752c7f24a6b4a81981a48521a2",
+      "sha256": "e5ef924592ad325f11811d1126cbedcd1ee4f3d8aa310845ce56a7c5b796e09c",
       "source": "dist/TS-STG/PACKAGE.json",
       "sourceSha256": "8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0",
-      "generatedContent": "{\n  \"runtimes\": [\n    {\n      \"linkage\": \"static\",\n      \"version\": \"0.10.1\",\n      \"revision\": \"3c9afc9943323ee9c7dbd123c0cd991448f4b6c2\",\n      \"id\": \"quickjs\",\n      \"jit\": false\n    },\n    {\n      \"library\": {\n        \"upstreamFile\": \"rusty_v8.lib\",\n        \"sha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n        \"upstreamSha256\": \"e168995c158b95d13a33992ed23a8b7fa84687a46d0b079b4a1eab9a055b23c3\",\n        \"archiveSha256\": \"19fb2f7cda3d6cd42179ec86c552d3efca639142f08b37fff18615ae6679ece2\",\n        \"file\": \"v8-host.lib\"\n      },\n      \"version\": \"12.3.219.9\",\n      \"sdkManifestSha256\": \"3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac\",\n      \"headers\": {\n        \"revision\": \"db2b8439ec4d3ae972330cc2e9830ccd517d7235\",\n        \"archiveSha256\": \"c0117ad65843deffb7363ef7feb6cd6198d4c0d965c85f135f41e7e0ffe504a8\"\n      },\n      \"build\": {\n        \"linkage\": \"static\",\n        \"pointerCompression\": false,\n        \"platform\": \"windows-x64\",\n        \"externalStartupData\": false,\n        \"promiseInternalFieldCount\": 1,\n        \"platformBridge\": {\n          \"inputSha256\": \"af8a48f4317731d16963b4a244e20f78a350627d1cf545ee12844157ae2fbea2\",\n          \"outputSha256\": \"7733761c7fdac0746a6692cfe3b4e145271b21f1942b510bbb3924d5c4b37bf6\",\n          \"exportedFunctions\": [\n            \"v8__Platform__NewDefaultPlatform\",\n            \"v8__Platform__DELETE\"\n          ],\n          \"originalSections\": 2224,\n          \"retainedSections\": 4,\n          \"retainedSymbols\": 10,\n          \"externalSymbols\": [\n            \"__security_cookie\",\n            \"__security_check_cookie\",\n            \"__guard_dispatch_icall_fptr\",\n            \"?NewDefaultPlatform@platform@v8@@YA?AV?$unique_ptr@VPlatform@v8@@U?$default_delete@VPlatform@v8@@@Cr@std@@@Cr@std@@HW4IdleTaskSupport@12@W4InProcessStackDumping@12@V?$unique_ptr@VTracingController@v8@@U?$default_delete@VTracingController@v8@@@Cr@std@@@45@W4PriorityMode@12@@Z\"\n          ],\n          \"executableBytesUnmodified\": true,\n          \"sections\": [\n            {\n              \"originalIndex\": 526,\n              \"name\": \".text\",\n              \"size\": 91,\n              \"relocations\": 3,\n              \"sha256\": \"17e41183530d7fcd423c12f4801ff8c1700ea1fc7481be81b540d9591e65d0cf\"\n            },\n            {\n              \"originalIndex\": 532,\n              \"name\": \".text\",\n              \"size\": 27,\n              \"relocations\": 1,\n              \"sha256\": \"cb4401e485a20b6ab2d3a6def48c232636ff183b88f6ad318299b3099706ff50\"\n            },\n            {\n              \"originalIndex\": 1045,\n              \"name\": \".xdata\",\n              \"size\": 8,\n              \"relocations\": 0,\n              \"sha256\": \"1f4b869bc523135882239a20f86a560aadb59c631a6fba4c7cc7b70b92f3004c\"\n            },\n            {\n              \"originalIndex\": 2132,\n              \"name\": \".pdata\",\n              \"size\": 12,\n              \"relocations\": 3,\n              \"sha256\": \"6dc0134d253e6d623f0a1362eeb8c40c7ac6fc6cf49c31dd8406e11218ba81c2\"\n            }\n          ]\n        },\n        \"crt\": \"static\",\n        \"sandbox\": false\n      },\n      \"id\": \"v8\",\n      \"librarySha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n      \"jit\": true,\n      \"wrapper\": {\n        \"version\": \"0.89.0\",\n        \"name\": \"rusty_v8\"\n      },\n      \"linkage\": \"static\"\n    }\n  ],\n  \"binarySha256\": \"c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8\",\n  \"kind\": \"engine-sdk\",\n  \"configuration\": \"Release\",\n  \"version\": \"0.1.0\",\n  \"format\": \"ts-stg-local-package-v2\",\n  \"referenceAssets\": false,\n  \"defaultBackend\": \"v8\",\n  \"createdUtc\": \"2026-10-05T11:39:53.102Z\",\n  \"commonResourceCounts\": {\n    \"archives\": 10,\n    \"textures\": 94,\n    \"sounds\": 51,\n    \"scripts\": 1342,\n    \"sprites\": 2256,\n    \"shotRows\": [\n      72,\n      32\n    ]\n  },\n  \"entry\": \"main.js\",\n  \"derivedFor\": {\n    \"commit\": \"8ec53bbe23b6d2dc9e5b7c6d6d187510f252f5fd\",\n    \"binarySource\": \"build/Release/ts-stg.exe\",\n    \"upstreamPackageSha256\": \"8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0\",\n    \"upstreamBinarySha256\": \"9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d\",\n    \"reason\": \"Local SDK metadata derived from the validated current native build; upstream dist remains unchanged and contains an older executable.\"\n  }\n}\n"
+      "generatedContent": "{\n  \"runtimes\": [\n    {\n      \"linkage\": \"static\",\n      \"version\": \"0.10.1\",\n      \"revision\": \"3c9afc9943323ee9c7dbd123c0cd991448f4b6c2\",\n      \"id\": \"quickjs\",\n      \"jit\": false\n    },\n    {\n      \"library\": {\n        \"upstreamFile\": \"rusty_v8.lib\",\n        \"sha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n        \"upstreamSha256\": \"e168995c158b95d13a33992ed23a8b7fa84687a46d0b079b4a1eab9a055b23c3\",\n        \"archiveSha256\": \"19fb2f7cda3d6cd42179ec86c552d3efca639142f08b37fff18615ae6679ece2\",\n        \"file\": \"v8-host.lib\"\n      },\n      \"version\": \"12.3.219.9\",\n      \"sdkManifestSha256\": \"3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac\",\n      \"headers\": {\n        \"revision\": \"db2b8439ec4d3ae972330cc2e9830ccd517d7235\",\n        \"archiveSha256\": \"c0117ad65843deffb7363ef7feb6cd6198d4c0d965c85f135f41e7e0ffe504a8\"\n      },\n      \"build\": {\n        \"linkage\": \"static\",\n        \"pointerCompression\": false,\n        \"platform\": \"windows-x64\",\n        \"externalStartupData\": false,\n        \"promiseInternalFieldCount\": 1,\n        \"platformBridge\": {\n          \"inputSha256\": \"af8a48f4317731d16963b4a244e20f78a350627d1cf545ee12844157ae2fbea2\",\n          \"outputSha256\": \"7733761c7fdac0746a6692cfe3b4e145271b21f1942b510bbb3924d5c4b37bf6\",\n          \"exportedFunctions\": [\n            \"v8__Platform__NewDefaultPlatform\",\n            \"v8__Platform__DELETE\"\n          ],\n          \"originalSections\": 2224,\n          \"retainedSections\": 4,\n          \"retainedSymbols\": 10,\n          \"externalSymbols\": [\n            \"__security_cookie\",\n            \"__security_check_cookie\",\n            \"__guard_dispatch_icall_fptr\",\n            \"?NewDefaultPlatform@platform@v8@@YA?AV?$unique_ptr@VPlatform@v8@@U?$default_delete@VPlatform@v8@@@Cr@std@@@Cr@std@@HW4IdleTaskSupport@12@W4InProcessStackDumping@12@V?$unique_ptr@VTracingController@v8@@U?$default_delete@VTracingController@v8@@@Cr@std@@@45@W4PriorityMode@12@@Z\"\n          ],\n          \"executableBytesUnmodified\": true,\n          \"sections\": [\n            {\n              \"originalIndex\": 526,\n              \"name\": \".text\",\n              \"size\": 91,\n              \"relocations\": 3,\n              \"sha256\": \"17e41183530d7fcd423c12f4801ff8c1700ea1fc7481be81b540d9591e65d0cf\"\n            },\n            {\n              \"originalIndex\": 532,\n              \"name\": \".text\",\n              \"size\": 27,\n              \"relocations\": 1,\n              \"sha256\": \"cb4401e485a20b6ab2d3a6def48c232636ff183b88f6ad318299b3099706ff50\"\n            },\n            {\n              \"originalIndex\": 1045,\n              \"name\": \".xdata\",\n              \"size\": 8,\n              \"relocations\": 0,\n              \"sha256\": \"1f4b869bc523135882239a20f86a560aadb59c631a6fba4c7cc7b70b92f3004c\"\n            },\n            {\n              \"originalIndex\": 2132,\n              \"name\": \".pdata\",\n              \"size\": 12,\n              \"relocations\": 3,\n              \"sha256\": \"6dc0134d253e6d623f0a1362eeb8c40c7ac6fc6cf49c31dd8406e11218ba81c2\"\n            }\n          ]\n        },\n        \"crt\": \"static\",\n        \"sandbox\": false\n      },\n      \"id\": \"v8\",\n      \"librarySha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n      \"jit\": true,\n      \"wrapper\": {\n        \"version\": \"0.89.0\",\n        \"name\": \"rusty_v8\"\n      },\n      \"linkage\": \"static\"\n    }\n  ],\n  \"binarySha256\": \"c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8\",\n  \"kind\": \"engine-sdk\",\n  \"configuration\": \"Release\",\n  \"version\": \"0.1.0\",\n  \"format\": \"ts-stg-local-package-v2\",\n  \"referenceAssets\": false,\n  \"defaultBackend\": \"v8\",\n  \"createdUtc\": \"2026-10-05T11:39:53.102Z\",\n  \"commonResourceCounts\": {\n    \"archives\": 10,\n    \"textures\": 94,\n    \"sounds\": 51,\n    \"scripts\": 1342,\n    \"sprites\": 2256,\n    \"shotRows\": [\n      72,\n      32\n    ]\n  },\n  \"entry\": \"main.js\",\n  \"derivedFor\": {\n    \"commit\": \"aadf73824b5eb538c2a4bd2691b33b484cacf629\",\n    \"binarySource\": \"build/Release/ts-stg.exe\",\n    \"upstreamPackageSha256\": \"8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0\",\n    \"upstreamBinarySha256\": \"9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d\",\n    \"reason\": \"Local SDK metadata derived from the validated current native build; upstream dist remains unchanged and contains an older executable.\"\n  }\n}\n"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -2680,7 +2700,7 @@
     "configuration": "Release",
     "executableSource": "build/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "d4b4bf8f64b3493c3cdf1d2f75588e7c64fdc2752c7f24a6b4a81981a48521a2",
+    "packageSha256": "e5ef924592ad325f11811d1126cbedcd1ee4f3d8aa310845ce56a7c5b796e09c",
     "binarySha256": "c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8",
     "sourceFiles": [
       {
