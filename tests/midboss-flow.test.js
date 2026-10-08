@@ -33,6 +33,10 @@ test('a recurring main Boss retreats through the public escape owner without a d
     assert.equal(f.sounds.filter(sound=>sound.id===27).length,phases,'every broken midboss group, even the last, plays the break cue');
     assert.equal(f.game.context.boss,null,'HUD/combat ownership ends while the visible actor departs');
     assert.equal(boss.alive,true);assert.equal(f.game.bossDefeats.length,0);assert.equal(f.game.bossPresentation.deaths.length,0);
+    assert.equal(f.game.bossEscapes.length,0,'a broken midboss pauses before she runs');
+    let pause=0;for(;pause<200&&f.game.bossEscapes.length===0;pause++)f.game.update(0);
+    assert.ok(pause>=45&&pause<=120,`the pause is a beat, not an instant or a stall (${pause})`);
+    assert.equal(f.director.state,'midboss-exit');assert.equal(boss.alive,true);
     const escape=f.game.bossEscapes[0];assert.equal(escape.enemy,boss);
     assert.equal(escape.sequence.duration,60);assert.equal(escape.sequence.easing,4);
     assert.deepEqual(escape.sequence.target,{x:192,y:-32,z:0});
@@ -44,7 +48,7 @@ test('a recurring main Boss retreats through the public escape owner without a d
     for(let i=0;i<10;i++)f.game.update(0);
     assert.equal(f.game.paused,true);assert.equal(escape.sequence.age,age);assert.deepEqual({x:boss.x,y:boss.y},position);
     f.game.update(Keys.PAUSE);
-    for(let i=0;i<80&&f.director.state==='midboss-exit';i++)f.game.update(0);
+    for(let i=0;i<200&&f.director.state==='midboss-exit';i++)f.game.update(0);
     assert.equal(f.director.state,'road');assert.equal(boss.alive,false);assert.equal(f.director.boss,null);
     assert.equal(f.events.filter(event=>event.name==='bossescape').length,1);
     assert.equal(f.events.filter(event=>event.name==='bossburst').length,0);
@@ -67,6 +71,7 @@ test('different midboss outcomes remain authorable, with escape opt-in and final
   for(const exit of ['escape','defeat']){
     const midbosses=MIDBOSSES.map(mid=>mid.stageId===1?{...mid,bossId:'fusae',exit}:mid),f=fixture({midbosses}),boss=f.director.boss;
     boss.damage(100000,{type:'transition-test'},f.game.context);
+    for(let i=0;i<200&&f.game.bossEscapes.length===0&&f.director.state==='midboss-exit';i++)f.game.update(0);
     assert.equal(f.game.bossEscapes.length,exit==='escape'?1:0);
     assert.equal(f.game.bossPresentation.deaths.length,exit==='defeat'?1:0);
     assert.equal(boss.alive,exit==='escape');f.dispose();
@@ -82,7 +87,7 @@ test('one phase preparation emits one original charge sound and one convergence 
   assert.equal(f.sounds.filter(sound=>sound.id===54).length,1,'ordinary updates do not retrigger the cue');
   assert.equal(f.sounds.filter(sound=>sound.id===6).length,1,'one release accompanies the same charge');
   const boss=f.director.boss;boss.damage(100000,{type:'transition-test'},f.game.context);
-  for(let i=0;i<80&&f.director.state!=='road';i++)f.game.update(0);
+  for(let i=0;i<200&&f.director.state!=='road';i++)f.game.update(0);
   f.director.midbossDone=true;f.director.stageFrame=STAGES[0].roadFrames;
   let beforeMainPhase;
   for(let i=0;i<180&&f.director.state!=='combat';i++){

@@ -4,6 +4,8 @@ import {createRoadPlan,spawnRoadFormation} from './roads.js';
 import {bossNonspellHealth,midbossNormalHealth,midbossSpellHealth} from './boss-health.js';
 
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+/** Frames a defeated recurring midboss hangs in place before she retreats. */
+const MIDBOSS_DEFEAT_PAUSE=75;
 const MODES=new Set(['normal','extra','stage-practice','spell-practice']);
 const actorPosition=(enemy,x,y)=>{enemy.x=Math.fround(x);enemy.y=Math.fround(y);
   Object.assign(enemy.motion.position,{x:enemy.x,y:enemy.y});Object.assign(enemy.animation,{x:enemy.x,y:enemy.y});};
@@ -146,18 +148,27 @@ export class CampaignDirector{
     else this._finishMidboss(game,source,{timeout});
   }
   _finishMidboss(game,source=null,{timeout=false}={}){
-    if(!['midboss-combat','midboss-phase-wait'].includes(this.state))return;this.state='midboss-exit';this.phaseFrame=0;
+    if(!['midboss-combat','midboss-phase-wait'].includes(this.state))return;this.state='midboss-exit';this.phaseFrame=0;this.pendingEscape=null;this.midbossExitFrames=70;
     const boss=this.boss;this._clear(game);boss.invulnerable=true;
     game.items.spawnBossDrops(boss,{counts:{[TouhouItemType.LARGE_POWER]:2,[TouhouItemType.POINT]:5},centerType:TouhouItemType.BOMB_FRAGMENT,
       timedOut:timeout,mode:game.session.mode});
     game.stopBossCombat();
     if(this.midbossExit==='escape'||timeout){
-      game.beginBossEscape(boss,{source,target:{x:timeout?0:192,y:-32},duration:60,easing:4});
-      this.events.push({event:'midboss-retreat',stage:this.stageId,timeout,frame:this.totalClock});
+      // A broken midboss does not bolt at once: she hangs in place for a beat, then retreats.
+      // A timed-out one is already leaving on her own.
+      this.pendingEscape={boss,source,timeout,delay:timeout?0:MIDBOSS_DEFEAT_PAUSE};
+      // Combat ownership (HUD, targeting) ends now even though the body lingers.
+      if(this.pendingEscape.delay)game.setBoss(null);this.midbossExitFrames=70+this.pendingEscape.delay;
+      if(!this.pendingEscape.delay)this._startMidbossEscape(game);
     }else{
       game.bossPresentation?.beginDeath({x:boss.x,y:boss.y,follow:null,delayFrames:0});
       game.removeBoss(boss);game.setBoss(null);this.boss=null;
     }
+  }
+  _startMidbossEscape(game){
+    const pending=this.pendingEscape;if(!pending)return;this.pendingEscape=null;
+    game.beginBossEscape(pending.boss,{source:pending.source,target:{x:pending.timeout?0:192,y:-32},duration:60,easing:4});
+    this.events.push({event:'midboss-retreat',stage:this.stageId,timeout:pending.timeout,frame:this.totalClock});
   }
   _buildPhases(){
     const stage=this.stage;
@@ -336,7 +347,8 @@ export class CampaignDirector{
     }else if(this.state==='midboss-phase-wait'){
       if(--this.waitFrames<=0)this._beginMidbossPhase(game,this.midbossPhaseIndex+1);
     }else if(this.state==='midboss-exit'){
-      if(++this.phaseFrame>=70){this.state='road';this.stageFrame++;this.phaseFrame=0;}
+      if(this.pendingEscape&&this.phaseFrame>=this.pendingEscape.delay)this._startMidbossEscape(game);
+      if(++this.phaseFrame>=this.midbossExitFrames){this.state='road';this.stageFrame++;this.phaseFrame=0;}
     }else if(this.state==='boss-enter'){
       if(game.bossPresentation.entranceReady)this._beginPhase(game,0);
     }else if(this.state==='phase-wait'){
