@@ -58,8 +58,8 @@ export function auditBoundaries({root=PROJECT_ROOT,verifyDependencies=true}={}){
   for(const character of [...PLAYERS,...CHARACTERS])assert.ok(art.assets[`assets/portraits/${character.id}.png`],'Character portrait is missing');
   for(const character of CHARACTERS)assert.ok(art.assets[`assets/sprites/${character.id}.png`],'Boss animation atlas is missing');
   for(const stage of STAGES)assert.ok(art.assets[`assets/art/stage${String(stage.id).padStart(2,'0')}.png`],'Stage far landscape is missing');
-  const expectedMusic=['title',...Array.from({length:6},(_,index)=>[`stage0${index+1}`,`boss0${index+1}`]).flat(),'extra','bossExtra','ending','staff'];
-  assert.deepEqual(MUSIC_TRACKS.map(track=>track.id),expectedMusic,'Music is not this game\'s 17-track programme');
+  const expectedMusic=['title',...Array.from({length:6},(_,index)=>[`stage0${index+1}`,`boss0${index+1}`]).flat(),'extra','bossExtra','ending','staff','playersScore'];
+  assert.deepEqual(MUSIC_TRACKS.map(track=>track.id),expectedMusic,'Music is not this game\'s 18-track programme');
   const musicPaths=MUSIC_TRACKS.map(track=>track.file).sort();assert.deepEqual(mediaFiles(root,'assets/music').sort(),musicPaths,'Music inventory differs');
   for(const track of MUSIC_TRACKS){assert.equal(track.file,`assets/music/${track.id}.wav`);assert.equal(shaFile(inside(root,track.file)),track.sha256,`Original music hash changed: ${track.id}`);}
   const lockedNames=new Set(lock.thlibFiles.map(file=>file.path));

@@ -58,7 +58,7 @@ export class CampaignScene extends TouhouGame {
           vm.drawSelf=(draw,view)=>{const priority=vm.drawPriority,alreadyClipped=priority>=10&&priority<=62||priority>=80&&priority<=83;
             if(!alreadyClipped)draw.scissor(48,24,576,672);drawSelf(draw,view);if(!alreadyClipped)draw.scissorEnd();};return vm;}}:{})},
       spellOptions:{...settings.spellOptions,records,fallbackRecords:{},viewIndex:config.character,playback:!!playbackSource,mode:config.mode==='spell-practice'?2:0},
-      gameOverOptions:{...settings.gameOverOptions,onOpen:({pauseMusic})=>{if(pauseMusic)music.pause();},onContinue:()=>music.resume()}});
+      gameOverOptions:{...settings.gameOverOptions,music:'playersScore',musicPlayer:music}});
     Object.assign(this,{resources,host,art,text,music,storage,config,options,background,onComplete,onReplayDone,onSpellPracticeEnd});
     this.bossSprites=new BossSpriteCatalog({art});
     this.frameSkin=new GameFrameSkin({art,text});

@@ -93,6 +93,6 @@ export function manualPages(){return [
   {title:'符卡与血环',lines:['非符与后续符卡共用分段血环。到达标记处即进入符卡。','不 Miss、不使用 Bomb，并在时限内击破可取得符卡奖励。','耐久符卡不能被射击提前结束，须存活到倒计时归零。','符卡名、失败与收取提示、聚能和慢速消弹均使用公共预置体。']},
   {title:'六面本篇与 Extra',lines:['本篇从灯笼坂通往归名天台，包含六个完整关卡。','不续关通关获得自机好结局并解锁 Extra；续关则为坏结局。','Extra 是独立的固定难度：3 张中 Boss 符卡与 10 张主 Boss 符卡。','关卡练习只开放已经到达的关卡；符卡练习开放已经见过的符卡。']},
   {title:'练习、回放与存档',lines:['关卡练习从该关道中开始；符卡练习直接进入选中的符卡。','回放保存输入、种子与校验点，最近 20 次保存在回放鉴赏。','练习、回放和测试不解锁故事通关记录。','所有设置、成绩、符卡记录与回放均保存在本目录 userdata。']},
-  {title:'制作与资源',lines:['底层引擎与公共玩法：TS-STG / thlib。','新作剧情、对白、Boss、符卡与菜单皮肤独立设计。','立绘和场景由 imagegen 辅助制作；17 首 BGM 为原创合成编曲。','本地公共原作资源保持既有来源标记，不作为原创素材重新授权。']},
+  {title:'制作与资源',lines:['底层引擎与公共玩法：TS-STG / thlib。','新作剧情、对白、Boss、符卡与菜单皮肤独立设计。','立绘和场景由 imagegen 辅助制作；18 首 BGM 为原创合成编曲。','本地公共原作资源保持既有来源标记，不作为原创素材重新授权。']},
   ...CHARACTERS.map(character=>({title:`${character.name}　${character.title}`,lines:[`种族：${character.species}`,`能力：${character.ability}`,character.personality,character.backstory]}))
 ];}

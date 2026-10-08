@@ -220,6 +220,19 @@ export const MUSIC_TRACKS = Object.freeze([
     "bpm": 132,
     "description": "重逢的进行曲；响亮主题下仍有一条温柔的钢琴小路。",
     "sha256": "fad29e4ddf0fd737801ac40a8fe0a7ed4302d395d3852fbb1dee5ef22a085ab4"
+  },
+  {
+    "id": "playersScore",
+    "title": "Player's Score",
+    "file": "assets/music/playersScore.wav",
+    "sampleRate": 32000,
+    "frames": 3442759,
+    "loopStartFrame": 264828,
+    "loopEndFrame": 3442759,
+    "duration": 107.586219,
+    "bpm": 116,
+    "description": "满身疮痍之后的小憩；钢琴慢慢清点一路的分数，钟琴轻声提醒还可以再出发一次。",
+    "sha256": "2eb195bc638c90454c141b040e7df912e9d3a44589acad858ec5ec51c0b5b282"
   }
 ].map(track => Object.freeze(track)));
 

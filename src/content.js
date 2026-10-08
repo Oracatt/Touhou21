@@ -713,6 +713,7 @@ export const MUSIC_COMMENTS = {
   bossExtra: { title: '言灵在零点之后复活', comment: '玉继未央的主题。快速而爱玩，旋律总抢着重复自己的最后几个音。并行的正逆动机在末段同向，不是回声终于停止，而是她终于能自己接上下一句。' },
   ending: { title: '名字留在茶杯边', comment: '结局的曲子。名字都回来了，大家还是要过原来的日子。放轻旋律，把几声铃留在窗外；那些日常的小麻烦，便是异变已经结束的证据。' },
   staff: { title: '归名的旅途还没有结束', comment: '制作名单的曲子。让各段归途的感觉汇在一起，保持向前的节拍。一本册子读完了，空白页也不必急着填满。下一次开口，总会有新的名字。' },
+  playersScore: { title: "Player's Score", comment: '满身疮痍时的曲子。分数停在那里，名字也没有走远。钢琴放慢脚步，把一路上的灯火、雨信、渡船和铃声各数一遍；钟琴在旁边小声提醒，续关的机会还在，换个方向再找一次也来得及。' },
 };
 
 /** Spell practice order: each stage's midboss card, then its Boss cards. */

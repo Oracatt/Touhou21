@@ -123,8 +123,8 @@ test('midbosses open with an ordinary attack, add a card from stage 2, and Extra
 
 test('all stage music references and music-room comments match the actual soundtrack', () => {
   const trackById = new Map(MUSIC_TRACKS.map((track) => [track.id, track]));
-  assert.equal(Object.keys(MUSIC_COMMENTS).length, 17);
-  assert.equal(trackById.size, 17);
+  assert.equal(Object.keys(MUSIC_COMMENTS).length, 18);
+  assert.equal(trackById.size, 18);
   for (const stage of STAGES) {
     assert.ok(trackById.has(stage.bgmStage), `missing road BGM for ${stage.id}`);
     assert.ok(trackById.has(stage.bgmBoss), `missing Boss BGM for ${stage.id}`);

@@ -47,7 +47,7 @@ node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit ad801fad73960
 | --- | --- |
 | 本作原创 JavaScript、PowerShell、Python 与文档 | 根 `LICENSE` 的 MIT，仅覆盖原创代码与文档 |
 | 新作立绘、背景与 Boss 动画图集 | imagegen 辅助生成；保留生成提示、来源记录与 `assets/art-manifest.json` 哈希。根 MIT 不自动授权图像或其中的原作角色权利 |
-| 新作 17 首 BGM | 本作独立乐谱与离线合成编曲；保留 `assets/music/scores.json`、`src/music-data.js` 和合成工具。音频文件不在根 MIT 范围内 |
+| 新作 18 首 BGM | 本作独立乐谱与离线合成编曲；保留 `assets/music/scores.json`、`src/music-data.js` 和合成工具。音频文件不在根 MIT 范围内 |
 | TS-STG 引擎代码 | 源引擎原有 MIT；私有运行时保留 `runtime/LICENSE.TS-STG` |
 | thlib 原创代码及其数学实现 | 保留 `packages/thlib/LICENSE`，包括 Microsoft 的归属说明；根项目许可不替代依赖自身许可 |
 | thlib 本地导入的东方公共图像、音效与动画数据 | 上海爱丽丝幻乐团 / ZUN 的既有资源，见 `packages/thlib/assets/touhou-common/NOTICE.md`；属于私有引用素材，非 MIT 美术资产 |

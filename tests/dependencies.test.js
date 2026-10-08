@@ -50,5 +50,5 @@ test('runtime game source may import public owners but not private paths or dupl
   for(const source of ["import x from 'node:fs';","import x from '@ts-stg/thlib/src/touhou/player.js';","import x from '../packages/thlib/src/index.js';","class TouhouPlayer {}","const x=import('./content.js');","host.loadMusic('../TS-STG/music.ogg');","const engine='D:/AIWorkspace/TS-STG';"])assert.throws(()=>auditSourceText(source));
 });
 test('game media, public dependencies and Git publishing boundary audit passes',()=>{
-  const result=auditBoundaries();assert.equal(result.passed,true);assert.equal(result.musicFiles,17);assert.equal(result.spells,39);assert.ok(result.artFiles>=24);
+  const result=auditBoundaries();assert.equal(result.passed,true);assert.equal(result.musicFiles,18);assert.equal(result.spells,39);assert.ok(result.artFiles>=24);
 });

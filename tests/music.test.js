@@ -7,11 +7,11 @@ import { fileURLToPath } from 'node:url';
 import { MUSIC_TRACKS, musicTrack, musicLoopSeconds } from '../src/music-data.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const expected = ['title', ...Array.from({ length: 6 }, (_, i) => `stage0${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `boss0${i + 1}`), 'extra', 'bossExtra', 'ending', 'staff'];
+const expected = ['title', ...Array.from({ length: 6 }, (_, i) => `stage0${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `boss0${i + 1}`), 'extra', 'bossExtra', 'ending', 'staff', 'playersScore'];
 
-test('all seventeen original BGM tracks have distinct files and stable loop metadata', () => {
+test('all eighteen original BGM tracks have distinct files and stable loop metadata', () => {
   assert.deepEqual(new Set(MUSIC_TRACKS.map(track => track.id)), new Set(expected));
-  assert.equal(new Set(MUSIC_TRACKS.map(track => track.sha256)).size, 17);
+  assert.equal(new Set(MUSIC_TRACKS.map(track => track.sha256)).size, 18);
   for (const track of MUSIC_TRACKS) {
     assert.equal(musicTrack(track.id), track);
     assert.equal(track.sampleRate, 32000);
@@ -70,8 +70,8 @@ for (const track of MUSIC_TRACKS) {
 
 test('scores contain full themes, contrasting sections and reproducible multi-instrument arrangements', () => {
   const scoreFile = JSON.parse(fs.readFileSync(path.join(root, 'assets/music/scores.json'), 'utf8'));
-  assert.equal(scoreFile.tracks.length, 17);
-  assert.equal(new Set(scoreFile.tracks.map(track => JSON.stringify(track.motifDegrees))).size, 17);
+  assert.equal(scoreFile.tracks.length, 18);
+  assert.equal(new Set(scoreFile.tracks.map(track => JSON.stringify(track.motifDegrees))).size, 18);
   for (const score of scoreFile.tracks) {
     assert.equal(score.motifDegrees.length, 16);
     assert.equal(score.answerDegrees.length, 16);

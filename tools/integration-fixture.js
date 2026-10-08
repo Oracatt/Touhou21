@@ -107,15 +107,16 @@ function* continuationReplay(){
   application=make({autostart:true,mode:'normal',difficulty:1,character:0});
   const source=application.core.game,events={miss:0,gameover:0},event=source.onEvent;
   source.onEvent=(name,data)=>{if(name in events)events[name]++;event?.(name,data);};
-  let frames=0,continuedAt=null;
+  let frames=0,continuedAt=null;const tracks=new Set();
   while(frames<5000&&(continuedAt===null||frames<continuedAt+750)){
     let mask=continuedAt===null?0:Keys.RIGHT;
     if(source.paused&&source.pauseVisual instanceof TouhouGameOver&&source.pauseVisual.phase===6)mask=Keys.SHOOT;
-    application.update(mask);frames++;
+    application.update(mask);frames++;tracks.add(application.music.current?.id);
     if(source.session.continues===1&&continuedAt===null)continuedAt=frames;
     if(frames%128===0)yield;
   }
   assert(continuedAt!==null&&events.gameover>=1&&events.miss>=1,'Real road collision and GameOver inputs reach the common Continue restoration');
+  assert(tracks.has('playersScore')&&application.music.current?.id===STAGES[0].bgmStage,'GameOver plays Player\'s Score and Continue returns to the stage BGM');
   assert(source.session.continues===1&&source.session.credits===4,'Continue consumes one of the original five credits');
   assert(source.player.highScore===12345678&&source.session.highScore===12345678,'Continue keeps an existing high score greater than the current run');
   const recorded=source.recorder.toJSON(),expected=source.snapshot();
@@ -198,17 +199,20 @@ function* gameOverExternalPages(){
   memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
   memory.set('userdata/guiming-progress.json',JSON.stringify({scores:[{character:0,difficulty:1,mode:'normal',score:12345678}]}));
   application=make({autostart:true});const app=application,game=app.core.game,visited=[];
-  let frames=0;while(!(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6)&&frames<3000){app.update(0);frames++;if(frames%128===0)yield;}
+  let frames=0,stageTrack=null;while(!(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6)&&frames<3000){if(!game.paused)stageTrack=app.music.current?.id;app.update(0);frames++;if(frames%128===0)yield;}
   assert(game.paused&&game.pauseVisual instanceof TouhouGameOver,'Real road miss opens the public GameOver owner');
+  assert(stageTrack===STAGES[0].bgmStage&&app.music.current?.id==='playersScore'&&!app.music.paused,'GameOver interrupts the stage BGM with Player\'s Score');
   for(const [selection,title]of [[4,'选项'],[3,'游戏说明'],[2,'保存回放']]){
     let steps=0;while(game.pauseVisual.selection!==selection&&steps++<6)tap(app,Keys.DOWN);assert(game.pauseVisual.selection===selection,'GameOver choice remains available');
     tap(app,Keys.SHOOT);tick(app,22);assert(app.page?.title===title,`GameOver opens ${title}`);visited.push(title);
     const position=game.frame;tick(app,12);tap(app,Keys.BOMB);
-    assert(app.page===null&&game.pauseVisual.phase===6&&game.pauseVisual.panelVisible,'Closing external utility restores its public GameOver result menu');assert(game.frame===position,'GameOver utility freezes gameplay');yield;
+    assert(app.page===null&&game.pauseVisual.phase===6&&game.pauseVisual.panelVisible,'Closing external utility restores its public GameOver result menu');assert(game.frame===position,'GameOver utility freezes gameplay');
+    assert(app.music.current?.id==='playersScore','GameOver utility pages keep Player\'s Score');yield;
   }
   let steps=0;while(game.pauseVisual.selection!==0&&steps++<6)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,16);
   assert(!game.paused&&game.session.continues===1&&game.player.highScore===12345678,'Continue after utility pages restores play and preserves the previous high score');
-  result={kind:'gameover-external-pages',frames:app.frame,visited,memoryWrites:writes,snapshot:game.snapshot()};
+  assert(app.music.current?.id===stageTrack&&!app.music.paused,'Continue restores the interrupted stage BGM');
+  result={kind:'gameover-external-pages',frames:app.frame,visited,music:{stage:stageTrack,gameOver:'playersScore',continued:app.music.current.id},memoryWrites:writes,snapshot:game.snapshot()};
 }
 function* manualSave(){
   memory.set('userdata/guiming-settings.json',JSON.stringify({autoSaveReplay:false}));

@@ -58,6 +58,8 @@ const TRACKS = [
     motif: [0, 2, 4, 3, 2, 0, 1, 2, 4, 5, 3, 4, 2, 1, -1, 0], answer: [7, 6, 4, 5, 3, 4, 2, 3, 1, 2, 4, 3, 2, 0, -1, 0], chords: [0, 5, 3, 4, 0, 2, 1, 4], rhythm: [1, .5, .5, 1, .5, .5, 1, 1, .5, .5, 1, .5, .5, 1, .5, .5], description: '回到神社后的钢琴小品，茶水里倒映着一个还记得的名字。' },
   { id: 'staff', title: '归名的旅途还没有结束', bpm: 132, key: 67, mode: 'major', voice: 'brass', color: 'piano',
     motif: [0, 4, 5, 7, 6, 4, 2, 3, 4, 6, 7, 9, 8, 6, 4, 0], answer: [7, 9, 8, 11, 9, 7, 5, 6, 4, 5, 7, 6, 3, 4, 1, 0], chords: [0, 4, 5, 3, 0, 2, 1, 4], rhythm: [.5, .5, 1, .5, .5, 1, .5, .5, .5, .5, 1, .5, .5, 1, .5, 1.5], description: '重逢的进行曲；响亮主题下仍有一条温柔的钢琴小路。' },
+  { id: 'playersScore', title: "Player's Score", bpm: 116, key: 60, mode: 'dorian', voice: 'piano', color: 'bell',
+    motif: [4, 5, 4, 2, 0, 1, 2, 4, 3, 2, 0, -1, 0, 2, 1, 0], answer: [7, 6, 5, 4, 5, 4, 2, 3, 4, 2, 1, 2, 0, 1, -1, 0], chords: [0, 3, 5, 4, 0, 5, 3, 4], rhythm: [1, .5, .5, 1, 1, .5, .5, 1, 1, .5, .5, 1, .5, .5, 1.5, .5], description: '满身疮痍之后的小憩；钢琴慢慢清点一路的分数，钟琴轻声提醒还可以再出发一次。' },
 ];
 
 function seeded(seed) {
@@ -76,7 +78,7 @@ function degreePitch(track, degree, octave = 0, modulation = 0) {
 function makeScore(track, index) {
   const notes = [];
   const random = seeded(0x21f00d + index * 7907);
-  const isGentle = track.id === 'title' || track.id === 'ending';
+  const isGentle = track.id === 'title' || track.id === 'ending' || track.id === 'playersScore';
   const add = (beat, length, pitch, voice, velocity, pan = 0) => notes.push({
     beat: +beat.toFixed(5), length: +length.toFixed(5), pitch, voice,
     velocity: +velocity.toFixed(4), pan: +pan.toFixed(4),
