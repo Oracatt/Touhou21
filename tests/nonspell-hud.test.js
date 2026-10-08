@@ -115,3 +115,37 @@ test('an escaping midboss queues its same body after the public presentation det
   assert.equal(entering.game.bossPresentation.bossVisible,false,'The ordinary black-fog entrance still hides its body');
   entering.game.director.boss.draw(queue,entering.game.view);assert.equal(queued.length,0,'The escape render path must not bypass a normal fog entrance');entering.dispose();
 });
+
+test('real midboss defeat keeps the body drawn on every held and escaping frame until retirement',()=>{
+  const f=fixture({midboss:true});enterCombat(f,true);
+  const game=f.game,boss=game.director.boss,queued=[],drawn=[];
+  const queue={enqueue:(layer,callback,options)=>{queued.push({layer,options});callback({});}};
+  game.bossSprites.draw=(_draw,enemy)=>drawn.push(enemy);
+  try{
+    for(let i=0;game.director.state==='midboss-combat';i++){
+      assert.ok(i<1000,'Capped public damage reaches registered defeat');
+      game.context.damageEnemy(boss,1000000,{kind:'qa-public-damage',x:game.player.x,y:game.player.y});game.update(0);
+    }
+    assert.equal(game.director.state,'midboss-exit');assert.equal(game.director.pendingEscape?.boss,boss);
+    assert.equal(game.context.boss,null);assert.equal(game.bossPresentation.boss,null);assert.equal(game.bossEscapes.length,0);
+    const origin={x:boss.x,y:boss.y},delay=game.director.pendingEscape.delay;let heldFrames=0,escapeFrames=0,moved=false;
+    const checkBody=()=>{
+      queued.length=0;drawn.length=0;boss.draw(queue,game.view);
+      assert.equal(queued.length,1,`Alive midboss body must be queued at exit frame ${game.director.phaseFrame}`);
+      assert.equal(queued[0].layer,7);assert.equal(queued[0].options.order,0);assert.deepEqual(drawn,[boss]);
+      assert.equal(game.context.boss,null);assert.equal(game.bossPresentation.boss,null);
+      assert.equal(game.bossHud.timerVisible,false,'Body visibility must not reactivate combat HUD');
+    };
+    while(game.director.pendingEscape){
+      assert.ok(heldFrames<=delay+1,'Delay remains bounded');assert.deepEqual({x:boss.x,y:boss.y},origin);
+      checkBody();heldFrames++;game.update(0);
+    }
+    assert.ok(heldFrames>=delay);assert.ok(game.bossEscapes.some(entry=>entry.enemy===boss&&entry.sequence.alive));
+    while(boss.alive){
+      assert.ok(escapeFrames<65,'Public escape retires the body');checkBody();
+      moved||=boss.x!==origin.x||boss.y!==origin.y;escapeFrames++;game.update(0);
+    }
+    assert.equal(moved,true);queued.length=0;drawn.length=0;boss.draw(queue,game.view);
+    assert.equal(queued.length,0);assert.equal(drawn.length,0,'Retired body is no longer submitted');
+  }finally{f.dispose();}
+});

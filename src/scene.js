@@ -115,9 +115,10 @@ export class CampaignScene extends TouhouGame {
     };
     enemy.draw=(queue,view)=>{
       if(!enemy.alive)return queue;
-      // The public escape intentionally clears the active presentation/HUD.
-      // Its held actor remains a visible body until the escape owner retires it.
-      if(this.bossEscapes.some(entry=>entry.enemy===enemy&&entry.sequence.alive)){
+      // Combat ownership ends before the defeated actor's pause and flight.
+      // Draw the same held body until the public escape owner retires it.
+      const waitingToEscape=this.director?.state==='midboss-exit'&&this.director.pendingEscape?.boss===enemy;
+      if(waitingToEscape||this.bossEscapes.some(entry=>entry.enemy===enemy&&entry.sequence.alive)){
         const bodyView={...view};
         if(queue.enqueue)queue.enqueue(7,draw=>renderBody(draw,bodyView),{order:0});
         else renderBody(queue,bodyView);
