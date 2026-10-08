@@ -74,8 +74,8 @@ export class EndingPage {
       this.text.draw(draw,'Z 继续',785,600,{size:18,width:140,height:40,color:0xb4c8daff});
     }else if(this.phase==='staff'){
       this.text.draw(draw,GAME.title,0,54,{size:54,width:960,height:90,align:'center',font:this.text.titleFont,color:0xffe4a6ff});
-      const lines=['Names Beyond the Boundary.','东方 Project 原作：上海爱丽丝幻乐团 / ZUN','原创同人企划、剧情、角色与弹幕：Touhou21 项目','引擎：TS-STG　　游戏框架与公共预置体：thlib','原创图像：imagegen 辅助制作','原创音乐：程序合成与独立记谱','愿每一个旧名字，都有人轻轻应答。'];
-      for(let i=0;i<lines.length;i++)this.text.draw(draw,lines[i],0,210+i*53,{size:i?23:25,width:960,height:52,align:'center',color:i===6?0xffe4a6ff:0xc8d5e0ff});
+      const lines=['Names Beyond the Boundary.','东方 Project 原作：上海爱丽丝幻乐团 / ZUN','原创同人企划、剧情、角色与弹幕：Touhou21 项目','引擎：TS-STG　　游戏框架与公共预置体：thlib','原创图像：imagegen 辅助制作','原创音乐：独立记谱，以真实乐器采样离线渲染','采样：Salamander Grand Piano（Alexander Holm，CC BY 3.0）','MuldjordKit（Lars Muldjord，CC BY 4.0）／VSCO 2 CE（CC0）','愿每一个旧名字，都有人轻轻应答。'];
+      for(let i=0;i<lines.length;i++)this.text.draw(draw,lines[i],0,196+i*48,{size:i?22:25,width:960,height:48,align:'center',color:i===lines.length-1?0xffe4a6ff:0xc8d5e0ff});
     }else{
       this.text.draw(draw,'归名之旅　完成',0,100,{size:48,width:960,height:85,align:'center',color:0xffe4a6ff});
       const saved=this.result.replaySaved?'记录与回放已保存。':'记录已保存；本局未自动保存回放。';
@@ -93,6 +93,6 @@ export function manualPages(){return [
   {title:'符卡与血环',lines:['非符与后续符卡共用分段血环。到达标记处即进入符卡。','不 Miss、不使用 Bomb，并在时限内击破可取得符卡奖励。','耐久符卡不能被射击提前结束，须存活到倒计时归零。','符卡名、失败与收取提示、聚能和慢速消弹均使用公共预置体。']},
   {title:'六面本篇与 Extra',lines:['本篇从灯笼坂通往归名天台，包含六个完整关卡。','不续关通关获得自机好结局并解锁 Extra；续关则为坏结局。','Extra 是独立的固定难度：3 张中 Boss 符卡与 10 张主 Boss 符卡。','关卡练习只开放已经到达的关卡；符卡练习开放已经见过的符卡。']},
   {title:'练习、回放与存档',lines:['关卡练习从该关道中开始；符卡练习直接进入选中的符卡。','回放保存输入、种子与校验点，最近 20 次保存在回放鉴赏。','练习、回放和测试不解锁故事通关记录。','所有设置、成绩、符卡记录与回放均保存在本目录 userdata。']},
-  {title:'制作与资源',lines:['底层引擎与公共玩法：TS-STG / thlib。','新作剧情、对白、Boss、符卡与菜单皮肤独立设计。','立绘和场景由 imagegen 辅助制作；18 首 BGM 为原创合成编曲。','本地公共原作资源保持既有来源标记，不作为原创素材重新授权。']},
+  {title:'制作与资源',lines:['底层引擎与公共玩法：TS-STG / thlib。','新作剧情、对白、Boss、符卡与菜单皮肤独立设计。','立绘和场景由 imagegen 辅助制作；18 首 BGM 为原创编曲（采样来源见制作名单与 docs/MUSIC.md）。','本地公共原作资源保持既有来源标记，不作为原创素材重新授权。']},
   ...CHARACTERS.map(character=>({title:`${character.name}　${character.title}`,lines:[`种族：${character.species}`,`能力：${character.ability}`,character.personality,character.backstory]}))
 ];}

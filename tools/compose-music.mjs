@@ -279,8 +279,31 @@ function render(score) {
 fs.mkdirSync(OUT, { recursive: true });
 const metadata = [], scores = [];
 const selected = new Set(process.argv.slice(2));
+// Tracks rendered by tools/studio (sampled instruments) are listed in studio.json; they are
+// merged into the metadata as they are and never re-synthesised here.
+const studioFile = path.join(OUT, 'studio.json');
+const studio = new Map(fs.existsSync(studioFile)
+  ? JSON.parse(fs.readFileSync(studioFile, 'utf8')).tracks.map(entry => [entry.id, entry]) : []);
 for (let index = 0; index < TRACKS.length; index++) {
   const track = TRACKS[index];
+  const studioTrack = studio.get(track.id);
+  if (studioTrack) {
+    const file = `${track.id}.wav`;
+    const wav = fs.readFileSync(path.join(OUT, file));
+    const sha256 = crypto.createHash('sha256').update(wav).digest('hex');
+    if (sha256 !== studioTrack.sha256 || (wav.length - 44) / 4 !== studioTrack.frames) {
+      throw new Error(`${file} does not match assets/music/studio.json; run tools/studio/export_game.py again`);
+    }
+    metadata.push({
+      id: track.id, title: track.title, file: `assets/music/${file}`,
+      sampleRate: RATE, frames: studioTrack.frames,
+      loopStartFrame: studioTrack.loopStartFrame, loopEndFrame: studioTrack.loopEndFrame,
+      duration: +(studioTrack.frames / RATE).toFixed(6), bpm: studioTrack.bpm,
+      description: studioTrack.description, sha256,
+    });
+    console.log(`${track.id}: studio track, ${(studioTrack.frames / RATE).toFixed(1)} s, loop from ${(studioTrack.loopStartFrame / RATE).toFixed(2)} s`);
+    continue;
+  }
   const score = makeScore(track, index);
   scores.push(score);
   // The optional id filter is useful for audition work; complete generation remains the default.
@@ -304,7 +327,7 @@ for (let index = 0; index < TRACKS.length; index++) {
   if (audio.peak != null) console.log(`${track.id}: ${(audio.frames / RATE).toFixed(1)} s, ${score.notes.length} notes, peak ${audio.peak.toFixed(3)}, RMS ${audio.rms.toFixed(3)}`);
 }
 fs.writeFileSync(path.join(OUT, 'scores.json'), JSON.stringify({
-  provenance: 'Original motifs, harmonies and score authored for 东方归名录; offline deterministic synthesis; no sampled music or quoted melody.',
+  provenance: 'Tracks not listed in studio.json: original motifs, harmonies and score authored for 东方归名录; offline deterministic synthesis; no sampled music or quoted melody.',
   format: 'beat-addressed note event score, MIDI pitches, normalized voice velocity and stereo pan',
   sampleRate: RATE, tracks: scores,
 }, null, 2) + '\n');
