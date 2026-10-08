@@ -1,5 +1,40 @@
 # 验收方法与覆盖范围
 
+## v2.0.0 Boss 出场对白与立绘分离（2026-10-08）
+
+当前为 **v2.0.0 / 回放修订 6**，引擎锁定 `d7f2fcc26a0265baf233fbc4a81ee12eb62da3f1`。按用户要求，在公共 thlib 增加 `boxMode: 2` 场上气泡、逐句 `entrance` 与 `portraits.*.present` 的撤回 / 再入生命周期；业务层负责首句提示、实体锚点、台词和音乐。原作依据为只读 `st01m0.msg.utf8.txt` 的 MSG4 / 9 / 28 / 12：先撤自机立绘并创建场中 Boss，60 帧后显示气泡，94 帧后开放推进；下一句才执行 MSG1 / 2 创建双方立绘。没有修改原作目录。
+
+首句采用原 ANM 的单行 272 / 双行 296 与上方箭头 262 / 266。锚点由实际 Boss 与 view 投影换算，保留原 MSG 相对实体的 `(-32,+6)` 源屏幕偏移，在该步骤进入时固定；没有把立绘坐标当场中位置，也没有额外逐帧追踪实体。下一句重新创建双方原立绘运动模板；此前的自机立绘按原 ANM 退出，其第 30 帧尾部仍存活，下一更新才清除。音乐提示保持原业务切点，独立于立绘重建。对白输入时钟变化，因此递增回放修订；旧回放仍保留。
+
+源引擎执行以下真实公共素材测试 **30 / 30 通过、0 失败、0 跳过**，最终用时 **3215.0864 ms**。新 10 项覆盖 mode2 单 / 双行气泡与箭头、旧左右模式、缺席侧不激活、退出尾与快速重入、私有 bank 释放、自定义立绘钩子、逐句入口与事件、非法时序和旧全局入口兼容。另在延迟立绘阶段的合法步骤先重现旧实现将仍存活的立绘整层隐藏，以及等待中 `finish()` 错传下一未应用步骤；修复后已有身体 / 退出尾持续绘制，回调沿用最近已应用的立绘步骤，首次尚未创建时不提前调用绘制钩子。
+
+```powershell
+# cwd: D:\AIWorkspace\TS-STG
+node --test tests/touhou-dialogue-actor-bubble.test.js tests/touhou-dialogue-entrance.test.js tests/touhou-dialogue-exit.test.js tests/rushboss-dialogue.test.js
+$env:TSSTG_BACKEND='v8'; node tools/verify-integration.mjs
+$env:TSSTG_BACKEND='quickjs'; node tools/verify-integration.mjs
+```
+
+最终 `d7f2fcc` 下两个后端的完整引擎集成均通过：7200 帧关卡、四段攻击结算、重复 Node 确定性及各自与原生后端的状态匹配；各后端另执行 1800 次原生回放调用，900 帧记录 / 869 帧模拟、两次 Bomb，`verified:true`。浮点容差为 `1e-7`，整数严格匹配；不声称两个后端回放校验和相等。源报告分别为 `TS-STG/reports/dialogue-actor/integration-release-v8.json` 与 `integration-release-quickjs.json`；此前 `a0616f6` 的同项两后端报告也按原文件保留。
+
+本作新增 `tests/dialogue-intro.test.js` 的 **6 / 6 项通过、0 跳过**：七面 × 两自机的三类提示分离、首句 0 / 60 / 94 帧与立绘撤回 / 再入、非默认 view 投影及固定锚点、暂停与持续跳过、普通 / 战后对白及短剧情回退；实际记录并回放到 1201 帧，检查中间手工检查点和 600 / 1200 帧自动检查点、最终状态相同、无进度写入。最终锁和业务代码下与 `tests/content.test.js` 一起执行 **13 / 13 通过，3999.0358 ms**。测试使用真实公共 ANM，字图 / 业务贴图由记录型宿主提供，实际 GDI 和 GPU 另由原生专项验证。
+
+首轮同步后的完整 `npm test` **146 / 146 通过、0 失败、0 跳过**，用时 **227585.2706 ms**，日志见 `reports/node-tests-dialogue-actor-intro.log`。该次运行使用 `a0616f6` 锁，随后人工审图发现原有 42 字节长句伸入 HUD，本作改为 `maxLineBytes: 32`，并将魔理沙一处台词在两句间显式分行，避免句号孤立；公共层另补上上述延迟立绘绘制边界，锁更新至 `d7f2fcc`。最终状态执行上述针对性测试与下述双后端原生复验，不把该完整运行冒称为最终状态下的全套复跑。
+
+本作 `tools/dialogue-intro-fixture.js` 通过真实 `ProjectApplication` 的 Shoot / 松键输入进入对白，固定检查独白 35 帧、撤回 20 帧、场中首句 70 / 110 帧、下一句立绘 35 帧，覆盖灵梦 / 魔理沙及六面 / Extra 场中首句。最终锁下实际执行 **9 场景 × V8 / QuickJS，共 18 次原生 GPU 验证，全部通过**，用时 **58.700 秒**，九对状态与 PNG 严格相同；报告为 `reports/dialogue-actor-intro-release/report.json`。根代理与复核代理均逐张查看九张 V8 图，人工记录见同目录 `visual-review.json`：首句没有双方业务立绘贴图提交，原上指箭头实际绘制，下一句双方立绘恢复；长句气泡未伸入 HUD，魔理沙句号不再独占一行。首轮 `dialogue-actor-intro` 的越界未验收记录、第二轮 `dialogue-actor-intro-final` 的孤立句号记录均保留，不用后轮覆盖历史结果，也不将三轮数量累加成最终锁的验收数量。
+
+最终 18 次原生运行中，31 个业务源文件、177 个公共源文件、锁、程序与两个验证工具全程哈希冻结。绘制前后 Application 快照相同，未推进任何时钟；公开黑雾仍在 101 帧开放实体绘制，70 帧未提交身体、110 帧提交一次。黑雾的可见尾部仍可能遮住已提交身体，右侧立绘仍沿用整个画布的原布局，这次未修改这些既有表现，也不据此宣称完整画面已与原作逐像素相等。场景隔离采用跳过道中、无敌和内存用户数据，不写真实存档；本专项不替代完整战役、碰撞、难度、音频听感或性能验收。
+
+同步通过带源核对的 `verify-engine-lock --check-source`，仍为 **341 个 thlib / 150 个运行时文件**，程序 SHA-256 仍为 `c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8`。两次同步前的依赖与锁分别完整保留在 `build/engine-upgrade-9e89d41c-3fdc-49e8-b8c6-ab1d7aecc6fb`、`build/engine-upgrade-b01c3b71-5c81-4186-8ff6-b4269a7e8f6a`。源目录唯一未提交内容仍是已有用户启动脚本，SHA-256 保持 `7121aa214d9f0e526f8c8188293cb07d93d6b9200600f8eab4c13e26fccd4901`，没有混入公共修复提交。未关闭或重启用户游戏窗口；下一次启动才加载新对白代码。这次没有推送远程。
+
+```powershell
+# cwd: D:\AIWorkspace\Touhou21
+node --test tests/dialogue-intro.test.js tests/content.test.js
+node tools/verify-dialogue-intro.mjs --label dialogue-actor-intro-recheck
+node tools/verify-engine-lock.mjs --check-source
+node tools/audit-boundaries.mjs
+```
+
 ## v2.0.0 公共暂停 / 结果面板图层修复（2026-10-08）
 
 按用户要求，在源 TS-STG 的公共 thlib 修复 `TouhouPause` 与 `TouhouGameOver`，独立提交为 `c801e679325917653922394764aa28fa151a1df8`，再通过 `tools/sync-engine.mjs` 的预览 / 安装同步本作。游戏业务源码不变，保持 **v2.0.0 / 回放修订 5**；这次只改变绘制顺序，不改变菜单输入、动画时钟、坐标、判定或回放模拟。

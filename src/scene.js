@@ -13,6 +13,7 @@ const names=new Map(CHARACTERS.map(value=>[value.id,value.name]));
 const stages=STAGES.map(value=>({...value,bossName:names.get(value.bossId),midbossName:names.get(MIDBOSSES.find(midboss=>midboss.stageId===value.id)?.bossId??value.bossId)}));
 const formatScore=value=>String(Math.trunc(value*10)).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 const BGM_CAPTION_FRAMES=360;
+const DIALOGUE_SCREEN_SCALE=1.5;
 const clone=value=>JSON.parse(JSON.stringify(value));
 const rgba=value=>((value<<8)|(value>>>24))>>>0;
 const floatBits=new DataView(new ArrayBuffer(4));
@@ -136,13 +137,27 @@ export class CampaignScene extends TouhouGame {
   openDialogue(lines,{bossId,kind,cues=null,cue=null,onComplete}){
     this.dialogue?.dispose();this.context.dialogue=true;
     const playerId=PLAYERS[this.character??this.config.character].id;
-    const steps=lines.map((line,index)=>{const events=[];
-      if(cues?.appear===index)events.push({type:'cue',name:'appear'});if(cues?.music===index)events.push({type:'cue',name:'music'});
-      // Before the Boss appears the player is alone on the road.
-      return{speaker:line.speaker==='boss'?'right':'left',text:line.text,coldFrames:cues?.appear===index?48:18,autoFrames:600,events,
-        portraits:{left:{present:true},right:{present:!cues||index>=cues.appear}}};});
-    this.dialogue=new TouhouDialogue({resources:this.dialogueResources,steps,character:this.config.character,codePage:936,maxLineBytes:42,
-      startDelayFrames:kind==='before'?12:0,onEvent:event=>{if(event.type==='cue')cue?.(event.name);},entrance:kind==='after'?'afterBoss':null,exit:kind==='after'?'afterBoss':'beforeBoss',
+    const steps=lines.map((line,index)=>{const events=[],actorLine=cues?.appear===index;
+      if(actorLine)events.push({type:'cue',name:'appear',entranceStage:'portraits'});
+      if(cues?.music===index)events.push({type:'cue',name:'music'});
+      // The first response belongs to the actor on the road. The following
+      // line introduces its portrait independently of the entrance and BGM.
+      const portraitReady=!cues||Number.isInteger(cues.portrait)&&index>=cues.portrait;
+      return{speaker:line.speaker==='boss'?'right':'left',text:line.text,coldFrames:actorLine?0:18,autoFrames:600,events,
+        ...(actorLine?{boxMode:2,entrance:{portraitFrame:0,speakerFrame:0,textFrame:60,inputFrame:94}}:{}),
+        portraits:{left:{present:!cues||index<cues.appear||portraitReady},right:{present:portraitReady}}};});
+    this.dialogue=new TouhouDialogue({resources:this.dialogueResources,steps,character:this.config.character,codePage:936,maxLineBytes:32,
+      startDelayFrames:kind==='before'?12:0,onEvent:(event,step)=>{
+        if(event.type!=='cue')return;cue?.(event.name);
+        if(event.name==='appear'&&step.boxMode===2&&this.director.boss){
+          const boss=this.director.boss,view=this.view;
+          // st01m0 MSG28(192,150) points to the actor at screen(224,144).
+          // Mode2's source ANM272/296 and arrow262/266 supply the tail shape;
+          // retain its (-32,+6) screen offset and MSG's doubled coordinates.
+          step.x=2*((view.x+boss.x*view.scale)/DIALOGUE_SCREEN_SCALE-32);
+          step.y=2*((view.y+boss.y*view.scale)/DIALOGUE_SCREEN_SCALE+6);
+        }
+      },entrance:kind==='after'?'afterBoss':null,exit:kind==='after'?'afterBoss':'beforeBoss',
       speakerNames:{left:PLAYERS[this.config.character].name,right:names.get(bossId)},
       drawPortrait:(draw,step,owner)=>{
         const left=owner.portraitState('left'),right=owner.portraitState('right');
@@ -223,7 +238,7 @@ export class CampaignScene extends TouhouGame {
     this.text.draw(draw,this.currentStage.location,651,660,{size:16,width:292,height:46,align:'center',color:0x59675cff});
     if(this.bgmCaption){const {age,title}=this.bgmCaption;const alpha=Math.min(1,age/20,(BGM_CAPTION_FRAMES-age)/45);
       this.text.draw(draw,`♪ ${title}`,324,664,{size:16,width:296,height:28,align:'right',color:0xf8e8caff,alpha});}
-    this.stageClear?.draw(draw);this.dialogue?.draw(draw,{x:0,y:0,scale:1,screenScale:1.5});
+    this.stageClear?.draw(draw);this.dialogue?.draw(draw,{x:0,y:0,scale:1,screenScale:DIALOGUE_SCREEN_SCALE});
     if(this.playback)this.text.draw(draw,'Replay',674,564,{size:20,width:230,height:42,align:'center',color:0xb6c7dfff});
     return draw.commands;
   }

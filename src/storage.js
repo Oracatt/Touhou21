@@ -1,5 +1,5 @@
 import {SaveStore} from '@ts-stg/thlib';
-export const GAME_REVISION=5;
+export const GAME_REVISION=6;
 export const DEFAULT_SETTINGS=Object.freeze({musicVolume:72,soundVolume:70,startingLives:2,autoSaveReplay:true});
 export class GameStorage {
   constructor(host){this.store=new SaveStore({readText:file=>host.readText(`userdata/${file}`),writeText:(file,text)=>host.writeText(file,text)},'guiming');this.settings={...DEFAULT_SETTINGS,...this.store.get('settings',{})};this.progress={clears:{},extraClears:{},stageUnlock:1,seenSpells:[],spellRecords:{},scores:[],plays:0,...this.store.get('progress',{})};this.replays=this.store.get('replays',[]);}

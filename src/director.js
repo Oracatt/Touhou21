@@ -201,6 +201,7 @@ export class CampaignDirector{
     this.phaseIndex=-1;this.phaseFrame=0;this.bossAppeared=false;this.bossMusicStarted=false;
     const route=this.character?'marisa':'reimu',lines=this.stage.dialogues?.[route]?.before??[];
     const first=lines.findIndex(entry=>entry.speaker==='boss'),cues=first<0?null:{appear:first,
+      ...(first+1<lines.length?{portrait:first+1}:{}),
       music:Math.min(lines.length-1,Math.min(first+4,Math.max(first+1,Math.floor(lines.length/2))))};
     this._dialogue(game,'before',()=>this._endPrelude(game),null,cues);
   }
