@@ -14,8 +14,10 @@ export class TextPainter {
     while(this.cache.size>this.limit){const oldest=this.cache.keys().next().value,previous=this.cache.get(oldest);this.cache.delete(oldest);if(previous.texture)this.host.unloadTexture(previous.texture);}
     return value;
   }
+  /** `scale` enlarges the cached raster about the text box origin (x, y). */
   draw(draw,text,x,y,options={}) {
-    const value=this.texture(text,options);if(value.texture)draw.sprite(value.texture,x+value.x+value.width/2,y+value.y+value.height/2,value.width,value.height,0,options.alpha===undefined?0xffffffff:((0xffffff00|Math.round(Math.max(0,Math.min(1,options.alpha))*255))>>>0));
+    const value=this.texture(text,options),s=options.scale??1;
+    if(value.texture)draw.sprite(value.texture,x+(value.x+value.width/2)*s,y+(value.y+value.height/2)*s,value.width*s,value.height*s,0,options.alpha===undefined?0xffffffff:((0xffffff00|Math.round(Math.max(0,Math.min(1,options.alpha))*255))>>>0));
     return draw;
   }
   destroy(){for(const value of this.cache.values())if(value.texture)this.host.unloadTexture(value.texture);this.cache.clear();}

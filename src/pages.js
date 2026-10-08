@@ -1,6 +1,20 @@
 import {Keys} from '@ts-stg/thlib';
 import {TouhouButtons} from '@ts-stg/thlib/touhou';
 import {GAME,CHARACTERS,ENDINGS,PLAYERS} from './content.js';
+import {drawTitleBackdrop,drawOrnament,fillQuad,rgba} from './title-backdrop.js';
+
+/** Shared reading panel for utility pages over the animated title scene. */
+function drawPanel(draw,{art,text,title,age}){
+  drawTitleBackdrop(draw,art,age,{shade:.5,dim:.3});
+  draw.rect(30,24,900,672,0x060d1ee0);
+  for(const [x1,y1,x2,y2] of [[30,24,930,24],[30,696,930,696],[30,24,30,696],[930,24,930,696]])draw.line(x1,y1,x2,y2,1,0xe5bd8255);
+  text.draw(draw,title,56,38,{size:36,width:820,height:60,font:text.titleFont,stroke:3,color:0xffe4a6ff});
+  drawOrnament(draw,56,104,846,1);
+}
+function drawCursor(draw,y,age,height=38){
+  draw.blend('add');for(let s=0;s<12;s++)draw.rect(49+s*72,y-1,72,height,rgba(0xe0b060,.15*Math.pow(1-s/12,1.3)));draw.blendEnd();
+  fillQuad(draw,62,y+height/2-1,9,9,age*.05,0xffe2a2ff);
+}
 
 export class ListPage {
   constructor({title,rows=[],detail=()=>'',onSelect,onClose,onAdjust,text,art,sound,visibleRows=9,initialSelection=0}={}){Object.assign(this,{title,rows,detail,onSelect,onClose,onAdjust,text,art,sound,visibleRows});this.buttons=new TouhouButtons();this.selection=initialSelection;this.age=0;this.message='';}
@@ -15,15 +29,14 @@ export class ListPage {
     if(b.pressed&(Keys.SHOOT|Keys.CONFIRM)){this.sound?.(7);this.onSelect?.(this.row,this);}
   }
   draw(draw){
-    this.art.background(draw,'title',480,360,960,720);draw.rect(22,22,916,676,0x071327df);
-    this.text.draw(draw,this.title,54,42,{size:37,width:860,height:66,color:0xffe4a6ff});draw.line(50,108,908,108,1,0xe5bd8266);
+    drawPanel(draw,{art:this.art,text:this.text,title:this.title,age:this.age});
     const start=Math.max(0,Math.min(this.rows.length-this.visibleRows,this.selection-Math.floor(this.visibleRows/2)));
     for(let i=start;i<Math.min(this.rows.length,start+this.visibleRows);i++){
       const row=this.rows[i],active=i===this.selection,y=133+(i-start)*42,label=typeof row==='string'?row:typeof row.label==='function'?row.label():row.label??row.title??row.name??'';
-      if(active)draw.rect(49,y-1,857,38,0xc4b17822);
-      this.text.draw(draw,`${active?'◆':'　'} ${label}`,56,y,{size:active?24:22,width:845,height:40,color:row.locked?0x718394ff:active?0xffe5afff:0xcbd6dcff});
+      if(active)drawCursor(draw,y,this.age);
+      this.text.draw(draw,label,active?84:78,y,{size:active?24:22,width:820,height:40,color:row.locked?0x718394ff:active?0xffe5afff:0xcbd6dcff});
     }
-    if(this.rows.length>this.visibleRows)this.text.draw(draw,`${this.selection+1} / ${this.rows.length}`,788,95,{size:15,width:115,height:30,color:0x8fabbfff});
+    if(this.rows.length>this.visibleRows)this.text.draw(draw,`${this.selection+1} / ${this.rows.length}`,788,62,{size:16,width:115,height:30,align:'right',color:0x8fabbfff});
     this.text.draw(draw,this.message||this.detail(this.row,this),56,542,{size:20,width:845,height:100,color:0xc0d0dcff});
     this.text.draw(draw,'↑↓ 选择　Z 确定　X / Esc 返回',55,650,{size:17,width:750,height:34,color:0xb4c3d1ff});return draw;
   }
@@ -36,8 +49,7 @@ export class ReadingPage {
     if(b.pressed&(Keys.CANCEL|Keys.BOMB|Keys.PAUSE)){this.sound?.(9);this.onClose?.();return;}
     if(b.pressed&(Keys.SHOOT|Keys.CONFIRM|Keys.RIGHT)){this.sound?.(7);if(this.index<this.pages.length-1)this.index++;else this.onClose?.();}
     if(b.pressed&Keys.LEFT){this.sound?.(10);this.index=Math.max(0,this.index-1);}}
-  draw(draw){this.art.background(draw,'title',480,360,960,720);draw.rect(32,28,896,658,0x071327eb);
-    this.text.draw(draw,this.title,65,48,{size:35,width:830,height:70,color:0xffe3a4ff});
+  draw(draw){drawPanel(draw,{art:this.art,text:this.text,title:this.title,age:this.age});
     const page=this.pages[this.index],heading=page.title??'',lines=page.lines??page;
     if(heading)this.text.draw(draw,heading,67,122,{size:27,width:820,height:62,color:0xd8cba7ff});
     const values=Array.isArray(lines)?lines:[String(lines)];
@@ -52,7 +64,7 @@ export class EndingPage {
     if(this.phase==='ending'&&this.age>=60&&(next||this.age>=420)){this.age=0;this.line++;if(this.line>=this.ending.length){this.phase='staff';this.music.play('staff',true);}}
     else if(this.phase==='staff'&&((this.age>90&&next)||this.age>=1800)){this.phase='result';this.age=0;}
     else if(this.phase==='result'&&this.age>40&&(next||this.buttons.pressed&(Keys.BOMB|Keys.CANCEL|Keys.PAUSE))){this.sound?.(7);this.onClose?.();}}
-  draw(draw){this.art.background(draw,'title',480,360,960,720);draw.rect(0,0,960,720,0x051022a9);
+  draw(draw){drawTitleBackdrop(draw,this.art,this.age+this.line*420,{shade:.3,dim:.55});
     if(this.phase==='ending'){
       this.art.portrait(draw,PLAYERS[this.result.character].id,595,105,570,{alpha:.7});
       this.text.draw(draw,this.result.ending==='extra'?'旧名的新一天':this.result.ending==='good'?'名字仍在归途中':'来日再沿名字寻路',54,74,{size:37,width:845,height:80,color:0xffe4a6ff});
