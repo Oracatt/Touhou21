@@ -30,6 +30,7 @@ test('a recurring main Boss retreats through the public escape owner without a d
       if(phase+1<phases)assert.equal(f.director.state,'midboss-phase-wait');
     }
     assert.equal(f.director.state,'midboss-exit');assert.equal(f.director.boss,boss);
+    assert.equal(f.sounds.filter(sound=>sound.id===27).length,phases,'every broken midboss group, even the last, plays the break cue');
     assert.equal(f.game.context.boss,null,'HUD/combat ownership ends while the visible actor departs');
     assert.equal(boss.alive,true);assert.equal(f.game.bossDefeats.length,0);assert.equal(f.game.bossPresentation.deaths.length,0);
     const escape=f.game.bossEscapes[0];assert.equal(escape.enemy,boss);

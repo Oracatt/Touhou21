@@ -135,8 +135,10 @@ export class CampaignDirector{
       timedOut:timeout,survival:!!phase.spec?.survival,mode:game.session.mode});
     this.events.push({event:'midboss-phase-end',stage:this.stageId,index:this.midbossPhaseIndex,timeout,frame:this.totalClock});
     this.finishing=false;
+    // Every broken midboss group, including the last one before it leaves, gets the ordinary ECL handoff cue.
+    game.context.sound?.(27,this.boss.x);
     if(!last){
-      game.context.sound?.(27,this.boss.x);this.state='midboss-phase-wait';this.waitFrames=phase.spell?60:40;
+      this.state='midboss-phase-wait';this.waitFrames=phase.spell?60:40;
       const next=this.midbossPhases[this.midbossPhaseIndex+1];
       game.setBossHud({remainingSpells:this.midbossPhases.slice(this.midbossPhaseIndex+1).filter(p=>p.spell).length,
         healthBars:[{current:next.hp,maximum:next.hp,phaseHealth:next.hp,markers:[],animateFill:false}]});

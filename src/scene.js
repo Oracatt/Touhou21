@@ -155,11 +155,10 @@ export class CampaignScene extends TouhouGame {
   openStageClear(stage,{onComplete}){
     this.stageClear?.destroy();this.context.dialogue=true;
     const bonus=(stage.id*100000+this.player.lives*50000+this.player.power*1000)|0;
-    this.stageClear=new TouhouStageClear({bank:null,font:this.font,bonus,initialMask:0,
+    this.stageClear=new TouhouStageClear({bank:this.banks.front,font:this.font,bonus,initialMask:0,
       rows:[{label:'Stage',value:stage.id},{label:'Clear Bonus',value:bonus}],
       onAward:value=>{this.player.score+=(value/10)|0;},onDismiss:()=>this.music.fadeOut(2),
       drawSummary:(draw)=>{
-        this.text.draw(draw,'Stage Clear',48,220,{size:42,width:576,height:70,align:'center',color:0xffe4a6ff});
         this.text.draw(draw,`Bonus　${String(bonus).replace(/\B(?=(\d{3})+(?!\d))/g,',')}`,48,320,{size:26,width:576,height:50,align:'center'});
         this.text.draw(draw,`Score　${formatScore(this.player.score)}`,48,376,{size:23,width:576,height:50,align:'center'});
       },
@@ -219,7 +218,7 @@ export class CampaignScene extends TouhouGame {
       this.text.draw(draw,this.currentStage.subtitle,58,213,{size:16,width:555,height:45,align:'center',alpha});}
     this.text.draw(draw,GAME.title,674,605,{size:34,width:268,height:60,font:this.text.titleFont,align:'center',color:0x62563eff});
     this.text.draw(draw,this.currentStage.location,651,660,{size:16,width:292,height:46,align:'center',color:0x59675cff});
-    this.stageClear?.draw(draw,{x:0,y:0,scale:1,screenScale:1.5});this.dialogue?.draw(draw,{x:0,y:0,scale:1,screenScale:1.5});
+    this.stageClear?.draw(draw);this.dialogue?.draw(draw,{x:0,y:0,scale:1,screenScale:1.5});
     if(this.playback)this.text.draw(draw,'Replay',674,564,{size:20,width:230,height:42,align:'center',color:0xb6c7dfff});
     return draw.commands;
   }
