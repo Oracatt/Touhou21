@@ -1,0 +1,49 @@
+{
+  "project": "东方归名录",
+  "tool": "built-in imagegen",
+  "operation": "generate",
+  "date": "2026-10-09",
+  "scope": "Game-specific sidebar background and title emblem only. Common status labels use extracted original Touhou assets, never generated images.",
+  "references": [
+    {
+      "title": "Touhou 16 official store screenshots",
+      "url": "https://store.steampowered.com/app/745880/"
+    },
+    {
+      "title": "Touhou 17 announcement by ZUN",
+      "url": "https://kourindou.exblog.jp/28205045/"
+    }
+  ],
+  "assets": [
+    {
+      "id": "hud-panel",
+      "file": "assets/art/hud-panel.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1082d-9cf7-7bc1-b6bc-619d17147918/exec-6f7b207e-6838-43a5-b6f2-274d7405b1b5.png",
+      "prompt": "Use case: stylized-concept. Asset type: finished original illustrated RIGHT SIDE HUD BACKGROUND TEXTURE for a Japanese fantasy vertical bullet-hell game, portrait approximately 1:2.1 aspect, ideally 768x1616. Primary request: a beautiful theme-specific sidebar for an original game about returning lost names, forgotten name registers, paper name slips and warm lantern light. No text is rendered into this background. Style: delicate hand-painted ink, layered aged washi paper and softly weathered pigment, restrained printed game border illustration, matte, intricate but not photorealistic, no vector placeholder shapes. Color palette: dark muted indigo, smoky blue-green jade, antique bronze-gold and occasional dim warm amber. Composition: full bleed narrow vertical panel. The top 76 percent is a quiet, visibly textured dark midnight blue/jade wash with faint layered paper fibers and soft flowing ink eddies; it must provide excellent legibility behind overlaid white score digits, resource icons and pale small status labels. This area is NOT solid color, NOT a blank rectangle, NOT an empty card; keep real hand-painted low-contrast pattern. Concentrate readable decorative details along the extreme left/right edges and lower corners: thin worn register-book bindings, several tiny blank ivory name slips on faded red thread, delicate copper bell silhouettes, a few drifting paper edges disappearing into soft ink mist. Lower 24 percent has a subtle tide-like sweep of golden lantern reflections, floating blank paper name slips and smoky indigo ink, still dark enough to later overlay a cream-and-copper title emblem. No bright moon, no torii, no horizon scene, no large central object crossing the number area. Keep all background elements subordinate to the game HUD. Constraints: ONLY the background painting, no words, no characters, no letters, no numbers, no UI labels, no logos, no stats, no borders outside the image, no watermark, no mockup or screenshot, opaque background.",
+      "mode": "RGB",
+      "transparent": false,
+      "width": 865,
+      "height": 1819,
+      "sha256": "6601ca8a1ead8a306bfd60e3955af1bb926af169a2472f4df4f67f0d9a71c4c2",
+      "reviewed": true
+    },
+    {
+      "id": "hud-logo",
+      "file": "assets/art/hud-logo.png",
+      "source": "C:/Users/oracat/.codex/generated_images/01a1082d-9cf7-7bc1-b6bc-619d17147918/exec-672ecf54-c64b-4170-bf26-41762eb6de19.png",
+      "prompt": "Use case: logo-brand. Asset type: finished ORIGINAL transparent raster TITLE EMBLEM for the bottom of a Japanese fantasy vertical bullet-hell game HUD. Primary request: a richly crafted, irregular calligraphic game title, exact Chinese text \"东方归名录\" and exact English subtitle \"Names Beyond the Boundary.\". This is a new fictional fan game, do not reproduce any existing game logo. Chinese typography: dynamic expressive brush-written running/clerical calligraphy, readable real Chinese characters, nuanced thick-and-thin ink strokes, slightly different angles and sizes, compact interlocking composition, small \"东方\" perched at upper left and large \"归名录\" as the main line. Main strokes have warm ivory/soft pearl painted faces with touches of antique bronze-gold and smoky ink-blue edge shading. A carefully shaped dark indigo outline and subtle warm paper-white outer keyline ensure legibility over a dark blue-green textured background. Integrate a few restrained flowing paper/ink flourishes and a tiny vermilion square seal-like graphic with NO extra writing, avoiding rigid rectangular badges. English typography: elegant highly legible sharp serif italic display lettering, pale warm gold/ivory, exact words in TWO balanced lines directly under the Chinese: line 1 \"Names Beyond\" and line 2 \"the Boundary.\". Keep the Latin large enough to read when the entire emblem is displayed only 290 pixels wide and 140 pixels tall. Overall emblem wide landscape, approximately 2.1:1 visible-art aspect, tightly composed, all Chinese and English inside the silhouette, no overly long side flourishes, no clipped strokes. Hand-finished 2D illustrated game logo, expressive and atmospheric, NOT generic UI font, NOT a shiny metallic 3D fantasy game logo. Text verbatim only: 东方归名录 / Names Beyond / the Boundary. Spell every letter accurately. Constraints: genuinely TRANSPARENT background, no solid backing panel, no checkerboard rendered into pixels, no scene, no box around the logo, no characters or portraits, no extra text, no subtitles beyond the specified words, no watermark, generous transparent padding around all finished strokes.",
+      "mode": "RGBA",
+      "transparent": true,
+      "width": 1536,
+      "height": 1024,
+      "visibleBounds": {
+        "x": 55,
+        "y": 169,
+        "width": 1427,
+        "height": 711
+      },
+      "sha256": "0dd2be2a62e3ac846dbfb2ee49fbacc34f37536a72ee198cbeebfd4ec3b0714e",
+      "reviewed": true
+    }
+  ]
+}

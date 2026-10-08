@@ -2,7 +2,7 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/AIWorkspace/TS-STG",
-  "commit": "d7f2fcc26a0265baf233fbc4a81ee12eb62da3f1",
+  "commit": "8ec53bbe23b6d2dc9e5b7c6d6d187510f252f5fd",
   "backend": "v8",
   "supportedBackends": [
     "v8",
@@ -12,8 +12,8 @@
   "sourceModified": true,
   "dependencies": "Private byte-pinned local snapshots only. Imported common reference materials retain their original notices and are excluded from the original-code MIT grant.",
   "format": "touhou21-engine-lock-v1",
-  "thlibSha256": "bd181754b35e986292e12107400812e747cf846eb0540f95939b703cee71c719",
-  "runtimeSha256": "4cc5b9d5accfcc92ba1d6e9d49f9f7c4877f6b30bc5154fda021120d2d1a9b97",
+  "thlibSha256": "5742cd4505472c2937529e61dd70fd9038e27f2f6751580d339ca0df8311ad7a",
+  "runtimeSha256": "29f4ab674c9f90b9586e94618e5c51b3a87c9fad4f32e8afc7c812095c07b305",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -22,8 +22,8 @@
     },
     {
       "path": "assets/touhou-common/NOTICE.md",
-      "bytes": 5636,
-      "sha256": "bf3c953ff61e7917f04cefea23e49d0dbcf9c9e031e9366cc9a9258e79ce7a0a"
+      "bytes": 7467,
+      "sha256": "ff4f68f6cc07653f3d09006fb8ae7d1e855b8dabdfcfbb2ffdcf0997e1e6c485"
     },
     {
       "path": "assets/touhou-common/anm/ascii_960.json",
@@ -47,8 +47,8 @@
     },
     {
       "path": "assets/touhou-common/anm/front.json",
-      "bytes": 728069,
-      "sha256": "68a580bd9b7ef8a04a661244e15985abdf11061af47fd1971641418f36e5349d"
+      "bytes": 731325,
+      "sha256": "c8edf2cbd2f963e957d6b3b7d5491ddcc0a3c83ddc8b9d96d70b6a17e87d9d12"
     },
     {
       "path": "assets/touhou-common/anm/pl00.json",
@@ -341,14 +341,49 @@
       "sha256": "71a43ebbf6b935004b54ed61b3c28ce65f03967ce2e7a76062649836dbebe7b2"
     },
     {
+      "path": "assets/touhou-common/hud-labels.json",
+      "bytes": 1732,
+      "sha256": "d1051df3a5f20ec277e497ce2d1144f31c99702622036e29eae6ad780616eb66"
+    },
+    {
+      "path": "assets/touhou-common/locales/zh-CN/anm/ascii_960.json",
+      "bytes": 178096,
+      "sha256": "458859ec7ed1cda823f8317e423693e95700a00532f2e679060032946617d865"
+    },
+    {
+      "path": "assets/touhou-common/locales/zh-CN/anm/front.json",
+      "bytes": 732115,
+      "sha256": "9ff44d834666eabf0c852e3d84c01095da7b1b7b0eaa93d80b5eaf4c27d20459"
+    },
+    {
+      "path": "assets/touhou-common/locales/zh-CN/anm/title.json",
+      "bytes": 200587,
+      "sha256": "9fef52b9425bd71855813a2f338ca25de62465d33c1ec25536582b7d8ad73223"
+    },
+    {
+      "path": "assets/touhou-common/locales/zh-CN/source.json",
+      "bytes": 41672,
+      "sha256": "2293ac80d6450238768478066c12683765b3efbf56c9be6dd5c8f432637b6bff"
+    },
+    {
+      "path": "assets/touhou-common/locales/zh-CN/textures/front.png",
+      "bytes": 244510,
+      "sha256": "7bfbdac0218e94389481db2991b94b23501c56d9391b6781e2a677f4daa7bab8"
+    },
+    {
+      "path": "assets/touhou-common/locales/zh-CN/textures/title.png",
+      "bytes": 953623,
+      "sha256": "9209de2ed75f8f7af51dd36eed66e2357fc71d4228d8d39b6966f8b02ca9bd00"
+    },
+    {
       "path": "assets/touhou-common/manifest.json",
-      "bytes": 618987,
-      "sha256": "dc6357483ae54aef857d3f0e77e2d7410adcdda0b8951e9e883fea16a1167824"
+      "bytes": 716555,
+      "sha256": "a20d55cd58880c423294845bf3cf8ab2015e6a1e1de59ba825ced07f7664afba"
     },
     {
       "path": "assets/touhou-common/prefabs.json",
-      "bytes": 216896,
-      "sha256": "bbdb2e53626e252ea4789dd42531daf5080be5835c1033fb972f3eee6d8094e5"
+      "bytes": 217234,
+      "sha256": "be58980ddcf09cc623fcf17f462692de78e6ccda864638dbe5fff9f0f0bbb01a"
     },
     {
       "path": "assets/touhou-common/shots/pl00.json",
@@ -594,6 +629,11 @@
       "path": "assets/touhou-common/textures/front/entry-9.png",
       "bytes": 2414,
       "sha256": "b40050f12b4957c19484de6c96f457ffe12a6de36be06d535c55fac6c5197b2f"
+    },
+    {
+      "path": "assets/touhou-common/textures/front/hud-labels.png",
+      "bytes": 4389,
+      "sha256": "ba9a633d1efaebd5066aee56a42d22d9276b59101682c1710ce0cc099fd902c2"
     },
     {
       "path": "assets/touhou-common/textures/pl00/entry-0.png",
@@ -1376,14 +1416,24 @@
       "sha256": "5ba0a58a43592f90fbe29878a83ed4eb2020e9c86f297aac50999481c421fd9b"
     },
     {
+      "path": "src/touhou/hud-label-data.d.ts",
+      "bytes": 152,
+      "sha256": "3920405d3d8c1804cfa7cdc6e7dd7a0cdfcee56a16a9e2284a244fdc12380553"
+    },
+    {
+      "path": "src/touhou/hud-label-data.js",
+      "bytes": 161,
+      "sha256": "6d45f6827e0ed5dd198d48ea185b87528decaff7973ae36b5490ddf1d02ab05e"
+    },
+    {
       "path": "src/touhou/hud.d.ts",
-      "bytes": 1752,
-      "sha256": "3e6ccd5c00fbb8d6c5418c27b262ff2df7a6f4f588c6f50f9d2d253569b07026"
+      "bytes": 4231,
+      "sha256": "2cc4461de190c0e5494e6e12c8711064eede99f25dcfc596701569217b8a2afa"
     },
     {
       "path": "src/touhou/hud.js",
-      "bytes": 11084,
-      "sha256": "561a1d0062a77448e6545d0fd43957322935494771e412b35fc04426b5e25589"
+      "bytes": 17107,
+      "sha256": "eb6217f6e20a0c94fa912dff8022efc0e4021adaef7e1d50797afc6d23bbfec3"
     },
     {
       "path": "src/touhou/index.d.ts",
@@ -1587,13 +1637,13 @@
     },
     {
       "path": "src/touhou/resources.d.ts",
-      "bytes": 2808,
-      "sha256": "8a3d63b2bab099af7c1cde5ae8c146c6f7dc4cdc13dac0a818b0f643fe41d527"
+      "bytes": 3556,
+      "sha256": "c72c9727e06faf06ec5e54cc935e9902bfd58d9f581fac67a994f6bac625cb72"
     },
     {
       "path": "src/touhou/resources.js",
-      "bytes": 7475,
-      "sha256": "9103a3e5ea52a3319c9fd49521409a6478b6ab049b1b7fb42ff923d5b8f64c05"
+      "bytes": 8485,
+      "sha256": "68721d93e1af76b35e21112bc027b912643fee17bab8f895014821aa91b22ce9"
     },
     {
       "path": "src/touhou/scene-transition.d.ts",
@@ -1731,10 +1781,10 @@
     {
       "path": "PACKAGE.json",
       "bytes": 4319,
-      "sha256": "08cb65b1c7f0bc9a1ef19f8072e02458efe94df4f67a99624218ba33ed93fe58",
+      "sha256": "d4b4bf8f64b3493c3cdf1d2f75588e7c64fdc2752c7f24a6b4a81981a48521a2",
       "source": "dist/TS-STG/PACKAGE.json",
       "sourceSha256": "8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0",
-      "generatedContent": "{\n  \"runtimes\": [\n    {\n      \"linkage\": \"static\",\n      \"version\": \"0.10.1\",\n      \"revision\": \"3c9afc9943323ee9c7dbd123c0cd991448f4b6c2\",\n      \"id\": \"quickjs\",\n      \"jit\": false\n    },\n    {\n      \"library\": {\n        \"upstreamFile\": \"rusty_v8.lib\",\n        \"sha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n        \"upstreamSha256\": \"e168995c158b95d13a33992ed23a8b7fa84687a46d0b079b4a1eab9a055b23c3\",\n        \"archiveSha256\": \"19fb2f7cda3d6cd42179ec86c552d3efca639142f08b37fff18615ae6679ece2\",\n        \"file\": \"v8-host.lib\"\n      },\n      \"version\": \"12.3.219.9\",\n      \"sdkManifestSha256\": \"3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac\",\n      \"headers\": {\n        \"revision\": \"db2b8439ec4d3ae972330cc2e9830ccd517d7235\",\n        \"archiveSha256\": \"c0117ad65843deffb7363ef7feb6cd6198d4c0d965c85f135f41e7e0ffe504a8\"\n      },\n      \"build\": {\n        \"linkage\": \"static\",\n        \"pointerCompression\": false,\n        \"platform\": \"windows-x64\",\n        \"externalStartupData\": false,\n        \"promiseInternalFieldCount\": 1,\n        \"platformBridge\": {\n          \"inputSha256\": \"af8a48f4317731d16963b4a244e20f78a350627d1cf545ee12844157ae2fbea2\",\n          \"outputSha256\": \"7733761c7fdac0746a6692cfe3b4e145271b21f1942b510bbb3924d5c4b37bf6\",\n          \"exportedFunctions\": [\n            \"v8__Platform__NewDefaultPlatform\",\n            \"v8__Platform__DELETE\"\n          ],\n          \"originalSections\": 2224,\n          \"retainedSections\": 4,\n          \"retainedSymbols\": 10,\n          \"externalSymbols\": [\n            \"__security_cookie\",\n            \"__security_check_cookie\",\n            \"__guard_dispatch_icall_fptr\",\n            \"?NewDefaultPlatform@platform@v8@@YA?AV?$unique_ptr@VPlatform@v8@@U?$default_delete@VPlatform@v8@@@Cr@std@@@Cr@std@@HW4IdleTaskSupport@12@W4InProcessStackDumping@12@V?$unique_ptr@VTracingController@v8@@U?$default_delete@VTracingController@v8@@@Cr@std@@@45@W4PriorityMode@12@@Z\"\n          ],\n          \"executableBytesUnmodified\": true,\n          \"sections\": [\n            {\n              \"originalIndex\": 526,\n              \"name\": \".text\",\n              \"size\": 91,\n              \"relocations\": 3,\n              \"sha256\": \"17e41183530d7fcd423c12f4801ff8c1700ea1fc7481be81b540d9591e65d0cf\"\n            },\n            {\n              \"originalIndex\": 532,\n              \"name\": \".text\",\n              \"size\": 27,\n              \"relocations\": 1,\n              \"sha256\": \"cb4401e485a20b6ab2d3a6def48c232636ff183b88f6ad318299b3099706ff50\"\n            },\n            {\n              \"originalIndex\": 1045,\n              \"name\": \".xdata\",\n              \"size\": 8,\n              \"relocations\": 0,\n              \"sha256\": \"1f4b869bc523135882239a20f86a560aadb59c631a6fba4c7cc7b70b92f3004c\"\n            },\n            {\n              \"originalIndex\": 2132,\n              \"name\": \".pdata\",\n              \"size\": 12,\n              \"relocations\": 3,\n              \"sha256\": \"6dc0134d253e6d623f0a1362eeb8c40c7ac6fc6cf49c31dd8406e11218ba81c2\"\n            }\n          ]\n        },\n        \"crt\": \"static\",\n        \"sandbox\": false\n      },\n      \"id\": \"v8\",\n      \"librarySha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n      \"jit\": true,\n      \"wrapper\": {\n        \"version\": \"0.89.0\",\n        \"name\": \"rusty_v8\"\n      },\n      \"linkage\": \"static\"\n    }\n  ],\n  \"binarySha256\": \"c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8\",\n  \"kind\": \"engine-sdk\",\n  \"configuration\": \"Release\",\n  \"version\": \"0.1.0\",\n  \"format\": \"ts-stg-local-package-v2\",\n  \"referenceAssets\": false,\n  \"defaultBackend\": \"v8\",\n  \"createdUtc\": \"2026-10-05T11:39:53.102Z\",\n  \"commonResourceCounts\": {\n    \"archives\": 10,\n    \"textures\": 94,\n    \"sounds\": 51,\n    \"scripts\": 1342,\n    \"sprites\": 2256,\n    \"shotRows\": [\n      72,\n      32\n    ]\n  },\n  \"entry\": \"main.js\",\n  \"derivedFor\": {\n    \"commit\": \"d7f2fcc26a0265baf233fbc4a81ee12eb62da3f1\",\n    \"binarySource\": \"build/Release/ts-stg.exe\",\n    \"upstreamPackageSha256\": \"8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0\",\n    \"upstreamBinarySha256\": \"9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d\",\n    \"reason\": \"Local SDK metadata derived from the validated current native build; upstream dist remains unchanged and contains an older executable.\"\n  }\n}\n"
+      "generatedContent": "{\n  \"runtimes\": [\n    {\n      \"linkage\": \"static\",\n      \"version\": \"0.10.1\",\n      \"revision\": \"3c9afc9943323ee9c7dbd123c0cd991448f4b6c2\",\n      \"id\": \"quickjs\",\n      \"jit\": false\n    },\n    {\n      \"library\": {\n        \"upstreamFile\": \"rusty_v8.lib\",\n        \"sha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n        \"upstreamSha256\": \"e168995c158b95d13a33992ed23a8b7fa84687a46d0b079b4a1eab9a055b23c3\",\n        \"archiveSha256\": \"19fb2f7cda3d6cd42179ec86c552d3efca639142f08b37fff18615ae6679ece2\",\n        \"file\": \"v8-host.lib\"\n      },\n      \"version\": \"12.3.219.9\",\n      \"sdkManifestSha256\": \"3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac\",\n      \"headers\": {\n        \"revision\": \"db2b8439ec4d3ae972330cc2e9830ccd517d7235\",\n        \"archiveSha256\": \"c0117ad65843deffb7363ef7feb6cd6198d4c0d965c85f135f41e7e0ffe504a8\"\n      },\n      \"build\": {\n        \"linkage\": \"static\",\n        \"pointerCompression\": false,\n        \"platform\": \"windows-x64\",\n        \"externalStartupData\": false,\n        \"promiseInternalFieldCount\": 1,\n        \"platformBridge\": {\n          \"inputSha256\": \"af8a48f4317731d16963b4a244e20f78a350627d1cf545ee12844157ae2fbea2\",\n          \"outputSha256\": \"7733761c7fdac0746a6692cfe3b4e145271b21f1942b510bbb3924d5c4b37bf6\",\n          \"exportedFunctions\": [\n            \"v8__Platform__NewDefaultPlatform\",\n            \"v8__Platform__DELETE\"\n          ],\n          \"originalSections\": 2224,\n          \"retainedSections\": 4,\n          \"retainedSymbols\": 10,\n          \"externalSymbols\": [\n            \"__security_cookie\",\n            \"__security_check_cookie\",\n            \"__guard_dispatch_icall_fptr\",\n            \"?NewDefaultPlatform@platform@v8@@YA?AV?$unique_ptr@VPlatform@v8@@U?$default_delete@VPlatform@v8@@@Cr@std@@@Cr@std@@HW4IdleTaskSupport@12@W4InProcessStackDumping@12@V?$unique_ptr@VTracingController@v8@@U?$default_delete@VTracingController@v8@@@Cr@std@@@45@W4PriorityMode@12@@Z\"\n          ],\n          \"executableBytesUnmodified\": true,\n          \"sections\": [\n            {\n              \"originalIndex\": 526,\n              \"name\": \".text\",\n              \"size\": 91,\n              \"relocations\": 3,\n              \"sha256\": \"17e41183530d7fcd423c12f4801ff8c1700ea1fc7481be81b540d9591e65d0cf\"\n            },\n            {\n              \"originalIndex\": 532,\n              \"name\": \".text\",\n              \"size\": 27,\n              \"relocations\": 1,\n              \"sha256\": \"cb4401e485a20b6ab2d3a6def48c232636ff183b88f6ad318299b3099706ff50\"\n            },\n            {\n              \"originalIndex\": 1045,\n              \"name\": \".xdata\",\n              \"size\": 8,\n              \"relocations\": 0,\n              \"sha256\": \"1f4b869bc523135882239a20f86a560aadb59c631a6fba4c7cc7b70b92f3004c\"\n            },\n            {\n              \"originalIndex\": 2132,\n              \"name\": \".pdata\",\n              \"size\": 12,\n              \"relocations\": 3,\n              \"sha256\": \"6dc0134d253e6d623f0a1362eeb8c40c7ac6fc6cf49c31dd8406e11218ba81c2\"\n            }\n          ]\n        },\n        \"crt\": \"static\",\n        \"sandbox\": false\n      },\n      \"id\": \"v8\",\n      \"librarySha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n      \"jit\": true,\n      \"wrapper\": {\n        \"version\": \"0.89.0\",\n        \"name\": \"rusty_v8\"\n      },\n      \"linkage\": \"static\"\n    }\n  ],\n  \"binarySha256\": \"c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8\",\n  \"kind\": \"engine-sdk\",\n  \"configuration\": \"Release\",\n  \"version\": \"0.1.0\",\n  \"format\": \"ts-stg-local-package-v2\",\n  \"referenceAssets\": false,\n  \"defaultBackend\": \"v8\",\n  \"createdUtc\": \"2026-10-05T11:39:53.102Z\",\n  \"commonResourceCounts\": {\n    \"archives\": 10,\n    \"textures\": 94,\n    \"sounds\": 51,\n    \"scripts\": 1342,\n    \"sprites\": 2256,\n    \"shotRows\": [\n      72,\n      32\n    ]\n  },\n  \"entry\": \"main.js\",\n  \"derivedFor\": {\n    \"commit\": \"8ec53bbe23b6d2dc9e5b7c6d6d187510f252f5fd\",\n    \"binarySource\": \"build/Release/ts-stg.exe\",\n    \"upstreamPackageSha256\": \"8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0\",\n    \"upstreamBinarySha256\": \"9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d\",\n    \"reason\": \"Local SDK metadata derived from the validated current native build; upstream dist remains unchanged and contains an older executable.\"\n  }\n}\n"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -2630,7 +2680,7 @@
     "configuration": "Release",
     "executableSource": "build/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "08cb65b1c7f0bc9a1ef19f8072e02458efe94df4f67a99624218ba33ed93fe58",
+    "packageSha256": "d4b4bf8f64b3493c3cdf1d2f75588e7c64fdc2752c7f24a6b4a81981a48521a2",
     "binarySha256": "c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8",
     "sourceFiles": [
       {

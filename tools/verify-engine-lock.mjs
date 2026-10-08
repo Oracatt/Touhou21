@@ -52,6 +52,26 @@ export function inventoryTree(root){
   }
   visit(root);return files.sort((a,b)=>ordinal(a.path,b.path));
 }
+/** Complete public subtree, never an old lock's remembered subset. Both the
+ * filesystem and Git index must describe regular files without link traversal. */
+export function inventoryTrackedThlibTree(source,directory){
+  safeRelative(directory);
+  const prefix='packages/thlib/'+directory,root=inside(source,prefix),base=path.resolve(source);
+  let probe=root;
+  while(true){assert.ok(!fs.lstatSync(probe).isSymbolicLink(),'Source public tree may not pass through a link or junction');
+    if(probe===base)break;probe=path.dirname(probe);}
+  const tracked=new Map();
+  for(const record of git(source,['ls-files','--stage','-z','--',prefix]).split('\0').filter(Boolean)){
+    const separator=record.indexOf('\t'),header=record.slice(0,separator).split(' '),name=record.slice(separator+1);
+    assert.ok(separator>0&&header[2]==='0','Source public tree has an unresolved Git index entry');
+    assert.ok(header[0]==='100644'||header[0]==='100755','Source public tree contains a nonregular Git entry: '+name);
+    tracked.set(name,header[0]);
+  }
+  const files=inventoryTree(root).map(entry=>({...entry,path:directory+'/'+entry.path}));
+  for(const entry of files)assert.ok(tracked.has('packages/thlib/'+entry.path),'Public thlib file is not tracked at the requested engine commit: '+entry.path);
+  assert.equal(files.length,tracked.size,'Source public tree differs from its complete Git file inventory: '+directory);
+  return files;
+}
 export function inventoryDigest(files){
   const hash=createHash('sha256');
   for(const file of [...files].sort((a,b)=>ordinal(a.path,b.path)))hash.update(`${file.path}\0${file.bytes}\0${file.sha256.toLowerCase()}\n`,'utf8');
@@ -121,8 +141,12 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
     const commit=execFileSync('git',['-C',location,'rev-parse','HEAD'],{encoding:'utf8',windowsHide:true}).trim();
     assert.equal(commit,lock.commit,'Engine source commit differs from lock');
     inspectSourceState(location,{recorded:lock.sourceState});
-    // The local snapshot is an explicit subset of the public package. Only the
-    // pinned entries are copied; unrelated source files are never swept in.
+    // The public code and selected common pack are complete subtrees. Other
+    // asset packs remain excluded from this private consumer snapshot.
+    for(const directory of ['src','assets/touhou-common']){
+      const files=inventoryTrackedThlibTree(location,directory);
+      assert.equal(inventoryDigest(files),inventoryDigest(lock.thlibFiles.filter(file=>file.path.startsWith(directory+'/'))),'Snapshot does not contain the complete public thlib tree: '+directory);
+    }
     for(const file of lock.thlibFiles){const sourceFile=inside(path.join(location,'packages/thlib'),file.path);
       assert.ok(!fs.lstatSync(sourceFile).isSymbolicLink(),'Source library file may not be a link');
       assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source library file size differs');
@@ -137,8 +161,6 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
         assert.equal(shaFile(sourceFile),file.sha256,'Native build source hash differs');}
       for(const entry of [lock.nativeBuild.hostObject,lock.nativeBuild.dependencyLog,...(lock.nativeBuild.objects??[]),...(lock.nativeBuild.linkInputs??[]),...(lock.nativeBuild.linkLog?[lock.nativeBuild.linkLog]:[])])
         assert.equal(shaFile(inside(location,entry.source)),entry.sha256,'Native compiler evidence hash differs');
-      const allCode=inventoryTree(path.join(location,'packages/thlib/src')).map(file=>({...file,path:'src/'+file.path}));
-      assert.equal(inventoryDigest(allCode),inventoryDigest(lock.thlibFiles.filter(file=>file.path.startsWith('src/'))),'Snapshot does not contain all public thlib source');
     }
     sourceVerified=true;
   }

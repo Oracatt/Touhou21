@@ -14,6 +14,14 @@ const stages=STAGES.map(value=>({...value,bossName:names.get(value.bossId),midbo
 const formatScore=value=>String(Math.trunc(value*10)).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 const BGM_CAPTION_FRAMES=360;
 const DIALOGUE_SCREEN_SCALE=1.5;
+const HUD_NUMBER_PALETTE=Object.freeze({
+  highScore:{color:0xffbdc6d2,shadowColor:0xe0101929},
+  score:{color:0xfff1e6cf,shadowColor:0xe0101929},
+  stock:{color:0xffe4ecea,shadowColor:0xff101929},
+  power:{color:0xffedc1ab,shadowColor:0xe0101929},
+  pointValue:{color:0xffdbc0e1,shadowColor:0xe0101929},
+  graze:{color:0xffc3dedc,shadowColor:0xe0101929},
+});
 const clone=value=>JSON.parse(JSON.stringify(value));
 const rgba=value=>((value<<8)|(value>>>24))>>>0;
 const floatBits=new DataView(new ArrayBuffer(4));
@@ -52,7 +60,10 @@ export class CampaignScene extends TouhouGame {
     const records=playbackSource||options.testing?initialSpellRecords:persistentRecords;
     if(!playbackSource&&!options.testing)storage.progress.spellRecords[recordNamespace]=records;
     const background=new StageBackground({art,seed:config.seed});
+    const frameSkin=new GameFrameSkin({art});
     super({...settings,character:config.character,difficulty:config.difficulty,seed:config.seed,
+      systemOptions:{...settings.systemOptions,hud:{...settings.systemOptions?.hud,skin:frameSkin,
+        palette:{...settings.systemOptions?.hud?.palette,...HUD_NUMBER_PALETTE},replay:!!playbackSource}},
       factories:{...settings.factories,bossHud:(hudOptions,game)=>new CampaignBossHud(hudOptions,game)},
       rng:settings.rng??new TouhouRNG(config.seed),visualRng:settings.visualRng??new TouhouRNG(config.seed^0x6d2b79f5),
       renderBackground:(draw,game)=>{background.draw(draw,game);game.stageTransition?.draw(draw,{x:48,y:24,width:576,height:672});},
@@ -62,10 +73,8 @@ export class CampaignScene extends TouhouGame {
             if(!alreadyClipped)draw.scissor(48,24,576,672);drawSelf(draw,view);if(!alreadyClipped)draw.scissorEnd();};return vm;}}:{})},
       spellOptions:{...settings.spellOptions,records,fallbackRecords:{},viewIndex:config.character,playback:!!playbackSource,mode:config.mode==='spell-practice'?2:0},
       gameOverOptions:{...settings.gameOverOptions,music:'playersScore',musicPlayer:music}});
-    Object.assign(this,{resources,host,art,text,music,storage,config,options,background,onComplete,onReplayDone,onSpellPracticeEnd});
+    Object.assign(this,{resources,host,art,text,music,storage,config,options,background,frameSkin,onComplete,onReplayDone,onSpellPracticeEnd});
     this.bossSprites=new BossSpriteCatalog({art});
-    this.frameSkin=new GameFrameSkin({art,text});
-    this.hud.roots[0].draw=queue=>this.frameSkin.draw(queue,this);
     this.dialogue=null;this.stageClear=null;this.stageTransition=null;this.stageCaptionAge=0;this.currentStage=null;this.bgmCaption=null;
     this.outerDraw=new DrawList();this.savedRun=false;this.replayDone=false;this.finishedResult=null;
     this.player.lives=storage.settings.startingLives;
@@ -234,12 +243,9 @@ export class CampaignScene extends TouhouGame {
     if(this.stageCaptionAge<240&&this.director.state==='road'&&!this.dialogue){const alpha=Math.min(1,this.stageCaptionAge/30,(240-this.stageCaptionAge)/45);
       this.text.draw(draw,this.currentStage.title,58,160,{size:27,width:555,height:60,align:'center',color:0xf8e5b7ff,alpha});
       this.text.draw(draw,this.currentStage.subtitle,58,213,{size:16,width:555,height:45,align:'center',alpha});}
-    this.text.draw(draw,GAME.title,674,605,{size:34,width:268,height:60,font:this.text.titleFont,align:'center',color:0x62563eff});
-    this.text.draw(draw,this.currentStage.location,651,660,{size:16,width:292,height:46,align:'center',color:0x59675cff});
     if(this.bgmCaption){const {age,title}=this.bgmCaption;const alpha=Math.min(1,age/20,(BGM_CAPTION_FRAMES-age)/45);
       this.text.draw(draw,`♪ ${title}`,324,664,{size:16,width:296,height:28,align:'right',color:0xf8e8caff,alpha});}
     this.stageClear?.draw(draw);this.dialogue?.draw(draw,{x:0,y:0,scale:1,screenScale:DIALOGUE_SCREEN_SCALE});
-    if(this.playback)this.text.draw(draw,'Replay',674,564,{size:20,width:230,height:42,align:'center',color:0xb6c7dfff});
     return draw.commands;
   }
   snapshot(){return {...super.snapshot(),statistics:{score:this.player.score,highScore:this.player.highScore,graze:this.player.graze,pointValue:this.player.pointValue,pointItems:this.player.pointItems,lifeFragments:this.player.lifeFragments,bombFragments:this.player.bombFragments},director:this.director?.snapshot(),dialogue:this.dialogue?.snapshot()??null,stageClear:this.stageClear?.snapshot()??null,stageTransition:this.stageTransition?.snapshot()??null,stageCaptionAge:this.stageCaptionAge};}

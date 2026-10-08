@@ -17,7 +17,7 @@ export class ProjectApplication {
     this.host=host;this.options=options;this.storage=new GameStorage(host);this.art=new GameArt(host);this.text=new TextPainter(host);
     this.music=new MusicController(host,this.storage.settings);this.frame=0;this.page=null;this.playbackSource=null;this.extraSelection={};this.drawList=new DrawList();this.destroyed=false;
     this.liveButtons=new TouhouButtons();this.playbackExternalClose=null;
-    this.resources=createTouhouResources(host,{environment:{rng:new TouhouRNG(0x217e57)},audioVolume:this.storage.settings.soundVolume});
+    this.resources=createTouhouResources(host,{locale:'zh-CN',environment:{rng:new TouhouRNG(0x217e57)},audioVolume:this.storage.settings.soundVolume});
     this.renderTarget=host.createRenderTarget(960,720);this.compositeTarget=host.createRenderTarget(960,720);
     const selection={character:options.character??0,difficulty:options.mode==='extra'?4:options.difficulty??1,mode:options.mode??'normal',stageId:options.stageId??1,spellId:options.spellId??null,seed:options.seed};
     this.core=new TouhouApplication({resources:this.resources,pixels:host,initialSelection:selection,autostart:!!options.autostart,

@@ -4,7 +4,82 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {planEngineUpgrade,applyEngineUpgrade} from '../tools/sync-engine.mjs';
-import {PROJECT_ROOT,readEngineLock,shaFile,inspectSourceState,verifyEngineLock} from '../tools/verify-engine-lock.mjs';
+import {PROJECT_ROOT,readEngineLock,shaFile,inspectSourceState,verifyEngineLock,inventoryTree,inventoryDigest,inventoryTrackedThlibTree} from '../tools/verify-engine-lock.mjs';
+
+function inventoryFixture(){
+  const build=path.join(PROJECT_ROOT,'build');fs.mkdirSync(build,{recursive:true});
+  const directory=fs.mkdtempSync(path.join(build,'engine-inventory-verification-')),source=path.join(directory,'source');fs.mkdirSync(source);
+  const run=args=>execFileSync('git',['-C',source,...args],{encoding:'utf8',windowsHide:true}).trim();
+  const write=(name,content)=>{const target=path.join(source,...name.split('/'));fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,content);return target;};
+  run(['init','--quiet']);
+  for(const[name,content]of Object.entries({
+    'packages/thlib/LICENSE':'fixture license\n','packages/thlib/package.json':'{"type":"module"}\n',
+    'packages/thlib/src/index.js':'export const fixture = true;\n',
+    'packages/thlib/assets/touhou-common/manifest.json':'{"fixture":true}\n',
+    'packages/thlib/assets/touhou-common/hud-labels.json':'{"labels":[378,379]}\n',
+    'packages/thlib/assets/touhou-common/locales/zh-CN/anm/front.json':'{"language":"zh-CN"}\n',
+    'packages/thlib/assets/touhou-common/locales/zh-CN/textures/front.png':'fixture texture bytes\n',
+    'packages/thlib/assets/private-demo/excluded.png':'not a selected public common asset\n',
+    'ts-stg.exe':'fixture executable bytes\n',
+  }))write(name,content);
+  run(['add','.']);run(['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','--quiet','-m','Fixture public trees']);
+  return{directory,source,run,write};
+}
+
+test('complete tracked common inventory discovers new locale and HUD files independently of an old snapshot list',()=>{
+  const{source}=inventoryFixture(),common=inventoryTrackedThlibTree(source,'assets/touhou-common');
+  assert.deepEqual(common.map(entry=>entry.path),[
+    'assets/touhou-common/hud-labels.json',
+    'assets/touhou-common/locales/zh-CN/anm/front.json',
+    'assets/touhou-common/locales/zh-CN/textures/front.png',
+    'assets/touhou-common/manifest.json',
+  ]);
+  const oldSubset=common.filter(entry=>entry.path==='assets/touhou-common/manifest.json');
+  assert.notEqual(inventoryDigest(common),inventoryDigest(oldSubset),'new common resources cannot disappear behind an older lock inventory');
+  assert.deepEqual(inventoryTrackedThlibTree(source,'src').map(entry=>entry.path),['src/index.js']);
+  assert.ok(!common.some(entry=>entry.path.includes('private-demo')),'other asset packs are not swept into the common snapshot');
+});
+
+test('source verification rejects a valid old subset lock until every tracked common resource is copied and pinned',()=>{
+  const{directory,source,run}=inventoryFixture(),root=path.join(directory,'consumer');
+  fs.mkdirSync(path.join(root,'packages/thlib'),{recursive:true});fs.mkdirSync(path.join(root,'runtime'),{recursive:true});
+  for(const name of ['LICENSE','package.json','src/index.js','assets/touhou-common/manifest.json']){
+    const output=path.join(root,'packages/thlib',...name.split('/'));fs.mkdirSync(path.dirname(output),{recursive:true});fs.copyFileSync(path.join(source,'packages/thlib',...name.split('/')),output);
+  }
+  fs.copyFileSync(path.join(source,'ts-stg.exe'),path.join(root,'runtime/ts-stg.exe'));
+  const runtimeFiles=inventoryTree(path.join(root,'runtime')).map(entry=>({...entry,source:entry.path}));
+  const lock={format:'touhou21-engine-lock-v1',engine:'TS-STG',library:'@ts-stg/thlib',source,commit:run(['rev-parse','HEAD']),
+    executableSha256:runtimeFiles[0].sha256,sourceModified:false,supportedBackends:['v8','quickjs'],backend:'v8',runtimeFiles,runtimeSha256:inventoryDigest(runtimeFiles)};
+  const writeLock=()=>{lock.thlibFiles=inventoryTree(path.join(root,'packages/thlib'));lock.thlibSha256=inventoryDigest(lock.thlibFiles);fs.writeFileSync(path.join(root,'engine.lock.json'),JSON.stringify(lock));};
+  writeLock();assert.equal(verifyEngineLock({root,checkNode:false}).passed,true,'the old local snapshot is internally byte-pinned');
+  assert.throws(()=>verifyEngineLock({root,source,checkNode:false}),/complete public thlib tree: assets\/touhou-common/,'source verification must detect newly tracked resources omitted from the lock');
+  for(const entry of inventoryTrackedThlibTree(source,'assets/touhou-common')){
+    const output=path.join(root,'packages/thlib',...entry.path.split('/'));fs.mkdirSync(path.dirname(output),{recursive:true});fs.copyFileSync(path.join(source,'packages/thlib',...entry.path.split('/')),output);
+  }
+  writeLock();assert.equal(verifyEngineLock({root,source,checkNode:false}).sourceVerified,true);
+  assert.equal(run(['status','--porcelain']),'','verification never modifies the source fixture');
+});
+
+test('public inventory rejects untracked files, missing tracked files and Git symlink entries even when checkout bytes are regular',()=>{
+  const untracked=inventoryFixture();untracked.write('packages/thlib/assets/touhou-common/untracked.png','unreviewed bytes');
+  assert.throws(()=>inventoryTrackedThlibTree(untracked.source,'assets/touhou-common'),/not tracked/);
+  const missing=inventoryFixture();fs.unlinkSync(path.join(missing.source,'packages/thlib/assets/touhou-common/manifest.json'));
+  assert.throws(()=>inventoryTrackedThlibTree(missing.source,'assets/touhou-common'),/complete Git file inventory/);
+  const symlink=inventoryFixture(),name='packages/thlib/assets/touhou-common/git-symlink.txt',file=symlink.write(name,'manifest.json\n');
+  const blob=symlink.run(['hash-object','-w',file]);symlink.run(['update-index','--add','--cacheinfo','120000',blob,name]);
+  assert.equal(fs.lstatSync(file).isFile(),true,'fixture reproduces a regular Windows checkout of a Git symlink');
+  assert.throws(()=>inventoryTrackedThlibTree(symlink.source,'assets/touhou-common'),/nonregular Git entry/);
+});
+
+test('public inventory rejects both nested junctions and links in a selected directory ancestor',()=>{
+  const{directory,source}=inventoryFixture(),external=path.join(directory,'external');fs.mkdirSync(external);fs.writeFileSync(path.join(external,'secret'),'outside bytes');
+  fs.symlinkSync(external,path.join(source,'packages/thlib/assets/touhou-common/link'),process.platform==='win32'?'junction':'dir');
+  assert.throws(()=>inventoryTrackedThlibTree(source,'assets/touhou-common'),/link/);
+  const linkedSource=path.join(directory,'linked-source'),assets=path.join(directory,'external-assets');
+  fs.mkdirSync(path.join(linkedSource,'packages/thlib'),{recursive:true});fs.mkdirSync(path.join(assets,'touhou-common'),{recursive:true});
+  fs.symlinkSync(assets,path.join(linkedSource,'packages/thlib/assets'),process.platform==='win32'?'junction':'dir');
+  assert.throws(()=>inventoryTrackedThlibTree(linkedSource,'assets/touhou-common'),/link or junction/);
+});
 
 test('a source exception is limited to the recorded unstaged editor launcher',()=>{
   const build=path.join(PROJECT_ROOT,'build');fs.mkdirSync(build,{recursive:true});

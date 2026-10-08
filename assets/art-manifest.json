@@ -2,6 +2,28 @@
   "format": "guiming-art-v1",
   "alphaThreshold": 16,
   "assets": {
+    "assets/art/hud-logo.png": {
+      "width": 1536,
+      "height": 1024,
+      "bounds": {
+        "x": 55,
+        "y": 169,
+        "width": 1427,
+        "height": 711
+      },
+      "sha256": "0dd2be2a62e3ac846dbfb2ee49fbacc34f37536a72ee198cbeebfd4ec3b0714e"
+    },
+    "assets/art/hud-panel.png": {
+      "width": 865,
+      "height": 1819,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 865,
+        "height": 1819
+      },
+      "sha256": "6601ca8a1ead8a306bfd60e3955af1bb926af169a2472f4df4f67f0d9a71c4c2"
+    },
     "assets/art/stage01.png": {
       "width": 1024,
       "height": 1536,

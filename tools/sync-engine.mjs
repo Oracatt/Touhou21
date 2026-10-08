@@ -7,7 +7,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {randomUUID} from 'node:crypto';
-import {PROJECT_ROOT,inside,inventoryTree,inventoryDigest,readEngineLock,shaFile,shaText,inspectSourceState,verifyEngineLock} from './verify-engine-lock.mjs';
+import {PROJECT_ROOT,inside,inventoryTree,inventoryTrackedThlibTree,inventoryDigest,readEngineLock,shaFile,shaText,inspectSourceState,verifyEngineLock} from './verify-engine-lock.mjs';
 
 const git=(root,args)=>execFileSync('git',['-C',root,...args],{encoding:'utf8',windowsHide:true}).trim();
 const relative=file=>file.split(path.sep).join('/');
@@ -107,10 +107,8 @@ export function planEngineUpgrade({root=PROJECT_ROOT,source,commit,binary='build
   verifyEngineLock({root});const old=readEngineLock(root),sourceState=verifySource(source,commit,{allowChanges:allowSourceChanges});
   assert.equal(fs.realpathSync(path.join(root,'node_modules/@ts-stg/thlib')),fs.realpathSync(path.join(root,'packages/thlib')),'Upgrade requires the existing local thlib junction, not a separately installed Node copy.');
   const {nativeBuild,packageContent}=assertBuild(source,binary,{commit,deriveSdkManifest}),libraryRoot=inside(source,'packages/thlib');
-  const publicCode=inventoryTree(inside(libraryRoot,'src')).map(entry=>({...entry,path:'src/'+entry.path}));
-  const tracked=new Set(git(source,['ls-files','packages/thlib/src']).split(/\r?\n/));
-  for(const entry of publicCode)assert.ok(tracked.has('packages/thlib/'+entry.path),'Public code is not tracked at the requested engine commit: '+entry.path);
-  const common=old.thlibFiles.filter(entry=>entry.path.startsWith('assets/touhou-common/')).map(entry=>fileEntry(libraryRoot,entry.path));
+  const publicCode=inventoryTrackedThlibTree(source,'src');
+  const common=inventoryTrackedThlibTree(source,'assets/touhou-common');
   const thlibFiles=[fileEntry(libraryRoot,'LICENSE'),fileEntry(libraryRoot,'package.json'),...publicCode,...common].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
   const runtimeNames=new Map(old.runtimeFiles.map(entry=>[entry.path,entry.path==='ts-stg.exe'?binary:entry.source]));
   runtimeNames.set('PACKAGE.json','dist/TS-STG/PACKAGE.json');
