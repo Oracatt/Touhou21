@@ -1,5 +1,32 @@
 # 验收方法与覆盖范围
 
+## v2.0.0 公共暂停 / 结果面板图层修复（2026-10-08）
+
+按用户要求，在源 TS-STG 的公共 thlib 修复 `TouhouPause` 与 `TouhouGameOver`，独立提交为 `c801e679325917653922394764aa28fa151a1df8`，再通过 `tools/sync-engine.mjs` 的预览 / 安装同步本作。游戏业务源码不变，保持 **v2.0.0 / 回放修订 5**；这次只改变绘制顺序，不改变菜单输入、动画时钟、坐标、判定或回放模拟。
+
+原作 `front.anm` 中，花纹原始层 49 在次级注册后映射为有效层 47、绘制优先级 77；菜单文字及 Yes / No 确认文字原始层 34 映射为有效层 51、优先级 99。原作先画花纹，随后画文字。旧公共面板直接走 ANM 的原始层排序，文字反而先画。修复让每个 owner 通过独立的 `TouhouRenderQueue` 提交自己的面板树：捕获背景在前，公共花纹 / 文字按注册优先级绘制，owner 字体与外部页面在后；没有调用整个 bank 的绘制，也没有修改全局 ANM 的默认行为或素材。原作依据为只读 `Touhou20Reconstruction/scripts/recovered/anm/front.anm.txt`、`source_reconstruction/sprite_renderer/dispatch.cpp` 与 `controller_callbacks.inc`。
+
+源引擎新增真实公共 ANM 回归 `tests/touhou-pause-render-order.test.js`，旧实现 **7 / 7 项失败**，修复后 **7 / 7 通过**。检查实际贴图命令顺序、退出 / 重开 / 保存回放的确认与取消、外部页面返回、普通 / 练习 / 完成结果、隐藏与重复绘制，并确认不绘制无关 bank 实体、不推进 ANM 或菜单状态。与既有暂停、结果、音乐和渲染测试一起执行 **34 / 34 通过，0 失败、0 跳过**，用时 **1257.7358 ms**：
+
+```powershell
+# cwd: D:\AIWorkspace\TS-STG
+node --test tests/touhou-pause-render-order.test.js tests/th20-pause-menu.test.js tests/th20-game-over.test.js tests/touhou-game-over-music.test.js tests/shared-rendering.test.js tests/th20-render-state.test.js
+```
+
+本作新增 `tools/pause-ui-fixture.js` 与 `tools/verify-pause-ui.mjs`。旧锁下先实际截图普通暂停，`reports/pause-layer-order/baseline/report.json` 记录 `orderCorrect:false`；随后新锁实际执行 **7 场景 × V8 / QuickJS，共 14 次原生 GPU 验证与 14 张新截图**，全部通过。场景为普通暂停、退出确认 No / Yes、重开确认、保存回放确认、普通结果和练习结果。前五项通过真实 `ProjectApplication` 的 Esc / 导航 / 确认输入进入；后两项明确直接调用公共 `openGameOver`，不声称复现死亡输入路径。实际写入 DrawList 的命令区间均证实花纹 77 先于文字 99，七对状态与 PNG 严格相同。根代理逐张查看七张 V8 图及旧版图，确认左侧文字完整覆盖花纹，确认页文字同样在前。报告见 `reports/pause-layer-order/report.json`。
+
+原生专项执行期间，31 个业务源文件、全部公共源码、夹具、验证工具、锁与程序保持哈希稳定。存档写入隔离到内存，自机无敌只用于展示隔离；这次专项不替代完整关卡、碰撞、音频听感或性能验收。现有用户游戏窗口未关闭或重启，已加载的旧 JS 要在下一次启动后才采用修复。
+
+同步后的完整 `npm test` **140 / 140 项通过，0 失败、0 跳过**，用时 **183232.4398 ms**，日志见 `reports/node-tests-pause-layer-order.log`。其中真实源目录同步测试也通过；下方上一任务记录的旧锁 / 外部 HEAD 不符失败属于同步前的历史结果。
+
+依赖现锁定 `c801e67`，仍为 **341 个 thlib / 150 个运行时文件**，程序仍为 `c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8`。相对旧快照，生产 JS 仅上述两个公共 owner 改变，另同步已有许可 / 包元数据更新；原生输入和公共资源字节未变。同步保留旧依赖与锁在 `build/engine-upgrade-9253f6d3-79d3-47ea-8d6e-f130d9873816`，源用户启动脚本 SHA-256 保持 `7121aa214d9f0e526f8c8188293cb07d93d6b9200600f8eab4c13e26fccd4901`。带 `--check-source` 的依赖核对和静态边界审计通过。下方旧任务的测试失败与只读源声明按其执行时状态保留，不表示此次公共修复没有改源。
+
+```powershell
+node tools/verify-pause-ui.mjs
+node tools/verify-engine-lock.mjs --check-source
+node tools/audit-boundaries.mjs
+```
+
 ## v2.0.0 本机中 Boss 退场显示修复
 
 本次基于 `3873bb1` 修复中 Boss 击破后等待飞离时身体消失的问题，保留 **v2.0.0 / 回放修订 5**。唯一生产改动是 `src/scene.js` 的身体直绘条件：处于 `midboss-exit` 且 `pendingEscape.boss` 恰为当前实体，或该实体已有存活的公共 escape，才沿用实体层绘制；不会绕过普通黑雾入场的隐藏规则。源引擎、攻击、判定与阶段时钟未改变，75 帧击破停顿、60 帧飞离、击破 145 帧 / 超时 70 帧退出保持原有配置。
