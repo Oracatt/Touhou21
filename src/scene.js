@@ -92,7 +92,7 @@ export class CampaignScene extends TouhouGame {
       queue.enqueuePriority(style.drawPriority,draw=>this.text.draw(draw,label,76,18,{size:16,width:455,height:25,color:0xf8e8caff,alpha:(style.color>>>24)/255}));};
     this.director=new CampaignDirector({stages,midbosses:MIDBOSSES,character:config.character,difficulty:config.difficulty,mode:config.mode,stageId:config.stageId,spellId:config.spellId,seed:config.seed,
       callbacks:{
-        music:id=>music.play(id,true),stageStart:stage=>this.startStage(stage),
+        music:id=>music.play(id,true),musicFade:()=>music.fadeOut(1.6),stageStart:stage=>this.startStage(stage),
         bossSpawn:(enemy,metadata)=>this.decorateBoss(enemy,metadata),
         spellStart:(spec,metadata)=>this.spellStart(spec,metadata),
         dialogue:(lines,context)=>this.openDialogue(lines,context),
@@ -130,12 +130,16 @@ export class CampaignScene extends TouhouGame {
       record.name=spec.name;record.attempts[mode]=Math.min(99999,record.attempts[mode]+1);}
     return{portrait:createSpellPortrait({art:this.art,bossId,visualRng:this.visualRng}),keepStageBackground:true};
   }
-  openDialogue(lines,{bossId,kind,onComplete}){
+  openDialogue(lines,{bossId,kind,cues=null,cue=null,onComplete}){
     this.dialogue?.dispose();this.context.dialogue=true;
     const playerId=PLAYERS[this.character??this.config.character].id;
-    const steps=lines.map(line=>({speaker:line.speaker==='boss'?'right':'left',text:line.text,coldFrames:18,autoFrames:600,portraits:{left:{present:true},right:{present:true}}}));
+    const steps=lines.map((line,index)=>{const events=[];
+      if(cues?.appear===index)events.push({type:'cue',name:'appear'});if(cues?.music===index)events.push({type:'cue',name:'music'});
+      // Before the Boss appears the player is alone on the road.
+      return{speaker:line.speaker==='boss'?'right':'left',text:line.text,coldFrames:cues?.appear===index?48:18,autoFrames:600,events,
+        portraits:{left:{present:true},right:{present:!cues||index>=cues.appear}}};});
     this.dialogue=new TouhouDialogue({resources:this.dialogueResources,steps,character:this.config.character,codePage:936,maxLineBytes:42,
-      startDelayFrames:kind==='before'?12:0,entrance:kind==='after'?'afterBoss':null,exit:kind==='after'?'afterBoss':'beforeBoss',
+      startDelayFrames:kind==='before'?12:0,onEvent:event=>{if(event.type==='cue')cue?.(event.name);},entrance:kind==='after'?'afterBoss':null,exit:kind==='after'?'afterBoss':'beforeBoss',
       speakerNames:{left:PLAYERS[this.config.character].name,right:names.get(bossId)},
       drawPortrait:(draw,step,owner)=>{
         const left=owner.portraitState('left'),right=owner.portraitState('right');

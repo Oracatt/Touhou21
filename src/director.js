@@ -175,9 +175,30 @@ export class CampaignDirector{
         hp:1800+stage.id*220+spellIndex*110,duration:Math.round(spec.seconds*60)});
     });return phases;
   }
-  _spawnBoss(game,{practice=false}={}){
+  /** Spell practice has no pre-Boss dialogue: the Boss and its theme arrive together. */
+  _spawnBoss(game,{practice=false}={}){this._createBoss(game,{practice});this.callbacks.music?.(this.stage.bgmBoss);}
+  /** Original stage flow: the player talks to herself on the quiet road, the
+   * Boss then appears in the middle of the conversation, and the Boss theme
+   * only starts a few lines later. The cue lines come from the authored text. */
+  _beginPrelude(game){
     this._clear(game);this.phases=this._buildPhases();this.phasePlan=new TouhouBossPhasePlan(this.phases);
-    this.phaseIndex=-1;this.phaseFrame=0;this.state='boss-enter';
+    this.phaseIndex=-1;this.phaseFrame=0;this.bossAppeared=false;this.bossMusicStarted=false;
+    const route=this.character?'marisa':'reimu',lines=this.stage.dialogues?.[route]?.before??[];
+    const first=lines.findIndex(entry=>entry.speaker==='boss'),cues=first<0?null:{appear:first,
+      music:Math.min(lines.length-1,Math.min(first+4,Math.max(first+1,Math.floor(lines.length/2))))};
+    this._dialogue(game,'before',()=>this._endPrelude(game),null,cues);
+  }
+  _endPrelude(game){this._appearBoss(game);this._startBossMusic();this.state='boss-enter';}
+  _appearBoss(game){
+    if(this.bossAppeared)return;this.bossAppeared=true;
+    this.callbacks.musicFade?.();this._createBoss(game,{prepared:true});
+  }
+  _startBossMusic(){if(this.bossMusicStarted)return;this.bossMusicStarted=true;this.callbacks.music?.(this.stage.bgmBoss);}
+  _cue(name){if(this.destroyed||this.state!=='dialogue'||this.dialogueKind!=='before')return;
+    if(name==='appear')this._appearBoss(this.game);else if(name==='music')this._startBossMusic();}
+  _createBoss(game,{practice=false,prepared=false}={}){
+    if(!prepared){this._clear(game);this.phases=this._buildPhases();this.phasePlan=new TouhouBossPhasePlan(this.phases);
+      this.phaseIndex=-1;this.phaseFrame=0;this.state='boss-enter';}
     const boss=game.spawnEnemy({x:0,y:105,hp:this.phases[0].hp,radius:16,script:30,directional:false,
       deathBank:game.banks.effect,drop:[],damageInvulnerability:0});
     game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
@@ -186,16 +207,15 @@ export class CampaignDirector{
     game.enterBoss(boss,{entrance:{mode:practice?'flyIn':'blackFog',follow:boss}});
     game.setBossHud({name:this.stage.bossName??this.stage.bossId,dialogue:true,...this.phasePlan.hudState(0)});
     this.callbacks.bossSpawn?.(boss,{bossId:boss.bossId,midboss:false});
-    this.callbacks.music?.(this.stage.bgmBoss);
   }
-  _dialogue(game,kind,continuation,linesOverride=null){
+  _dialogue(game,kind,continuation,linesOverride=null,cues=null){
     this.state='dialogue';this.dialogueKind=kind;this.dialogueContinuation=continuation;
     game.stopBossCombat();game.bossPresentation?.clearCharges();game.context.bossSuppressed=true;game.context.enemyContactBlocked=true;
     game.context.dialogue=true;game.context.inputBlocked=true;
-    if(this.boss)this.boss.invulnerable=true;game.setBossHud({dialogue:true});
+    if(this.boss){this.boss.invulnerable=true;game.setBossHud({dialogue:true});}
     const route=this.character?'marisa':'reimu',lines=linesOverride??this.stage.dialogues?.[route]?.[kind]??[];
     if(!lines.length||!this.callbacks.dialogue){this.continueDialogue();return;}
-    this.callbacks.dialogue(lines,{stage:this.stage,bossId:this.boss?.bossId??this.stage.bossId,kind,onComplete:()=>this.continueDialogue()});
+    this.callbacks.dialogue(lines,{stage:this.stage,bossId:this.boss?.bossId??this.stage.bossId,kind,cues,cue:name=>this._cue(name),onComplete:()=>this.continueDialogue()});
   }
   continueDialogue(){
     if(this.state!=='dialogue'||!this.dialogueContinuation)return false;
@@ -298,7 +318,7 @@ export class CampaignDirector{
         const wave=this.roadPlan.waves[this.roadWaveIndex++];if(wave.at===t)this._spawnRoadWave(game,wave);
       }
       if(!this.midbossDone&&t>=(this.midbosses.find(entry=>entry.stageId===this.stageId)?.atFrame??Math.floor(roadFrames*.43))){this._spawnMidboss(game);return;}
-      if(t>=roadFrames){this._spawnBoss(game);return;}this.stageFrame++;
+      if(t>=roadFrames){this._beginPrelude(game);return;}this.stageFrame++;
     }else if(this.state==='midboss-enter'){
       this.phaseFrame++;const fraction=Math.min(1,this.phaseFrame/60);
       actorPosition(this.boss,150*(1-fraction),20+fraction*85);
@@ -314,10 +334,7 @@ export class CampaignDirector{
     }else if(this.state==='midboss-exit'){
       if(++this.phaseFrame>=70){this.state='road';this.stageFrame++;this.phaseFrame=0;}
     }else if(this.state==='boss-enter'){
-      if(game.bossPresentation.entranceReady){
-        if(this.mode==='spell-practice')this._beginPhase(game,0);
-        else this._dialogue(game,'before',()=>this._beginPhase(game,0));
-      }
+      if(game.bossPresentation.entranceReady)this._beginPhase(game,0);
     }else if(this.state==='phase-wait'){
       // The ring is already shown with the upcoming group's HP while the
       // sixty-frame card result and movement preparation run.

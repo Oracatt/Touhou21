@@ -108,8 +108,40 @@ test('dialogue freezes road and card clocks while the real player continues upda
   assert.equal(director.stageFrame,before.stageFrame);assert.equal(director.phaseFrame,before.phaseFrame);
   assert.ok(f.game.player.timer.current>playerAge);assert.equal(f.game.player.bombs,bombs);
   assert.equal(f.game.player.shots.length,shots,'dialogue never creates shots');done();done();
+  for(let i=0;i<400&&director.state!=='combat';i++)step(f.game,director);
   assert.equal(director.state,'combat');assert.equal(director.phaseIndex,0);
   director.destroy();f.dispose();
+});
+
+test('the player speaks alone, the Boss appears mid-dialogue and its theme starts a few lines later',()=>{
+  for(const character of [0,1]){
+    const f=fixture(),log=[];let done,seen;
+    const director=new CampaignDirector({stages:STAGES,character,callbacks:{
+      music:id=>log.push(`music:${id}`),musicFade:()=>log.push('fade'),bossSpawn:()=>log.push('boss'),
+      dialogue:(lines,options)=>{if(options.kind==='before'){seen={lines,options};done=options.onComplete;}else options.onComplete();},
+    }}).attach(f.game);
+    log.length=0;director.midbossDone=true;director.stageFrame=STAGES[0].roadFrames;
+    for(let i=0;i<5;i++)step(f.game,director);
+    assert.equal(director.state,'dialogue');assert.equal(director.boss,null,'no Boss while the player is still alone');
+    assert.deepEqual(log,[],'the stage theme keeps playing during the monologue');
+    const {appear,music}=seen.options.cues,speakers=seen.lines.map(line=>line.speaker);
+    assert.ok(appear>=2,'at least two lines of self-talk');assert.ok(speakers.slice(0,appear).every(name=>name!=='boss'));
+    assert.equal(speakers[appear],'boss');assert.ok(music>appear&&music<=speakers.length-1,'the theme starts after some conversation');
+    seen.options.cue('appear');assert.ok(director.boss?.alive);assert.deepEqual(log,['fade','boss']);
+    seen.options.cue('appear');assert.equal(log.length,2,'a cue is delivered once');
+    seen.options.cue('music');assert.deepEqual(log.slice(2),['music:boss01']);seen.options.cue('music');assert.equal(log.length,3);
+    done();assert.equal(director.state,'boss-enter');assert.equal(log.length,3,'ending the dialogue does not restart the theme');
+    for(let i=0;i<400&&director.state!=='combat';i++)step(f.game,director);assert.equal(director.state,'combat');
+    director.destroy();f.dispose();
+  }
+});
+
+test('a dialogue that never delivers cues still brings in the Boss and its theme',()=>{
+  const f=fixture(),log=[];
+  const director=new CampaignDirector({stages:STAGES,callbacks:{music:id=>log.push(id),dialogue:(lines,{onComplete})=>onComplete()}}).attach(f.game);
+  log.length=0;director.midbossDone=true;director.stageFrame=STAGES[0].roadFrames;
+  for(let i=0;i<5;i++)step(f.game,director);
+  assert.ok(director.boss?.alive);assert.deepEqual(log,['boss01']);director.destroy();f.dispose();
 });
 
 test('application-injected spell background and portrait remain owned by public spell presentation',()=>{

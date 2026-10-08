@@ -200,6 +200,7 @@ export const STAGES = [
       reimu: {
         before: [
           line('reimu', '神社牌匾没有字也就算了，村子的路牌也空了。'),
+          line('reimu', '前面有光……这个时候，是谁在点灯？'),
           line('boss', '你要找哪一扇门？照一下就能看见旧字哦。'),
           line('reimu', '博丽神社。先说好，不收照明费。'),
           line('boss', '啊，那扇门昨晚也托我保管名字了。'),
@@ -218,6 +219,7 @@ export const STAGES = [
       marisa: {
         before: [
           line('marisa', '书脊、瓶签、路牌全空了。倒省得我重新分类。'),
+          line('marisa', '路边的灯笼亮着，里头塞满了纸条。'),
           line('boss', '我的灯能照回旧字！要照哪一个？'),
           line('marisa', '先照这瓶。要是毒药，今天就麻烦了。'),
           line('boss', '上面写着……不要喝。'),
@@ -253,6 +255,7 @@ export const STAGES = [
       reimu: {
         before: [
           line('reimu', '真会挑地方。连雨也把脚印洗掉了。'),
+          line('reimu', '信封一封接一封飘着，这雨不对劲。'),
           line('boss', '欢迎。你是信上说的“那位巫女”吗？'),
           line('reimu', '别用这种叫法。我有名字。'),
           line('boss', '可信里只剩下这几个字了。问候还在，就能送达。'),
@@ -271,6 +274,7 @@ export const STAGES = [
       marisa: {
         before: [
           line('marisa', '这雨下得很讲究，每滴都像有东西要说。'),
+          line('marisa', '落在帽子上的……好像是字？'),
           line('boss', '那是我装在信里的声音。你愿意收一封吗？'),
           line('marisa', '要是附带照出旧字的办法，我收十封。'),
           line('boss', '纸从河对面的书库来，我只是借雨送信。'),
@@ -305,6 +309,8 @@ export const STAGES = [
     dialogues: {
       reimu: {
         before: [
+          line('reimu', '这里原本没有河，也没有桥才对。'),
+          line('reimu', '船？还是渡口自己长出来了？'),
           line('boss', '一位乘客？这条新航线今天只收一枚名字。'),
           line('reimu', '这种船费听起来就该退钱。'),
           line('boss', '空白票不收铜钱。你瞧，两边都没写岸名。'),
@@ -323,7 +329,8 @@ export const STAGES = [
       },
       marisa: {
         before: [
-          line('marisa', '这条河昨天还没有。你连水路也借来了？'),
+          line('marisa', '地图上画的是路，眼前却是一条河。'),
+          line('marisa', '这条河昨天还没有。难道水路也被借走了？'),
           line('boss', '河一直在，只是岸名暂时不在。船费一枚名字。'),
           line('marisa', '我给你取个新名字，算不算？'),
           line('boss', '那要看取得好不好。'),
@@ -359,6 +366,8 @@ export const STAGES = [
     dialogues: {
       reimu: {
         before: [
+          line('reimu', '整片林子都被丝线缝在一起了。'),
+          line('reimu', '每根线都亮着，像写满了字。'),
           line('boss', '沿着线来的客人，别把脚下的小结踩散了。'),
           line('reimu', '你把整片林子缝起来，别人怎么过？'),
           line('boss', '不缝起来，昨天买过谁家的豆腐都要讲错。'),
@@ -378,6 +387,7 @@ export const STAGES = [
       marisa: {
         before: [
           line('marisa', '名字消失了，这些线却还会认人。好魔法。'),
+          line('marisa', '线在抖。是有人在那一头拉着吧。'),
           line('boss', '线认的是你昨天做过的事。'),
           line('marisa', '那就别翻昨天的了，从今天开始。'),
           line('boss', '昨天似乎有一本没还的书呢。'),
@@ -413,6 +423,8 @@ export const STAGES = [
     dialogues: {
       reimu: {
         before: [
+          line('reimu', '好大的书库，连门都是纸糊的。'),
+          line('reimu', '满屋都是旧墨水和没人翻的纸味。'),
           line('boss', '欢迎来到归名书库。请将活着的名字放在门外。'),
           line('reimu', '不放。里面有没有一块写着博丽神社的牌匾？'),
           line('boss', '我们只收名字，不收牌匾。它已依新例归入旧名。'),
@@ -433,6 +445,7 @@ export const STAGES = [
       marisa: {
         before: [
           line('marisa', '这就是让书脊全空白的书库？藏书真不少。'),
+          line('marisa', '这味道，全是从没被翻开过的纸。'),
           line('boss', '请先登记。这里不接受抄本之外的物品带出。'),
           line('marisa', '抄本能带走？你们的规矩比我想的友善。'),
           line('boss', '但你正在使用的名字，也已登记成旧名。'),
@@ -469,6 +482,8 @@ export const STAGES = [
     dialogues: {
       reimu: {
         before: [
+          line('reimu', '无名之庭……连花草的名字也没有了。'),
+          line('reimu', '风里也没有人在叫谁。'),
           line('boss', '欢迎。归名册里还有地方，你的名字不会再次消失。'),
           line('reimu', '就是你，把还在用的名字都搬进来了？'),
           line('boss', '大家都说不想被忘记。我只是替他们保管。'),
@@ -494,6 +509,7 @@ export const STAGES = [
       marisa: {
         before: [
           line('marisa', '这就是归名册的原件？竟然连封皮也没标题。'),
+          line('marisa', '封皮上的空白，也太整齐了点。'),
           line('boss', '有名字的书，会先被自己的名字占去一页。'),
           line('marisa', '为了省一页，倒让全乡的书都没了标题。'),
           line('boss', '无人再叫的名字，总得有一个不会褪色的地方。'),
@@ -543,6 +559,8 @@ export const STAGES = [
     dialogues: {
       reimu: {
         before: [
+          line('reimu', '铃声明明已经停了，怎么还在响？'),
+          line('reimu', '……不是铃。是有人在喊名字。'),
           line('boss', '……会来叫的。你果然又来啦。'),
           line('reimu', '我说的不是你。铃都停了，哪来的回声？'),
           line('boss', '每个旧名字都留下了最后一声。我替它们接下去。'),
@@ -566,6 +584,8 @@ export const STAGES = [
       },
       marisa: {
         before: [
+          line('marisa', '书页自己在翻，是回声在读它们？'),
+          line('marisa', '三天前的话，怎么又响起来了。'),
           line('boss', '……取个名字。你那本书取好了吗？'),
           line('marisa', '连三天前的话也能听见。你是书库的回音？'),
           line('boss', '是所有旧名字的回音。现在也算我自己的声音。'),
