@@ -17,7 +17,7 @@ test('the attack catalogue covers every card, ordinary attack and midboss phase 
   assert.deepEqual(STAGE_PATTERN_OFFSETS,[0,2,5,8,12,16,21]);
   for(const stage of STAGES){
     assert.equal(SPELL_PATTERNS.filter(p=>p.stageId===stage.id).length,stage.spells.length,`stage ${stage.id} cards`);
-    assert.equal(NONSPELL_PATTERNS[stage.id-1].length,stage.spells.length,`stage ${stage.id} ordinary attacks pair with cards`);
+    assert.equal(NONSPELL_PATTERNS[stage.id-1].length,[...stage.phaseLayout].filter(kind=>kind==='N').length,`stage ${stage.id} ordinary attacks follow the phase layout`);
     const midboss=MIDBOSSES.find(m=>m.stageId===stage.id);
     assert.equal(MIDBOSS_SPELL_PATTERNS.filter(p=>p.stageId===stage.id).length,midboss.spells.length,`stage ${stage.id} midboss cards`);
     assert.equal(!!MIDBOSS_NONSPELL_PATTERNS[stage.id-1],midboss.nonspell,`stage ${stage.id} midboss ordinary attack`);

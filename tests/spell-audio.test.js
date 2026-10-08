@@ -109,7 +109,7 @@ test('the last Extra midboss card settles its result without pretending another 
     }
     f.audio.flush();f.requested.length=0;f.played.length=0;f.events.length=0;
     f.strike();f.update();assert.equal(f.director.state,'midboss-exit');
-    assert.equal(count(f,46),1);assert.equal(count(f,27),0);
+    assert.equal(count(f,46),1);assert.equal(count(f,27),1,'The last broken midboss card still gets the ordinary break cue');
     assert.equal(f.events.filter(event=>event.name==='spellFinish').length,1);
   }finally{f.dispose();}
 });

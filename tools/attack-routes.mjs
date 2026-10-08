@@ -53,7 +53,7 @@ function make(spec){
   assert.equal(game.player.focusRadius,radius);assert.equal(game.player.x,0);assert.equal(game.player.y,400);
   const state={};let frame=0;
   game.stage=()=>{const fn=spec.kind==='nonspell'?updateNonspellPattern:spec.kind==='midboss'?updateMidbossSpellPattern:updateSpellPattern;
-    fn({game,boss,frame:frame++,difficulty:spec.difficulty,stageId:spec.stageId,spellIndex:spec.spellIndex??0,phaseIndex:spec.phaseIndex??0,state});};
+    fn({game,boss,frame:frame++,difficulty:spec.difficulty,stageId:spec.stageId,spellIndex:spec.spellIndex??0,group:spec.group??0,state});};
   return{game,dispose(){game.destroy();resources.dispose();}};
 }
 export function attackOccupancy(game){

@@ -12,24 +12,13 @@ function runEchoes(k){
 }
 const echoed=attack=>{const run=k=>{runEchoes(k);attack(k);};Object.defineProperty(run,'name',{value:attack.name});if(attack.home)run.home=attack.home;return run;};
 
-/* ---- ten nonspells ---- */
+/* ---- eight nonspells ---- */
 function halfSpokenVoice(k){
   if(k.every(46)){const aim=k.aim(),x=k.ox,y=k.oy;
     k.fan(x,y,7,3.1,aim,.13,T.RICE,C.BLUE,null,{rows:2,speedStep:2.3});
     echo(k,18,k=>k.fan(-x,y,7,2.7,Math.atan2(k.py-y,k.px+x),.13,T.RICE,C.SKY,null,{rows:2,speedStep:2}));}
   if(k.every(92,60))k.ringGap(k.ox,k.oy,28,1.8,T.BALL,C.WHITE);
   if(k.every(184,150))k.wander(40);
-}
-function lateResponse(k){
-  if(k.every(40)){const a=k.unit()*TAU,x=k.ox,y=k.oy;k.ring(x,y,28,2.3,a,T.BALL,C.BLUE);
-    echo(k,14,k=>k.ring(x,y,28,1.85,a+Math.PI/28,T.BALL,C.WHITE));}
-  if(k.every(120,80))k.aimed(k.ox,k.oy,5,3,.15,T.SCALE,C.RED,null,{rows:3,speedStep:2.1});
-  if(k.every(160,130))k.wander(40);
-}
-function reversedTail(k){
-  if(k.every(36)){const wave=k.t/36|0;k.ring(k.ox,k.oy,30,3,wave*.19,T.SCALE,wave%2?C.SKY:C.BLUE,[k.stopTurn(44,Math.PI,1.8)]);}
-  if(k.every(108,70))k.aimed(k.ox,k.oy,3,3.2,.2,T.RICE,C.RED,null,{rows:3,speedStep:2.2});
-  if(k.every(216,180))k.wander(40);
 }
 function betweenTwoVoices(k){
   if(k.every(3)){const a=k.t*.052;
@@ -61,16 +50,33 @@ function unheardNames(k){
   if(k.every(45,20))k.ring(k.ox,k.oy,20,1.5,k.t*.07,T.BALL,C.BLUE);
   if(k.every(180,150))k.wander(40);
 }
-function laughterAfterBell(k){
-  if(k.every(3)){const a=-DOWN+(k.unit()-.5)*2.6;k.shot(k.ox,k.oy,a,lerp(2.2,3.4,k.unit()),T.STAR,k.t%2?C.ROSE:C.WHITE,[k.accel(.045,220,DOWN)],{silent:k.t%12!==0});}
-  if(k.every(70,35))k.ringGap(k.ox,k.oy,30,2,T.BALL,C.BLUE,null,{rows:2,speedStep:1.5});
+/** The voice meets the side wall and comes back across the hall; the echo
+ * leaves a beat later toward the opposite wall. */
+function wallOfEcho(k){
+  const period=k.pick(64,52,46,40);
+  if(k.every(period)){
+    const wave=k.t/period|0,side=wave%2?1:-1,x=k.ox,y=k.oy,n=k.pick(5,7,9,11);
+    k.fan(x,y,n,2.4,DOWN+side*1.15,.16,T.RICE,side<0?C.BLUE:C.SKY,[k.bounce(1,12)]);
+    echo(k,22,k=>k.fan(x,y,n,2.4,DOWN-side*1.15,.16,T.RICE,side<0?C.SKY:C.BLUE,[k.bounce(1,12)]));
+  }
+  if(k.every(110,70))k.aimed(k.ox,k.oy,3,2.8,.2,T.AMULET,C.WHITE,null,{rows:2,speedStep:1.9});
+  if(k.every(220,170))k.wander(40);
 }
-function speakingAgain(k){
-  if(k.every(32)){const a=k.aim(),x=k.ox,y=k.oy;k.ringGap(x,y,32,2.2,T.BALL,C.BLUE);
-    echo(k,16,k=>k.ring(-x,y,32,1.8,Math.atan2(k.py-y,k.px+x)+Math.PI/32,T.BALL,C.ROSE));}
-  if(k.every(5))k.shot(k.ox,k.oy,k.t*.07,2.3,T.RICE,C.WHITE,null,{silent:true});
-  if(k.every(120,90))k.wander(40);
+
+/** The voice is replayed: the Boss walks a slow loop leaving a still dot every
+ * few frames, and after a breath the dots fall in the order they were left,
+ * so the path it walked comes down as a slanted curtain. */
+function replayedVoice(k){
+  const a=k.t*.035;
+  k.place(Math.sin(a)*90,92+Math.sin(a*2)*26);
+  if(k.every(k.pick(10,9,8,7))){
+    const lean=Math.sin(k.t*.011)*.18;
+    k.shot(k.ox,k.oy,DOWN,0,T.AMULET,(k.t/7|0)%2?C.SKY:C.WHITE,[k.wait(110),k.set(DOWN+lean,k.pick(1.6,1.8,1.9,2))],{silent:k.t%28!==0});
+  }
+  if(k.every(100,40)){const x=k.ox,y=k.oy;
+    k.aimed(x,y,3,2.7,.2,T.RICE,C.ROSE,null,{rows:2,speedStep:1.8});}
 }
+replayedVoice.home={x:0,y:92};
 
 /* ---- ten spell cards ---- */
 /** 回声「迟到半拍的自我介绍」 */
@@ -93,40 +99,75 @@ function voiceFromBellMouth(k){
 }
 voiceFromBellMouth.home={x:0,y:120};
 
-/** 旧名「无人居住的门牌街」 */
-function uninhabitedNameplateStreet(k){
-  if(k.every(38)){const wave=k.t/38|0,rotation=wave*.37,door=k.aim(),x=k.ox,y=k.oy;
-    burstShape(k,x,y,polygon(4,17),1.65,rotation,T.AMULET,C.SKY,null,{skip:(p,a)=>inGap(a,door,.2)});
-    echo(k,16,k=>{const late=Math.atan2(k.py-y,k.px-x);burstShape(k,x,y,polygon(4,13),1.25,rotation+Math.PI/4,T.AMULET,C.BLUE,null,{skip:(p,a)=>inGap(a,late,.23)});});}
-  if(k.every(120,60))for(const side of[-1,1])k.aimed(k.ox+side*46,k.oy,1,2.4,0,T.ORB,C8.CYAN,null,{rows:3,speedStep:1.7});
+/** 回廊「只在静默处通行的长廊」: dotted lanes of voices cross the hall in
+ * alternating directions, slightly tilted so the lanes weave. Every lane
+ * keeps one silence, and the silences are staggered from lane to lane. */
+function silentCorridor(k){
+  const rows=7,step=k.pick(18,16,15,14),speed=k.pick(1.5,1.65,1.8,1.9),cycle=k.pick(5,5,6,6);
+  if(k.every(step)){
+    const beat=k.t/step|0;
+    for(let i=0;i<rows;i++){
+      if((beat+i*3)%cycle===0)continue;
+      const fromLeft=i%2===0,tilt=(i%4<2?1:-1)*.07;
+      k.shot(fromLeft?-190:190,170+i*40,fromLeft?tilt:Math.PI-tilt,speed,T.RICE,i%2?C.ROSE:C.SKY,null,{silent:i>0||k.t%(step*3)!==0,safe:2304});
+    }
+  }
+  if(k.every(96,48)){const aim=k.aim(),x=k.ox,y=k.oy;
+    k.fan(x,y,5,2.6,aim,.14,T.SCALE,C.WHITE,null,{rows:2,speedStep:1.9});
+    echo(k,20,k=>k.fan(-x,y,5,2.4,Math.atan2(k.py-y,k.px+x),.14,T.SCALE,C.SKY,null,{rows:2,speedStep:1.8}));}
 }
-uninhabitedNameplateStreet.home={x:0,y:104};
+silentCorridor.home={x:0,y:96};
 
-/** 复雨「同一封信的两个昨日」 */
-function twoYesterdaysOfALetter(k){
-  if(k.every(2))k.shot(lerp(-186,186,k.unit()),-6,DOWN+.06*Math.sin(k.t*.01),lerp(2.4,3.3,k.unit()),T.NEEDLE,C.SKY,null,{safe:2304,silent:true});
-  if(k.every(7))k.shot(lerp(-186,186,k.unit()),446,-DOWN+.05*Math.sin(k.t*.013),lerp(1.2,1.7,k.unit()),T.NEEDLE,C.ROSE,null,{safe:4096,silent:true});
-  if(k.every(60)){const letters=k.aimed(k.ox,k.oy,5,3.1,.3,T.AMULET,C.WHITE,[k.hold(46),k.wait(22),k.vanish()]);
-    k.later(60,letters,b=>k.ring(b.x,b.y,12,1.55,k.unit()*TAU,T.BALL,C.BLUE,null,{silent:true}));}
+/** 余响「远处才响起的钟」: slow bells drift down the hall. Each one rings
+ * again and again as it falls, and every ring keeps a gap toward you. */
+function farBells(k){
+  const period=k.pick(290,250,220,200),pulse=k.pick(66,58,54,50),n=k.pick(8,10,12,12);
+  if(k.every(period)){
+    const x=lerp(-120,120,k.unit()),bells=k.fan(x,-6,k.pick(1,1,2,2),.9,DOWN,.8,T.BIG,C8.WHITE,[k.wait(5*pulse+12),k.vanish()],{safe:4096});
+    for(let s=1;s<=5;s++)k.later(s*pulse,bells,b=>{
+      const bx=b.x,by=b.y;k.ring(bx,by,n,1.3,k.unit()*TAU,T.BALL,s%2?C.BLUE:C.SKY,null,{silent:s%3!==1,safe:3600});
+      if(s%2===0)echo(k,16,k=>k.ring(bx,by,n,1.0,k.unit()*TAU,T.BALL,C.WHITE,null,{silent:true,safe:3600}));
+    });
+  }
+  if(k.every(110,60))k.aimed(k.ox,k.oy,3,2.7,.2,T.AMULET,C.WHITE,null,{rows:2,speedStep:1.8});
+  if(k.every(220,170))k.wander(40);
 }
-twoYesterdaysOfALetter.home={x:0,y:108};
+farBells.home={x:0,y:96};
 
-/** 彼岸声「错过末班船的呼唤」 */
-function missedLastFerry(k){
-  if(k.every(19)){const wave=k.t/19|0,side=wave%2?1:-1,y=[46,96,146,96][(wave>>1)%4];
-    k.fan(side*186,y,12,2.15,side<0?.32:Math.PI-.32,.13,T.AMULET,side<0?C.SKY:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304});}
-  if(k.every(64,30)){const wave=k.t/64|0;k.ring(k.ox,k.oy,26,3,wave*.2,T.OVAL,C8.BLUE,[k.stopTurn(52,Math.PI,1.45)]);}
+/** 回环「绕回原处的呼唤」: rings curl into tight spirals as they leave, and
+ * the echo ring curls the other way through the gaps of the first. */
+function windingCalls(k){
+  const period=k.pick(58,46,40,36),n=k.pick(8,10,12,14);
+  if(k.every(period)){
+    const wave=k.t/period|0,w=(wave%2?1:-1)*.058,a=wave*.39,x=k.ox,y=k.oy;
+    k.ring(x,y,n,1.15,a,T.BALL,wave%2?C.SKY:C.ROSE,[k.curve(w,110,.017)]);
+    echo(k,18,k=>k.ring(x,y,n,1.0,a+Math.PI/n,T.BALL,C.WHITE,[k.curve(-w,110,.015)]));
+  }
+  if(k.every(96,48))k.aimed(k.ox,k.oy,5,2.9,.13,T.RICE,C.WHITE,null,{rows:2,speedStep:2});
 }
-missedLastFerry.home={x:0,y:100};
+windingCalls.home={x:0,y:104};
 
-/** 结声「说不尽的八重尾音」 */
-function endlessEightfoldNote(k){
-  const cycle=300,c=k.t%cycle,round=k.t/cycle|0;
-  if(c===0)for(let j=0;j<8;j++)k.beam(k.ox,k.oy,round*Math.PI/8+j*Math.PI/4,{width:9,delay:60,grow:12,sustain:200,shrink:14,color:C.ROSE,angular:(round%2?1:-1)*.0028,sound:j?-1:26});
-  if(k.every(4)){const a=k.t*.029;for(let j=0;j<3;j++){
-    k.shot(k.ox,k.oy,a+j*TAU/3,1.9,T.BALL,C.SKY,null,{silent:j>0||k.t%12!==0});k.shot(k.ox,k.oy,-a+j*TAU/3+Math.PI/3,1.65,T.BALL,C.WHITE,null,{silent:true});}}
+/** 镜声「与你相反的回响」: the Boss drifts to the opposite side of the hall
+ * from you and pours a sweeping curtain down; aimed fans arrive from both the
+ * Boss and its mirror image. */
+function mirroredVoice(k){
+  const target=clamp(-k.px*.85,-140,140);
+  k.place(k.boss.x+(target-k.boss.x)*.045,96+10*Math.sin(k.t*.03));
+  if(k.every(9))k.shot(k.ox,k.oy,DOWN+Math.sin(k.t*.045)*.2,2.1,T.NEEDLE,C.SKY,null,{silent:k.t%27!==0});
+  if(k.every(k.pick(100,88,80,74),30)){const x=k.ox,y=k.oy;
+    k.aimed(x,y,k.pick(3,3,5,5),2.7,.15,T.RICE,C.WHITE,null,{rows:2,speedStep:1.8});
+    echo(k,22,k=>k.aimed(-x,y,3,2.5,.15,T.RICE,C.ROSE,null,{rows:2,speedStep:1.7}));}
 }
-endlessEightfoldNote.home={x:0,y:116};
+mirroredVoice.home={x:0,y:100};
+
+/** 耐响「最后一次呼唤的六十余息」 (survival): six echoes of this hall, ten
+ * seconds each, with a breath between them. */
+function lastCallSixtyBreaths(k){
+  const segment=Math.min(5,k.t/620|0),c=k.t%620;k.state.segment=segment;
+  if(c>=590)return;
+  [silentCorridor,farBells,windingCalls,mirroredVoice,wallOfEcho,replayedVoice][segment](k);
+}
+lastCallSixtyBreaths.home={x:0,y:108};
 
 /** 封名「旧册背面的白纸花」 */
 function whitePaperFlowerOnBack(k){
@@ -138,21 +179,6 @@ whitePaperFlowerOnBack.home={x:0,y:112};
 
 /** 耐响「最后一次呼唤的六十余息」 (survival): six echoes of the journey,
  * each a little quieter than the one before. */
-function lastCallSixtyBreaths(k){
-  const segment=Math.min(5,k.t/620|0),c=k.t%620,ease=1+segment*.12;k.state.segment=segment;
-  if(c>=590)return;
-  if(segment===0&&c%Math.round(36*ease)===0){const door=k.aim();burstShape(k,k.ox,k.oy,polygon(4,16),1.6,c*.012,T.AMULET,C.ORANGE,null,{skip:(p,a)=>inGap(a,door,.21)});}
-  else if(segment===1){if(c%2===0)k.shot(lerp(-186,186,k.unit()),-6,DOWN+.08,lerp(2.4,3.1,k.unit()),T.NEEDLE,C.SKY,null,{safe:2304,silent:true});
-    if(c%Math.round(60*ease)===0){const l=k.aimed(k.ox,k.oy,5,3,.3,T.AMULET,C.WHITE,[k.hold(46),k.wait(22),k.vanish()]);k.later(60,l,b=>k.ring(b.x,b.y,12,1.5,k.unit()*TAU,T.BALL,C.AZURE,null,{silent:true}));}}
-  else if(segment===2&&c%Math.round(42*ease)===0)k.ring(k.ox,k.oy,32,3.2,c*.2,T.OVAL,C8.CYAN,[k.stopTurn(50,Math.PI,1.6)]);
-  else if(segment===3){if(c%300===0&&c<560)for(let j=0;j<8;j++)k.beam(k.ox,k.oy,j*Math.PI/4+Math.PI/8,{width:9,delay:60,sustain:200,color:C.PALE,angular:c?-.0026:.0026,sound:j?-1:26});
-    if(c>=60&&c%Math.round(30*ease)===0)k.ring(k.ox,k.oy,36,1.25,c*.13,T.BALL,C.MAGENTA);}
-  else if(segment===4&&c%Math.round(20*ease)===0){const cells=14;k.state.blank=clamp((k.state.blank??7)+(k.unit()<.5?-1:1),2,cells-3);
-    for(let i=0;i<cells;i++)if(Math.abs(i-k.state.blank)>1)k.shot(-182+i*28,-4,DOWN,1.7,T.AMULET,C.PALE,null,{silent:i>0,safe:2304});}
-  else if(segment===5&&c%Math.round(34*ease)===0)k.ringGap(k.ox,k.oy,28,2.2,T.BALL,C.YELLOW,null,{rows:3,speedStep:1.4});
-}
-lastCallSixtyBreaths.home={x:0,y:108};
-
 /** 言灵「没有说出口的第一个名字」 */
 function firstUnspokenName(k){
   const a1=k.t*.032,a2=a1+Math.PI-.7*Math.sin(k.t*.011);
@@ -182,9 +208,8 @@ mayOldNamesBeAnswered.home={x:0,y:110};
 
 export const MIO=Object.freeze({
   id:'mio',
-  nonspells:[halfSpokenVoice,lateResponse,reversedTail,betweenTwoVoices,oldNameKnocks,halfAJoke,
-    overlappingCorridor,unheardNames,laughterAfterBell,speakingAgain].map(echoed),
-  spells:[lateSelfIntroduction,voiceFromBellMouth,uninhabitedNameplateStreet,twoYesterdaysOfALetter,missedLastFerry,
-    endlessEightfoldNote,whitePaperFlowerOnBack,lastCallSixtyBreaths,firstUnspokenName,mayOldNamesBeAnswered].map(echoed),
+  nonspells:[halfSpokenVoice,betweenTwoVoices,oldNameKnocks,wallOfEcho,halfAJoke,overlappingCorridor,replayedVoice,unheardNames].map(echoed),
+  spells:[lateSelfIntroduction,voiceFromBellMouth,silentCorridor,farBells,windingCalls,mirroredVoice,
+    whitePaperFlowerOnBack,lastCallSixtyBreaths,firstUnspokenName,mayOldNamesBeAnswered].map(echoed),
   midboss:{nonspell:null,spells:FUSAE.extraMidboss},
 });

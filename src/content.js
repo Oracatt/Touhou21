@@ -191,6 +191,7 @@ export const STAGES = [
     colors: ['#172C40', '#CF7042', '#F2CE81'], background: 'stage01',
     bgmStage: 'stage01', bgmBoss: 'boss01', roadFrames: 3900, midbossAt: 1680,
     nonspellNames: ['提灯旋转', '无字门前的灯列'],
+    phaseLayout: 'NSNS',
     midbossSpells: [],
     spells: [
       spell('s01-01', '灯符「无人认领的门灯」', 'lantern', 'lantern_gate', '方形门框一圈圈扩散并缓缓旋转，每个门框都在自机方向留出一扇门；两侧灯笼的中玉成列瞄准自机。高难度在门框内再套一层错位的小门框。', 35),
@@ -242,7 +243,8 @@ export const STAGES = [
     location: '湿墨竹林·旧驿道', bossId: 'shizuri',
     colors: ['#244B68', '#79A9BC', '#C2D9DC'], background: 'stage02',
     bgmStage: 'stage02', bgmBoss: 'boss02', roadFrames: 4500, midbossAt: 1980,
-    nonspellNames: ['雨信的折角', '驿道斜雨', '散落的问候'],
+    nonspellNames: ['雨信的折角', '散落的问候'],
+    phaseLayout: 'NSNSS',
     midbossSpells: [
       spell('s02-mid', '封缄「雨停前请勿拆阅」', 'rain', 'rain_sealed', '信封向上飞出后悬在空中，拆封时各自洒下一小束针雨，信封本身随即投向自机；细雨贯穿全程。', 35),
     ],
@@ -298,6 +300,7 @@ export const STAGES = [
     colors: ['#1C3E58', '#6CA99B', '#D2C79A'], background: 'stage03',
     bgmStage: 'stage03', bgmBoss: 'boss03', roadFrames: 4800, midbossAt: 2160,
     nonspellNames: ['摆渡双流', '纸票回航', '靠岸前的涟漪'],
+    phaseLayout: 'NSNSNS',
     midbossSpells: [
       spell('s03-mid', '船费「一枚铜钱的渡口」', 'ferry', 'ferry_toll', '铜钱被抛成喷泉状的抛物线落下，带缺口的船票环随重力下坠，船票束定时瞄准自机。', 35),
     ],
@@ -353,7 +356,8 @@ export const STAGES = [
     location: '旧林深处·记忆织庭', bossId: 'shino',
     colors: ['#372F57', '#9A79B8', '#D5C58F'], background: 'stage04',
     bgmStage: 'stage04', bgmBoss: 'boss04', roadFrames: 5100, midbossAt: 2280,
-    nonspellNames: ['经纬的起针', '隔着丝线的旧事', '织梭往返', '解不开的小结'],
+    nonspellNames: ['经纬的起针', '隔着丝线的旧事', '解不开的小结'],
+    phaseLayout: 'NSNSSNS',
     midbossSpells: [
       spell('s04-mid', '缝符「先缝住影子的一针」', 'weave', 'weave_shadow', '针弹飞到自机周围排成一圈，停留片刻后一同向圆心缝合；两侧袖口持续洒下米弹。', 35),
     ],
@@ -410,7 +414,8 @@ export const STAGES = [
     location: '边界背侧·归名书库', bossId: 'fusae',
     colors: ['#263E3A', '#AFAE8A', '#C4544A'], background: 'stage05',
     bgmStage: 'stage05', bgmBoss: 'boss05', roadFrames: 5400, midbossAt: 2400,
-    nonspellNames: ['藏书印的序列', '札页分类', '归名册的索引', '闭架书库'],
+    nonspellNames: ['藏书印的序列', '归名册的索引', '闭架书库'],
+    phaseLayout: 'NSNSNSS',
     midbossSpells: [
       spell('s05-mid', '规章「借阅证不得转借」', 'archive', 'archive_sorting', '纸札环展开后按颜色分拣：红札折向一岸、绿札折向另一岸，两片斜幕在下方交叉。', 35),
     ],
@@ -468,7 +473,8 @@ export const STAGES = [
     location: '归名册尽头·无名之庭', bossId: 'kotone',
     colors: ['#7BAA9B', '#E7E0C1', '#D6B668'], background: 'stage06',
     bgmStage: 'stage06', bgmBoss: 'boss06', roadFrames: 3900, midbossAt: 1680,
-    nonspellNames: ['最初的呼唤', '薄荷色的声纹', '铃口相向', '无声的答复', '最后一页之前'],
+    nonspellNames: ['最初的呼唤', '薄荷色的声纹', '无声的答复', '最后一页之前'],
+    phaseLayout: 'NSNSSNSNS',
     midbossSpells: [
       spell('s06-mid', '名札「请在空白处写上名字」', 'name', 'name_writing', '白札飞到空中写出一笔笔字划，停顿后按字形滴落成幕；带缺口的金铃环定时扩散。', 35),
     ],
@@ -538,7 +544,8 @@ export const STAGES = [
     location: '归名书库背面·倒铃回廊', bossId: 'mio',
     colors: ['#1E2E56', '#B3BED0', '#BA4B60'], background: 'stage07',
     bgmStage: 'extra', bgmBoss: 'bossExtra', roadFrames: 5100, midbossAt: 2280,
-    nonspellNames: ['说到一半的声音', '迟来的应声', '倒转的尾音', '两声之间', '旧名轻叩', '半句玩笑', '回廊的重叠', '听不到的名字', '铃后的笑声', '重新开口'],
+    nonspellNames: ['说到一半的声音', '两声之间', '旧名轻叩', '墙上的回响', '半句玩笑', '回廊的重叠', '重播的声线', '听不到的名字'],
+    phaseLayout: 'NSNSNSSNSNSNSSNSNS',
     midbossSpells: [
       spell('ex-mid-01', '抄札「只准借阅的旧名目录」', 'archive', 'archive_copy', '纸札成列落下，行至半途相邻两列交换车道；红札束定时瞄准自机。', 45),
       spell('ex-mid-02', '封印「回声不可携出之页」', 'archive', 'archive_echo_seal', '方形书页展开后被拉回封印，穿过中心再向另一侧展开；朱印成扇形盖向自机。', 50),
@@ -547,12 +554,12 @@ export const STAGES = [
     spells: [
       spell('ex-01', '回声「迟到半拍的自我介绍」', 'echo', 'echo_introduction', '每一拍放出声环，半拍后从镜像位置响起错开半格的回声环；瞄准自机的自我介绍也会在原处再说一遍。', 45),
       spell('ex-02', '倒铃「从铃口归来的声音」', 'echo', 'echo_inverse', '鳞弹铃环飞出、停下、折返穿过中心，再次停下后斜向散开，与新铃环层层交错。', 50),
-      spell('ex-03', '旧名「无人居住的门牌街」', 'echo', 'echo_street', '冷色方形门框扩散并朝自机开门；半拍后的回声门框只朝自机当时的新位置开门。', 50),
-      spell('ex-04', '复雨「同一封信的两个昨日」', 'echo', 'echo_rain', '针雨自上方落下，第二个昨日的雨从下方缓缓升起；信封停住后拆封成环。', 50),
-      spell('ex-05', '彼岸声「错过末班船的呼唤」', 'echo', 'echo_ferry', '两岸的船票扇面弯向下游交织，椭圆渡船环驶出后调头回航。', 55),
-      spell('ex-06', '结声「说不尽的八重尾音」', 'echo', 'echo_weave', '八条丝线每轮反向转动，顺逆两条珠链在丝线之间交织出移动的缝隙。', 55),
+      spell('ex-03', '回廊「只在静默处通行的长廊」', 'echo', 'echo_corridor', '成串的声点沿长廊来回穿行，相邻两条回廊方向相反、略微倾斜并相互交织；每条回廊都留有一处静默，各条的静默依次错开。瞄准自机的扇面会在镜像位置再响一次。', 50),
+      spell('ex-04', '余响「远处才响起的钟」', 'echo', 'echo_bell', '缓慢下沉的大钟一路敲响，每一声都放出缺口朝向自机的声环，半拍后再落下一圈没有缺口的余响。', 50),
+      spell('ex-05', '回环「绕回原处的呼唤」', 'echo', 'echo_loop', '声环离开 Boss 时卷成紧密的螺旋；半拍后的回声环向相反方向卷曲，穿过前一环的缝隙。', 55),
+      spell('ex-06', '镜声「与你相反的回响」', 'echo', 'echo_mirror', 'Boss 总是移到与自机相反的一侧，倾泻左右摇摆的针雨；瞄准自机的扇面同时从 Boss 与它的镜像位置射来。', 55),
       spell('ex-07', '封名「旧册背面的白纸花」', 'echo', 'echo_archive', '五瓣纸花向外扩散后整朵向反方向折回，红白两色交替；针弹束定时瞄准自机。', 55),
-      spell('ex-08', '耐响「最后一次呼唤的六十余息」', 'echo', 'echo_survival', '耐久符卡。灯门、雨信、回航、丝庭、书页与铃声六段旧声依次响起，每段比前一段更轻；需要生存至时限结束，不因自机射击提前结束。', 65, true),
+      spell('ex-08', '耐响「最后一次呼唤的六十余息」', 'echo', 'echo_survival', '耐久符卡。长廊、远钟、回环、镜声、墙上的回响与重播的声线六段回声依次响起，每段十秒、中间留一口气；需要生存至时限结束，不因自机射击提前结束。', 65, true),
       spell('ex-09', '言灵「没有说出口的第一个名字」', 'echo', 'echo_first', '两个声点绕 Boss 互相追逐，轮流放出缺口朝向自机的声环；中央的星弹螺旋不断写下名字。', 60),
       spell('ex-10', '「愿旧名也有人轻轻应答」', 'echo', 'echo_answer', '六种旅途的形状与它们的回声依次出现；回声起初与原形相差半圈，随时间逐渐转向同一方向，直到完全应答。', 65),
     ],

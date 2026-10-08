@@ -10,7 +10,7 @@ test('QA catalog covers every authored card with its own full duration and diffi
   assert.equal(spells.filter(spec=>spec.kind==='midboss').length,8);
   assert.deepEqual(spells.filter(spec=>spec.kind==='midboss').map(spec=>spec.stageId),[2,3,4,5,6,7,7,7]);
   for(const spec of spells){assert.ok(spec.frames>0&&spec.frames%4===0);assert.equal(spec.difficulty,spec.stageId===7?4:1);}
-  assert.equal(attackRouteCases({kind:'nonspell'}).length,31);
+  assert.equal(attackRouteCases({kind:'nonspell'}).length,25);
 });
 
 test('grid interpolation follows real focused Reimu controls at exactly two units per frame',()=>{

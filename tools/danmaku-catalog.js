@@ -29,7 +29,7 @@ export function attackCatalog(){
   for(const group of NONSPELL_PATTERNS)for(const pattern of group)
     scripted(`s${pattern.stageId}-non${pad(pattern.group+1)}-${pattern.id}`,'nonspell',pattern.stageId,pattern.group,
       STAGES[pattern.stageId-1]?.nonspellNames?.[pattern.group]??pattern.id,NONSPELL_PREVIEW_FRAMES,
-      o=>updateNonspellPattern({...o,stageId:pattern.stageId,phaseIndex:pattern.group*2}));
+      o=>updateNonspellPattern({...o,stageId:pattern.stageId,group:pattern.group}));
   for(const pattern of MIDBOSS_NONSPELL_PATTERNS)if(pattern)
     scripted(`s${pattern.stageId}-midnon-${pattern.id}`,'midboss',pattern.stageId,-1,pattern.id,NONSPELL_PREVIEW_FRAMES,
       o=>updateMidbossNonspellPattern({...o,stageId:pattern.stageId}));

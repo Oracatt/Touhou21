@@ -45,16 +45,6 @@ function sealSequence(k){
   if(c===120)k.wander(40);
 }
 
-/** Nonspell 2: paper is classified into two streams that curl apart. */
-function pageClassification(k){
-  if(k.every(k.pick(5,4,3,3)))for(const side of[-1,1]){
-    const a=DOWN-side*(.35+.2*Math.sin(k.t*.04));
-    k.fan(k.ox+side*20,k.oy,k.pick(1,2,2,2),2.4,a,.2,T.AMULET,side<0?C.GREEN:C.RED,[k.curve(-side*.0075,80)],{silent:side>0||k.t%9!==0});
-  }
-  if(k.every(100,50))k.aimed(k.ox,k.oy,k.pick(1,3,3,5),2.8,.2,T.BIG,C8.RED);
-  if(k.every(250,210))k.wander(36);
-}
-
 /** Nonspell 3: index lines leave the Boss diagonally in alternating
  * directions, crossing into a lattice of entries. */
 function indexOfNames(k){
@@ -171,7 +161,7 @@ originalsReturned.home={x:0,y:104};
 
 export const FUSAE=Object.freeze({
   id:'fusae',
-  nonspells:[sealSequence,pageClassification,indexOfNames,closedStacks],
+  nonspells:[sealSequence,indexOfNames,closedStacks],
   spells:[archiveRefusesOriginals,misfiledPages,fivefoldSeal,blankSignature],
   midboss:{nonspell:shelfSorting,spells:[nonTransferableCard]},
   extraMidboss:[borrowOnlyCatalogue,echoMayNotLeave,originalsReturned],

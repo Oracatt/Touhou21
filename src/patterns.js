@@ -39,9 +39,10 @@ export function updateMidbossSpellPattern({game,boss,frame,difficulty=4,stageId=
   if(!pattern)throw new RangeError(`Undefined midboss card ${stageId}/${spellIndex}`);
   driveAttack(pattern.update,{game,boss,frame,difficulty,state,rng,start:ATTACK_START.midbossSpell});return pattern.id;
 }
-/** phaseIndex is the director's interleaved index: nonspell groups are 0,2,4... */
-export function updateNonspellPattern({game,boss,frame,difficulty=1,stageId=1,phaseIndex=0,state={},rng=null}){
-  requireFrame(frame);const group=Math.floor(phaseIndex/2),pattern=NONSPELL_PATTERNS[stageId-1]?.[group];
+/** `group` is the stage's unnamed-attack index (see `phaseLayout`). For callers that
+ * still pass the old card-interleaved `phaseIndex`, groups are 0,2,4... */
+export function updateNonspellPattern({game,boss,frame,difficulty=1,stageId=1,group=null,phaseIndex=0,state={},rng=null}){
+  requireFrame(frame);group??=Math.floor(phaseIndex/2);const pattern=NONSPELL_PATTERNS[stageId-1]?.[group];
   if(!pattern)throw new RangeError(`Undefined nonspell ${stageId}/${group}`);
   driveAttack(pattern.update,{game,boss,frame,difficulty,state,rng,start:ATTACK_START.nonspell});return pattern.id;
 }

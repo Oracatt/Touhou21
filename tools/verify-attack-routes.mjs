@@ -15,7 +15,7 @@ export function attackRouteCases({kind='spell'}={}){
   assert.ok(['spell','nonspell','all'].includes(kind));const cases=[];
   for(const stage of STAGES){const difficulty=stage.id===7?4:1;
     if(kind!=='nonspell')stage.spells.forEach((card,spellIndex)=>cases.push({id:card.id,name:card.name,kind:'spell',stageId:stage.id,spellIndex,difficulty,frames:Math.round(card.seconds*60)}));
-    if(kind!=='spell')stage.spells.forEach((_,group)=>cases.push({id:`nonspell-${stage.id}-${group}`,kind:'nonspell',stageId:stage.id,phaseIndex:group*2,difficulty,frames:(32+Math.min(18,stage.id*3))*60}));
+    if(kind!=='spell')stage.nonspellNames.forEach((_,group)=>cases.push({id:`nonspell-${stage.id}-${group}`,kind:'nonspell',stageId:stage.id,group,difficulty,frames:(32+Math.min(18,stage.id*3))*60}));
   }
   if(kind!=='nonspell')for(const midboss of MIDBOSSES)for(const [spellIndex,card]of(midboss.spells??[]).entries())
     cases.push({id:card.id,name:card.name,kind:'midboss',stageId:midboss.stageId,spellIndex,difficulty:midboss.stageId===7?4:1,frames:Math.round(card.seconds*60)});

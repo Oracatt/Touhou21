@@ -21,19 +21,22 @@
  *         :679/713 = 19500/3500; :774/808 = 22000/6000.
  * Paths above are scripts/recovered/ecl/*.ecl.txt in the read-only reference.
  *
- * This original game has more unnamed groups in stages 2, 4, 5 and Extra.
- * Those additional groups repeat their stage's final reference budget;
- * they are authored extensions, not claims of additional original ECL phases.
+ * Not every card is preceded by an unnamed group: a stage's `phaseLayout`
+ * (content.js) lists its phases in order, and a card that directly follows
+ * another card has no group of its own. Rows below are indexed by unnamed
+ * group, not by card. Groups beyond the reference counts (stage 6's fourth
+ * and Extra's later ones) repeat the stage's final reference budget; they are
+ * authored extensions, not claims of additional original ECL phases.
  * Spell HP and phase timing are deliberately configured by the director.
  */
 export const BOSS_NONSPELL_HEALTH=Object.freeze([
   Object.freeze([12000,12000]),
-  Object.freeze([15000,15000,15000]),
+  Object.freeze([15000,15000]),
   Object.freeze([20000,20000,19800]),
-  Object.freeze([20000,20000,20300,20300]),
-  Object.freeze([16000,16000,16000,16000]),
-  Object.freeze([18000,18000,16000,16000,13000]),
-  Object.freeze([18000,18000,18000,18000,16000,16000,16000,16000,16000,16000]),
+  Object.freeze([20000,20000,20300]),
+  Object.freeze([16000,16000,16000]),
+  Object.freeze([18000,18000,16000,16000]),
+  Object.freeze([18000,18000,18000,18000,16000,16000,16000,16000]),
 ]);
 
 /** Midboss ordinary attacks. Stage 1 keeps the direct st01mbs:24 budget of
@@ -50,13 +53,13 @@ export function midbossSpellHealth(stageId,spellIndex=0){
   return stageId===7?2300+spellIndex*180:1500+stageId*150;
 }
 
-export function bossNonspellHealth(stageId,spellIndex){
+export function bossNonspellHealth(stageId,group){
   if(!Number.isInteger(stageId)||stageId<1||stageId>BOSS_NONSPELL_HEALTH.length)
     throw new RangeError('Unknown Boss stage');
   const groups=BOSS_NONSPELL_HEALTH[stageId-1];
-  if(!Number.isInteger(spellIndex)||spellIndex<0||spellIndex>=groups.length)
+  if(!Number.isInteger(group)||group<0||group>=groups.length)
     throw new RangeError('Unknown unnamed attack group');
-  return groups[spellIndex];
+  return groups[group];
 }
 
 export function midbossNormalHealth(stageId){

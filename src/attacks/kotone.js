@@ -49,16 +49,6 @@ function mintVoiceprint(k){
   if(k.every(84,40))k.ringGap(k.ox,k.oy,k.pick(14,18,22,26),1.7,T.BALL,C.YELLOW);
 }
 
-/** Nonspell 3: bells facing each other across the garden fire streams that
- * cross in the middle; the Boss answers with gapped rings. */
-function bellsFacing(k){
-  if(k.every(k.pick(6,5,4,3)))for(const side of[-1,1]){
-    const x=side*176,y=86+18*Math.sin(k.t*.03+side),toward=side<0?0:Math.PI;
-    k.fan(x,y,k.pick(1,2,2,3),2.3,toward-side*(.55+.25*Math.sin(k.t*.05)),.22,T.BALL,side<0?C.YELLOW:C.MINT,null,{silent:side>0||k.t%10!==0,safe:2304});
-  }
-  if(k.every(96,48))k.ringGap(k.ox,k.oy,k.pick(14,18,24,28),2.2,T.AMULET,C.WHITE);
-}
-
 /** Nonspell 4: silent answers — a ring stops in mid-air; its bullets answer
  * one after another around the circle, so the restart sweeps like a hand. */
 function silentAnswer(k){
@@ -176,7 +166,7 @@ writeBackEveryName.home={x:0,y:104};
 
 export const KOTONE=Object.freeze({
   id:'kotone',
-  nonspells:[firstCalling,mintVoiceprint,bellsFacing,silentAnswer,beforeTheLastPage],
+  nonspells:[firstCalling,mintVoiceprint,silentAnswer,beforeTheLastPage],
   spells:[paperGodUncalled,thousandHouseholdsAnswer,livingAndOldNames,gardenBeyondForgetting,writeBackEveryName],
   midboss:{nonspell:trialCall,spells:[writeANameHere]},
 });

@@ -51,15 +51,6 @@ function memoriesBehindThreads(k){
   if(k.every(300,250))k.wander(36);
 }
 
-/** Nonspell 3: two shuttles sweep needles to and fro like a loom. */
-function shuttleToAndFro(k){
-  if(k.every(k.pick(4,3,3,2)))for(const side of[-1,1]){
-    const a=DOWN+side*1.1*Math.sin(k.t*.047);
-    k.fan(k.ox+side*30,k.oy,k.pick(1,1,2,2),2.6,a,.12,T.NEEDLE,side<0?C.MAGENTA:C.PINK,null,{silent:side>0||k.t%8!==0});
-  }
-  if(k.every(110,55))k.ring(k.ox,k.oy,k.pick(10,14,18,22),1.6,k.t*.1,T.BALL,C.PALE);
-}
-
 /** Nonspell 4: knots — small rings loop tightly around three points, then
  * untie and fly off in rotated directions. */
 function untiedKnots(k){
@@ -150,7 +141,7 @@ unsignedReunionRobe.home={x:0,y:118};
 
 export const SHINO=Object.freeze({
   id:'shino',
-  nonspells:[warpAndWeft,memoriesBehindThreads,shuttleToAndFro,untiedKnots],
+  nonspells:[warpAndWeft,memoriesBehindThreads,untiedKnots],
   spells:[acquaintanceWarpWeft,crossedStitchesOfDays,eightfoldWebGarden,unsignedReunionRobe],
   midboss:{nonspell:spinningShuttle,spells:[stitchTheShadow]},
 });

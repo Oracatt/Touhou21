@@ -186,6 +186,30 @@ test('nonspell defeat immediately enters its spell on the remaining shared HP se
   director.destroy();f.dispose();
 });
 
+test('a card may follow another card directly: stage 2 is two ordinary attacks and three cards',()=>{
+  const stage=STAGES[1];assert.equal(stage.phaseLayout,'NSNSS');
+  const f=fixture();const director=new CampaignDirector({stages:STAGES,stageId:2,callbacks:{dialogue:(lines,{onComplete})=>onComplete()}}).attach(f.game);
+  director.midbossDone=true;director.stageFrame=stage.roadFrames;for(let i=0;i<105&&director.state!=='combat';i++)step(f.game,director);
+  assert.equal(director.stageId,2);
+  assert.deepEqual(director.phases.map(phase=>phase.spell?'S':'N'),[...stage.phaseLayout]);
+  assert.deepEqual(director.phases.filter(phase=>!phase.spell).map(phase=>phase.group),[0,1]);
+  assert.deepEqual(director.phases.filter(phase=>phase.spell).map(phase=>phase.spec.id),stage.spells.map(spell=>spell.id));
+  const strike=()=>director.boss.damage(100000,{type:'test-strike'},f.game.context);
+  const wait=()=>{for(let i=0;i<60;i++)step(f.game,director);};
+  strike();strike();wait();                         // ordinary attack -> card -> (hand-over) -> second ordinary attack
+  assert.equal(director.phaseIndex,2);assert.equal(director.state,'combat');
+  strike();assert.equal(director.phaseIndex,3);assert.ok(f.game.spell.active);
+  strike();                                         // card -> card: a wait, then the next card with a ring of its own
+  assert.equal(director.state,'phase-wait');
+  assert.equal(director.boss.health.scaledHp,director.phases[4].hp*7,'the waiting Boss already carries card health');
+  assert.equal(f.game.bossHudState.healthBars[0].maximum,director.phases[4].hp,'a card after a card has its own ring');
+  wait();
+  assert.equal(director.phaseIndex,4);assert.equal(director.state,'combat');assert.ok(f.game.spell.active);
+  assert.equal(director.boss.hp,director.phases[4].hp);
+  assert.equal(director.phase.spec.id,stage.spells[2].id);
+  director.destroy();f.dispose();
+});
+
 test('final card uses the original 60-frame clearing wave and burst before dialogue',()=>{
   const f=fixture();const seen=[];
   const director=new CampaignDirector({stages:STAGES,mode:'spell-practice',stageId:1,spellId:STAGES[0].spells[0].id,

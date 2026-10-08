@@ -18,7 +18,7 @@ test('each stage runs its whole road, a midboss of the right shape, the Boss and
     assert.ok(count(r.events,'road-wave')>=24,'a full road score');
     assert.equal(count(r.events,'midboss-phase-start'),phases,`stage ${stage.id} midboss phases`);
     assert.equal(count(r.events,'midboss-escaped'),stage.extra?0:1,'recurring Bosses fly away; the Extra midboss is defeated');
-    assert.equal(count(r.events,'phase-start'),stage.spells.length*2,'every ordinary attack and card');
+    assert.equal(count(r.events,'phase-start'),stage.phaseLayout.length,'every ordinary attack and card');
     assert.equal(r.director.captures.length,stage.spells.length+midboss.spells.length,'every card settles once');
     assert.deepEqual(r.director.captures.map(c=>c.id),[...midboss.spells,...stage.spells].map(c=>c.code));
     assert.ok(r.log.includes(`clear:${stage.id}`));

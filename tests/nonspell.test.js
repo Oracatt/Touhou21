@@ -10,10 +10,10 @@ const assets=fs.existsSync('packages/thlib/assets/touhou-common/manifest.json');
 const needsAssets=assets?{}:{skip:'requires the private touhou-common resource pack (tools/setup-local.ps1)'};
 const makeResources=()=>createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11});
 
-test('ordinary attacks are authored per Boss: one function per group, paired with each card',()=>{
+test('ordinary attacks are authored per Boss: one function per unnamed group of the phase layout',()=>{
   for(const stage of STAGES){
     const groups=NONSPELL_PATTERNS[stage.id-1];
-    assert.equal(groups.length,stage.spells.length);assert.ok(stage.nonspellNames.length>=groups.length,'every group has a name');
+    assert.equal(groups.length,stage.nonspellNames.length,'every group has a name');
     assert.equal(new Set(groups.map(g=>g.update)).size,groups.length,'groups are distinct attacks, not one escalating loop');
   }
   assert.deepEqual(MIDBOSS_NONSPELL_PATTERNS.map(p=>!!p),[true,true,true,true,true,true,false]);
@@ -23,7 +23,7 @@ test('ordinary attacks are authored per Boss: one function per group, paired wit
 test('every Boss and midboss ordinary attack runs on the real public game without Miss under invulnerability',needsAssets,t=>{
   const resources=makeResources();
   try{
-    const cases=[...NONSPELL_PATTERNS.flat().map(p=>({...p,run:o=>updateNonspellPattern({...o,phaseIndex:p.group*2})})),
+    const cases=[...NONSPELL_PATTERNS.flat().map(p=>({...p,run:o=>updateNonspellPattern({...o,group:p.group})})),
       ...MIDBOSS_NONSPELL_PATTERNS.filter(Boolean).map(p=>({...p,run:o=>updateMidbossNonspellPattern(o)}))];
     for(const c of cases)for(const difficulty of c.stageId===7?[4]:[1,3]){
       const game=new TouhouGame({banks:resources.banks,font:resources.font,sht:resources.shots[0],styles:resources.styles,seed:73,difficulty});

@@ -46,19 +46,6 @@ function foldedCorners(k){
   if(k.every(160,120))k.wander(42);
 }
 
-/** Nonspell 2: sheets of slanted rain change direction with the wind,
- * while stacked aimed drops come from the Boss. */
-function slantedPostRoad(k){
-  const wind=(k.t/240|0)%2?1:-1,lean=-wind*.42;
-  if(k.every(k.pick(4,3,3,2)))for(let i=k.pick(1,2,2,2);i>0;i--){
-    const x=lerp(-200,200,k.unit())+wind*90;
-    k.shot(x,-6,DOWN+lean,lerp(2.5,3,k.unit()),T.RICE,C.SKY,null,{safe:2304,silent:true});
-  }
-  if(k.rank>=2&&k.every(9))k.shot(wind*-190,lerp(10,160,k.unit()),DOWN+lean,2.5,T.RICE,C.CYAN,null,{safe:2304,silent:true});
-  if(k.every(80,20))k.aimed(k.ox,k.oy,k.pick(1,3,3,5),3.2,.22,T.RICE,C.AZURE,null,{rows:3,speedStep:2.2});
-  if(k.every(240,200))k.wander(40);
-}
-
 /** Nonspell 3: greetings scatter as fountains of letters that fall back
  * under gravity; the second fountain fills the first one's gaps. */
 function scatteredGreetings(k){
@@ -125,7 +112,7 @@ undeliveredLetters.home={x:0,y:104};
 
 export const SHIZURI=Object.freeze({
   id:'shizuri',
-  nonspells:[foldedCorners,slantedPostRoad,scatteredGreetings],
+  nonspells:[foldedCorners,scatteredGreetings],
   spells:[blankAddresseeDrizzle,washedGreeting,undeliveredLetters],
   midboss:{nonspell:postmanBeforeRain,spells:[sealedUntilRainStops]},
 });

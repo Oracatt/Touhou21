@@ -170,12 +170,15 @@ export class CampaignDirector{
         hp:midboss?midbossSpellHealth(stage.id,spellIndex):1800+stage.id*220+spellIndex*110,
         code:spec.code??(midboss?32+spellIndex:1+STAGE_PATTERN_OFFSETS[stage.id-1]+spellIndex),duration:Math.round(spec.seconds*60)}];
     }
-    const phases=[];
-    stage.spells.forEach((spec,spellIndex)=>{
-      phases.push({spell:false,hp:bossNonspellHealth(stage.id,spellIndex),duration:(32+Math.min(18,stage.id*3))*60,spellIndex});
-      phases.push({spell:true,spec,spellIndex,code:spec.code??1+STAGE_PATTERN_OFFSETS[stage.id-1]+spellIndex,
-        hp:1800+stage.id*220+spellIndex*110,duration:Math.round(spec.seconds*60)});
-    });return phases;
+    // `phaseLayout` lists the Boss fight in order: N is an unnamed attack and
+    // S the next card. A card does not need an unnamed attack before it.
+    const phases=[];let group=0,spellIndex=0;
+    for(const kind of stage.phaseLayout){
+      if(kind==='N')phases.push({spell:false,hp:bossNonspellHealth(stage.id,group),duration:(32+Math.min(18,stage.id*3))*60,group,spellIndex:group++});
+      else{const spec=stage.spells[spellIndex];
+        phases.push({spell:true,spec,spellIndex,code:spec.code??1+STAGE_PATTERN_OFFSETS[stage.id-1]+spellIndex,
+          hp:1800+stage.id*220+spellIndex*110,duration:Math.round(spec.seconds*60)});spellIndex++;}
+    }return phases;
   }
   /** Spell practice has no pre-Boss dialogue: the Boss and its theme arrive together. */
   _spawnBoss(game,{practice=false}={}){this._createBoss(game,{practice});this.callbacks.music?.(this.stage.bgmBoss);}
@@ -263,7 +266,7 @@ export class CampaignDirector{
     if(!phase.spell)this._beginPhase(game,this.phaseIndex+1);
     else{
       this.state='phase-wait';this.waitFrames=60;this.phaseFrame=0;
-      const next=this.phases[this.phaseIndex+1];this.boss.prepareNormalHealth(next.hp);this.boss.maximumHp=next.hp;
+      const next=this.phases[this.phaseIndex+1];next.spell?this.boss.prepareSpellHealth(next.hp):this.boss.prepareNormalHealth(next.hp);this.boss.maximumHp=next.hp;
       game.setBossHud({...this.phasePlan.hudState(this.phaseIndex+1),dialogue:false,
         healthBars:this.phasePlan.hudState(this.phaseIndex+1).healthBars.map(bar=>({...bar,animateFill:false}))});
     }
@@ -350,7 +353,7 @@ export class CampaignDirector{
       if(!phase.spell)game.setBossHud({...hud,remainingFrames:Math.max(0,phase.duration-t)});
       else game.setBossHud(hud);
       if(phase.spell)(phase.midboss?updateMidbossSpellPattern:updateSpellPattern)({game,boss,frame:t,difficulty:this.difficulty,stageId:this.stageId,spellIndex:phase.spellIndex,state:this.patternState,rng:this.rng});
-      else updateNonspellPattern({game,boss,frame:t,difficulty:this.difficulty,stageId:this.stageId,phaseIndex:this.phaseIndex,state:this.patternState,rng:this.rng});
+      else updateNonspellPattern({game,boss,frame:t,difficulty:this.difficulty,stageId:this.stageId,group:phase.group,state:this.patternState,rng:this.rng});
       this.phaseFrame++;
       if(!phase.spell&&this.phaseFrame>=phase.duration)this._finishPhase(game,{timeout:true});
     }

@@ -24,8 +24,8 @@ test('unnamed damage budgets subtract the original shared-ring spell threshold, 
     [[21900,3900],[21900,3900],[20000,4000],[20000,4000],[17000,4000]],
     [[22000,4000],[22000,4000],[22000,4000],[22000,4000],[21000,5000],[21000,5000],[19500,3500],[22000,6000]],
   ];
-  assert.deepEqual(BOSS_NONSPELL_HEALTH.map(row=>row.length),STAGES.map(stage=>stage.spells.length));
-  for(let stage=1;stage<=7;stage++)for(let group=0;group<STAGES[stage-1].spells.length;group++){
+  assert.deepEqual(BOSS_NONSPELL_HEALTH.map(row=>row.length),STAGES.map(stage=>stage.nonspellNames.length));
+  for(let stage=1;stage<=7;stage++)for(let group=0;group<STAGES[stage-1].nonspellNames.length;group++){
     const [total,threshold]=original[stage-1][Math.min(group,original[stage-1].length-1)];
     assert.equal(bossNonspellHealth(stage,group),total-threshold);
   }
