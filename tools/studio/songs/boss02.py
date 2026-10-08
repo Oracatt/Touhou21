@@ -3,6 +3,7 @@
 4-bar intro, then a 32-bar loop: A (violins and piano falling in 16ths, tremolo strings, gallop drums) /
 B (long lines over F#m, xylophone rain) / chorus (trumpet + violins, horn and tutti) / A' again.
 The chorus ends on B minor, back to the first chord of A."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, lead, pick, swell, timp_roll, tpt_hits, trem
 from studio.score import arpeggio, progression, roots, sustained
 
@@ -61,4 +62,5 @@ def build():
     P['drums'] = dr + fill_at(3, 'stop')
     P['timpani'] = timp_roll(19, 'F#2', 'F#2') + timp_roll(35, 'F#2', 'F#2')[:-1] + tpt_hits(4, 'F#2', 112)
     swell(P['violins'], 12, 20, -4, 6)
+    intros.apply(P, 'toccata', INTRO)
     return P, {'celli': {'gain': 2.0}, 'xylo': {'gain': 2.0}}

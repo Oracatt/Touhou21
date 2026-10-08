@@ -30,7 +30,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "停在路口的那盏灯还亮着。钢琴、长笛与弦乐在小调与暖色之间走了一圈，再慢慢绕回开头。",
-      "sha256": "91c5100c9a7f0b8b2eb4b283a4ebe8fcd89940f32794f468f80a9a967c89b81f"
+      "sha256": "14534828163f3934d1799c5a21af1f975d7555612943b4c82ca23153658f8b54"
     },
     {
       "id": "stage01",
@@ -41,7 +41,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "暖黄色的提灯照着夜路，长笛领着轻快的旋律走在前面，小号在副歌里把整条路都点亮。",
-      "sha256": "87fa3eeac9efed20b3edfe059d92686690a0832f68d05d55373008990500759e"
+      "sha256": "0264b6359d35bfc417a45fc3ef825f35baa1d3e96f04abe6cbdf202ca34132a9"
     },
     {
       "id": "boss01",
@@ -63,7 +63,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "雨落在纸伞上，单簧管、马林巴和拨弦把雨点一颗颗数开；副歌里小提琴终于把伞撑高了一点。",
-      "sha256": "a8e839041009327e38ed834a35b96cabce4fbc6e8055516981a9ad8b1983e438"
+      "sha256": "40e39d63893a90aff0049db3da10e46026208c564c000811c4e860c8ca93bc2c"
     },
     {
       "id": "boss02",
@@ -74,7 +74,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "雨线织成一张网，钢琴与小提琴在十六分音符里追逐，颤弓弦乐把天色压得很低。",
-      "sha256": "8b3cbaa2e7f1533d024355139433915fa224902997c915b05fe23f2eaffde4eb"
+      "sha256": "2693e3c567f4bf274cddc24a1d8cbd90f26330dac6262a117bf12d27d0a41d21"
     },
     {
       "id": "stage03",
@@ -85,7 +85,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "黄昏的渡口，双簧管和马林巴一起摇着船。副歌里小号与小提琴把对岸的灯火拉近。",
-      "sha256": "1c9709d53c07ee3880127b45e4ae2abb64791d9d4076858987b8b37aa177c147"
+      "sha256": "2279efb946f368e0ee8a3e17ced53cf0ff3843aadba459621267ff588fa34a22"
     },
     {
       "id": "boss03",
@@ -96,7 +96,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "渡船的主人只认船钱。铜管在摇摆的节奏里报价，长号和圆号在副歌里把价码压到最后一文。",
-      "sha256": "5747c2921a5157094a1c13004429443c0c1cb2fcfc8943590a8a14c2aa39faaf"
+      "sha256": "d86449facbd91850bbf5847725975bf94659123281db35b364b31843d7104c50"
     },
     {
       "id": "stage04",
@@ -107,7 +107,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "暗处有看不见的丝线。竖琴与拨弦走得很轻，双簧管在线上走钢丝，副歌里终于见到了光。",
-      "sha256": "7db610c823fa31ba0d8edca02d1850653dfff2bb0791cd1981ac7d1e8589d98b"
+      "sha256": "fc95e50d4f7133835d049e8a4f77d857594addca596274c8b66a814aa63e9d5a"
     },
     {
       "id": "boss04",
@@ -118,7 +118,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "蛛丝一圈圈收紧。大提琴不停重复十六分音符，小提琴在上面织出主旋律，定音鼓与铜锣压在副歌之前。",
-      "sha256": "60f08e6757a9bf42442102b8ca850f6eacf0c6abac6150aa39a02629448b61dd"
+      "sha256": "2eff0e3e59bf3c03bc6aaa2709ea48cdbf1c9aa4670ed5dae4987dc8accde475"
     },
     {
       "id": "stage05",
@@ -129,7 +129,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "书的最后一页还留着空白。长笛、短笛与木琴像翻页一样轻快，副歌里整个乐队一起翻过去。",
-      "sha256": "4ecaad92d0abfe5881fd8e0764dd8cd442a90feb6cc6d2301c1a5d3b99974e1b"
+      "sha256": "3300f3a2bc9bc51716c3a093e0fe6c6ce46e1cfd5ae31299e6dbda87eb471b4b"
     },
     {
       "id": "boss05",
@@ -140,7 +140,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "校对者在影子里划掉一行又一行。小号用三三二的重音写下句子，长号与圆号在副歌里回应。",
-      "sha256": "a640b13c8e377ab61877c3644a453df6c15277f211b501fc0f12aa01eb7c7c5e"
+      "sha256": "968cb1b546c850422ebf391bb65aa661827429ecbbbf8050996cf4a8a9471300"
     },
     {
       "id": "stage06",
@@ -151,7 +151,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "还没有被写下的清晨。长笛与双簧管在钢琴与竖琴上缓缓升起，小号只在副歌里放亮。",
-      "sha256": "04819011a4c2b69d0f6186aee665fb27482ec8fb3187cb656664eaed46c759b8"
+      "sha256": "b8b153ac75111a7a1b844fb3fe7be16534b44746f2e2457c77de8da5dad0e674"
     },
     {
       "id": "boss06",
@@ -162,7 +162,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "庄重的开场白，需要足够坦然的人来说。小号与圆号立起仪式的架子，铜锣和定音鼓在副歌之前落下。",
-      "sha256": "26d0f5441993e9b115d19a6e0fc01e9abaa0033ebe2eb610d31e3d0f67cd2bf7"
+      "sha256": "cb4dfd3680c8a49eacd4c29630cf2f7f1607d62420b9475bc335923022bd52ec"
     },
     {
       "id": "extra",
@@ -173,7 +173,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "把写完的东西再写一遍。小号的短句咬着合成器的拨奏，副歌里小提琴与合成主音一起把句子改成新的。",
-      "sha256": "868e26f4e2737a7ea35a209ec922c9c487bfab7af82a62e2b5a60836892f6107"
+      "sha256": "86ed310d442b8d5627d19686f5d21a934be4bc2254e52afacda3f744dcfa5d84"
     },
     {
       "id": "bossExtra",
@@ -184,7 +184,7 @@
       "introBars": 4,
       "loopBars": 32,
       "description": "一个不肯停下的结尾。八分音符一路往前冲，B 大调的属和弦把每一段都推回开头，没有落脚的地方。",
-      "sha256": "015b08987be4bbea8e9464d22bf7039c196cc8ddb89f44b780a5cc7a04d9a927"
+      "sha256": "087d082e4e831c3baf7e743d0d7b91f64e27d801eaf59f55f3bdc4479106268a"
     }
   ]
 }

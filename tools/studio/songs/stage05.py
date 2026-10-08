@@ -2,6 +2,7 @@
 
 4-bar intro of glock and harp, then a 32-bar loop: A (flute over marimba, plucked strings) / B (oboe, violins) /
 chorus (trumpet + violins, piccolo, xylophone) / A' (piccolo and oboe). The A chord closes the loop into D."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, lead, pick, pizz, swell
 from studio.score import arpeggio, progression, roots, sustained
 
@@ -58,4 +59,5 @@ def build():
                  + bass_part(pick(CHORDS, 20, 28), 'drive', 98, context=CHORDS) + bass_part(pick(CHORDS, 28, 36), 'drive', 94, context=CHORDS))
     P['drums'] = drum_part([(4, 12, 'light'), (12, 20, 'half'), (20, 28, 'dance'), (28, 36, 'drive2')]) + fill_at(3, 'stop')
     swell(P['violins'], 12, 20, -2, 8)
+    intros.apply(P, 'lyric_solo', INTRO, lead='oboe')
     return P, {'harp': {'gain': 8.0}, 'marimba': {'gain': 10.0}}

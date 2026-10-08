@@ -203,7 +203,7 @@ def timpani():
         rr = int(f.stem.split('_rr')[1][0])
         lo, hi = ranges.get(layer, (1, 127))
         regions.append(Region(path=str(f.resolve()), lokey=28, hikey=55, center=center, lovel=lo, hivel=hi, seq=rr, seq_len=2))
-    return Voice({'n': Instrument('timpani', with_onsets(regions, TUNE), one_shot=True, veltrack=40, pre_cap=0.008)},
+    return Voice({'n': Instrument('timpani', with_onsets(regions, TUNE), one_shot=True, veltrack=40, max_len=4.0, pre_cap=0.008)},
                  lambda n, s: 'n')
 
 

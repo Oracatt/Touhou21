@@ -2,6 +2,7 @@
 
 4-bar intro, then a 32-bar loop: A (flute) / B (strings) / chorus (trumpet + full band) / A' (strings + oboe),
 the last bar of A' leans on the dominant so the loop returns to the first G chord."""
+from studio import intros
 from studio.layers import (bass_part, crash_at, double, drum_part, fill_at, lead, pick, swell, within)
 from studio.score import arpeggio, progression, roots, sustained
 
@@ -62,5 +63,6 @@ def build():
     dr += fill_at(3, 'stop')
     P['drums'] = dr
     swell(P['violins'], 28, 36, 0, 8)
+    intros.apply(P, 'pizz_walk', INTRO)
     return P, {'harp': {'gain': 8.0}, 'marimba': {'gain': 10.0}, 'horn': {'gain': 3.0}}
 

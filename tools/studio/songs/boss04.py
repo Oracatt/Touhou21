@@ -3,6 +3,7 @@
 4-bar intro (flute over tremolo), then a 32-bar loop: A (violins over a cello ostinato, harp, gallop) /
 B (oboe, flute and strings, sweeter) / chorus (violins + trumpet, piccolo octave, horn, timpani, gong) / A'.
 Every section ends on C# major so the loop pulls into F# minor."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, fit, lead, pick, swell, timp_roll, tpt_hits, trem
 from studio.score import arpeggio, bass_line, progression, roots, sustained
 from studio.core import Note
@@ -63,4 +64,5 @@ def build():
     P['timpani'] = timp_roll(19, 'C#2', 'F#2') + timp_roll(35, 'C#2', 'F#2')[:-1] + tpt_hits(4, 'F#2', 112)
     P['gong'] = [Note(20 * 4, 4, 60, 100, '', {})]
     swell(P['violins'], 12, 20, -4, 6)
+    intros.apply(P, 'trem_strings', INTRO)
     return P, {'harp': {'gain': 8.0}}

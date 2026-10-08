@@ -2,6 +2,7 @@
 
 4-bar intro of piano and glock, then a 32-bar loop: A (flute and oboe over piano, harp) / B (violins, horns) /
 chorus (trumpet + violins, horn answer, full band) / A' (flute, violins). B-flat major closes the loop into E-flat."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, lead, pick, swell
 from studio.score import arpeggio, progression, roots, sustained
 
@@ -57,4 +58,5 @@ def build():
                  + bass_part(pick(CHORDS, 20, 28), 'drive', 96, context=CHORDS) + bass_part(pick(CHORDS, 28, 36), 'sync', 90, context=CHORDS))
     P['drums'] = drum_part([(4, 12, 'lighter'), (12, 20, 'light'), (20, 28, 'half'), (28, 36, 'light')]) + fill_at(3, 'stop')
     swell(P['violins'], 12, 20, -2, 8)
+    intros.apply(P, 'strings_swell', INTRO)
     return P, {'harp': {'gain': 8.0}}

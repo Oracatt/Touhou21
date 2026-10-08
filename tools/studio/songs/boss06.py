@@ -3,6 +3,7 @@
 4-bar intro, then a 32-bar loop: A (a ceremonial call, trumpet and horns over strings and timpani) /
 B (violins and flute, long arc) / chorus (trumpet + violins, trombone and horn answer, gong, tutti) / A'.
 C major closes every section and pulls the loop back into F minor."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, fit, lead, pick, swell, timp_roll, tpt_hits, trem
 from studio.score import arpeggio, progression, roots, stabs, sustained
 from studio.core import Note
@@ -66,4 +67,5 @@ def build():
     P['timpani'] = timp_roll(19, 'C2', 'F2') + timp_roll(35, 'C2', 'F2')[:-1] + tpt_hits(4, 'F2', 114)
     P['gong'] = [Note(4 * 4, 4, 60, 96, '', {}), Note(20 * 4, 4, 60, 104, '', {})]
     swell(P['violins'], 12, 20, -4, 6)
+    intros.apply(P, 'snare_build', INTRO)
     return P, {'trombone': {'gain': 2.0}, 'contrabass': {'gain': 2.0}}

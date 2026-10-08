@@ -3,6 +3,7 @@
 4-bar intro, then a 32-bar loop: A (a brass riff, trumpet over horns and trombone, shuffling kit) /
 B (violins and flute, horn pedal) / chorus (trumpet + violins, trombone answer, timpani and gong) / A'.
 G major closes both A' and the chorus so the loop slams back into C minor."""
+from studio import intros
 from studio.layers import bass_part, crash_at, double, drum_part, fill_at, fit, lead, pick, swell, timp_roll, tpt_hits
 from studio.score import arpeggio, progression, roots, stabs, sustained
 from studio.core import Note, midi
@@ -64,4 +65,5 @@ def build():
     P['timpani'] = timp_roll(19, 'G2', 'C2') + timp_roll(35, 'G2', 'C2')[:-1] + tpt_hits(4, 'C2', 112)
     P['gong'] = [Note(20 * 4, 4, 60, 96, '', {})]
     swell(P['violins'], 12, 20, -4, 6)
+    intros.apply(P, 'brass_riff', INTRO)
     return P, {'trombone': {'gain': 2.0}, 'contrabass': {'gain': 2.0}}

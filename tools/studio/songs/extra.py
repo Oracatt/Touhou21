@@ -2,6 +2,7 @@
 
 4-bar intro, then a 32-bar loop: A (trumpet in 3+3+2 over plucked synth and piano) / B (violins, flute, dark pad) /
 chorus (violins + synth lead, trumpet, tutti) / A' (oboe, trumpet). G# major closes the loop into C# minor."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, lead, pick, swell, timp_roll, tpt_hits, trem
 from studio.score import arpeggio, progression, roots, stabs, sustained
 from studio.core import Note
@@ -60,4 +61,5 @@ def build():
     P['drums'] = drum_part([(4, 12, 'double'), (12, 20, 'half'), (20, 28, 'dance'), (28, 36, 'double')]) + fill_at(3, 'stop')
     P['timpani'] = timp_roll(19, 'G#1', 'C#2') + timp_roll(35, 'G#1', 'C#2')[:-1] + tpt_hits(4, 'C#2', 110)
     swell(P['violins'], 12, 20, -4, 6)
+    intros.apply(P, 'groove', INTRO)
     return P, {'pluck': {'gain': -12.0}}

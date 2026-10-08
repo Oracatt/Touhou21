@@ -2,6 +2,7 @@
 
 4-bar intro of harp and tremolo, then a 32-bar loop: A (oboe over harp runs, pizzicato) / B (violins and clarinet) /
 chorus (trumpet + violins, bassoon answer) / A' (oboe and flute). D major closes the loop back into G minor."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, lead, pick, pizz, swell, trem
 from studio.score import arpeggio, progression, roots, sustained
 
@@ -60,4 +61,5 @@ def build():
                  + bass_part(pick(CHORDS, 2, 4), 'whole', 80, context=CHORDS))
     P['drums'] = drum_part([(4, 12, 'gallop'), (12, 20, 'half'), (20, 28, 'rock'), (28, 36, 'drive')]) + fill_at(3, 'stop')
     swell(P['violins'], 12, 20, -4, 6)
+    intros.apply(P, 'pizz_ostinato', INTRO)
     return P, {'harp': {'gain': 8.0}}

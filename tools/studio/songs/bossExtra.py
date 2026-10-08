@@ -3,6 +3,7 @@
 4-bar intro, then a 32-bar loop: A (relentless eighths, violins and trumpet over gallop and piano) /
 B (oboe, flute, strings) / chorus (trumpet + violins + synth lead, trombone and horn answer, gong) / A'.
 B major closes every section so the loop never settles."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, fit, lead, pick, swell, timp_roll, tpt_hits, trem
 from studio.score import arpeggio, progression, roots, stabs, sustained
 from studio.core import Note
@@ -66,4 +67,5 @@ def build():
     P['timpani'] = timp_roll(19, 'B1', 'E2') + timp_roll(35, 'B1', 'E2')[:-1] + tpt_hits(4, 'E2', 114)
     P['gong'] = [Note(20 * 4, 4, 60, 104, '', {})]
     swell(P['violins'], 12, 20, -4, 6)
+    intros.apply(P, 'gong_dark', INTRO)
     return P, {'trombone': {'gain': 2.0}}

@@ -3,6 +3,7 @@
 4-bar intro of falling piano and glock notes, then a 32-bar loop: A (clarinet over pizzicato) /
 B (oboe, strings) / chorus (violins + flute, full band) / A' (clarinet + flute). B7 closes A'
 so the loop falls back onto E minor."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, lead, pick, pizz, swell
 from studio.score import arpeggio, progression, roots, sustained
 
@@ -60,4 +61,5 @@ def build():
                  + bass_part(pick(CHORDS, 20, 28), 'drive', 98, context=CHORDS) + bass_part(pick(CHORDS, 28, 36), 'sync', 92, context=CHORDS))
     P['drums'] = drum_part([(4, 12, 'light'), (12, 20, 'lighter'), (20, 28, 'rock'), (28, 36, 'drive')]) + fill_at(3, 'stop')
     swell(P['violins'], 12, 20, 0, 10)
+    intros.apply(P, 'rain', INTRO)
     return P, {'harp': {'gain': 8.0}, 'marimba': {'gain': 10.0}}

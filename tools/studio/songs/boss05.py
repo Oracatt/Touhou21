@@ -3,6 +3,7 @@
 4-bar intro, then a 32-bar loop: A (trumpet riff in 3+3+2 over horns and bassoon, tight kit) /
 B (violins and oboe, long lines) / chorus (trumpet + violins, trombone answer, timpani and gong) / A'.
 F major closes every section so the loop returns to B-flat minor."""
+from studio import intros
 from studio.layers import bass_part, double, drum_part, fill_at, fit, lead, pick, swell, timp_roll, tpt_hits, trem
 from studio.score import arpeggio, progression, roots, stabs, sustained
 from studio.core import Note
@@ -66,4 +67,5 @@ def build():
     P['timpani'] = timp_roll(19, 'F2', 'Bb1') + timp_roll(35, 'F2', 'Bb1')[:-1] + tpt_hits(4, 'Bb1', 112)
     P['gong'] = [Note(20 * 4, 4, 60, 100, '', {})]
     swell(P['violins'], 12, 20, -4, 6)
+    intros.apply(P, 'fanfare', INTRO)
     return P, {'trombone': {'gain': 2.0}}
