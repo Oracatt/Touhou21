@@ -7,7 +7,8 @@ import {attackRouteCases} from '../tools/verify-attack-routes.mjs';
 
 test('QA catalog covers every authored card with its own full duration and difficulty',()=>{
   const spells=attackRouteCases();assert.equal(spells.length,39);assert.equal(new Set(spells.map(spec=>spec.id)).size,39);
-  assert.equal(spells.filter(spec=>spec.kind==='midboss').length,3);
+  assert.equal(spells.filter(spec=>spec.kind==='midboss').length,8);
+  assert.deepEqual(spells.filter(spec=>spec.kind==='midboss').map(spec=>spec.stageId),[2,3,4,5,6,7,7,7]);
   for(const spec of spells){assert.ok(spec.frames>0&&spec.frames%4===0);assert.equal(spec.difficulty,spec.stageId===7?4:1);}
   assert.equal(attackRouteCases({kind:'nonspell'}).length,31);
 });

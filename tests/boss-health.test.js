@@ -42,6 +42,8 @@ test('midbosses budget an ordinary attack before their card; stage 1 keeps the o
   assert.throws(()=>midbossSpellHealth(1,0),RangeError,'the stage 1 midboss has no card');
 });
 
+/** A real player keeps shooting from under the Boss as it changes position;
+ * collisions are suspended so only weapon damage decides the duration. */
 test('imported Reimu and Marisa shots consume real normal HP while the first group keeps attacking',needsAssets,t=>{
   const r=resources();try{
     for(const character of[0,1])for(const power of[200,400]){
@@ -50,7 +52,8 @@ test('imported Reimu and Marisa shots consume real normal HP while the first gro
       let frames=0,firstHit=-1,hostile=0;const state={},emit=g.bullets.emit.bind(g.bullets);g.bullets.emit=(p,o)=>{const out=emit(p,o);hostile+=out.length;return out;};
       g.stage=()=>updateNonspellPattern({game:g,boss,frame:frames,difficulty:1,stageId:1,phaseIndex:0,state});
       while(boss.alive&&frames<2400){
-        const before=boss.hp;g.player.invulnerability.set(60);g.update(Keys.SHOOT|Keys.FOCUS);
+        const before=boss.hp,dx=boss.x-g.player.x;g.player.invulnerability.set(60);
+        g.update(Keys.SHOOT|Keys.FOCUS|(dx<-2?Keys.LEFT:dx>2?Keys.RIGHT:0));
         if(firstHit<0&&boss.hp<before)firstHit=frames;frames++;
       }
       assert.equal(boss.alive,false,'only common weapon hits exhaust the normal HP');

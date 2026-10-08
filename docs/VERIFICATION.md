@@ -20,6 +20,14 @@
 
 `reports/danmaku/summary.md`（忽略目录）记录每个攻击各难度的实验峰值与每秒发射数。Normal 符卡峰值 115～474、非符 79～233，旧版分别为 60～111 与 54～94。
 
+**补充：真实公共素材下的复验**
+
+之后 TS-STG 推送了 `4b9fbc5`（把 `touhou-common` 等公共素材纳入 thlib 仓库，thlib `src/` 与原生代码相对 `ad801fa` 没有变化）。在这台机器上把它拉取下来，从同一份原生源码 out-of-tree 编译 `ts-stg.exe`（V8 12.3.219.9），并按安装器的目录结构摆放本地运行副本（`runtime/`、`packages/thlib/` 与 `node_modules` 目录链接，均被 Git 排除）。这不是锁定快照：锁文件仍记录 `ad801fa` 和官方程序哈希，需要另行用 `npm run sync:engine` 更新。
+
+- 完整 `node --test` 128 项：**125 通过**、1 项原有跳过、2 项失败；失败的是依赖锁核对与包含锁核对的边界审计，原因就是上述提交与程序哈希不同。此前因缺素材失败或跳过的真实 `TouhouGame` 测试（battle、midboss-flow、nonspell-hud、spell-audio、nonspell / road / boss-health 素材部分）全部通过。
+- 真实武器：自机跟随 Boss 射击，一面第一段非符（12,000 HP）灵梦 P2 / P4 用 525 / 517 帧、魔理沙 P2 / P4 用 584 / 463 帧击破，Boss 期间发射 260～333 发；无敌只用于排除中弹，伤害全部来自公共武器。
+- 原生无窗口运行：标题画面 300 帧；二面关卡练习 6000 帧（自机无敌、不射击），道中、道中 Boss 非符超时转入符卡「封缄」（编号 35，超时未收取）、飞离后道路继续，平均约 1.1 ms / 帧。游戏窗口已能正常启动。
+
 **未执行，需要在具备私有依赖的环境补做**
 
 - 原生 V8 / QuickJS 完整流程（`npm run verify`）、GPU 截图（`npm run verify:visual`、`verify:background`、Boss HUD）、性能采样（`tools/measure-performance.mjs`）、依赖锁核对（`npm run verify:engine`）。
