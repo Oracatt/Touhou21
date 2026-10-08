@@ -92,7 +92,7 @@ export class CampaignScene extends TouhouGame {
       queue.enqueuePriority(style.drawPriority,draw=>this.text.draw(draw,label,76,18,{size:16,width:455,height:25,color:0xf8e8caff,alpha:(style.color>>>24)/255}));};
     this.director=new CampaignDirector({stages,midbosses:MIDBOSSES,character:config.character,difficulty:config.difficulty,mode:config.mode,stageId:config.stageId,spellId:config.spellId,seed:config.seed,
       callbacks:{
-        music:id=>music.play(id,true),musicFade:()=>music.fadeOut(1.6),stageStart:stage=>this.startStage(stage),
+        music:id=>music.play(id,true),stageStart:stage=>this.startStage(stage),
         bossSpawn:(enemy,metadata)=>this.decorateBoss(enemy,metadata),
         spellStart:(spec,metadata)=>this.spellStart(spec,metadata),
         dialogue:(lines,context)=>this.openDialogue(lines,context),
@@ -155,7 +155,7 @@ export class CampaignScene extends TouhouGame {
   openStageClear(stage,{onComplete}){
     this.stageClear?.destroy();this.context.dialogue=true;
     const bonus=(stage.id*100000+this.player.lives*50000+this.player.power*1000)|0;
-    this.stageClear=new TouhouStageClear({bank:this.banks.front,font:this.font,bonus,initialMask:0,
+    this.stageClear=new TouhouStageClear({bank:null,font:this.font,bonus,initialMask:0,
       rows:[{label:'Stage',value:stage.id},{label:'Clear Bonus',value:bonus}],
       onAward:value=>{this.player.score+=(value/10)|0;},onDismiss:()=>this.music.fadeOut(2),
       drawSummary:(draw)=>{

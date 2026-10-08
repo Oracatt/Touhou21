@@ -117,7 +117,7 @@ test('the player speaks alone, the Boss appears mid-dialogue and its theme start
   for(const character of [0,1]){
     const f=fixture(),log=[];let done,seen;
     const director=new CampaignDirector({stages:STAGES,character,callbacks:{
-      music:id=>log.push(`music:${id}`),musicFade:()=>log.push('fade'),bossSpawn:()=>log.push('boss'),
+      music:id=>log.push(`music:${id}`),bossSpawn:()=>log.push('boss'),
       dialogue:(lines,options)=>{if(options.kind==='before'){seen={lines,options};done=options.onComplete;}else options.onComplete();},
     }}).attach(f.game);
     log.length=0;director.midbossDone=true;director.stageFrame=STAGES[0].roadFrames;
@@ -127,10 +127,10 @@ test('the player speaks alone, the Boss appears mid-dialogue and its theme start
     const {appear,music}=seen.options.cues,speakers=seen.lines.map(line=>line.speaker);
     assert.ok(appear>=2,'at least two lines of self-talk');assert.ok(speakers.slice(0,appear).every(name=>name!=='boss'));
     assert.equal(speakers[appear],'boss');assert.ok(music>appear&&music<=speakers.length-1,'the theme starts after some conversation');
-    seen.options.cue('appear');assert.ok(director.boss?.alive);assert.deepEqual(log,['fade','boss']);
-    seen.options.cue('appear');assert.equal(log.length,2,'a cue is delivered once');
-    seen.options.cue('music');assert.deepEqual(log.slice(2),['music:boss01']);seen.options.cue('music');assert.equal(log.length,3);
-    done();assert.equal(director.state,'boss-enter');assert.equal(log.length,3,'ending the dialogue does not restart the theme');
+    seen.options.cue('appear');assert.ok(director.boss?.alive);assert.deepEqual(log,['boss'],'the stage theme is not cut when the Boss appears');
+    seen.options.cue('appear');assert.equal(log.length,1,'a cue is delivered once');
+    seen.options.cue('music');assert.deepEqual(log.slice(1),['music:boss01']);seen.options.cue('music');assert.equal(log.length,2);
+    done();assert.equal(director.state,'boss-enter');assert.equal(log.length,2,'ending the dialogue does not restart the theme');
     for(let i=0;i<400&&director.state!=='combat';i++)step(f.game,director);assert.equal(director.state,'combat');
     director.destroy();f.dispose();
   }

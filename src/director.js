@@ -178,8 +178,8 @@ export class CampaignDirector{
   /** Spell practice has no pre-Boss dialogue: the Boss and its theme arrive together. */
   _spawnBoss(game,{practice=false}={}){this._createBoss(game,{practice});this.callbacks.music?.(this.stage.bgmBoss);}
   /** Original stage flow: the player talks to herself on the quiet road, the
-   * Boss then appears in the middle of the conversation, and the Boss theme
-   * only starts a few lines later. The cue lines come from the authored text. */
+   * Boss then appears in the middle of the conversation while the stage theme
+   * keeps playing, and the Boss theme only starts a few lines later. The cue lines come from the authored text. */
   _beginPrelude(game){
     this._clear(game);this.phases=this._buildPhases();this.phasePlan=new TouhouBossPhasePlan(this.phases);
     this.phaseIndex=-1;this.phaseFrame=0;this.bossAppeared=false;this.bossMusicStarted=false;
@@ -190,8 +190,7 @@ export class CampaignDirector{
   }
   _endPrelude(game){this._appearBoss(game);this._startBossMusic();this.state='boss-enter';}
   _appearBoss(game){
-    if(this.bossAppeared)return;this.bossAppeared=true;
-    this.callbacks.musicFade?.();this._createBoss(game,{prepared:true});
+    if(this.bossAppeared)return;this.bossAppeared=true;this._createBoss(game,{prepared:true});
   }
   _startBossMusic(){if(this.bossMusicStarted)return;this.bossMusicStarted=true;this.callbacks.music?.(this.stage.bgmBoss);}
   _cue(name){if(this.destroyed||this.state!=='dialogue'||this.dialogueKind!=='before')return;
