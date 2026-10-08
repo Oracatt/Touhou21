@@ -1,8 +1,38 @@
 # 验收方法与覆盖范围
 
-当前游戏为 **v1.2.1 / 回放修订 4**。TS-STG 提交仍为 `ad801fad7396000e2913c8dda4a813b7428698d2`，原生程序 SHA-256 仍为 `c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8`；本次只修改目标工程的业务源码、测试及文档。验收分开检查业务规则、真实原生流程、GPU 画面、攻击路线、性能与依赖边界，不把 Node 宿主执行等同于原生运行。
+## v2.0.0 验收（当前版本）
 
-## v1.2.1 专项验收
+当前游戏为 **v2.0.0 / 回放修订 5**。本版重写全部 76 个 Boss 攻击（39 张符卡、31 段主 Boss 非符、6 段中 Boss 非符）与七面道中，新增二至六面中 Boss 符卡，并重做标题主页面与工具页面。旧修订回放保留，但不按新规则播放。
+
+本版在一台**没有私有依赖**的机器上完成：TS-STG 检出位于锁定提交 `ad801fa`，但其中没有导入 `touhou-common` 原作公共素材，也没有构建原生程序，因此 `tools/setup-local.ps1` 无法还原本作的 `packages/thlib` 与 `runtime/`。只读源码通过忽略目录 `node_modules/@ts-stg/thlib` 指向该检出的 `packages/thlib`，以便在 Node 中加载公共 JS 代码；没有修改 TS-STG。
+
+**已执行**
+
+| 检查 | 范围 | 结果 |
+| --- | --- | --- |
+| 完整 `node --test` | 124 项 | 83 通过、6 项因缺少私有素材跳过、35 项失败；35 项失败逐条核对，全部是读取私有 `touhou-common` 清单、私有运行时快照或私有 thlib 副本路径失败，基线（改动前 116 项中 47 项失败）同因 |
+| 无素材弹幕测试 `tests/danmaku.test.js` | 76 个 Boss 攻击 × 全部难度 | 全部完整运行；公共判定半径、有限坐标、弹池峰值 < 1400、相同种子复现（禁用 `Math.random`）、难度逐级增压均通过；避弹机器人 Normal 全部零中弹，Extra 合计 1 次失误 |
+| 无素材导演测试 `tests/director-flow.test.js` | 七面关卡练习、本篇、Extra、39 张符卡练习 | 真实 `CampaignDirector` 驱动真实子弹场，配合最小 Boss 生命周期替身：道中八段、中 Boss 阶段形状、非符超时转符卡、飞离、Boss 全阶段、通关、记录编号与复现全部通过 |
+| 无素材道路测试 `tests/road.test.js` | 七面完整道路 × 四难度 | 结构、留白、上半场开火、后半增压、难度增压、种子复现通过；3 项真实 `TouhouGame` 测试跳过 |
+| 菜单测试 `tests/menu.test.js` | 标题、难度、自机、工具页 | 记录型宿主下绘制确定、双语菜单完整、锁定 Extra 跳过、选择流程到达 `onStart` |
+| 静态边界审计 | `auditBoundaries({verifyDependencies:false})` | 通过：31 个源文件只导入两个公共 thlib 入口，媒体清单与 Git 排除规则不变 |
+| 画面预览 | `tools/preview-danmaku.mjs`、`tools/menu-preview.mjs` | 逐一人工查看各面符卡、非符、道中接触印样与标题 / 难度 / 自机 / 工具页布局预览；机器人中弹现场用 `--at` 渲染核对 |
+
+`reports/danmaku/summary.md`（忽略目录）记录每个攻击各难度的实验峰值与每秒发射数。Normal 符卡峰值 115～474、非符 79～233，旧版分别为 60～111 与 54～94。
+
+**未执行，需要在具备私有依赖的环境补做**
+
+- 原生 V8 / QuickJS 完整流程（`npm run verify`）、GPU 截图（`npm run verify:visual`、`verify:background`、Boss HUD）、性能采样（`tools/measure-performance.mjs`）、依赖锁核对（`npm run verify:engine`）。
+- 真实 `TouhouGame` 下的测试（battle、midboss-flow、nonspell-hud、spell-audio、nonspell / road / boss-health 的素材部分）与 `npm run verify:routes` 路线搜索。
+- 真实 ANM 的出生帧数、贴图、加色混合、文字度量与音效。实验环境的 ANM 替身只近似出生时长；菜单预览用 System.Drawing 近似文字，加色混合画成普通混合。
+- 弹数上升后的性能：按 v1.2.0 实测，V8 约 9 µs / 发 / 帧，Lunatic 峰值约 600～900 发时预计 6～10 ms；QuickJS 在密集场景本就超出 16.7 ms 预算，会更慢。
+- 真人难度与手感评价。避弹机器人零中弹只说明存在路线，不等于人类初见可过。
+
+## v1.2.1 历史验收
+
+以下记录对应 **v1.2.1 / 回放修订 4**，均针对旧弹幕。TS-STG 提交仍为 `ad801fad7396000e2913c8dda4a813b7428698d2`，原生程序 SHA-256 仍为 `c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8`；本次只修改目标工程的业务源码、测试及文档。验收分开检查业务规则、真实原生流程、GPU 画面、攻击路线、性能与依赖边界，不把 Node 宿主执行等同于原生运行。
+
+### v1.2.1 专项验收
 
 本次修复六面同角色中 Boss 飞离、非符血量及普通非符计时，并补全一次聚能的开始 / 释放音和阶段交接音。原作路径、业务选择、完整 HP 表及音效身份见 [BOSS-FLOW.md](BOSS-FLOW.md)。使用公共 escape、实体伤害、共享血环与 Boss HUD 工厂，不改公共判定、武器或源目录。回放修订升为 4，旧回放保留但明确拒绝用新规则播放。
 
