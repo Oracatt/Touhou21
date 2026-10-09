@@ -8,6 +8,8 @@
 
 Windows 下双击 `Play.cmd`，使用带 JIT 的 V8 后端；`Play-QuickJS.cmd` 使用 QuickJS。开发启动脚本先编译 TypeScript，再运行 `dist/main.js`。游戏以固定 60 帧模拟，画面为 960 × 720，采用纵向游戏区与右侧状态栏。直接运行已经编译的游戏不需要 Node.js；编译与开发启动脚本需要 Node.js 24+。
 
+macOS 下双击 `Play.command`（或在终端执行 `./Play.command`）。首次启动时 `npm run build:macos` 从锁定的引擎提交取出原生源码，逐个核对 `engine.lock.json` 记录的 SHA-256，再与 `tools/macos/` 中基于 CoreText 的系统文字实现一起编译出 `build/macos/ts-stg`；锁文件和这些源码不变时直接启动。编译需要 Xcode 命令行工具、CMake 3.24+、Git 以及 TS-STG 仓库的读取权限，源引擎目录只读。Windows 字体名按同风格映射到系统字体（微软雅黑 → 苹方，楷体 → 楷体-简，メイリオ / ＭＳ ゴシック的中文 → 苹方），位图文字保留原 Windows 字体的 GDI 字号度量，对白排版与 Windows 一致。固定版本的 V8 SDK 只有 Windows 版，macOS 使用 QuickJS：标题与菜单满帧，弹幕密集时 CPU 脚本耗时约 30–50 ms，会出现处理落。`npm run verify:macos` 另运行引擎的矢量文字、位图文字、媒体与绘制合约测试。macOS 需要已还原的 `packages/thlib`；`restore:engine` 目前仍要求 Windows 运行时，可从已安装的 Windows 环境复制该目录。
+
 源码克隆不包含私有引擎、thlib 或其导入素材。安装需要 Node.js 24 或更新版本；使用锁文件对应的本地 TS-STG 检出及已构建程序还原依赖：
 
 ```powershell
