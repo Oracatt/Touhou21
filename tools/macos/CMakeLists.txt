@@ -10,7 +10,9 @@ if(NOT EXISTS "${TSSTG_SOURCE_DIR}/native/src/host.cpp")
   message(FATAL_ERROR "TSSTG_SOURCE_DIR must name the locked TS-STG source tree.")
 endif()
 
-# The pinned V8 SDK is Windows-only; macOS uses the engine's QuickJS-NG backend.
+set(TOUHOU21_V8_INCLUDE_DIR "" CACHE PATH "Headers of the pinned V8 release; empty builds a QuickJS-only host")
+set(TOUHOU21_V8_LIBRARY "" CACHE FILEPATH "Pinned rusty_v8 static library for the target architecture")
+# The engine's V8 option fetches the Windows SDK only; the V8 backend is added below instead.
 set(TSSTG_ENABLE_V8 OFF CACHE BOOL "" FORCE)
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 add_subdirectory("${TSSTG_SOURCE_DIR}" engine)
@@ -23,3 +25,12 @@ set_property(TARGET ts-stg PROPERTY SOURCES ${engine_sources}
   "${CMAKE_CURRENT_SOURCE_DIR}/text_bitmap_coretext.cpp")
 target_include_directories(ts-stg PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(ts-stg PRIVATE "-framework CoreText" "-framework CoreGraphics" "-framework CoreFoundation")
+if(TOUHOU21_V8_INCLUDE_DIR)
+  if(NOT EXISTS "${TOUHOU21_V8_INCLUDE_DIR}/v8.h" OR NOT EXISTS "${TOUHOU21_V8_LIBRARY}")
+    message(FATAL_ERROR "TOUHOU21_V8_INCLUDE_DIR and TOUHOU21_V8_LIBRARY must name the pinned V8 headers and library.")
+  endif()
+  target_sources(ts-stg PRIVATE "${TSSTG_SOURCE_DIR}/native/src/v8_backend.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/rusty_v8_callbacks.cpp")
+  target_include_directories(ts-stg SYSTEM PRIVATE "${TOUHOU21_V8_INCLUDE_DIR}")
+  target_compile_definitions(ts-stg PRIVATE TSSTG_HAS_V8 V8_PROMISE_INTERNAL_FIELD_COUNT=1)
+  target_link_libraries(ts-stg PRIVATE "${TOUHOU21_V8_LIBRARY}")
+endif()

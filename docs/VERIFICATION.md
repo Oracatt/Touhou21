@@ -1,5 +1,15 @@
 # 验收方法与覆盖范围
 
+## 2026-10-10 macOS V8 后端
+
+macOS 宿主加入带 JIT 的 V8 后端，版本与 Windows 相同（V8 12.3.219.9，rusty_v8 v0.89.0），`Play.command` 改用 `--backend v8`。`build-host.mjs` 按本机架构下载 rusty_v8 的 macOS 静态库（x86_64 与 arm64 各固定压缩包与解压后的 SHA-256），V8 头文件与 rusty_v8 许可证沿用引擎 Windows 脚本固定的修订和 SHA-256；`tools/macos/CMakeLists.txt` 照引擎的 Windows 配置加入 `v8_backend.cpp`、`TSSTG_HAS_V8` 与 `V8_PROMISE_INTERNAL_FIELD_COUNT=1`。库内的 V8 使用 Chromium 自带的 libc++（`std::Cr`），与宿主的系统 libc++ 互不冲突；引擎只经两个 C 接口函数创建平台。这两个函数所在的 rusty_v8 绑定对象另引用 19 个由 Rust 实现的序列化与 inspector 回调，宿主从不创建对应对象，`rusty_v8_callbacks.cpp` 以调用即中止的定义满足链接（Windows 版是从绑定对象中剥离）。源引擎目录未改动。
+
+- 本机 macOS 14.5 / Intel i7-9750H：宿主编译与链接无警告。V8 后端合约测试 `backend-v8.js` 通过。12 项引擎合约测试在 V8 与 QuickJS 下都通过，两个后端的快照逐字节相同；引擎 CMake 中其余脚本测试在两个后端上各 33 项（5 项正常用例、28 项拒绝用例）结果符合预期，拒绝原因两边一致。arm64 版交叉编译链接通过，未在 Apple 芯片上运行。
+- 游戏（`tools/performance-fixture.js`，600 帧）：标题、五面道中、四面与六面 Lunatic 符卡在两个后端下第 600 帧的截图逐字节相同，状态快照除记录的后端名外相同。`--benchmark` 每帧脚本与宿主耗时（括号内为 QuickJS）：标题 1.4 ms（3.4）、五面道中 7.6（36.3）、四面符卡 6.7（35.0）、六面终符 9.1（51.7）。
+- 垂直同步下实时运行 600 帧模拟：五面道中 10.8 s、六面终符 10.7 s，画面 23 / 35 帧每秒；QuickJS 为 17.0 s / 13.5 s，画面 4–6 帧每秒。V8 下剩余的处理落来自 GPU：本机系统设置只用 Intel UHD 630（`pmset` 的 `gpuswitch 0`），弹幕密集时 GPU 每帧 16–25 ms；Radeon Pro 5300M 未测。
+
+未修改用户存档。
+
 ## 2026-10-10 macOS 宿主
 
 新增 `tools/macos/`：`build-host.mjs` 按 `engine.lock.json` 的提交 `c030f92` 稀疏拉取 TS-STG 原生源码到 `build/macos/engine-src`，17 个原生源文件的大小与 SHA-256 全部与锁文件一致后，通过一个薄 CMake 工程引用引擎自身的 `CMakeLists.txt`（raylib 5.5、QuickJS-NG v0.10.1 的固定提交与编译选项不变），只把 `text_win32.cpp` / `text_gdi.cpp` 换成 CoreText 实现，并关闭仅限 Windows 的 V8。源引擎目录未改动。矢量文字按 DirectWrite 版的语义排版、取字形轮廓、先描边后填充、按输出像素裁剪；位图文字模拟 GDI：单元格字号、整像素步进、字符集优先于字体名，以及「被覆盖的像素按覆盖率混合颜色并清零 alpha」的约定，代码页编码改用 CoreFoundation。Windows 字体名映射到同风格的 macOS 字体；メイリオ、ＭＳ ゴシック等仍按原 Windows 字体的单元格度量换算字身，thlib 为メイリオ放大 1.5 倍的字号表因此得到与 Windows 相同的字身。
