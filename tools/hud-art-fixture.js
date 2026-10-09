@@ -16,7 +16,9 @@ export function createHudArtFixture(scenarioPath){
     writeText:{value:(file,text)=>{const name=normalPath(file);assert(!name.includes('..')&&!name.startsWith('/')&&!name.includes(':'),'QA writes remain relative memory userdata');memory.set(`userdata/${name}`,text);memoryWrites++;}},
     loadTexture:{value:(file,...args)=>{const id=native.loadTexture(file,...args);texturePaths.set(id,normalPath(file));return id;}},
   });
-  const app=new ProjectApplication(host,{testing:true,fixedClock:true,seed:210909,autostart:true,invincible:true,autoDialogue:true,
+  const continuedMenu=['pause-continued','result-continued'].includes(scenario.kind);
+  if(continuedMenu)memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
+  const app=new ProjectApplication(host,{testing:true,fixedClock:true,seed:continuedMenu?210721:210909,autostart:true,invincible:!continuedMenu,autoDialogue:true,
     character:scenario.character,mode:scenario.mode,stageId:scenario.stageId,difficulty:scenario.stageId===7?4:1,
     skipRoad:scenario.kind==='combat',spellId:scenario.kind==='spell'?scenario.spellId??STAGES[scenario.stageId-1].spells[0].id:null});
   assert(app.resources.locale==='zh-CN','The production App selects Chinese through the public resource API');
@@ -78,9 +80,32 @@ export function createHudArtFixture(scenarioPath){
       };for(const child of vm.children??[])visit(child);};visit(menuOwner.panel);
     }
   };
-  let replayProof=null,layoutPreset=null,renderWarmup=null,pointProof=null;
+  let replayProof=null,layoutPreset=null,renderWarmup=null,pointProof=null,continuationProof=null;
   function* prepare(){
-    if(scenario.kind==='point-growth'){
+    if(continuedMenu){
+      let misses=0,gameovers=0;const onEvent=game.onEvent;
+      game.onEvent=(name,data)=>{if(name==='miss')misses++;if(name==='gameover')gameovers++;onEvent?.(name,data);};
+      for(let i=0;game.session.continues===0;i++){
+        assert(i<2500,'Real road collision, GameOver and Shoot input reach Continue');
+        advance(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6?Keys.SHOOT:0);
+        if(applicationUpdates%32===0)yield;
+      }
+      assert(misses>0&&gameovers>0&&game.player.continues===1&&game.session.credits===4,'Continue is earned by an actual game-over input path');
+      advance();preview=true;yield;preview=false;
+      const frame=game.frame;
+      if(scenario.kind==='result-continued')game.openGameOver(0);else advance(Keys.PAUSE);
+      menuOwner=game.pauseVisual;
+      assert(game.paused&&menuOwner instanceof (scenario.kind==='result-continued'?TouhouGameOver:TouhouPause),'The actual continued game opens its public menu');
+      for(let i=0;i<scenario.age;i++)advance();
+      assert(menuOwner.excluded.has(2),'Continued replay remains unavailable for selection');
+      const script=scenario.kind==='result-continued'?127:121,vm=menuOwner.child(script);
+      assert(vm?.alive&&vm.visible&&vm.flashColor===null,'The original unselected row remains alive without the nearly transparent disabled tint');
+      if(scenario.age>=45){
+        for(let i=0;i<2;i++){advance(Keys.DOWN);advance();assert(menuOwner.selection!==2,'Real menu navigation skips Save Replay after Continue');}
+      }
+      assert(game.frame===frame,'Pause freezes gameplay after Continue');
+      continuationProof={misses,gameovers,continues:game.session.continues,credits:game.session.credits,script,primaryColor:vm.U(0x490),secondaryColor:vm.U(0x494),flashColor:vm.flashColor};
+    }else if(scenario.kind==='point-growth'){
       for(let i=0;i<90;i++){advance();if(applicationUpdates%32===0)yield;}
       const player=game.player;
       assert(player.pointValue===10000&&player.graze===0,'A new game starts with the initial point value');
@@ -153,10 +178,10 @@ export function createHudArtFixture(scenarioPath){
     assert(memoryWrites===0&&JSON.stringify(app.storage.progress)===initialProgress,'Preparation leaves persistent progress and userdata untouched');
     observeHud();
     result={passed:true,id:scenario.id,backend:native.backend,applicationUpdates,inputs,memoryWrites,memoryUserdataKeys:[...memory.keys()].sort(),
-      actualState:app.snapshot(),layoutPreset,replayProof,renderWarmup,pointProof,hudLayout:game.hud.layout,hudReplay:game.hud.replay,
+      actualState:app.snapshot(),layoutPreset,replayProof,renderWarmup,pointProof,continuationProof,hudLayout:game.hud.layout,hudReplay:game.hud.replay,
       spellTitle:game.spell.active?{name:game.spell.name,age:game.spell.age.current,animations:game.spell.info.map(vm=>vm?.snapshot()??null)}:null,
       locale:{name:app.resources.locale,frontDescriptor:localeDescriptor,changedTexturePaths},menu:menuOwner?.snapshot()??null,
-      menuEntry:scenario.kind==='gameover'?'Explicit public openGameOver API; no death/input reproduction':menuOwner?'Actual Esc and navigation input':null,
+      menuEntry:continuedMenu?(scenario.kind==='result-continued'?'Actual road death and Continue input, then explicit public result API':'Actual road death, Continue, Esc and navigation input'):scenario.kind==='gameover'?'Explicit public openGameOver API; no death/input reproduction':menuOwner?'Actual Esc and navigation input':null,
       commands:0,assetLoads,textCalls,numberCalls:[],replayCalls:[],statusCalls:[],skinCalls:[],menuCalls:[],
       scope:'Eight focused actual App/public zh-CN HUD and menu samples. Invincibility isolates presentation; GameOver enters via the public API. The layout preset follows a genuine verified replay. No campaign, collision, difficulty or audio-quality claim.'};ready=true;
   }
@@ -298,6 +323,11 @@ export function createHudArtFixture(scenarioPath){
         assert(Math.max(...decorations.map(value=>value.commandEnd))<=Math.min(...labels.map(value=>value.commandStart)),'Public menu text is submitted after all green decorations');
         assert(labels.every(value=>changedTexturePaths.includes(value.source?.texturePath)),'Visible pause/GameOver words sample actual Chinese locale textures');
         if(scenario.kind==='pause-confirm')for(const script of [0x8e,0x8f])assert(labels.some(value=>value.scriptId===script),'Both original Yes and No ANM choices are drawn');
+        if(continuationProof){
+          const replay=result.menuCalls.find(value=>value.scriptId===continuationProof.script);
+          assert(replay?.bounds&&replay.visibleBounds,'The continued Save Replay row actually submits its original label pixels');
+          assert((continuationProof.primaryColor>>>24)>=240,'The row retains full entry opacity instead of collapsing to alpha 5');
+        }
         result.menuOrderCorrect=true;
       }else assert(result.menuCalls.length===0,'Unpaused samples do not render a pause/result panel');
       if(!game.paused&&!earlySpell){

@@ -2,7 +2,7 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/AIWorkspace/TS-STG",
-  "commit": "aadf73824b5eb538c2a4bd2691b33b484cacf629",
+  "commit": "a6487455888d86b9569a3d8e3254e0df44ba9a23",
   "backend": "v8",
   "supportedBackends": [
     "v8",
@@ -12,8 +12,8 @@
   "sourceModified": true,
   "dependencies": "Private byte-pinned local snapshots only. Imported common reference materials retain their original notices and are excluded from the original-code MIT grant.",
   "format": "touhou21-engine-lock-v1",
-  "thlibSha256": "6d7e676d214a3f562cbfd192c1edfed056642c339b5c6981d3ae408aebeee5bb",
-  "runtimeSha256": "53cbdc4b61e1f1fbe0df282f577caac3252c7c01da48e6a280de4fe61980fa1f",
+  "thlibSha256": "4b2516f4bc9e0745dbfa3439e9288f7b8140389575f19c3287115c2aa55048ee",
+  "runtimeSha256": "65508ece09eac5a0b58c73edca35492bc9de87b73e3915fbc53e0a72a81c9ec5",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -1392,8 +1392,8 @@
     },
     {
       "path": "src/touhou/game-over.js",
-      "bytes": 15324,
-      "sha256": "8180e2e136a01969c2300f044051c6214a62150e59b6556b82b576a9c53eeb8f"
+      "bytes": 15522,
+      "sha256": "1b095f0f1dfe16070f8ec3fdb86e31d4505f8dedc00bf5215df93c99136d36fd"
     },
     {
       "path": "src/touhou/game.d.ts",
@@ -1562,8 +1562,8 @@
     },
     {
       "path": "src/touhou/pause.js",
-      "bytes": 6999,
-      "sha256": "5a3d69f064a310295a7442914749f4cc26cd56c9d161c9e2b503544c06c36800"
+      "bytes": 7337,
+      "sha256": "c217f78a127db3465d4b5f4b41535e843d3fbbfa9439b7aaae52ea72092d1210"
     },
     {
       "path": "src/touhou/phase-sequence.d.ts",
@@ -1801,10 +1801,10 @@
     {
       "path": "PACKAGE.json",
       "bytes": 4319,
-      "sha256": "e5ef924592ad325f11811d1126cbedcd1ee4f3d8aa310845ce56a7c5b796e09c",
+      "sha256": "68a70eae7fd2c4e11578b99b07f583ab42fe610f111b788cf60a54d936058f06",
       "source": "dist/TS-STG/PACKAGE.json",
       "sourceSha256": "8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0",
-      "generatedContent": "{\n  \"runtimes\": [\n    {\n      \"linkage\": \"static\",\n      \"version\": \"0.10.1\",\n      \"revision\": \"3c9afc9943323ee9c7dbd123c0cd991448f4b6c2\",\n      \"id\": \"quickjs\",\n      \"jit\": false\n    },\n    {\n      \"library\": {\n        \"upstreamFile\": \"rusty_v8.lib\",\n        \"sha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n        \"upstreamSha256\": \"e168995c158b95d13a33992ed23a8b7fa84687a46d0b079b4a1eab9a055b23c3\",\n        \"archiveSha256\": \"19fb2f7cda3d6cd42179ec86c552d3efca639142f08b37fff18615ae6679ece2\",\n        \"file\": \"v8-host.lib\"\n      },\n      \"version\": \"12.3.219.9\",\n      \"sdkManifestSha256\": \"3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac\",\n      \"headers\": {\n        \"revision\": \"db2b8439ec4d3ae972330cc2e9830ccd517d7235\",\n        \"archiveSha256\": \"c0117ad65843deffb7363ef7feb6cd6198d4c0d965c85f135f41e7e0ffe504a8\"\n      },\n      \"build\": {\n        \"linkage\": \"static\",\n        \"pointerCompression\": false,\n        \"platform\": \"windows-x64\",\n        \"externalStartupData\": false,\n        \"promiseInternalFieldCount\": 1,\n        \"platformBridge\": {\n          \"inputSha256\": \"af8a48f4317731d16963b4a244e20f78a350627d1cf545ee12844157ae2fbea2\",\n          \"outputSha256\": \"7733761c7fdac0746a6692cfe3b4e145271b21f1942b510bbb3924d5c4b37bf6\",\n          \"exportedFunctions\": [\n            \"v8__Platform__NewDefaultPlatform\",\n            \"v8__Platform__DELETE\"\n          ],\n          \"originalSections\": 2224,\n          \"retainedSections\": 4,\n          \"retainedSymbols\": 10,\n          \"externalSymbols\": [\n            \"__security_cookie\",\n            \"__security_check_cookie\",\n            \"__guard_dispatch_icall_fptr\",\n            \"?NewDefaultPlatform@platform@v8@@YA?AV?$unique_ptr@VPlatform@v8@@U?$default_delete@VPlatform@v8@@@Cr@std@@@Cr@std@@HW4IdleTaskSupport@12@W4InProcessStackDumping@12@V?$unique_ptr@VTracingController@v8@@U?$default_delete@VTracingController@v8@@@Cr@std@@@45@W4PriorityMode@12@@Z\"\n          ],\n          \"executableBytesUnmodified\": true,\n          \"sections\": [\n            {\n              \"originalIndex\": 526,\n              \"name\": \".text\",\n              \"size\": 91,\n              \"relocations\": 3,\n              \"sha256\": \"17e41183530d7fcd423c12f4801ff8c1700ea1fc7481be81b540d9591e65d0cf\"\n            },\n            {\n              \"originalIndex\": 532,\n              \"name\": \".text\",\n              \"size\": 27,\n              \"relocations\": 1,\n              \"sha256\": \"cb4401e485a20b6ab2d3a6def48c232636ff183b88f6ad318299b3099706ff50\"\n            },\n            {\n              \"originalIndex\": 1045,\n              \"name\": \".xdata\",\n              \"size\": 8,\n              \"relocations\": 0,\n              \"sha256\": \"1f4b869bc523135882239a20f86a560aadb59c631a6fba4c7cc7b70b92f3004c\"\n            },\n            {\n              \"originalIndex\": 2132,\n              \"name\": \".pdata\",\n              \"size\": 12,\n              \"relocations\": 3,\n              \"sha256\": \"6dc0134d253e6d623f0a1362eeb8c40c7ac6fc6cf49c31dd8406e11218ba81c2\"\n            }\n          ]\n        },\n        \"crt\": \"static\",\n        \"sandbox\": false\n      },\n      \"id\": \"v8\",\n      \"librarySha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n      \"jit\": true,\n      \"wrapper\": {\n        \"version\": \"0.89.0\",\n        \"name\": \"rusty_v8\"\n      },\n      \"linkage\": \"static\"\n    }\n  ],\n  \"binarySha256\": \"c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8\",\n  \"kind\": \"engine-sdk\",\n  \"configuration\": \"Release\",\n  \"version\": \"0.1.0\",\n  \"format\": \"ts-stg-local-package-v2\",\n  \"referenceAssets\": false,\n  \"defaultBackend\": \"v8\",\n  \"createdUtc\": \"2026-10-05T11:39:53.102Z\",\n  \"commonResourceCounts\": {\n    \"archives\": 10,\n    \"textures\": 94,\n    \"sounds\": 51,\n    \"scripts\": 1342,\n    \"sprites\": 2256,\n    \"shotRows\": [\n      72,\n      32\n    ]\n  },\n  \"entry\": \"main.js\",\n  \"derivedFor\": {\n    \"commit\": \"aadf73824b5eb538c2a4bd2691b33b484cacf629\",\n    \"binarySource\": \"build/Release/ts-stg.exe\",\n    \"upstreamPackageSha256\": \"8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0\",\n    \"upstreamBinarySha256\": \"9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d\",\n    \"reason\": \"Local SDK metadata derived from the validated current native build; upstream dist remains unchanged and contains an older executable.\"\n  }\n}\n"
+      "generatedContent": "{\n  \"runtimes\": [\n    {\n      \"linkage\": \"static\",\n      \"version\": \"0.10.1\",\n      \"revision\": \"3c9afc9943323ee9c7dbd123c0cd991448f4b6c2\",\n      \"id\": \"quickjs\",\n      \"jit\": false\n    },\n    {\n      \"library\": {\n        \"upstreamFile\": \"rusty_v8.lib\",\n        \"sha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n        \"upstreamSha256\": \"e168995c158b95d13a33992ed23a8b7fa84687a46d0b079b4a1eab9a055b23c3\",\n        \"archiveSha256\": \"19fb2f7cda3d6cd42179ec86c552d3efca639142f08b37fff18615ae6679ece2\",\n        \"file\": \"v8-host.lib\"\n      },\n      \"version\": \"12.3.219.9\",\n      \"sdkManifestSha256\": \"3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac\",\n      \"headers\": {\n        \"revision\": \"db2b8439ec4d3ae972330cc2e9830ccd517d7235\",\n        \"archiveSha256\": \"c0117ad65843deffb7363ef7feb6cd6198d4c0d965c85f135f41e7e0ffe504a8\"\n      },\n      \"build\": {\n        \"linkage\": \"static\",\n        \"pointerCompression\": false,\n        \"platform\": \"windows-x64\",\n        \"externalStartupData\": false,\n        \"promiseInternalFieldCount\": 1,\n        \"platformBridge\": {\n          \"inputSha256\": \"af8a48f4317731d16963b4a244e20f78a350627d1cf545ee12844157ae2fbea2\",\n          \"outputSha256\": \"7733761c7fdac0746a6692cfe3b4e145271b21f1942b510bbb3924d5c4b37bf6\",\n          \"exportedFunctions\": [\n            \"v8__Platform__NewDefaultPlatform\",\n            \"v8__Platform__DELETE\"\n          ],\n          \"originalSections\": 2224,\n          \"retainedSections\": 4,\n          \"retainedSymbols\": 10,\n          \"externalSymbols\": [\n            \"__security_cookie\",\n            \"__security_check_cookie\",\n            \"__guard_dispatch_icall_fptr\",\n            \"?NewDefaultPlatform@platform@v8@@YA?AV?$unique_ptr@VPlatform@v8@@U?$default_delete@VPlatform@v8@@@Cr@std@@@Cr@std@@HW4IdleTaskSupport@12@W4InProcessStackDumping@12@V?$unique_ptr@VTracingController@v8@@U?$default_delete@VTracingController@v8@@@Cr@std@@@45@W4PriorityMode@12@@Z\"\n          ],\n          \"executableBytesUnmodified\": true,\n          \"sections\": [\n            {\n              \"originalIndex\": 526,\n              \"name\": \".text\",\n              \"size\": 91,\n              \"relocations\": 3,\n              \"sha256\": \"17e41183530d7fcd423c12f4801ff8c1700ea1fc7481be81b540d9591e65d0cf\"\n            },\n            {\n              \"originalIndex\": 532,\n              \"name\": \".text\",\n              \"size\": 27,\n              \"relocations\": 1,\n              \"sha256\": \"cb4401e485a20b6ab2d3a6def48c232636ff183b88f6ad318299b3099706ff50\"\n            },\n            {\n              \"originalIndex\": 1045,\n              \"name\": \".xdata\",\n              \"size\": 8,\n              \"relocations\": 0,\n              \"sha256\": \"1f4b869bc523135882239a20f86a560aadb59c631a6fba4c7cc7b70b92f3004c\"\n            },\n            {\n              \"originalIndex\": 2132,\n              \"name\": \".pdata\",\n              \"size\": 12,\n              \"relocations\": 3,\n              \"sha256\": \"6dc0134d253e6d623f0a1362eeb8c40c7ac6fc6cf49c31dd8406e11218ba81c2\"\n            }\n          ]\n        },\n        \"crt\": \"static\",\n        \"sandbox\": false\n      },\n      \"id\": \"v8\",\n      \"librarySha256\": \"4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87\",\n      \"jit\": true,\n      \"wrapper\": {\n        \"version\": \"0.89.0\",\n        \"name\": \"rusty_v8\"\n      },\n      \"linkage\": \"static\"\n    }\n  ],\n  \"binarySha256\": \"c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8\",\n  \"kind\": \"engine-sdk\",\n  \"configuration\": \"Release\",\n  \"version\": \"0.1.0\",\n  \"format\": \"ts-stg-local-package-v2\",\n  \"referenceAssets\": false,\n  \"defaultBackend\": \"v8\",\n  \"createdUtc\": \"2026-10-05T11:39:53.102Z\",\n  \"commonResourceCounts\": {\n    \"archives\": 10,\n    \"textures\": 94,\n    \"sounds\": 51,\n    \"scripts\": 1342,\n    \"sprites\": 2256,\n    \"shotRows\": [\n      72,\n      32\n    ]\n  },\n  \"entry\": \"main.js\",\n  \"derivedFor\": {\n    \"commit\": \"a6487455888d86b9569a3d8e3254e0df44ba9a23\",\n    \"binarySource\": \"build/Release/ts-stg.exe\",\n    \"upstreamPackageSha256\": \"8942682fe778df67c2b5200cea16a623596047d8cee4bed10039d6d1a50e73a0\",\n    \"upstreamBinarySha256\": \"9bf136d648f821a1af67eccd6c61ca0e7b331c19b3629b6608b51a1e9c80198d\",\n    \"reason\": \"Local SDK metadata derived from the validated current native build; upstream dist remains unchanged and contains an older executable.\"\n  }\n}\n"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -2700,7 +2700,7 @@
     "configuration": "Release",
     "executableSource": "build/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "e5ef924592ad325f11811d1126cbedcd1ee4f3d8aa310845ce56a7c5b796e09c",
+    "packageSha256": "68a70eae7fd2c4e11578b99b07f583ab42fe610f111b788cf60a54d936058f06",
     "binarySha256": "c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8",
     "sourceFiles": [
       {

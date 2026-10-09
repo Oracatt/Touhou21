@@ -107,15 +107,22 @@ function* continuationReplay(){
   application=make({autostart:true,mode:'normal',difficulty:1,character:0});
   const source=application.core.game,events={miss:0,gameover:0},event=source.onEvent;
   source.onEvent=(name,data)=>{if(name in events)events[name]++;event?.(name,data);};
-  let frames=0,continuedAt=null;const tracks=new Set();
+  let frames=0,continuedAt=null,continuedPause=false,continuedResume=false;const tracks=new Set();
   while(frames<5000&&(continuedAt===null||frames<continuedAt+750)){
     let mask=continuedAt===null?0:Keys.RIGHT;
     if(source.paused&&source.pauseVisual instanceof TouhouGameOver&&source.pauseVisual.phase===6)mask=Keys.SHOOT;
+    else if(continuedAt!==null&&!continuedPause&&frames>=continuedAt+90){mask=Keys.PAUSE;continuedPause=true;}
+    else if(continuedPause&&!continuedResume&&source.paused&&source.pauseVisual.phase===6&&source.pauseVisual.age>=20){
+      const replayRow=source.pauseVisual.child(121);
+      assert(source.pauseVisual.excluded.has(2)&&replayRow?.flashColor===null,'Continued pause keeps replay disabled but visibly gray');
+      mask=Keys.PAUSE;continuedResume=true;
+    }
     application.update(mask);frames++;tracks.add(application.music.current?.id);
     if(source.session.continues===1&&continuedAt===null)continuedAt=frames;
     if(frames%128===0)yield;
   }
   assert(continuedAt!==null&&events.gameover>=1&&events.miss>=1,'Real road collision and GameOver inputs reach the common Continue restoration');
+  assert(continuedPause&&continuedResume&&!source.paused,'The recorded run also opens and resumes the continued pause menu');
   assert(tracks.has('playersScore')&&application.music.current?.id===STAGES[0].bgmStage,'GameOver plays Player\'s Score and Continue returns to the stage BGM');
   assert(source.session.continues===1&&source.session.credits===4,'Continue consumes one of the original five credits');
   assert(source.player.highScore===12345678&&source.session.highScore===12345678,'Continue keeps an existing high score greater than the current run');

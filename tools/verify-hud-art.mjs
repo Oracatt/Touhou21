@@ -13,6 +13,8 @@ const scenarios=[
   {id:'pause-main',kind:'pause',character:0,mode:'normal',stageId:1},
   {id:'pause-confirm',kind:'pause-confirm',character:0,mode:'normal',stageId:1},
   {id:'gameover-result',kind:'gameover',character:1,mode:'normal',stageId:1},
+  ...[5,12,45].map(age=>({id:`pause-continued-${age}`,kind:'pause-continued',character:0,mode:'normal',stageId:1,age})),
+  {id:'result-continued',kind:'result-continued',character:0,mode:'normal',stageId:1,age:45},
   {id:'replay-long',kind:'replay',character:1,mode:'normal',stageId:1},
   ...[0,15,30,60,90,120].map(age=>({id:`spell-name-${age}`,kind:'spell',character:1,mode:'spell-practice',stageId:7,spellId:'ex-09',age})),
 ];
