@@ -108,7 +108,7 @@ export class CampaignDirector{
     if(!['escape','defeat'].includes(this.midbossExit))throw new RangeError('Unknown midboss exit');
     this.midbossPhases=this._midbossPhaseList(this.midbossSpec);this.midbossPhaseIndex=0;
     const first=this.midbossPhases[0],hp=first.hp;this.midbossDuration=first.duration;
-    const boss=game.spawnEnemy({x:150,y:20,hp,radius:16,script:30,directional:false,damageInvulnerability:0,
+    const boss=game.spawnEnemy({x:-150,y:20,hp,radius:16,script:30,directional:false,damageInvulnerability:0,
       deathBank:game.banks.effect,drop:[]}) as CampaignBoss;
     game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
     boss.kind='midboss';boss.bossId=this.midbossSpec?.bossId??this.stage.bossId;boss.maximumHp=hp;boss.invulnerable=true;this.boss=boss;
@@ -366,7 +366,7 @@ export class CampaignDirector{
       if(t>=roadFrames){this._beginPrelude(game);return;}this.stageFrame++;
     }else if(this.state==='midboss-enter'){
       this.phaseFrame++;const fraction=Math.min(1,this.phaseFrame/60);
-      actorPosition(this.boss!,150*(1-fraction),20+fraction*85);
+      actorPosition(this.boss!,-150*(1-fraction),20+fraction*85);
       if(this.phaseFrame>=60&&game.bossPresentation!.entranceReady){const route=this.character?'marisa':'reimu';
         this._dialogue(game,'midboss',()=>this._beginMidbossPhase(game,0),this.midbossSpec?.dialogues?.[route]??[]);}
     }else if(this.state==='midboss-combat'){

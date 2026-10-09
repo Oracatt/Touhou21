@@ -1,5 +1,11 @@
 # 验收方法与覆盖范围
 
+## 2026-10-10 道中 Boss 从左上入场
+
+仅修改游戏 `CampaignDirector`：道中 Boss 的出生位置由 `(150,20)` 改为 `(-150,20)`，60 帧路径从左上到 `(0,105)`，配合现有右侧半黑雾；thlib 预设、依赖锁、主 Boss 和退场路径不变。内容与回放修订同步至 10。
+
+构建及49项相关 Node 回归通过，覆盖入场起点/中点/终点及既有停留/飞离效果生命周期。真实三面练习与输入回放 × V8 / QuickJS **4/4** 通过，共25,366次场景更新；报告 `reports/integration/midboss-left/summary.json`。道中入场截图两后端状态、PNG一致，已目视确认 Boss 在左上、法阵跟随；报告 `reports/visual/midboss-left/selected-report.json`。未重启正在运行的游戏。
+
 ## 2026-10-09 Boss 效果与战斗生命周期拆分
 
 依赖锁更新到 TS-STG `c030f926d7516731f704d040a5f2b48015fe2989`。`setBossEffects({aura,distortion})` 独立于入场、战斗和符卡结算；道中 Boss 使用原作三流 `halfFog` 和 `midboss` 配置，在既有 60 帧入场中开启法阵/扭曲。最终破卡后保留同一组实例，经过原有 75 帧停留、60 帧飞离，实际移除时清理。超时仍立即开始飞离；主 Boss 显式使用 `boss` 配置并在开战时开启效果。内容及回放修订同步为 9。

@@ -89,6 +89,11 @@ test('midboss effects start during flight, survive its dialogue and switch to th
     assert.deepEqual(presentation.aura.map(vm=>vm.scriptId),[99]);assert.equal(distortion.radius,128);
     assert.equal(presentation.combatActive,false);assert.equal(game.isBossCombatReady(boss),false);
     const phase=distortion.phaseX;
+    assert.deepEqual({x:boss.x,y:boss.y},{x:-150,y:20},'right-side fog accompanies an upper-left Boss entrance');
+    for(let i=0;i<30;i++)game.update(0);
+    assert.deepEqual({x:boss.x,y:boss.y},{x:-75,y:62.5});
+    assert.equal(director.state,'midboss-enter');assert.equal(presentation.combatActive,false);
+    assert.equal(aura.x,boss.x);assert.equal(aura.y,boss.y,'the existing effect follows the corrected route');
     for(let i=0;i<90&&!midbossDialogue;i++)game.update(0);
     assert.ok(midbossDialogue);assert.equal(director.state,'dialogue');assert.equal(presentation.combatActive,false);
     assert.equal(presentation.aura[0],aura);assert.equal(presentation.distortion,distortion);
