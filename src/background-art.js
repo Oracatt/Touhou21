@@ -50,10 +50,19 @@ export const SPELL_BACKGROUND_STYLES=Object.freeze([
   ]},
 ].map(style=>{
   const first=style.layers[0],second=style.layers[1];
-  const base={rotation:first.rotation*.18,angle:first.angle*.3,drift:first.drift.map(value=>value*.38),rate:first.rate.map(value=>value*.47),
-    zoom:first.zoom*.35,breath:first.breath*.4,wave:0,grid:1,texture:'base',blend:'alpha',opacity:1,tint:0xe4e4e4ff};
-  const pattern={...first,texture:'pattern',blend:'alpha',opacity:[.46,.48,.42,.50,.43,.45,.46][style.stage-1],tint:style.tint};
-  const echo={...second,texture:'pattern',blend:['add','add','subtract','subtract','subtract','add','add'][style.stage-1],opacity:[.095,.08,.085,.075,.08,.095,.105][style.stage-1],tint:style.tint};
+  // Tempo: the authored table is the slow geometry; these multipliers turn it
+  // into the lively overlay of the originals. The ink base drifts gently, the
+  // pattern spins, swells and shimmers, and its echo counter-spins faster and
+  // trades brightness with it (pulse phases are half a period apart).
+  const scale=(values,k)=>values.map(value=>value*k),pulseRate=.0185+style.stage*.0009;
+  const base={rotation:first.rotation*.3,angle:first.angle*.3,drift:scale(first.drift,.5),rate:scale(first.rate,.8),
+    zoom:first.zoom*.6,breath:first.breath*.9,wave:0,grid:1,texture:'base',blend:'alpha',opacity:1,tint:0xe4e4e4ff};
+  const pattern={...first,rotation:first.rotation*2.2,rate:scale(first.rate,2.4),zoom:first.zoom*1.5,breath:first.breath*3.4,
+    wave:Math.max(first.wave,4),grid:6,flow:2,ripple:5,pulse:.34,pulseRate,pulsePhase:0,
+    texture:'pattern',blend:'alpha',opacity:[.46,.48,.42,.50,.43,.45,.46][style.stage-1],tint:style.tint};
+  const echo={...second,rotation:second.rotation*2.6,rate:scale(second.rate,2.8),zoom:second.zoom*1.7,breath:second.breath*3,
+    wave:Math.max(second.wave,5),grid:6,flow:2.6,ripple:7,pulse:.8,pulseRate:pulseRate*1.3,pulsePhase:Math.PI,
+    texture:'pattern',blend:['add','add','subtract','subtract','subtract','add','add'][style.stage-1],opacity:[.17,.15,.15,.14,.15,.17,.18][style.stage-1],tint:style.tint};
   return Object.freeze({bossId:style.bossId,stage:style.stage,motif:style.motif,
     textures:Object.freeze({base:`assets/spells/${style.bossId}-base.png`,pattern:`assets/spells/${style.bossId}.png`}),
     layers:Object.freeze([base,pattern,echo].map(layer))});

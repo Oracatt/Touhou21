@@ -9,6 +9,15 @@ function phaseFor(seed,key){let word=(seed??0)>>>0;for(let i=0;i<key.length;i++)
 export const SPELL_BACKGROUND_TIMING=Object.freeze({fadeIn:FADE_IN,fadeOut:FADE_OUT,maxCards:MAX_CARDS});
 export function spellBackgroundOpacity(card,clock){const entry=clamp((clock-card.born)/FADE_IN,0,1);return card.retired===null?entry:card.retireAlpha*clamp(1-(clock-card.retired)/FADE_OUT,0,1);}
 
+/** The overlay shimmers: its opacity breathes between (1-pulse)*opacity and
+ * opacity, so the pattern layer and its additive echo can trade brightness
+ * (they are half a period apart). Pure function of the card's age and seed. */
+export function spellLayerOpacity(layer,card){
+  const depth=layer.pulse??0;if(!depth)return layer.opacity;
+  const wave=.5+.5*Math.sin(card.age*layer.pulseRate+card.phase*1.9+(layer.pulsePhase??0));
+  return layer.opacity*(1-depth+depth*wave);
+}
+
 /** A whole-image plane with shared low-density vertices for subtle flow.
  * Overscan covers the viewport diagonal, every drift and the deformation even
  * after rotation. No wrap, repeated tile, atlas crop or out-of-range UV exists. */
@@ -16,20 +25,25 @@ function textureLayer(card,layer,texture,{x,y,width,height},index){
   const time=card.age,phase=card.phase+index*1.37;
   const dx=Math.sin(time*layer.rate[0]+phase)*layer.drift[0],dy=Math.cos(time*layer.rate[1]+phase*.79)*layer.drift[1];
   const rotation=layer.angle+phase*.027+time*layer.rotation+Math.sin(time*.0027+phase)*(layer.sway??0);
-  const pad=Math.hypot(...layer.drift)+layer.wave*2+24;
+  const flow=layer.flow??1,ripple=layer.ripple??0;
+  const pad=Math.hypot(...layer.drift)+(layer.wave+ripple)*2+24;
   const size=Math.hypot(width,height)+pad*2;
   const zoom=1.015+layer.zoom*(1+Math.sin(time*layer.breath+phase))/2;
   const scale=size*zoom/Math.min(texture.width,texture.height),w=texture.width*scale,h=texture.height*scale;
   const c=Math.cos(rotation),s=Math.sin(rotation),cx=x+width/2+dx,cy=y+height/2+dy;
   const vertices=[],indices=[],grid=layer.grid;
-  const color=alpha(layer.tint,card.opacity*layer.opacity);
+  const color=alpha(layer.tint,card.opacity*spellLayerOpacity(layer,card));
   for(let row=0;row<=grid;row++)for(let column=0;column<=grid;column++){
     const u=column/grid,v=row/grid,lx=(u-.5)*w,ly=(v-.5)*h;
     // Waves deform the image plane rather than sample neighbouring images.
     // All cells share their edge vertices, so movement cannot open seams.
-    const waveX=Math.sin(v*TAU*2+time*.024+phase)*layer.wave;
-    const waveY=Math.sin(u*TAU*2-time*.019+phase*.71)*layer.wave*.65;
-    vertices.push([cx+lx*c-ly*s+waveX,cy+lx*s+ly*c+waveY,layer.mirror?1-u:u,v,color]);
+    const waveX=Math.sin(v*TAU*2+time*.024*flow+phase)*layer.wave;
+    const waveY=Math.sin(u*TAU*2-time*.019*flow+phase*.71)*layer.wave*.65;
+    // A ring swell runs outward from the centre of the plane, like a ripple
+    // travelling through ink, so the pattern never just slides or spins.
+    const rx=lx*c-ly*s,ry=lx*s+ly*c,radius=Math.hypot(rx,ry)||1;
+    const swell=ripple?Math.sin(radius/(Math.max(w,h)/2)*TAU*1.25-time*.045*flow+phase)*ripple:0;
+    vertices.push([cx+rx+waveX+rx/radius*swell,cy+ry+waveY+ry/radius*swell,layer.mirror?1-u:u,v,color]);
   }
   for(let row=0;row<grid;row++)for(let column=0;column<grid;column++){
     const a=row*(grid+1)+column,b=a+1,d=a+grid+1,e=d+1;indices.push(a,b,e,a,e,d);

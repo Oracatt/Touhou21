@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {DrawList} from '@ts-stg/thlib';
 import {BACKGROUND_VIEWPORT,StageBackground,cameraForStage,lookAt3d,multiply3d,perspective3d,project3d,transform3d,viewport3d} from '../src/background.js';
 import {SCENERY_ATLASES,SPELL_BACKGROUND_STYLES,sceneryRegion} from '../src/background-art.js';
-import {DynamicSpellBackground,SPELL_BACKGROUND_TIMING} from '../src/spell-background.js';
+import {DynamicSpellBackground,SPELL_BACKGROUND_TIMING,spellLayerOpacity} from '../src/spell-background.js';
 
 const close=(a,b,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`${a} != ${b}`);
 function artFixture({width=1024,height=1024,baseSize=[width,height],patternSize=[width,height]}={}){
@@ -223,7 +223,7 @@ test('whole-image spell planes cover every playfield corner through rotation, dr
       }
       assert.ok(meshes[0][2].every(vertex=>(vertex[4]&255)===255),'the primary image must be opaque at steady state');
       assert.ok(meshes[1][2].every(vertex=>(vertex[4]&255)<=140),'primary pattern opacity is independent of the opaque base');
-      assert.ok(meshes[2][2].every(vertex=>(vertex[4]&255)<30),'echo flow must remain low alpha');
+      assert.ok(meshes[2][2].every(vertex=>(vertex[4]&255)<=51),'the additive echo shimmers but never exceeds one fifth alpha');
     }
     owner.destroy();
   }
@@ -277,7 +277,8 @@ test('each Boss uses two different texture handles and explicit, independent ble
       else if(command[0]==='mesh'){
         const layer=profile.layers[index++];blends.add(layer.blend);
         assert.deepEqual(activeBlend,['blendFactors','srcAlpha',layer.blend==='alpha'?'oneMinusSrcAlpha':'one',layer.blend==='subtract'?'reverseSubtract':'add','zero','one','add']);
-        assert.ok(command[2].every(vertex=>(vertex[4]&255)===Math.round(layer.opacity*(layer.tint&255))));
+        const shimmer=spellLayerOpacity(layer,owner.visibleCards()[0]);assert.ok(shimmer<=layer.opacity&&shimmer>=layer.opacity*(1-(layer.pulse??0))-1e-12);
+        assert.ok(command[2].every(vertex=>(vertex[4]&255)===Math.round(shimmer*(layer.tint&255))));
         assert.ok(command[2].every(vertex=>(vertex[4]>>>8)===(layer.tint>>>8)),'each layer uses its own tint');
       }
     }
@@ -296,7 +297,7 @@ test('the independent base alone covers roads after the 60-frame entry and every
   game.frame=62;game.spell.active=false;owner.update(game);game.frame=74;owner.update(game);
   const card=owner.visibleCards()[0],profile=SPELL_BACKGROUND_STYLES[2],draw=new DrawList();close(card.opacity,.5);assert.equal(owner.coversRoad(card),false);owner.drawCard(draw,card);
   const meshes=draw.commands.filter(command=>command[0]==='mesh');
-  meshes.forEach((command,index)=>assert.ok(command[2].every(vertex=>(vertex[4]&255)===Math.round(.5*profile.layers[index].opacity*(profile.layers[index].tint&255)))));
+  meshes.forEach((command,index)=>assert.ok(command[2].every(vertex=>(vertex[4]&255)===Math.round(.5*spellLayerOpacity(profile.layers[index],card)*(profile.layers[index].tint&255)))));
   const paused=owner.snapshot();owner.update({...game,frame:1000,paused:true});assert.deepEqual(owner.snapshot(),paused);
   game.frame=86;owner.update(game);assert.equal(owner.visibleCards().length,0);owner.destroy();
 });

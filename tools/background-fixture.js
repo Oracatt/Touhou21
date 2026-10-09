@@ -2,7 +2,7 @@ import {DrawList} from '@ts-stg/thlib';
 import {GameArt} from '../src/art.js';
 import {StageBackground} from '../src/background.js';
 import {spellBackgroundStyle} from '../src/background-art.js';
-import {SPELL_BACKGROUND_TIMING} from '../src/spell-background.js';
+import {SPELL_BACKGROUND_TIMING,spellLayerOpacity} from '../src/spell-background.js';
 
 /** Native-only observation of the production renderer. No replacement layers,
  * authored image edits, shader changes or gameplay clock are introduced here. */
@@ -51,7 +51,7 @@ export function createBackgroundFixture(scenarioPath){
         assert(mesh.path===profile.textures[layer.texture],'Submitted image order agrees with the authored layer descriptor');
         assert(mesh.blend.join(',')===expectedBlend.join(','),'Each layer independently selects its authored color blend and preserves target alpha');
         assert(mesh.scope!==meshes[index-1]?.scope,'Separate images do not inherit an earlier blend scope');
-        const alpha=Math.round(card.opacity*layer.opacity*(layer.tint&255)),rgb=layer.tint&0xffffff00;
+        const alpha=Math.round(card.opacity*spellLayerOpacity(layer,card)*(layer.tint&255)),rgb=layer.tint&0xffffff00;
         assert(mesh.vertices.every(vertex=>(vertex[4]&255)===alpha&&(vertex[4]&0xffffff00)===rgb),'Actual vertex alpha and tint match this layer, not a hard-coded index rule');
       });
       if(card.opacity===1&&profile.layers[0].blend==='alpha'&&profile.layers[0].opacity===1){
