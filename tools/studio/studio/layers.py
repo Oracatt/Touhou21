@@ -156,6 +156,41 @@ def tpt_hits(bar, pitch, vel=118):
     return [Note(bar * 4, 4, midi(pitch), vel, '', {})]
 
 
+def figure_bass(chords, low, high, figure, step, vel=72, gate=0.5):
+    """Root-position bass figures, one symbol per step: R root, O octave, 5 the chord's own fifth (diminished
+    in a dim chord), 3 its third, - rest. The root is the lowest bass pitch class within [low, high]."""
+    out = []
+    for c in chords:
+        r = next(p for p in range(midi(low), midi(high) + 1) if p % 12 == c.bass)
+        tone = {'R': r, 'O': r + 12, '5': r + c.intervals[2], '3': r + c.intervals[1]}
+        for k in range(int(round(c.length / step))):
+            sym = figure[k % len(figure)]
+            if sym != '-':
+                out.append(Note(c.beat + k * step, step, tone[sym], vel + (8 if k == 0 else 0), '.', {'gate': gate}))
+    return out
+
+
+def legato(notes):
+    """Bow every note into the next (long articulation even for short values)."""
+    for n in notes:
+        n.art += '_'
+        n.extra['gate'] = 1.0
+    return notes
+
+
+def battery_hit(name, beat, vel, seconds=None):
+    """One stroke of the orchestral battery; `seconds` cuts a long sound such as the snare roll."""
+    extra = {'drum': name}
+    if seconds:
+        extra['cut'] = seconds
+    return Note(beat, 1.0, lib.BATTERY[name], vel, '', extra)
+
+
+def cymbal_swell(target_beat, bpm, vel=100):
+    """The suspended-cymbal crescendo peaks about 1.35 s after it starts; aim the peak at `target_beat`."""
+    return battery_hit('SW', target_beat - 1.35 * bpm / 60.0, vel)
+
+
 def fit(notes, low, high):
     """Move notes by whole octaves into [low, high] (for doubling a line on a narrower instrument)."""
     lo, hi = midi(low), midi(high)

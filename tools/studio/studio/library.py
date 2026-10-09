@@ -9,8 +9,8 @@ from functools import lru_cache
 import numpy as np
 
 from . import synth
-from .core import SR
-from .sampler import Instrument, Region, TuneCache, from_files, load_sfz, with_onsets
+from .core import SR, SEMI
+from .sampler import _FILE_NOTE, Instrument, Region, TuneCache, from_files, load_sfz, with_onsets
 
 ROOT = pathlib.Path(__file__).resolve().parents[3] / 'build' / 'samples'
 VSCO = ROOT / 'VSCO-2-CE'
@@ -144,6 +144,16 @@ def violins():
 
 
 @lru_cache(None)
+def solo_violin():
+    arts = {'spic': _vsco('svn-spic', 'Strings/Solo Violin/spic', False, release=0.12, veltrack=50, pre_cap=0.06, pre_extra=0.02),
+            'sus': _vsco('svn-sus', 'Strings/Solo Violin/Arco Vib', True, glob='*_f.wav', trim_db=-24, release=0.28, veltrack=45,
+                         pre_cap=0.06, pre_extra=0.03),
+            'pizz': _vsco('svn-pizz', 'Strings/Solo Violin/Pizz', False, glob='*_f_*.wav', release=0.3, veltrack=50, pre_cap=0.02)}
+    TUNE.save()
+    return Voice(arts, short_long('spic', 'sus', None, 0.2), attack={'sus': 0.03})
+
+
+@lru_cache(None)
 def violas():
     return _strings('vla', 'Strings/Viola Section/spic', 'Strings/Viola Section/susvib')
 
@@ -231,6 +241,99 @@ def gong():
 @lru_cache(None)
 def triangle():
     return _hits('triangle', 'VSCO 1 Percussion/varMetal/triangle/1/triangle1_hit_*.wav', ('pp', 'mp', 'mf'), max_len=4.0)
+
+
+def _split(entries, extend):
+    """(root, path) pairs -> key ranges that meet halfway between neighbouring roots."""
+    entries = sorted(entries)
+    keys = [int(round(root)) for root, _ in entries]
+    out = []
+    for i, (root, path) in enumerate(entries):
+        lo = keys[i] - extend if i == 0 else (keys[i - 1] + keys[i]) // 2 + 1
+        hi = keys[i] + extend if i == len(entries) - 1 else (keys[i] + keys[i + 1]) // 2
+        out.append((lo, hi, root, path))
+    return out
+
+
+def _organ_rank(name, folder, key_of, **policy):
+    """Organ pipes are numbered, not named: `key_of(number)` gives the key, the measured deviation near it the fine tuning."""
+    entries = [(key_of(int(re.search(r'_(\d+)(?:_rr\d+)?$', f.stem).group(1))), str(f.resolve())) for f in sorted((VSCO / folder).glob('*Man3*.wav'))]
+    regions = []
+    for lo, hi, root, path in _split(entries, 7):
+        trim, pre = TUNE.onset(path)
+        regions.append(Region(path=path, lokey=lo, hikey=hi, center=float(root), tune=TUNE.correction(path, root, True), trim=trim, pre=pre))
+    return Instrument(name, regions, **policy)
+
+
+@lru_cache(None)
+def organ():
+    """Two manual ranks: a quiet flute stop for soft chords and the open diapason chorus from velocity 84."""
+    arts = {'quiet': _organ_rank('organ-quiet', 'Keys/Organ/Quiet', lambda n: n - 86, release=0.4, pre_cap=0.03),
+            'loud': _organ_rank('organ-loud', 'Keys/Organ/Loud', lambda n: n + 35, release=0.45, pre_cap=0.03)}
+    TUNE.save()
+    return Voice(arts, lambda n, s: n.extra.get('articulation') or ('loud' if n.vel >= 84 else 'quiet'), attack={'quiet': 0.02, 'loud': 0.015})
+
+
+@lru_cache(None)
+def bells():
+    """Tubular bells. Their strike note (an octave below the 4th partial) is the note in the file name, so the names
+    are taken as they are instead of measuring a fundamental that the bell does not have."""
+    entries = []
+    for f in sorted((VSCO / 'Percussion').glob('TB_hit_*.wav')):
+        letter, acc, octave = _FILE_NOTE.findall(f.stem)[-1]
+        entries.append((12 * (int(octave) + 1) + SEMI[letter] + (1 if acc == '#' else -1 if acc == 'b' else 0), str(f.resolve())))
+    regions = [Region(path=path, lokey=lo, hikey=hi, center=float(root)) for lo, hi, root, path in _split(entries, 5)]
+    inst = Instrument('bells', with_onsets(regions, TUNE), one_shot=True, veltrack=55, max_len=6.0, pre_cap=0.01)
+    TUNE.save()
+    return Voice({'n': inst}, lambda n, s: 'n')
+
+
+DYNAMICS = ('ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff')
+
+
+def _layer(stem):
+    m = re.search(r'_v(\d+)', stem)
+    if m:
+        return int(m.group(1))
+    m = re.search(r'_(ppp|pp|p|mp|mf|f|ff|fff)(?:_|$)', stem)
+    return DYNAMICS.index(m.group(1)) + 1 if m else 1
+
+
+def _keyed(key, pattern):
+    """One unpitched sound on one key: velocity layers from `_vN` or a dynamic mark, round robins from `_rrN`."""
+    files = sorted(VSCO.glob(pattern))
+    if not files:
+        raise ValueError(f'no samples for {pattern}')
+    layers = sorted({_layer(f.stem) for f in files})
+    cuts = np.linspace(0, 128, len(layers) + 1).astype(int)
+    regions = []
+    for i, layer in enumerate(layers):
+        members = sorted((f for f in files if _layer(f.stem) == layer), key=lambda f: f.stem)
+        for seq, f in enumerate(members, 1):
+            regions.append(Region(path=str(f.resolve()), lokey=key, hikey=key, center=float(key), keytrack=0.0,
+                                  lovel=max(1, int(cuts[i])), hivel=int(cuts[i + 1]) - 1 if i < len(layers) - 1 else 127,
+                                  seq=seq, seq_len=len(members)))
+    return regions
+
+
+# Orchestral battery, the concert-hall counterpart of KIT: one key per instrument and stroke.
+BATTERY = {'BD': 35, 'TAP': 37, 'SD': 38, 'ROLL': 39, 'SN': 40, 'CR': 49, 'SC': 51, 'SW': 52, 'GO': 53, 'TB': 54,
+           'CL': 75, 'LH': 76, 'LL': 77, 'TR': 81}
+_BATTERY_FILES = {
+    'BD': 'Percussion/BDrumNewhit_*.wav', 'TAP': 'Percussion/Snare2-taps_*.wav', 'SD': 'Percussion/Snare2-HitSN_*.wav',
+    'ROLL': 'Percussion/Snare2-rollSN_*.wav', 'SN': 'Percussion/Snare2-HitNS_*.wav', 'CR': 'Percussion/cymbal-crash1_*.wav',
+    'SC': 'Percussion/susCymb1-hit_*.wav', 'SW': 'Percussion/susCymb1-cresc-Short_*.wav', 'GO': 'Percussion/gongHit_*.wav',
+    'TB': 'Percussion/Tamb1-Hit_*.wav', 'CL': 'Percussion/Claves1_Hit_*.wav', 'LH': 'Percussion/LogDrumHi_MedM_*.wav',
+    'LL': 'Percussion/LogDrumLo_MedM_*.wav', 'TR': 'Percussion/Triangle3-Hit_*.wav',
+}
+
+
+@lru_cache(None)
+def battery():
+    regions = [r for name, key in BATTERY.items() for r in _keyed(key, _BATTERY_FILES[name])]
+    inst = Instrument('battery', with_onsets(regions, TUNE), one_shot=True, veltrack=45, max_len=8.0, pre_cap=0.01)
+    TUNE.save()
+    return DrumVoice(inst)
 
 
 class DrumVoice:

@@ -20,6 +20,7 @@ PROBES = {
     'bassoon': ['C2', 'G2', 'D3', 'A3'], 'piccolo': ['D6', 'A6'], 'violins': ['A3', 'D5', 'A5'], 'violas': ['C3', 'D4', 'A4'],
     'celli': ['D2', 'D3', 'A3'], 'contrabass': ['D1', 'A1', 'E2'], 'glock': ['D6', 'A6'], 'marimba': ['C3', 'G3', 'D4', 'A4'],
     'xylo': ['C5', 'G5', 'D6'], 'harp': ['D3', 'A4', 'D5'], 'timpani': ['D2', 'A1'],
+    'solo_violin': ['A3', 'D5', 'A5', 'D6'], 'organ': ['Bb2', 'F3', 'D4', 'Bb4', 'F5'],
 }
 want = sys.argv[1:] or list(PROBES)
 rng = Rng(5).stream('probe')
