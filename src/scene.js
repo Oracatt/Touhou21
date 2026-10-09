@@ -104,7 +104,11 @@ export class CampaignScene extends TouhouGame {
       queue.enqueuePriority(style.drawPriority,draw=>this.text.draw(draw,label,76,18,{size:16,width:455,height:25,color:0xf8e8caff,alpha:(style.color>>>24)/255}));};
     this.director=new CampaignDirector({stages,midbosses:MIDBOSSES,character:config.character,difficulty:config.difficulty,mode:config.mode,stageId:config.stageId,spellId:config.spellId,seed:config.seed,
       callbacks:{
-        music:id=>{music.play(id,true);this.bgmCaption={title:musicTrack(id).title,age:0};},stageStart:stage=>this.startStage(stage),
+        music:(id,{silenceFrames=0}={})=>{
+          const showCaption=()=>{if(!this.destroyed)this.bgmCaption={title:musicTrack(id).title,age:0};};
+          if(silenceFrames){this.bgmCaption=null;music.play(id,true,{silenceFrames,onStart:showCaption});}
+          else{music.play(id,true);showCaption();}
+        },stageStart:stage=>this.startStage(stage),
         bossSpawn:(enemy,metadata)=>this.decorateBoss(enemy,metadata),
         spellStart:(spec,metadata)=>this.spellStart(spec,metadata),
         dialogue:(lines,context)=>this.openDialogue(lines,context),

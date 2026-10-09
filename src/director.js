@@ -6,6 +6,9 @@ import {bossNonspellHealth,midbossNormalHealth,midbossSpellHealth} from './boss-
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 /** Frames a defeated recurring midboss hangs in place before she retreats. */
 const MIDBOSS_DEFEAT_PAUSE=75;
+// TH20's Boss WAVs contain about 0.7 s of near-silence before their first note.
+// Our authored tracks start immediately, so this game's cue supplies that lead-in.
+const BOSS_MUSIC_SILENCE_FRAMES=42;
 const MODES=new Set(['normal','extra','stage-practice','spell-practice']);
 const actorPosition=(enemy,x,y)=>{enemy.x=Math.fround(x);enemy.y=Math.fround(y);
   Object.assign(enemy.motion.position,{x:enemy.x,y:enemy.y});Object.assign(enemy.animation,{x:enemy.x,y:enemy.y});};
@@ -209,7 +212,8 @@ export class CampaignDirector{
   _appearBoss(game){
     if(this.bossAppeared)return;this.bossAppeared=true;this._createBoss(game,{prepared:true});
   }
-  _startBossMusic(){if(this.bossMusicStarted)return;this.bossMusicStarted=true;this.callbacks.music?.(this.stage.bgmBoss);}
+  _startBossMusic(){if(this.bossMusicStarted)return;this.bossMusicStarted=true;
+    this.callbacks.music?.(this.stage.bgmBoss,{silenceFrames:BOSS_MUSIC_SILENCE_FRAMES});}
   _cue(name){if(this.destroyed||this.state!=='dialogue'||this.dialogueKind!=='before')return;
     if(name==='appear')this._appearBoss(this.game);else if(name==='music')this._startBossMusic();}
   _createBoss(game,{practice=false,prepared=false}={}){
