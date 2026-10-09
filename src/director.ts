@@ -72,7 +72,7 @@ export class CampaignDirector{
     this.roadPlan=createRoadPlan(stage.id,stage.roadFrames);this.roadWaveIndex=0;this.roadSectionIndex=-1;
     game.session.stage=stage.id;game.spell.stage=stage.id;game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.context.dialogue=false;game.context.inputBlocked=false;
-    game.setBoss(null);game.stopBossCombat();game.bossPresentation?.clearCharges();this.callbacks.stageStart?.(stage);
+    game.setBossEffects({aura:false,distortion:false});game.setBoss(null);game.stopBossCombat();game.bossPresentation?.clearCharges();this.callbacks.stageStart?.(stage);
     this.callbacks.music?.(this.mode==='spell-practice'?stage.bgmBoss:stage.bgmStage);
     if(this.mode==='spell-practice')this._spawnBoss(game,{practice:true});else this.state='road';
   }
@@ -112,7 +112,8 @@ export class CampaignDirector{
       deathBank:game.banks.effect,drop:[]}) as CampaignBoss;
     game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
     boss.kind='midboss';boss.bossId=this.midbossSpec?.bossId??this.stage.bossId;boss.maximumHp=hp;boss.invulnerable=true;this.boss=boss;
-    game.enterBoss(boss,{entrance:{mode:'flyIn',readyFrame:60,follow:boss}});
+    game.enterBoss(boss,{profile:'midboss',entrance:{mode:'halfFog',readyFrame:60,follow:boss}});
+    game.setBossEffects({aura:true,distortion:true});
     game.setBossHud({name:this.stage.midbossName??this.stage.bossId,remainingSpells:this.midbossPhases.filter(p=>p.spell).length,dialogue:true,
       healthBars:[{current:hp,maximum:hp,phaseHealth:hp,markers:[]}]});
     this.callbacks.bossSpawn?.(boss,{bossId:boss.bossId,midboss:true});
@@ -123,7 +124,7 @@ export class CampaignDirector{
     const phase=this.midbossPhases[index],boss=this.boss!,survival=!!phase.spec?.survival;this.midbossDuration=phase.duration;
     boss.invulnerable=survival;boss.motion.flags=0;boss.motion.speed=0;Object.assign(boss.motion.delta,{x:0,y:0,z:0});
     phase.spell?boss.prepareSpellHealth(phase.hp):boss.prepareNormalHealth(phase.hp);boss.maximumHp=phase.hp;
-    game.resumeBoss(boss);boss.invulnerable=survival;game.startBossCombat();
+    game.resumeBoss(boss);boss.invulnerable=survival;game.startBossCombat();game.setBossEffects({aura:true,distortion:true});
     game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({dialogue:false,remainingSpells:this.midbossPhases.slice(index+1).filter(p=>p.spell).length,
       healthBars:[{current:phase.hp,maximum:phase.hp,phaseHealth:phase.hp,markers:[],animateFill:false}]});
@@ -180,12 +181,14 @@ export class CampaignDirector{
       // A broken midboss does not bolt at once: she hangs in place for a beat, then retreats.
       // A timed-out one is already leaving on her own.
       this.pendingEscape={boss,source,timeout,delay:timeout?0:MIDBOSS_DEFEAT_PAUSE};
-      // Combat ownership (HUD, targeting) ends now even though the body lingers.
-      if(this.pendingEscape.delay)game.setBoss(null);this.midbossExitFrames=70+this.pendingEscape.delay;
+      // Combat stops while the same attached body, aura and distortion keep
+      // updating through the hold and flight. Public removal ends them together.
+      this.midbossExitFrames=70+this.pendingEscape.delay;
       if(!this.pendingEscape.delay)this._startMidbossEscape(game);
     }else{
+      game.setBossEffects({aura:false,distortion:false});
       game.bossPresentation?.beginDeath({x:boss.x,y:boss.y,follow:null,delayFrames:0});
-      game.removeBoss(boss);game.setBoss(null);this.boss=null;
+      game.removeBoss(boss);this.boss=null;
     }
   }
   _startMidbossEscape(game:TouhouGame){
@@ -244,13 +247,15 @@ export class CampaignDirector{
     game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
     boss.kind='boss';boss.bossId=this.phases[0].midboss?this.midbosses.find(entry=>entry.stageId===this.stageId)?.bossId??'fusae':this.stage.bossId;
     boss.invulnerable=true;this.boss=boss;
-    game.enterBoss(boss,{entrance:{mode:practice?'flyIn':'blackFog',follow:boss}});
+    game.setBossEffects({aura:false,distortion:false});
+    game.enterBoss(boss,{profile:'boss',entrance:{mode:practice?'flyIn':'blackFog',follow:boss}});
     game.setBossHud({name:this.stage.bossName??this.stage.bossId,dialogue:true,...this.phasePlan!.hudState(0)});
     this.callbacks.bossSpawn?.(boss,{bossId:boss.bossId,midboss:false});
   }
   _dialogue(game:TouhouGame,kind:DialogueKind,continuation:()=>void,linesOverride:DialogueLine[]|null=null,cues:DialogueCues|null=null){
     this.state='dialogue';this.dialogueKind=kind;this.dialogueContinuation=continuation;
-    game.stopBossCombat();game.bossPresentation?.clearCharges();game.context.bossSuppressed=true;game.context.enemyContactBlocked=true;
+    game.stopBossCombat();if(kind!=='midboss')game.setBossEffects({aura:false,distortion:false});
+    game.bossPresentation?.clearCharges();game.context.bossSuppressed=true;game.context.enemyContactBlocked=true;
     game.context.dialogue=true;game.context.inputBlocked=true;
     if(this.boss){this.boss!.invulnerable=true;game.setBossHud({dialogue:true});}
     const route=this.character?'marisa':'reimu',lines=linesOverride??this.stage.dialogues?.[route]?.[kind]??[];
@@ -270,7 +275,7 @@ export class CampaignDirector{
     boss.primaryFlags&=~0x93;boss.invulnerable=!!phase.spec?.survival;
     boss.maximumHp=phase.hp;phase.spell?boss.prepareSpellHealth(phase.hp):boss.prepareNormalHealth(phase.hp);
     game.resumeBoss(boss);boss.primaryFlags&=~0x93;boss.invulnerable=!!phase.spec?.survival;
-    game.startBossCombat();game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
+    game.startBossCombat();game.setBossEffects({aura:true,distortion:true});game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({name:this.stage.bossName??this.stage.bossId,dialogue:false,...this.phasePlan!.hudState(index)});
     // Ring fill must be finished before an attack begins. A shared ring carries
     // its remaining segment from nonspell into its spell without a new refill.
@@ -317,7 +322,7 @@ export class CampaignDirector{
     }else if(name==='bossescape'&&(data as {enemy:TouhouEnemy}).enemy===this.boss&&this.state==='midboss-exit'){
       this.events.push({event:'midboss-escaped',stage:this.stageId,frame:this.totalClock});this.boss=null;
     }else if(name==='bossburst'&&(data as {enemy:TouhouEnemy}).enemy===this.boss&&this.state==='boss-defeat'){
-      game.stopBossCombat();
+      game.stopBossCombat();game.setBossEffects({aura:false,distortion:false});
       game.items.spawnBossDrops((data as {enemy:TouhouEnemy}).enemy,{counts:{[TouhouItemType.LARGE_POWER]:3,[TouhouItemType.POINT]:12},
         centerType:TouhouItemType.LIFE_FRAGMENT,mode:game.session.mode,timedOut:!!this.finalResult?.timeout,
         survival:!!this.finalResult?.survival});
@@ -327,7 +332,7 @@ export class CampaignDirector{
     }
   }
   _clearStage(game:TouhouGame){
-    game.setBoss(null);this.boss=null;this.state='stage-clear';game.context.bossSuppressed=true;game.context.enemyContactBlocked=true;
+    game.setBossEffects({aura:false,distortion:false});game.setBoss(null);this.boss=null;this.state='stage-clear';game.context.bossSuppressed=true;game.context.enemyContactBlocked=true;
     game.context.inputBlocked=true;
     this.stageContinuation=()=>{
       if(this.mode==='stage-practice'||this.mode==='extra'||this.stageId===6)this._complete(game);
@@ -339,7 +344,7 @@ export class CampaignDirector{
   continueStage(){if(this.state!=='stage-clear'||!this.stageContinuation)return false;
     const next=this.stageContinuation;this.stageContinuation=null;next();return true;}
   _complete(game:TouhouGame){
-    if(this.completed)return;this.completed=true;this.state='complete';game.stopBossCombat();game.context.bossSuppressed=true;
+    if(this.completed)return;this.completed=true;this.state='complete';game.stopBossCombat();game.setBossEffects({aura:false,distortion:false});game.context.bossSuppressed=true;
     game.context.enemyContactBlocked=true;game.context.inputBlocked=true;
     const continues=game.session.continues??game.player.continues??0;
     this.callbacks.complete?.({ending:this.mode==='extra'?'extra':continues?'bad':'good',character:this.character,
@@ -402,7 +407,7 @@ export class CampaignDirector{
     completed:this.completed,dialogueKind:this.dialogueKind??null,captures:this.captures.map(record=>({...record})),
     rng:this.rng.state,totalClock:this.totalClock,pattern:this.phase?.spell?this.phase.spec.id:null};}
   destroy(){if(this.destroyed)return;this.destroyed=true;this.dialogueContinuation=null;this.stageContinuation=null;
-    if(this.game){this.game.stage=this.originalStage;this.game.onEvent=this.originalEvent;
+    if(this.game){this.game.stopBossCombat();this.game.setBossEffects({aura:false,distortion:false});this.game.stage=this.originalStage;this.game.onEvent=this.originalEvent;
       if(this.boss?.alive)this.game.removeBoss(this.boss);Object.assign(this.game.context,this.originalInteraction);}
   }
 }

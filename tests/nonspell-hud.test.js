@@ -101,19 +101,19 @@ test('spell and nonspell warning thresholds remain owned by one public HUD updat
   }
 });
 
-test('an escaping midboss queues its same body after the public presentation detaches it',()=>{
+test('an escaping midboss queues its same body through the still-attached public presentation',()=>{
   const f=fixture({midboss:true});enterCombat(f,true);
   const boss=f.game.director.boss,queued=[],drawn=[];
   const queue={enqueue:(layer,callback,options)=>queued.push({layer,callback,options})};
   f.game.bossSprites.draw=(_draw,enemy,id,options)=>drawn.push({enemy,id,options});
   const escape=f.game.beginBossEscape(boss,{target:{x:192,y:-32},duration:60,easing:4});
-  assert.equal(f.game.context.boss,null);assert.equal(f.game.bossPresentation.boss,null);assert.equal(escape.alive,true);
+  assert.equal(f.game.context.boss,boss);assert.equal(f.game.bossPresentation.boss,boss);assert.equal(escape.alive,true);
   boss.draw(queue,f.game.view);assert.equal(queued.length,1);assert.equal(queued[0].layer,7);assert.equal(queued[0].options.order,0);
   queued[0].callback({});assert.equal(drawn.length,1);assert.equal(drawn[0].enemy,boss);assert.equal(drawn[0].options.height,55);
   f.game.removeBoss(boss);queued.length=0;boss.draw(queue,f.game.view);assert.equal(queued.length,0,'The retired body cannot be queued again');f.dispose();
   const entering=fixture();entering.game.update(0);
   assert.equal(entering.game.bossPresentation.bossVisible,false,'The ordinary black-fog entrance still hides its body');
-  entering.game.director.boss.draw(queue,entering.game.view);assert.equal(queued.length,0,'The escape render path must not bypass a normal fog entrance');entering.dispose();
+  entering.game.director.boss.draw(queue,entering.game.view);assert.equal(queued.length,0,'The shared body renderer must not bypass a normal fog entrance');entering.dispose();
 });
 
 test('real midboss defeat keeps the body drawn on every held and escaping frame until retirement',()=>{
@@ -127,13 +127,14 @@ test('real midboss defeat keeps the body drawn on every held and escaping frame 
       game.context.damageEnemy(boss,1000000,{kind:'qa-public-damage',x:game.player.x,y:game.player.y});game.update(0);
     }
     assert.equal(game.director.state,'midboss-exit');assert.equal(game.director.pendingEscape?.boss,boss);
-    assert.equal(game.context.boss,null);assert.equal(game.bossPresentation.boss,null);assert.equal(game.bossEscapes.length,0);
+    assert.equal(game.context.boss,boss);assert.equal(game.bossPresentation.boss,boss);assert.equal(game.bossEscapes.length,0);
     const origin={x:boss.x,y:boss.y},delay=game.director.pendingEscape.delay;let heldFrames=0,escapeFrames=0,moved=false;
     const checkBody=()=>{
       queued.length=0;drawn.length=0;boss.draw(queue,game.view);
       assert.equal(queued.length,1,`Alive midboss body must be queued at exit frame ${game.director.phaseFrame}`);
       assert.equal(queued[0].layer,7);assert.equal(queued[0].options.order,0);assert.deepEqual(drawn,[boss]);
-      assert.equal(game.context.boss,null);assert.equal(game.bossPresentation.boss,null);
+      assert.equal(game.context.boss,boss);assert.equal(game.bossPresentation.boss,boss);
+      assert.equal(game.bossPresentation.combatActive,false);
       assert.equal(game.bossHud.timerVisible,false,'Body visibility must not reactivate combat HUD');
     };
     while(game.director.pendingEscape){

@@ -3,7 +3,7 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/AIWorkspace/TS-STG",
-  "commit": "ea404dfd820c68eb17b6701ecc35ccdae210403f",
+  "commit": "c030f926d7516731f704d040a5f2b48015fe2989",
   "backend": "v8",
   "supportedBackends": [
     "v8",
@@ -1313,8 +1313,8 @@
       },
       {
         "path": "src/touhou/boss-entrance.ts",
-        "bytes": 8084,
-        "sha256": "d6b3fa86c8b437f2738ddb2479e8585f16c61a5d0ce69f64b4c7793419e60823"
+        "bytes": 8786,
+        "sha256": "27055c5b4f8cde66f903944a5f657853f278e5bf6a363a931809e0bb62dfdbd7"
       },
       {
         "path": "src/touhou/boss-escape.ts",
@@ -1343,8 +1343,8 @@
       },
       {
         "path": "src/touhou/boss-presentation.ts",
-        "bytes": 29102,
-        "sha256": "2438f5e55f9db9834cbbe38bfaa5ca7476e5359064cd5e567cd7ca22943ff983"
+        "bytes": 29879,
+        "sha256": "cab4ec975afa98518fc67da03a3b6bb56e9ea3788f3f6665afb81104a4bd9e3d"
       },
       {
         "path": "src/touhou/bullet-clear-wave.ts",
@@ -1418,8 +1418,8 @@
       },
       {
         "path": "src/touhou/game.ts",
-        "bytes": 39781,
-        "sha256": "7b9f7f2ea049c24dc62d78b53d62a59421f9d26bd395a0a6470395ae3627dd7d"
+        "bytes": 40281,
+        "sha256": "5594f3e0706ac23fc0c0f4ce86e2efc38ab915a4042be23fc4d11b24b45907fe"
       },
       {
         "path": "src/touhou/gameplay-compositor.ts",
@@ -1627,7 +1627,7 @@
         "sha256": "bf6dbafbd67e762ac716826a68e6ecc17894b0e110ad177446857a77a1fadbe3"
       }
     ],
-    "sourceSha256": "59750ba87ea15ef4801072d6175f82a45296091b20e40c7b8372d925f48ee13c",
+    "sourceSha256": "a4e6df1b9bcc51d013e20c76b2fb658430d7530e909c0cdd3450b6b87b8f6315",
     "outputFiles": [
       {
         "path": "dist/animation.d.ts",
@@ -2511,23 +2511,23 @@
       },
       {
         "path": "dist/touhou/boss-entrance.d.ts",
-        "bytes": 3259,
-        "sha256": "505dc0da72e72e9c4e254964261c0db60e6beb803acefdcd2e836688a007e66a"
+        "bytes": 3416,
+        "sha256": "bcd7a15735cca9492ed028abca788f9e4e5fbd3522cde3ad276e9ab0c74c4cf0"
       },
       {
         "path": "dist/touhou/boss-entrance.d.ts.map",
-        "bytes": 2399,
-        "sha256": "6a3e2485a1e83d6c2d4b499499810af90bd8b5ad1c737f003c6e0a7161c43d9b"
+        "bytes": 2411,
+        "sha256": "cc09bb60f99f25dc20ae1d2bb2d2ac8dca0d4cbc8809d68742dcb23b42bb1bb7"
       },
       {
         "path": "dist/touhou/boss-entrance.js",
-        "bytes": 6859,
-        "sha256": "51f1444ed2cde76737660f69c42160379211e271c75ed51af78569aa69053e52"
+        "bytes": 7576,
+        "sha256": "5115d4d0d2348ac2a1d8e279fb4d2f699f9175f9e20ba31c3e4ada4c7fb97e45"
       },
       {
         "path": "dist/touhou/boss-entrance.js.map",
-        "bytes": 6617,
-        "sha256": "9e24d1999cfe4a34efefa48d26205a21e975df1b0789b5e918d2a8dbb1e32b1e"
+        "bytes": 7191,
+        "sha256": "349a86bdef94103d9871a923d9723fb6c18e5d96d00b2b09004bd51424fd5834"
       },
       {
         "path": "dist/touhou/boss-escape.d.ts",
@@ -2631,23 +2631,23 @@
       },
       {
         "path": "dist/touhou/boss-presentation.d.ts",
-        "bytes": 11356,
-        "sha256": "c190eae44060d3d2f1d3f6ca9ac8c598e4f6690b71d17ab96ac63bfd84dfc2af"
+        "bytes": 11558,
+        "sha256": "c34a22ff7ca627dfe4420effe5917ccf870bf944bcb9d0d6050709f8fb353db4"
       },
       {
         "path": "dist/touhou/boss-presentation.d.ts.map",
-        "bytes": 7646,
-        "sha256": "28832484666729b090f420d36ebd0d8b25f4dedf4f670a1ead6bbd8fbd7f5d5e"
+        "bytes": 7868,
+        "sha256": "bc728c9778a6f4b0669e1daa74f8d57d5acb9b7f02db2dce760e1d8a5f9cea3a"
       },
       {
         "path": "dist/touhou/boss-presentation.js",
-        "bytes": 26207,
-        "sha256": "af26ad3f4fe10a5551b2c93e6f207d71821f4aa2a43684e55b8debf1ce1c4b66"
+        "bytes": 26854,
+        "sha256": "baec6566eb63d96634ec7f51fd9281e87cec20a472a170f73d8d928c7f1b3679"
       },
       {
         "path": "dist/touhou/boss-presentation.js.map",
-        "bytes": 25471,
-        "sha256": "5b6c4d17ffac586c0883920b39e2a3b000cff02f4fb3c720b44f2b75bf83e4be"
+        "bytes": 26198,
+        "sha256": "655624ef5ec9de3f6e53c4ee46ceaa03611f4c1bdf3b8575754cc00e419e9e18"
       },
       {
         "path": "dist/touhou/bullet-clear-wave.d.ts",
@@ -2931,23 +2931,23 @@
       },
       {
         "path": "dist/touhou/game.d.ts",
-        "bytes": 15736,
-        "sha256": "07b5b24c26139705909958282077a64c232c49e8a6c76e9d65a6b3d3ca4ab781"
+        "bytes": 15987,
+        "sha256": "db2e6965591dff12732ff1df9f80a59a421f382d8800f6302bef97d92e9410f5"
       },
       {
         "path": "dist/touhou/game.d.ts.map",
-        "bytes": 14146,
-        "sha256": "1fb4d6f9a99bdae7feb6ac6dffb86161a8f8cedc166c8ba2eddbfc12a89135e9"
+        "bytes": 14215,
+        "sha256": "40bf77b91537371d2a3702068b7c907d13b0d4994cd59b6f4103ce2962e37543"
       },
       {
         "path": "dist/touhou/game.js",
-        "bytes": 33834,
-        "sha256": "1564f7d67b5c3eca2dea3777feba3ac86177bcc2cea98d777114b6f835728a9f"
+        "bytes": 34316,
+        "sha256": "33566b2238a3f64e5e40e38613de963e05d47ae1eea4fcaec793cc5f82306a0e"
       },
       {
         "path": "dist/touhou/game.js.map",
-        "bytes": 36417,
-        "sha256": "12d0532470d1af4009a6d0270201a4e6a8af65ead7d9ca2f4b31a70cf741579a"
+        "bytes": 36694,
+        "sha256": "07b829cac15dd3dd5dc398b420f4b5b50a3487d510e42608834fef9d74945a18"
       },
       {
         "path": "dist/touhou/gameplay-compositor.d.ts",
@@ -3730,10 +3730,10 @@
         "sha256": "b703b3ba74beb0892d0bed9d6694352bc5b09b7fe44ff4b56ed020fc061e971b"
       }
     ],
-    "outputSha256": "0e29f369e7da70c9745a69a9883f61616b7ee12de1bf82be99fcf575a9936c7a"
+    "outputSha256": "b16e4d95bdab1f2dfa259a44abb7f5cdbcadf4187f612106171a04150ec7261e"
   },
-  "thlibSha256": "1d88212d59df9ae352605de8942cc47ccf8e4301c6465d827d8fb67f1964ca03",
-  "runtimeSha256": "e16992ebf1df7e31e658f9b3d973538329b45c3bc66ff63320d44f396d290a91",
+  "thlibSha256": "04dc014c780785e2fce5cba3ed8529d98d03c665aec11b46117657936ac539b8",
+  "runtimeSha256": "b5ca32f97d0d53627b537cc656474c4f306ee60be7a3b4c67e5c422cd1871108",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -5667,23 +5667,23 @@
     },
     {
       "path": "dist/touhou/boss-entrance.d.ts",
-      "bytes": 3259,
-      "sha256": "505dc0da72e72e9c4e254964261c0db60e6beb803acefdcd2e836688a007e66a"
+      "bytes": 3416,
+      "sha256": "bcd7a15735cca9492ed028abca788f9e4e5fbd3522cde3ad276e9ab0c74c4cf0"
     },
     {
       "path": "dist/touhou/boss-entrance.d.ts.map",
-      "bytes": 2399,
-      "sha256": "6a3e2485a1e83d6c2d4b499499810af90bd8b5ad1c737f003c6e0a7161c43d9b"
+      "bytes": 2411,
+      "sha256": "cc09bb60f99f25dc20ae1d2bb2d2ac8dca0d4cbc8809d68742dcb23b42bb1bb7"
     },
     {
       "path": "dist/touhou/boss-entrance.js",
-      "bytes": 6859,
-      "sha256": "51f1444ed2cde76737660f69c42160379211e271c75ed51af78569aa69053e52"
+      "bytes": 7576,
+      "sha256": "5115d4d0d2348ac2a1d8e279fb4d2f699f9175f9e20ba31c3e4ada4c7fb97e45"
     },
     {
       "path": "dist/touhou/boss-entrance.js.map",
-      "bytes": 6617,
-      "sha256": "9e24d1999cfe4a34efefa48d26205a21e975df1b0789b5e918d2a8dbb1e32b1e"
+      "bytes": 7191,
+      "sha256": "349a86bdef94103d9871a923d9723fb6c18e5d96d00b2b09004bd51424fd5834"
     },
     {
       "path": "dist/touhou/boss-escape.d.ts",
@@ -5787,23 +5787,23 @@
     },
     {
       "path": "dist/touhou/boss-presentation.d.ts",
-      "bytes": 11356,
-      "sha256": "c190eae44060d3d2f1d3f6ca9ac8c598e4f6690b71d17ab96ac63bfd84dfc2af"
+      "bytes": 11558,
+      "sha256": "c34a22ff7ca627dfe4420effe5917ccf870bf944bcb9d0d6050709f8fb353db4"
     },
     {
       "path": "dist/touhou/boss-presentation.d.ts.map",
-      "bytes": 7646,
-      "sha256": "28832484666729b090f420d36ebd0d8b25f4dedf4f670a1ead6bbd8fbd7f5d5e"
+      "bytes": 7868,
+      "sha256": "bc728c9778a6f4b0669e1daa74f8d57d5acb9b7f02db2dce760e1d8a5f9cea3a"
     },
     {
       "path": "dist/touhou/boss-presentation.js",
-      "bytes": 26207,
-      "sha256": "af26ad3f4fe10a5551b2c93e6f207d71821f4aa2a43684e55b8debf1ce1c4b66"
+      "bytes": 26854,
+      "sha256": "baec6566eb63d96634ec7f51fd9281e87cec20a472a170f73d8d928c7f1b3679"
     },
     {
       "path": "dist/touhou/boss-presentation.js.map",
-      "bytes": 25471,
-      "sha256": "5b6c4d17ffac586c0883920b39e2a3b000cff02f4fb3c720b44f2b75bf83e4be"
+      "bytes": 26198,
+      "sha256": "655624ef5ec9de3f6e53c4ee46ceaa03611f4c1bdf3b8575754cc00e419e9e18"
     },
     {
       "path": "dist/touhou/bullet-clear-wave.d.ts",
@@ -6087,23 +6087,23 @@
     },
     {
       "path": "dist/touhou/game.d.ts",
-      "bytes": 15736,
-      "sha256": "07b5b24c26139705909958282077a64c232c49e8a6c76e9d65a6b3d3ca4ab781"
+      "bytes": 15987,
+      "sha256": "db2e6965591dff12732ff1df9f80a59a421f382d8800f6302bef97d92e9410f5"
     },
     {
       "path": "dist/touhou/game.d.ts.map",
-      "bytes": 14146,
-      "sha256": "1fb4d6f9a99bdae7feb6ac6dffb86161a8f8cedc166c8ba2eddbfc12a89135e9"
+      "bytes": 14215,
+      "sha256": "40bf77b91537371d2a3702068b7c907d13b0d4994cd59b6f4103ce2962e37543"
     },
     {
       "path": "dist/touhou/game.js",
-      "bytes": 33834,
-      "sha256": "1564f7d67b5c3eca2dea3777feba3ac86177bcc2cea98d777114b6f835728a9f"
+      "bytes": 34316,
+      "sha256": "33566b2238a3f64e5e40e38613de963e05d47ae1eea4fcaec793cc5f82306a0e"
     },
     {
       "path": "dist/touhou/game.js.map",
-      "bytes": 36417,
-      "sha256": "12d0532470d1af4009a6d0270201a4e6a8af65ead7d9ca2f4b31a70cf741579a"
+      "bytes": 36694,
+      "sha256": "07b829cac15dd3dd5dc398b420f4b5b50a3487d510e42608834fef9d74945a18"
     },
     {
       "path": "dist/touhou/gameplay-compositor.d.ts",
@@ -7112,8 +7112,8 @@
     },
     {
       "path": "src/touhou/boss-entrance.ts",
-      "bytes": 8084,
-      "sha256": "d6b3fa86c8b437f2738ddb2479e8585f16c61a5d0ce69f64b4c7793419e60823"
+      "bytes": 8786,
+      "sha256": "27055c5b4f8cde66f903944a5f657853f278e5bf6a363a931809e0bb62dfdbd7"
     },
     {
       "path": "src/touhou/boss-escape.ts",
@@ -7142,8 +7142,8 @@
     },
     {
       "path": "src/touhou/boss-presentation.ts",
-      "bytes": 29102,
-      "sha256": "2438f5e55f9db9834cbbe38bfaa5ca7476e5359064cd5e567cd7ca22943ff983"
+      "bytes": 29879,
+      "sha256": "cab4ec975afa98518fc67da03a3b6bb56e9ea3788f3f6665afb81104a4bd9e3d"
     },
     {
       "path": "src/touhou/bullet-clear-wave.ts",
@@ -7217,8 +7217,8 @@
     },
     {
       "path": "src/touhou/game.ts",
-      "bytes": 39781,
-      "sha256": "7b9f7f2ea049c24dc62d78b53d62a59421f9d26bd395a0a6470395ae3627dd7d"
+      "bytes": 40281,
+      "sha256": "5594f3e0706ac23fc0c0f4ce86e2efc38ab915a4042be23fc4d11b24b45907fe"
     },
     {
       "path": "src/touhou/gameplay-compositor.ts",
@@ -7436,7 +7436,7 @@
     {
       "path": "PACKAGE.json",
       "bytes": 3960,
-      "sha256": "2bcdd9ebade5b883bf18cf45a3bef37f1228602b237ecd55b3cd2815923160d1",
+      "sha256": "b18937a91e41aa57368a9b96033b9213e4b8663a1f74c8f97b0254bf0f173450",
       "source": "dist/TS-STG/PACKAGE.json"
     },
     {
@@ -8332,7 +8332,7 @@
     "configuration": "Release",
     "executableSource": "build/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "2bcdd9ebade5b883bf18cf45a3bef37f1228602b237ecd55b3cd2815923160d1",
+    "packageSha256": "b18937a91e41aa57368a9b96033b9213e4b8663a1f74c8f97b0254bf0f173450",
     "binarySha256": "512183414f22e58085d7816b4891324ee0476c058eb3e32a42db0bb7a14287cb",
     "sourceFiles": [
       {

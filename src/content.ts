@@ -12,7 +12,7 @@ export const GAME = Object.freeze({
   subtitle: 'Names Beyond the Boundary.',
   fullTitle: '东方归名录 ～ Names Beyond the Boundary.',
   version: '2.0.0',
-  contentRevision: 8,
+  contentRevision: 9,
   genre: '东方 Project 二次创作弹幕射击游戏',
   attribution: '东方 Project 原作：上海爱丽丝幻乐团 / ZUN',
   fanWork: true,
@@ -685,7 +685,7 @@ export const EXTRA_MIDBOSS_SPELLS = STAGES[6].midbossSpells;
 export const MIDBOSSES: MidbossDefinition[] = STAGES.map((stage) => ({
   stageId: stage.id,
   bossId: stage.extra ? 'fusae' : stage.bossId,
-  entrance: 'flyIn',
+  entrance: 'halfFog',
   title: stage.extra ? '归名书库的更正页' : `途中相遇·${CHARACTERS.find((c) => c.id === stage.bossId)!.name}`,
   atFrame: stage.midbossAt,
   nonspell: !stage.extra,

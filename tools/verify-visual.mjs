@@ -23,6 +23,9 @@ const cases=[
   {id:'scene-cover',preRoll:18,actions:[{frame:0,type:'play'}]},
   {id:'scene-reveal',preRoll:60,actions:[{frame:0,type:'play'}]},
   {id:'road',options:base,preRoll:480},
+  {id:'midboss-entrance',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:25},
+  ...[{id:'midboss-defeated',phaseRoll:30},{id:'midboss-escaping',phaseRoll:95},{id:'midboss-removed',phaseRoll:140}].map(test=>({
+    ...test,options:{...base,mode:'stage-practice',stageId:2,autoDialogue:true,autoCapture:true},until:{state:'midboss-exit'}})),
   {id:'bgm-caption',options:base,preRoll:90},
   ...STAGES.map(stage=>({id:`road-${stage.id}`,options:{...base,mode:'stage-practice',stageId:stage.id,difficulty:stage.id===7?4:1},preRoll:1200})),
   {id:'prelude-monologue',options:{...base,skipRoad:true},until:{state:'dialogue'},phaseRoll:80},
@@ -69,6 +72,13 @@ for(const scenario of cases.filter(value=>!filter||filter.includes(value.id))){
     const state=JSON.parse(fs.readFileSync(prefix+'.json','utf8'));
     if(scenario.id.startsWith('ending-flow-')){assert.equal(state.mode,'title');assert.equal(state.page,null,'Ending, staff and result return to the real title owner');}
     if(scenario.id==='stage-transition')assert.ok(state.scene.stageTransition,'Native stage cover is active');
+    if(scenario.id.startsWith('midboss-')){
+      const effects=state.bossPresentation,removed=scenario.id==='midboss-removed';
+      assert.equal(effects.combatActive,false,'No attack activation during entry or escape');
+      assert.deepEqual(effects.auraScripts,removed?[]:[99],'Midboss aura lasts until entity removal');
+      assert.equal(effects.distortion?.ready??false,!removed,'Warp remains through defeated hold and flight');
+      assert.equal(effects.hud.timerVisible,false,'Retained effects do not retain a combat countdown');
+    }
     if(scenario.until){const director=state.scene.director;assert.ok(director,scenario.id);for(const [key,value] of Object.entries(scenario.until))if(key!=='spellId'){
       if(scenario.id!=='stage-transition')assert.equal(director[key],value,`${scenario.id}: ${key}`);
     }}

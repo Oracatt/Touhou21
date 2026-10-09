@@ -1,5 +1,17 @@
 # 验收方法与覆盖范围
 
+## 2026-10-09 Boss 效果与战斗生命周期拆分
+
+依赖锁更新到 TS-STG `c030f926d7516731f704d040a5f2b48015fe2989`。`setBossEffects({aura,distortion})` 独立于入场、战斗和符卡结算；道中 Boss 使用原作三流 `halfFog` 和 `midboss` 配置，在既有 60 帧入场中开启法阵/扭曲。最终破卡后保留同一组实例，经过原有 75 帧停留、60 帧飞离，实际移除时清理。超时仍立即开始飞离；主 Boss 显式使用 `boss` 配置并在开战时开启效果。内容及回放修订同步为 9。
+
+- 引擎全套 **1033/1033** 通过，含独立效果开关、隐藏本体时仍可显示效果、暂停、破卡/飞离保持对象、停止/恢复不重建血环与星星、最终移除清理缓存；严格类型检查与双后端模拟/回放通过。
+- 游戏全量运行 202 项，201 通过，唯一失败是检查时引擎 QA 工具尚在编辑的源状态冲突；最终同步后，包含该失败文件及全部相关业务测试的 **69/69** 复验通过，零跳过。日志 `build/boss-lifecycle-game-tests.log`、`build/boss-lifecycle-game-final-recheck.log`。
+- 三面练习、输入回放、续关回放、菜单输入、暂停页面回放 × V8 / QuickJS，**10/10** 通过，累计 38,244 次场景更新，未沿用旧结果。报告 `reports/integration/boss-effects/summary.json`。
+- 道中入场、破卡停留、飞离、移除及主 Boss 非符/符卡/暂停共 **7 类 × 两后端**，状态及 PNG 一致；人工查看入场、破卡、飞离截图。最后 HUD 空绑定清理增量再复验移除场景，两后端均通过。报告 `reports/visual/boss-effects/selected-report.json` 与 `reports/visual/boss-effects-final/selected-report.json`。
+- 引擎通用持留/飞离/移除/爆炸四场景 × 两后端 **8/8** 通过。未处理原始图集与公共图集的额外对照存在 142 个既有 UI 边缘像素差：倒计时31、符卡名44、指针67；来自已有 `pad-ui-atlas` 清边。统一两份 UI 图集而保留原始 effect 后差异归零，法阵/扭曲无差异；不将此称为整图原作逐像素一致。隔离证据在引擎 `reports/touhou/boss-effects-graphics/atlas-isolation.json`。
+
+最终 `typecheck`、边界审计和 `verify:engine -- --check-source --check-build` 通过，738 个 thlib 文件与 150 个运行时文件符合锁，`sourceModified:false`。没有写入用户存档或启动持久游戏窗口。
+
 ## 2026-10-09 TypeScript 源码与可复现依赖迁移
 
 `main.ts` 和 `src/**/*.ts` 是唯一业务实现，原 31 个 JS 模块全部迁为 TypeScript，并补充两份共享类型模块。`strict`、`noEmitOnError`、无 DOM / Node 环境类型的编译通过；产物只写入忽略的 `dist/`。旧 JS 入口与源码旁副本删除，Play 脚本先构建再加载 `dist/main.js`。31 个迁移模块的转译后运行时 AST 与原实现一致，保留内容 / 回放修订 8，以及道中到 Boss 曲的 42 次未暂停更新留白。

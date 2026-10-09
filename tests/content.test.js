@@ -5,6 +5,11 @@ import {
   MIDBOSS_SPELLS, EXTRA_MIDBOSS_SPELLS, ALL_SPELLS, SPELL_BY_ID, CHARACTER_BY_ID, MUSIC_COMMENTS,
 } from '../dist/src/content.js';
 import { MUSIC_TRACKS } from '../dist/src/music-data.js';
+import { GAME_REVISION } from '../dist/src/storage.js';
+
+test('the presentation lifecycle change advances the content and replay revision together',()=>{
+  assert.equal(GAME.contentRevision,9);assert.equal(GAME_REVISION,GAME.contentRevision);
+});
 
 test('campaign covers six connected stages and a separately identified Extra', () => {
   assert.equal(GAME.fanWork, true);
@@ -112,7 +117,7 @@ test('midbosses open with an ordinary attack, add a card from stage 2, and Extra
     assert.ok(midboss.atFrame > stage.roadFrames * .35 && midboss.atFrame < stage.roadFrames * .55);
     assert.equal(midboss.atFrame, stage.midbossAt);
     assert.ok(CHARACTER_BY_ID.has(midboss.bossId));
-    assert.equal(midboss.entrance, 'flyIn');
+    assert.equal(midboss.entrance, 'halfFog');
     assert.equal(midboss.spells, stage.midbossSpells);
     if (!stage.extra) { assert.equal(midboss.nonspell, true); assert.ok(midboss.seconds >= 20); assert.equal(midboss.bossId, stage.bossId); }
   }
