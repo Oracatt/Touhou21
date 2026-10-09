@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {stateHash,Keys} from '@ts-stg/thlib';
 import {TouhouGame,TouhouEnemy,TouhouMotion,TouhouRNG,createTouhouResources,TOUHOU_BULLET_STYLES,TOUHOU_ENEMY_PRESETS} from '@ts-stg/thlib/touhou';
-import {ROAD_SCRIPTS,ROAD_ROLES,ROAD_FORMATIONS,ROAD_ATTACKS,ROAD_MIDBOSS_FRAMES,createRoadPlan,spawnRoadFormation,roadPath,updateRoadEnemy} from '../src/roads.js';
-import {CampaignDirector} from '../src/director.js';
-import {STAGES,MIDBOSSES} from '../src/content.js';
+import {ROAD_SCRIPTS,ROAD_ROLES,ROAD_FORMATIONS,ROAD_ATTACKS,ROAD_MIDBOSS_FRAMES,createRoadPlan,spawnRoadFormation,roadPath,updateRoadEnemy} from '../dist/src/roads.js';
+import {CampaignDirector} from '../dist/src/director.js';
+import {STAGES,MIDBOSSES} from '../dist/src/content.js';
 import {createDanmakuLab} from '../tools/danmaku-lab.js';
 
 const assets=fs.existsSync('packages/thlib/assets/touhou-common/manifest.json');

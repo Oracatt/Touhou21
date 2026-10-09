@@ -34,11 +34,11 @@
 
 原作一 / 二面中 Boss 使用该面 Boss 的动画资源，四 / 五面使用独立中 Boss 动画库。还原脚本中三 / 六面没有对应的独立 `MBoss` 定义；本作三 / 六面中 Boss 是原创编排。当前版本按用户要求去掉再次登场角色的击破爆炸，采用 75 帧停顿后飞离，不复刻一 / 二面原作的 120 帧等待和小型击破反馈。它是有原作退场机制依据的业务演出选择，不能称为逐帧一致。
 
-公共参考见 `packages/thlib/src/touhou/boss-escape.js` 和 `game.js` 的 `beginBossEscape`。TS-STG 的 Rush 示例在 `games/rushboss/src/runtime.js:335` 的 `beginPracticeEscape` 中采用同一公共飞离序列；示例调用方先结算、消弹、停止聚能并隐藏战斗显示，退场完成后移除实体。本作直接使用公共 Game 的所有权接口。
+公共参考见 `packages/thlib/src/touhou/boss-escape.ts` 和 `game.ts` 的 `beginBossEscape`。TS-STG 的 Rush 示例在 `games/rushboss/src/runtime.ts` 的 `beginPracticeEscape` 中采用同一公共飞离序列；示例调用方先结算、消弹、停止聚能并隐藏战斗显示，退场完成后移除实体。本作直接使用公共 Game 的所有权接口。
 
 ## 阶段排布 `phaseLayout`
 
-不是每张符卡前面都有非符。`src/content.js` 里每个主 Boss 关卡有一条 `phaseLayout`，按战斗顺序写出各阶段：`N` 是一段非符，`S` 是下一张符卡（按 `spells` 的顺序取）。导演（`_buildPhases`）照这条字符串排出阶段；非符按出现顺序取 `nonspellNames` / `NONSPELL_PATTERNS` / `BOSS_NONSPELL_HEALTH` 里的第几组，符卡直接接在符卡后面时没有非符。
+不是每张符卡前面都有非符。`src/content.ts` 里每个主 Boss 关卡有一条 `phaseLayout`，按战斗顺序写出各阶段：`N` 是一段非符，`S` 是下一张符卡（按 `spells` 的顺序取）。导演（`_buildPhases`）照这条字符串排出阶段；非符按出现顺序取 `nonspellNames` / `NONSPELL_PATTERNS` / `BOSS_NONSPELL_HEALTH` 里的第几组，符卡直接接在符卡后面时没有非符。
 
 | 关卡 | 排布 | 非符 / 符卡 |
 | --- | --- | --- |
@@ -56,7 +56,7 @@
 
 原作 ECL 的 `ins_511(totalHP)` 与 `ins_514(slot,nextSpellHP,duration,handler)` 表示共享血环中的当前非符和下一张符卡。非符实际伤害预算为 `totalHP - nextSpellHP`，不是把整组血量再给非符。本作继续使用公共 `TouhouBossPhasePlan`，没有改用 Rush 的业务显示权重，也没有在进入符卡时重新充满整个共用血环。
 
-非符预算由 `src/boss-health.js` 集中配置，原作出处和总量 / 阈值逐项写在源码注释中：
+非符预算由 `src/boss-health.ts` 集中配置，原作出处和总量 / 阈值逐项写在源码注释中：
 
 | 关卡 | 主 Boss 各非符 HP | 道中 Boss 非符 HP | 道中 Boss 符卡 HP（显示值） |
 | --- | --- | ---: | ---: |
@@ -78,7 +78,7 @@
 
 原作 `source_reconstruction/gameplay/enemy_opcode_state.cpp:49–58` 用 ECL 513 重置阶段时钟、514 配置血量阈值与时限；`enemy_damage.cpp:49–54` 每帧将 `duration - timer_a8` 写入 Boss HUD。这条计时路径不要求符卡开启。`hud_system/update.cpp:50–64` 使用同一组公共计时动画：符卡初始 interrupt 2，普通非符为 3；不足 5 秒使用音效 11，不足 2 秒使用音效 12，对话及非战斗状态隐藏。
 
-本作旧 Scene 已对主 Boss 非符做计时包装，但普通中 Boss 没有传递其阶段剩余时间，且固定 1,200 帧盖过内容的 25 秒配置。本次以 `src/campaign-boss-hud.js` 的 `CampaignBossHud` 通过公共 `factories.bossHud` 接入：主非符使用 `phase.duration - phaseFrame`，普通中 Boss 使用 `midbossDuration - phaseFrame`；符卡继续接收公共 spell 已更新的剩余时间。
+本作旧 Scene 已对主 Boss 非符做计时包装，但普通中 Boss 没有传递其阶段剩余时间，且固定 1,200 帧盖过内容的 25 秒配置。本次以 `src/campaign-boss-hud.ts` 的 `CampaignBossHud` 通过公共 `factories.bossHud` 接入：主非符使用 `phase.duration - phaseFrame`，普通中 Boss 使用 `midbossDuration - phaseFrame`；符卡继续接收公共 spell 已更新的剩余时间。
 
 每个游戏 tick 只有一次公共 HUD update，计时动画、血环、秒以下数字和警告音仍由 `TouhouBossHud` 处理，没有第二套计时绘制或二次警告音。进入、对话、阶段间等待、飞离和结算明确隐藏计时，避免旧时间或 `-1` 截断成负零后显示“00”。暂停冻结阶段时钟及 HUD 更新，恢复后接续同一帧。
 

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {spellBackgroundStyle} from '../src/background-art.js';
+import {spellBackgroundStyle} from '../dist/src/background-art.js';
 
 const root=path.resolve(import.meta.dirname,'..'),args=process.argv.slice(2);
 let stages=[1,2,3,4,5,6,7],backends=['v8','quickjs'],modes=['road','spell'],frames=36,label='',clockStart=480;
@@ -24,7 +24,7 @@ assert.ok(!label||/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(label),'Background rep
 const binary=path.join(root,'runtime/ts-stg.exe'),out=path.join(root,'reports/backgrounds',label),scratch=path.join(root,'build/background-fixtures',label);
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(scratch,{recursive:true});
 const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex'),results=[];
-const sourceFiles=['src/background.js','src/background-art.js','src/spell-background.js','src/art.js','tools/background-fixture.js','tools/verify-background.mjs'];
+const sourceFiles=['src/background.ts','src/background-art.ts','src/spell-background.ts','src/art.ts','tools/background-fixture.js','tools/verify-background.mjs'];
 const sourceIdentity=()=>Object.fromEntries(sourceFiles.map(file=>[file,hash(path.join(root,file))]));
 const sourceBefore=sourceIdentity(),textureIdentity={};
 if(modes.includes('spell'))for(const stage of stages){

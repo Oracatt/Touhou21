@@ -30,7 +30,7 @@
 
 ## Boss 战前的换曲时机
 
-参照原作的演出顺序：道中结束后，自机先在安静的路上自言自语（对话文本里 Boss 第一句之前的几行），这时仍是道中曲；进入 Boss 首句的步骤时先撤自机立绘、启动场中 Boss 出场，60 帧后显示指向场中角色的台词气泡，94 帧后允许推进，道中曲不中断；下一句才让双方立绘入场，再说几句话后切换到 Boss 曲（`src/director.js` 的 `_beginPrelude`，音乐切入点仍是 Boss 首句之后约 1～4 行，不超过整段对话的一半）。场中出场、立绘出现与音乐是独立的业务提示，音乐不会因立绘重建而重播。符卡练习没有战前对话，Boss 与 Boss 曲同时开始。对话被跳过或没有文本时，Boss 与 Boss 曲在对话结束时补上，不会漏播。
+参照原作的演出顺序：道中结束后，自机先在安静的路上自言自语（对话文本里 Boss 第一句之前的几行），这时仍是道中曲；进入 Boss 首句的步骤时先撤自机立绘、启动场中 Boss 出场，60 帧后显示指向场中角色的台词气泡，94 帧后允许推进，道中曲不中断；下一句才让双方立绘入场，再说几句话后切换到 Boss 曲（`src/director.ts` 的 `_beginPrelude`，音乐切入点仍是 Boss 首句之后约 1～4 行，不超过整段对话的一半）。场中出场、立绘出现与音乐是独立的业务提示，音乐不会因立绘重建而重播。符卡练习没有战前对话，Boss 与 Boss 曲同时开始。对话被跳过或没有文本时，Boss 与 Boss 曲在对话结束时补上，不会漏播。
 
 ## 结构与循环
 
@@ -45,7 +45,7 @@
 
 ## 曲名显示
 
-关卡内换到新的 BGM（道中曲、Boss 曲）时，游戏区右下角会淡入显示「♪ 曲名」，约 6 秒后淡出，和原作一致。该提示只是画面状态，不进入录像快照（`src/scene.js` 的 `bgmCaption`，测试见 `tests/bgm-caption.test.js`）。
+关卡内换到新的 BGM（道中曲、Boss 曲）时，游戏区右下角会淡入显示「♪ 曲名」，约 6 秒后淡出，和原作一致。该提示只是画面状态，不进入录像快照（`src/scene.ts` 的 `bgmCaption`，测试见 `tests/bgm-caption.test.js`）。
 
 ## 道中到 Boss 曲的留白
 
@@ -53,14 +53,14 @@ Boss 曲仍由本作前置对话里的独立音乐提示点触发。提示点停
 
 这段约 0.7 秒留白补偿的是原作 **音频素材的近静音前导**，不是原作写死的 42 帧换曲规则。只读检查 `Touhou20Reconstruction/reports/bgm_recovery.json` 指向的原始 `thbgm.dat`：以任一 16 位声道幅值超过 104（约 −50 dBFS）为起音点，七首 Boss 曲的首个起音分别为 705.67、699.57、680.20、702.52、707.37、703.24、680.29 毫秒。曲目配对取自 `source_reconstruction/gameplay/stage_data.cpp`，分别是 `th20_03/05/07/09/11/12/18`。素材没有复制进本作。
 
-原作 `scripts/recovered/msg/st01r0.msg.utf8.txt` 的 `@180 / 19`、二面 `@220 / 19`、三面 `@228 / 19` 触发 Boss 曲；`source_reconstruction/hud_system/dialogue_script.cpp` 的 case 19 直接播放对应曲目，所查入场段没有统一淡出指令。故本次不额外编造淡出，也不改变 thlib 的通用播放策略。留白参数属于 `src/director.js` 的本作音乐提示点，队列和中断处理属于 `src/music.js`，曲名跟随实际播放由 `src/scene.js` 管理。测试见 `tests/boss-music.test.js`。
+原作 `scripts/recovered/msg/st01r0.msg.utf8.txt` 的 `@180 / 19`、二面 `@220 / 19`、三面 `@228 / 19` 触发 Boss 曲；`source_reconstruction/hud_system/dialogue_script.cpp` 的 case 19 直接播放对应曲目，所查入场段没有统一淡出指令。故本次不额外编造淡出，也不改变 thlib 的通用播放策略。留白参数属于 `src/director.ts` 的本作音乐提示点，队列和中断处理属于 `src/music.ts`，曲名跟随实际播放由 `src/scene.ts` 管理。测试见 `tests/boss-music.test.js`。
 
 接缝在渲染时处理，而不是靠淡出遮盖：
 
 1. 循环段用同一份乐谱连续渲染两遍并向第三遍预读，取中间一遍。前一遍的混响、延迟与采样释放尾音自然落在这一遍的开头，下一遍的起音预滚动落在这一遍的结尾；
 2. 每个音符的人性化（时值抖动、力度、轮换采样）由「声部名 + 音符序号」决定，两遍内容逐样本一致；
 3. 循环段最后 24 毫秒与引子最后 24 毫秒向「直播时应紧邻循环起点的那段音频」做等功率交叉，使两个接缝在采样级连续；
-4. 循环点是整数帧：`loopStartFrame` 为引子长度，`loopEndFrame` 等于文件总帧数。播放端使用 `src/music-data.js` 里的 `loopStartFrame / sampleRate` 与 `loopEndFrame / sampleRate`，重开曲目时必须重新 seek 到 0；引子只在首次开始时出现。
+4. 循环点是整数帧：`loopStartFrame` 为引子长度，`loopEndFrame` 等于文件总帧数。播放端使用 `src/music-data.ts` 里的 `loopStartFrame / sampleRate` 与 `loopEndFrame / sampleRate`，重开曲目时必须重新 seek 到 0；引子只在首次开始时出现。
 
 ## 制作方式与检查
 
@@ -68,7 +68,7 @@ Boss 曲仍由本作前置对话里的独立音乐提示点触发。提示点停
 
 每首曲子渲染时会检查：主旋律强拍音是否属于和弦音或调内音、与其他声部的小二度冲突、各声部的响度与频谱、立体声相关度、削波，并在循环接缝与引子→循环接缝处扫描爆音。结果只能说明技术上没有明显问题，不能代替人耳：音色与旋律的审美仍需要实际试听。
 
-`assets/music/studio.json` 记录采样曲的循环点、帧数、哈希、曲目描述与所用采样库；`npm run compose` 会读取它，把这 15 首原样并入 `src/music-data.js`，只重新合成剩余 3 首并写入 `assets/music/scores.json`。重新渲染某首采样曲的步骤：
+`assets/music/studio.json` 记录采样曲的循环点、帧数、哈希、曲目描述与所用采样库；`npm run compose` 会读取它，把这 15 首原样并入 `src/music-data.ts`，只重新合成剩余 3 首并写入 `assets/music/scores.json`。重新渲染某首采样曲的步骤：
 
 ```
 build/studio-venv/Scripts/python tools/studio/build_track.py boss02

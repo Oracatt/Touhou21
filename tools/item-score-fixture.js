@@ -1,5 +1,5 @@
-import {ProjectApplication} from '../src/application.js';
-import {CampaignScene} from '../src/scene.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {CampaignScene} from '../dist/src/scene.js';
 
 // Only setup values are prescribed. Every award and popup enters through the
 // actual App update and the public item collection path, never popup.spawn().

@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {Keys} from '@ts-stg/thlib';
 import {createTouhouResources,TouhouGame} from '@ts-stg/thlib/touhou';
-import {bossNonspellHealth,midbossNormalHealth,midbossSpellHealth,BOSS_NONSPELL_HEALTH,MIDBOSS_NORMAL_HEALTH} from '../src/boss-health.js';
-import {updateNonspellPattern} from '../src/patterns.js';
-import {STAGES,MIDBOSSES} from '../src/content.js';
+import {bossNonspellHealth,midbossNormalHealth,midbossSpellHealth,BOSS_NONSPELL_HEALTH,MIDBOSS_NORMAL_HEALTH} from '../dist/src/boss-health.js';
+import {updateNonspellPattern} from '../dist/src/patterns.js';
+import {STAGES,MIDBOSSES} from '../dist/src/content.js';
 
 const assets=fs.existsSync('packages/thlib/assets/touhou-common/manifest.json');
 const needsAssets=assets?{}:{skip:'requires the private touhou-common resource pack (tools/setup-local.ps1)'};

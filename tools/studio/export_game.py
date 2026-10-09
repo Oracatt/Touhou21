@@ -5,7 +5,7 @@
 
 The WAVs are written with a plain 44-byte header (PCM, 16 bit, stereo, 32 kHz) like every other game
 track. studio.json lists the frame-exact loop points; tools/compose-music.mjs merges it into
-src/music-data.js and no longer re-synthesises these ids."""
+src/music-data.ts and no longer re-synthesises these ids."""
 import hashlib
 import json
 import pathlib

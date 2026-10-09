@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {MusicController} from '../src/music.js';
-import {ProjectApplication} from '../src/application.js';
-import {STAGES} from '../src/content.js';
+import {MusicController} from '../dist/src/music.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {STAGES} from '../dist/src/content.js';
 
 const assets=fs.existsSync('packages/thlib/assets/touhou-common/manifest.json');
 const needsAssets=assets?{}:{skip:'requires the private touhou-common resource pack (tools/setup-local.ps1)'};

@@ -1,3 +1,5 @@
 @echo off
 cd /d "%~dp0"
-runtime\ts-stg.exe main.js --root . --backend quickjs %*
+call npm run build
+if errorlevel 1 exit /b 1
+runtime\ts-stg.exe dist/main.js --root . --backend quickjs %*

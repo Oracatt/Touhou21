@@ -1,11 +1,10 @@
-/** Export exactly the locked Git blobs for the PowerShell dependency installer.
+/** Export the locked committed TypeScript and reproducible compiler products for the PowerShell dependency installer.
  * No output directory is created until the complete commit inventory matches. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {readGitThlib} from './engine-git.mjs';
+import {buildGitThlib,inventoryBuffers} from './engine-git.mjs';
 import {PROJECT_ROOT,readEngineLock,inside,inventoryDigest,inventoryTree} from './verify-engine-lock.mjs';
 
 const ordinal=(a,b)=>a<b?-1:a>b?1:0;
@@ -21,9 +20,9 @@ function noLinks(target,root){
 
 export function exportEngineThlib({root=PROJECT_ROOT,source=null,output=null}={}){
   root=path.resolve(root);const lock=readEngineLock(root);
-  assert.equal(lock.thlibContent,'git-blob','Git export requires a canonical thlib lock');
-  const files=readGitThlib(source??lock.source,lock.commit);
-  const entries=[...files].map(([name,bytes])=>({path:name,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')})).sort((a,b)=>ordinal(a.path,b.path));
+  const rebuilt=buildGitThlib(source??lock.source,lock.commit,{compilerRoot:root}),files=rebuilt.files;
+  assert.deepEqual(rebuilt.build,lock.thlibBuild,'Pinned TypeScript build differs from the lock');
+  const entries=inventoryBuffers(files);
   assert.deepEqual(entries,[...lock.thlibFiles].sort((a,b)=>ordinal(a.path,b.path)),'Pinned Git thlib differs from the locked inventory');
   assert.equal(inventoryDigest(entries),lock.thlibSha256);
   if(output){

@@ -331,8 +331,8 @@ fs.writeFileSync(path.join(OUT, 'scores.json'), JSON.stringify({
   format: 'beat-addressed note event score, MIDI pitches, normalized voice velocity and stereo pan',
   sampleRate: RATE, tracks: scores,
 }, null, 2) + '\n');
-fs.writeFileSync(path.join(ROOT, 'src/music-data.js'),
+fs.writeFileSync(path.join(ROOT, 'src/music-data.ts'),
   '/** Original game-specific BGM. Integer frames are the canonical loop positions. */\n' +
   `export const MUSIC_TRACKS = Object.freeze(${JSON.stringify(metadata, null, 2)}.map(track => Object.freeze(track)));\n\n` +
-  'export function musicTrack(id) {\n  return MUSIC_TRACKS.find(track => track.id === id) ?? MUSIC_TRACKS[0];\n}\n\n' +
-  'export function musicLoopSeconds(track) {\n  return { start: track.loopStartFrame / track.sampleRate, end: track.loopEndFrame / track.sampleRate };\n}\n');
+  'export function musicTrack(id:string) {\n  return MUSIC_TRACKS.find(track => track.id === id) ?? MUSIC_TRACKS[0];\n}\n\n' +
+  'export function musicLoopSeconds(track:(typeof MUSIC_TRACKS)[number]) {\n  return { start: track.loopStartFrame / track.sampleRate, end: track.loopEndFrame / track.sampleRate };\n}\n');

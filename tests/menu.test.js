@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DrawList,Keys} from '@ts-stg/thlib';
 import {createStandInBank} from '../tools/danmaku-lab.js';
-import {GameArt} from '../src/art.js';
-import {TextPainter} from '../src/text.js';
-import {ProjectTitleMenu,TITLE_LABELS} from '../src/menu.js';
-import {ListPage} from '../src/pages.js';
-import {drawTitleBackdrop} from '../src/title-backdrop.js';
+import {GameArt} from '../dist/src/art.js';
+import {TextPainter} from '../dist/src/text.js';
+import {ProjectTitleMenu,TITLE_LABELS} from '../dist/src/menu.js';
+import {ListPage} from '../dist/src/pages.js';
+import {drawTitleBackdrop} from '../dist/src/title-backdrop.js';
 
 function recordingHost(){
   let next=1;const texts=[];

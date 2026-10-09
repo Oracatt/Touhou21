@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createTouhouResources,TouhouRNG,TouhouPlayer} from '@ts-stg/thlib/touhou';
-import {CampaignScene} from '../src/scene.js';
-import {STAGES} from '../src/content.js';
-import {musicTrack} from '../src/music-data.js';
+import {CampaignScene} from '../dist/src/scene.js';
+import {STAGES} from '../dist/src/content.js';
+import {musicTrack} from '../dist/src/music-data.js';
 
 function fixture(){
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11});

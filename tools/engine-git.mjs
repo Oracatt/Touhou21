@@ -3,6 +3,9 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import {createRequire} from 'node:module';
 
 const PREFIX='packages/thlib/';
 const MAX_BUFFER=256*1024*1024;
@@ -26,8 +29,10 @@ function safeName(name){
     'Unsafe public thlib path: '+name);
   return name;
 }
-const allowed=name=>name==='LICENSE'||name==='package.json'||name.startsWith('src/')||name.startsWith('assets/touhou-common/');
-const selected=name=>allowed(name)||name==='src'||name==='assets/touhou-common';
+export const PUBLIC_ASSET_DIRECTORIES=Object.freeze(['audio','reference-common','spell-common','touhou-common']);
+const allowed=name=>['LICENSE','package.json','tsconfig.json','tsconfig.base.json'].includes(name)||name.startsWith('src/')||
+  PUBLIC_ASSET_DIRECTORIES.some(pack=>name.startsWith('assets/'+pack+'/'))||/^assets\/[^/]+\.(?:json|md)$/.test(name);
+const selected=name=>allowed(name)||name==='src'||PUBLIC_ASSET_DIRECTORIES.some(pack=>name==='assets/'+pack);
 function verifyObject(oid,type,bytes){
   const actual=createHash('sha1').update(`${type} ${bytes.length}\0`,'utf8').update(bytes).digest('hex');
   assert.equal(actual,oid,'Git object bytes do not match their immutable object ID: '+oid);
@@ -66,7 +71,8 @@ function entriesAt(source,commit){
     assert.ok(header,'Invalid Git tree entry header');
     const fullName=utf8.decode(record.subarray(tab+1));start=end+1;
     assert.ok(fullName.startsWith(PREFIX),'Git tree path is outside the public library');
-    const name=fullName.slice(PREFIX.length);if(!selected(name))continue;
+    const name=fullName.slice(PREFIX.length);assert.ok(!name.startsWith('dist/'),'Compiled thlib dist must not be committed');if(!selected(name))continue;
+    if(name.startsWith('src/'))assert.ok(name.endsWith('.ts'),'Public thlib source must be TypeScript: '+name);
     safeName(name);
     assert.ok((header[1]==='100644'||header[1]==='100755')&&header[2]==='blob','Public thlib contains a nonregular Git entry: '+name);
     assert.ok(!seen.has(name)&&!folded.has(name.toLowerCase()),'Duplicate or case-colliding public thlib path: '+name);
@@ -74,6 +80,7 @@ function entriesAt(source,commit){
   }
   for(const [group,present] of [
     ['LICENSE',seen.has('LICENSE')],['package.json',seen.has('package.json')],
+    ['tsconfig.json',seen.has('tsconfig.json')],['tsconfig.base.json',seen.has('tsconfig.base.json')],
     ['src/',entries.some(entry=>entry.path.startsWith('src/'))],
     ['assets/touhou-common/',entries.some(entry=>entry.path.startsWith('assets/touhou-common/'))],
   ])assert.ok(present,'Public thlib Git commit is missing required group: '+group);
@@ -95,3 +102,82 @@ export function readGitThlibFile(source,commit,name){
   assert.ok(entry,'Public thlib file is absent from the requested Git commit: '+name);
   return readObjects(source,[entry.oid],'blob').get(entry.oid);
 }
+
+const require=createRequire(import.meta.url);
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+export function inventoryBuffers(files){return [...files].map(([name,bytes])=>({path:name,bytes:bytes.length,sha256:sha(bytes)})).sort((a,b)=>ordinal(a.path,b.path));}
+function digestInventory(files){const hash=createHash('sha256');for(const file of files)hash.update(`${file.path}\0${file.bytes}\0${file.sha256}\n`);return hash.digest('hex');}
+export function compilerCacheRoot(root,version){
+  assert.match(version??'',/^\d+\.\d+\.\d+$/,'Compiler version must be exact');
+  return path.join(root,'build','compiler-cache','typescript-'+version);
+}
+export function locateEngineCompiler(root,version){
+  const local=path.join(root,'node_modules','typescript','lib','typescript.js');
+  const cached=path.join(compilerCacheRoot(root,version),'node_modules','typescript','lib','typescript.js');
+  for(const file of [local,cached])if(fs.existsSync(file))return file;
+  throw new Error('Pinned TypeScript compiler is missing; run tools/setup-local.ps1 to bootstrap it.');
+}
+export function engineCompilerFingerprint(compilerFile){
+  const compilerDirectory=path.dirname(compilerFile),compilerPackage=path.join(compilerDirectory,'../package.json');
+  const packageBytes=fs.readFileSync(compilerPackage),packageData=JSON.parse(packageBytes.toString('utf8'));
+  assert.equal(packageData.name,'typescript');assert.match(packageData.version,/^\d+\.\d+\.\d+$/);
+  const standardLibrary=fs.readdirSync(compilerDirectory).filter(name=>/^lib\..*\.d\.ts$/.test(name)).sort(ordinal).map(name=>{
+    const bytes=fs.readFileSync(path.join(compilerDirectory,name));return{path:name,bytes:bytes.length,sha256:sha(bytes)};
+  });
+  return{name:'typescript',version:packageData.version,implementationSha256:sha(fs.readFileSync(compilerFile)),
+    packageSha256:sha(packageBytes),standardLibrarySha256:digestInventory(standardLibrary)};
+}
+/** Only the consumer's exactly pinned compiler executes. Source files and
+ * configuration are immutable Git blobs; output remains in memory until the
+ * complete inventory has been verified. No producer build is needed. */
+export function compileThlibBlobs(committed,{compilerRoot=path.resolve(import.meta.dirname,'..')}={}){
+  const packageData=JSON.parse(committed.get('package.json')?.toString('utf8')??'null');
+  const expected=packageData?.devDependencies?.typescript;
+  assert.match(expected??'',/^\d+\.\d+\.\d+$/,'thlib must pin one exact TypeScript compiler version');
+  // Node resolves package junctions before loading the compiler. Use the same
+  // canonical directory for its standard-library allowlist and default paths.
+  const compilerFile=fs.realpathSync(locateEngineCompiler(compilerRoot,expected));
+  const compiler=engineCompilerFingerprint(compilerFile);
+  assert.equal(compiler.version,expected,'Install the TypeScript version pinned by the engine commit before synchronizing');
+  const ts=require(compilerFile),compilerDirectory=path.dirname(compilerFile);
+  assert.equal(ts.version,compiler.version,'Loaded compiler implementation does not match its package');
+  const root=path.resolve(path.parse(process.cwd()).root,'__tsstg_committed_build__','thlib');
+  const normalize=name=>path.resolve(name).replaceAll('\\','/');
+  const prefix=normalize(root)+'/',libraryPrefix=normalize(compilerDirectory)+'/';
+  const virtual=new Map([...committed].map(([name,bytes])=>[prefix+name,bytes.toString('utf8')]));
+  const directories=new Set([normalize(root)]);
+  for(const name of virtual.keys()){let directory=path.posix.dirname(name);while(directory.startsWith(normalize(root))){directories.add(directory);const parent=path.posix.dirname(directory);if(parent===directory)break;directory=parent;}}
+  const readFile=name=>{const key=normalize(name);if(virtual.has(key))return virtual.get(key);if(key.startsWith(libraryPrefix))return ts.sys.readFile(name);return undefined;};
+  const fileExists=name=>{const key=normalize(name);return virtual.has(key)||key.startsWith(libraryPrefix)&&ts.sys.fileExists(name);};
+  const directoryExists=name=>{const key=normalize(name);return directories.has(key)||key.startsWith(libraryPrefix)&&ts.sys.directoryExists(name);};
+  const configPath=path.join(root,'tsconfig.json'),json=ts.readConfigFile(configPath,readFile);
+  assert.ok(!json.error,'Committed tsconfig.json could not be read');
+  assert.deepEqual(json.config.include,['src/**/*.ts'],'Public build includes must select the complete src TypeScript tree');
+  assert.ok(!json.config.files,'Explicit files would hide parts of the source tree');
+  assert.ok(!json.config.exclude||JSON.stringify(json.config.exclude)===JSON.stringify(['dist']),'Public build excludes must not omit TypeScript sources');
+  const parsed=ts.parseJsonConfigFileContent(json.config,{useCaseSensitiveFileNames:true,readFile,fileExists,
+    readDirectory:(directory,extensions)=>[...virtual.keys()].filter(name=>name.startsWith(normalize(directory)+'/src/')&&extensions.some(extension=>name.endsWith(extension)))},root,undefined,configPath);
+  const options=parsed.options;
+  assert.equal(normalize(options.rootDir),prefix+'src','Public TypeScript rootDir must be src');
+  assert.equal(normalize(options.outDir),prefix+'dist','Public TypeScript outDir must be dist');
+  assert.equal(options.strict,true,'Public TypeScript compilation must remain strict');
+  assert.equal(options.noEmitOnError,true,'Public TypeScript errors must prevent emit');
+  assert.notEqual(options.noCheck,true);assert.notEqual(options.allowJs,true);
+  assert.equal(options.declaration,true);assert.equal(options.sourceMap,true);assert.equal(options.declarationMap,true);
+  assert.deepEqual(options.types,[],'Public thlib cannot inherit consumer ambient packages');
+  const outputs=new Map(),host=ts.createCompilerHost(options);
+  Object.assign(host,{readFile,fileExists,directoryExists,getCurrentDirectory:()=>root,useCaseSensitiveFileNames:()=>true,getCanonicalFileName:name=>name,
+    getDirectories:directory=>[...directories].filter(name=>path.posix.dirname(name)===normalize(directory)).map(name=>path.posix.basename(name)),
+    getSourceFile:(name,languageVersion)=>{const text=readFile(name);return text===undefined?undefined:ts.createSourceFile(name,text,languageVersion,true);},
+    writeFile:(name,text)=>{const key=normalize(name);assert.ok(key.startsWith(prefix+'dist/'),'Compiler attempted an output outside dist');const relative=key.slice(prefix.length);safeName(relative);outputs.set(relative,Buffer.from(text,'utf8'));},
+    realpath:name=>name});
+  const program=ts.createProgram(parsed.fileNames,options,host),diagnostics=[...parsed.errors,...ts.getPreEmitDiagnostics(program)];
+  if(diagnostics.length)throw new Error(ts.formatDiagnostics(diagnostics,{getCanonicalFileName:name=>name,getCurrentDirectory:()=>root,getNewLine:()=> '\n'}));
+  const emitted=program.emit();assert.equal(emitted.emitSkipped,false,'TypeScript skipped the locked library build');
+  assert.equal(emitted.diagnostics.length,0,'TypeScript emitted diagnostics');
+  assert.ok(outputs.has('dist/index.js')&&outputs.has('dist/index.d.ts'),'Compiler did not produce the public entrypoints');
+  const sourceFiles=inventoryBuffers(committed),outputFiles=inventoryBuffers(outputs);
+  return{files:new Map([...committed,...outputs]),build:{compiler,sourceFiles,sourceSha256:digestInventory(sourceFiles),
+    outputFiles,outputSha256:digestInventory(outputFiles)}};
+}
+export function buildGitThlib(source,commit,options){return compileThlibBlobs(readGitThlib(source,commit),options);}

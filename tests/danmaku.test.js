@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {stateHash} from '@ts-stg/thlib';
 import {TOUHOU_BULLET_STYLES} from '@ts-stg/thlib/touhou';
-import {STAGES,MIDBOSSES} from '../src/content.js';
-import {SPELL_PATTERNS,MIDBOSS_SPELL_PATTERNS,NONSPELL_PATTERNS,MIDBOSS_NONSPELL_PATTERNS,STAGE_PATTERN_OFFSETS,ATTACK_START} from '../src/patterns.js';
-import {AttackKit,SPEED_SCALE} from '../src/danmaku.js';
+import {STAGES,MIDBOSSES} from '../dist/src/content.js';
+import {SPELL_PATTERNS,MIDBOSS_SPELL_PATTERNS,NONSPELL_PATTERNS,MIDBOSS_NONSPELL_PATTERNS,STAGE_PATTERN_OFFSETS,ATTACK_START} from '../dist/src/patterns.js';
+import {AttackKit,SPEED_SCALE} from '../dist/src/danmaku.js';
 import {runAttack} from '../tools/danmaku-lab.js';
 import {attackCatalog} from '../tools/danmaku-catalog.js';
 

@@ -4,6 +4,7 @@
 /userdata/
 /reports/
 /build/
+/dist/
 *.log
 .env
 .env.*

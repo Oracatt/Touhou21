@@ -6,8 +6,8 @@ import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {DrawList} from '@ts-stg/thlib';
-import {CHARACTERS} from '../src/content.js';
-import {BOSS_SPRITE_LAYOUTS,BossSpriteCatalog,bossSpriteFrame,bossSpriteRegion} from '../src/boss-sprites.js';
+import {CHARACTERS} from '../dist/src/content.js';
+import {BOSS_SPRITE_LAYOUTS,BossSpriteCatalog,bossSpriteFrame,bossSpriteRegion} from '../dist/src/boss-sprites.js';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'docs/SPRITE-PROMPTS.json'),'utf8'));

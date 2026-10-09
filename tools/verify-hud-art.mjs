@@ -32,7 +32,7 @@ fs.mkdirSync(out,{recursive:true});fs.mkdirSync(build,{recursive:true});assert.o
 const sha=file=>createHash('sha256').update(fs.readFileSync(path.resolve(root,file))).digest('hex');
 const tree=directory=>Object.fromEntries(fs.readdirSync(path.join(root,directory),{recursive:true}).filter(name=>fs.statSync(path.join(root,directory,name)).isFile())
   .map(name=>`${directory}/${name.replaceAll('\\','/')}`).sort().map(file=>[file,sha(file)]));
-const identity=()=>({gameSourceHashes:{'main.js':sha('main.js'),...tree('src')},publicSourceHashes:tree('packages/thlib/src'),
+const identity=()=>({gameSourceHashes:{'main.ts':sha('main.ts'),...tree('src')},publicSourceHashes:tree('packages/thlib/src'),
   publicResourceHashes:tree('packages/thlib/assets/touhou-common'),
   engineLockSha256:sha('engine.lock.json'),binarySha256:sha('runtime/ts-stg.exe'),artManifestSha256:sha('assets/art-manifest.json'),
   hudArtworkHashes:Object.fromEntries(['hud-panel','hud-logo'].map(id=>[`assets/art/${id}.png`,sha(`assets/art/${id}.png`)])),

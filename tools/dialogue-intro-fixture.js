@@ -1,6 +1,6 @@
 import {Keys} from '@ts-stg/thlib';
-import {ProjectApplication} from '../src/application.js';
-import {STAGES,PLAYERS} from '../src/content.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {STAGES,PLAYERS} from '../dist/src/content.js';
 
 /** Native display QA only. The production App receives ordinary Shoot/release
  * inputs. Road skipping isolates this dialogue; no dialogue private method or

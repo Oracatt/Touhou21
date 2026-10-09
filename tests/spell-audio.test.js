@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {ProjectApplication} from '../src/application.js';
-import {STAGES} from '../src/content.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {STAGES} from '../dist/src/content.js';
 
 /** Observe the actual App -> common audio queue -> platform playback chain.
  * Only platform handles and persistent storage are replaced; resource manifests,

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {
   GAME, PLAYERS, CHARACTERS, STAGES, ENDINGS, MIDBOSSES,
   MIDBOSS_SPELLS, EXTRA_MIDBOSS_SPELLS, ALL_SPELLS, SPELL_BY_ID, CHARACTER_BY_ID, MUSIC_COMMENTS,
-} from '../src/content.js';
-import { MUSIC_TRACKS } from '../src/music-data.js';
+} from '../dist/src/content.js';
+import { MUSIC_TRACKS } from '../dist/src/music-data.js';
 
 test('campaign covers six connected stages and a separately identified Extra', () => {
   assert.equal(GAME.fanWork, true);

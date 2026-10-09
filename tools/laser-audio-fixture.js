@@ -1,5 +1,5 @@
-import {ProjectApplication} from '../src/application.js';
-import {CampaignScene} from '../src/scene.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {CampaignScene} from '../dist/src/scene.js';
 
 /** Observe real authored beams through App updates and the public audio
  * adapter. Only the final host playback boundary is muted; no audible test. */

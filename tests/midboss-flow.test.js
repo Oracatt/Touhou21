@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {Keys} from '@ts-stg/thlib';
 import {TouhouGame,createTouhouResources} from '@ts-stg/thlib/touhou';
-import {STAGES,MIDBOSSES} from '../src/content.js';
-import {CampaignDirector} from '../src/director.js';
+import {STAGES,MIDBOSSES} from '../dist/src/content.js';
+import {CampaignDirector} from '../dist/src/director.js';
 
 function fixture({stageId=1,midbosses=MIDBOSSES}={}){
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11});

@@ -4,7 +4,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {Keys} from '@ts-stg/thlib';
-import {STAGES,ALL_SPELLS,PLAYERS,ENDINGS} from '../src/content.js';
+import {STAGES,ALL_SPELLS,PLAYERS,ENDINGS} from '../dist/src/content.js';
 
 const root=path.resolve(import.meta.dirname,'..'),args=process.argv.slice(2);
 const label=args.includes('--label')?args[args.indexOf('--label')+1]:'';
@@ -78,4 +78,4 @@ for(const scenario of cases.filter(value=>!filter||filter.includes(value.id))){
   if(runs.length===2){assert.deepEqual(parity(runs[0].state),parity(runs[1].state),`${scenario.id} state parity`);if(!backendLabel)assert.equal(runs[0].pngSha256,runs[1].pngSha256,`${scenario.id} pixels parity`);}
   report.push({id:scenario.id,passed:true,pixelComparison:backendLabel?'Backend name intentionally differs':'Exact PNG equality',runs});console.log(`PASS ${scenario.id}`);
 }
-fs.writeFileSync(path.join(out,filter?'selected-report.json':'report.json'),JSON.stringify({passed:true,binarySha256:sha(path.join(root,'runtime/ts-stg.exe')),gameSourceSha256:Object.fromEntries(fs.readdirSync(path.join(root,'src')).filter(name=>name.endsWith('.js')).map(name=>[name,sha(path.join(root,'src',name))])),artManifestSha256:sha(path.join(root,'assets/art-manifest.json')),cases:report},null,2)+'\n');
+fs.writeFileSync(path.join(out,filter?'selected-report.json':'report.json'),JSON.stringify({passed:true,binarySha256:sha(path.join(root,'runtime/ts-stg.exe')),gameSourceSha256:Object.fromEntries(fs.readdirSync(path.join(root,'src')).filter(name=>name.endsWith('.ts')).map(name=>[name,sha(path.join(root,'src',name))])),artManifestSha256:sha(path.join(root,'assets/art-manifest.json')),cases:report},null,2)+'\n');

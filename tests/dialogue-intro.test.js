@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DrawList,Keys,stateHash} from '@ts-stg/thlib';
 import {createTouhouResources,TouhouRNG} from '@ts-stg/thlib/touhou';
-import {CampaignScene} from '../src/scene.js';
-import {STAGES} from '../src/content.js';
+import {CampaignScene} from '../dist/src/scene.js';
+import {STAGES} from '../dist/src/content.js';
 
 function fixture({character=0,stageId=1,lines,view,playbackSource=null}={}){
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11,createTexture:()=>12,unloadTexture(){}}),writes=[],portraits=[],music=[];

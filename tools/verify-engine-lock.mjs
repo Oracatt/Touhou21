@@ -4,7 +4,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {inventoryGitThlib} from './engine-git.mjs';
+import {buildGitThlib,inventoryBuffers} from './engine-git.mjs';
 
 export const PROJECT_ROOT=path.resolve(import.meta.dirname,'..');
 export const shaFile=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -13,20 +13,19 @@ const ordinal=(a,b)=>a<b?-1:a>b?1:0;
 const git=(root,args)=>execFileSync('git',['-C',root,...args],{encoding:'utf8',windowsHide:true});
 export const ALLOWED_UNRELATED_SOURCE_CHANGES=Object.freeze(['start-spellcard-editor.cmd']);
 
-/** Only the reviewed editor launcher can be excluded from a source check.
- * Its exact status and bytes are recorded; tracked SDK/native changes, staged
- * edits, untracked files, deletions, renames and additional paths are refused. */
-export function inspectSourceState(source,{allowChanges=[],recorded=null}={}){
-  const allowed=recorded?.changes.map(entry=>entry.path)??allowChanges;
-  for(const name of allowed)assert.ok(ALLOWED_UNRELATED_SOURCE_CHANGES.includes(name),'Unreviewed source-change exception: '+name);
+/** Unstaged editor-launcher preferences do not enter any copied or compiled
+ * input. Every other tracked/index/untracked change blocks an SDK upgrade. */
+export function inspectSourceState(source,{recorded=null}={}){
   const changes=git(source,['status','--porcelain=v1','-z']).split('\0').filter(Boolean).map(line=>{
     const status=line.slice(0,2),name=line.slice(3);
-    assert.ok(status===' M'&&allowed.includes(name),'Source engine has unapproved local modifications: '+line);
+    assert.ok(status===' M'&&ALLOWED_UNRELATED_SOURCE_CHANGES.includes(name),'Source engine has unapproved local modifications: '+line);
     const file=inside(source,name),stat=fs.lstatSync(file);assert.ok(stat.isFile()&&!stat.isSymbolicLink(),'Excluded source file must be a regular file');
     return{path:name,status,bytes:stat.size,sha256:shaFile(file),headBlob:git(source,['rev-parse','HEAD:'+name]).trim()};
   });
-  if(recorded&&changes.length)assert.deepEqual(changes,recorded.changes,'Excluded source modification changed since it was recorded');
-  return{gitClean:changes.length===0,changes,policy:'Only the unstaged editor launcher is excluded; SDK, native inputs and copied files remain byte-pinned.'};
+  const state={gitClean:changes.length===0,dependencyInputsClean:true,excludedChanges:changes,
+    policy:'All dependency/build inputs come from the pinned commit. Unstaged editor-launcher preferences are unrelated and never copied.'};
+  if(recorded)assert.deepEqual(state,recorded,'Source state changed since it was recorded');
+  return state;
 }
 
 export function safeRelative(value){
@@ -78,47 +77,41 @@ export function inventoryDigest(files){
   for(const file of [...files].sort((a,b)=>ordinal(a.path,b.path)))hash.update(`${file.path}\0${file.bytes}\0${file.sha256.toLowerCase()}\n`,'utf8');
   return hash.digest('hex');
 }
+function validateInventory(files,label){
+  assert.ok(Array.isArray(files)&&files.length>0,label+' inventory must not be empty');const seen=new Set();
+  for(const file of files){safeRelative(file.path);if(file.source)safeRelative(file.source);
+    const name=file.path.toLowerCase();assert.ok(!seen.has(name),label+' has a duplicate/case-colliding path');seen.add(name);
+    assert.ok(Number.isSafeInteger(file.bytes)&&file.bytes>=0);assert.match(file.sha256,/^[a-f0-9]{64}$/);}
+}
 export function readEngineLock(root=PROJECT_ROOT){
   const lock=JSON.parse(fs.readFileSync(path.join(root,'engine.lock.json'),'utf8'));
-  assert.equal(lock.format,'touhou21-engine-lock-v1');assert.equal(lock.engine,'TS-STG');assert.equal(lock.library,'@ts-stg/thlib');
-  assert.match(lock.commit,/^[a-f0-9]{40}$/);assert.match(lock.executableSha256,/^[a-f0-9]{64}$/i);
-  if(lock.thlibContent!==undefined)assert.equal(lock.thlibContent,'git-blob','Unknown thlib content representation');
-  assert.deepEqual(lock.supportedBackends,['v8','quickjs']);assert.equal(lock.backend,'v8');assert.equal(typeof lock.sourceModified,'boolean');
-  if(lock.sourceState){
-    assert.equal(lock.sourceModified,!lock.sourceState.gitClean);assert.ok(Array.isArray(lock.sourceState.changes));
-    assert.equal(lock.sourceState.gitClean,lock.sourceState.changes.length===0);
-    for(const entry of lock.sourceState.changes){assert.ok(ALLOWED_UNRELATED_SOURCE_CHANGES.includes(entry.path));assert.equal(entry.status,' M');
-      assert.match(entry.sha256,/^[a-f0-9]{64}$/);assert.match(entry.headBlob,/^[a-f0-9]{40}$/);assert.ok(Number.isSafeInteger(entry.bytes)&&entry.bytes>=0);}
-  }else assert.equal(lock.sourceModified,false,'Modified source must carry its reviewed exception record');
-  for(const files of [lock.thlibFiles,lock.runtimeFiles]){
-    assert.ok(Array.isArray(files)&&files.length>0);const seen=new Set();
-    for(const file of files){safeRelative(file.path);if(file.source)safeRelative(file.source);
-      assert.ok(!seen.has(file.path),'Duplicate locked file');seen.add(file.path);
-      assert.ok(Number.isSafeInteger(file.bytes)&&file.bytes>=0);assert.match(file.sha256,/^[a-f0-9]{64}$/);}
-  }
+  assert.equal(lock.format,'touhou21-engine-lock-v2','Only the committed TypeScript engine lock format is supported');
+  assert.equal(lock.engine,'TS-STG');assert.equal(lock.library,'@ts-stg/thlib');assert.equal(lock.thlibContent,'git-typescript-build');
+  assert.match(lock.commit,/^[a-f0-9]{40}$/);assert.match(lock.executableSha256,/^[a-f0-9]{64}$/);
+  assert.equal(lock.sourceModified,false,'Dependency inputs must be committed; dirty snapshots are unsupported');
+  assert.deepEqual(lock.supportedBackends,['v8','quickjs']);assert.equal(lock.backend,'v8');
+  if(lock.sourceState){assert.equal(lock.sourceState.dependencyInputsClean,true);assert.ok(Array.isArray(lock.sourceState.excludedChanges));
+    assert.equal(lock.sourceState.gitClean,lock.sourceState.excludedChanges.length===0);
+    for(const entry of lock.sourceState.excludedChanges){assert.ok(ALLOWED_UNRELATED_SOURCE_CHANGES.includes(entry.path));assert.equal(entry.status,' M');assert.match(entry.sha256,/^[a-f0-9]{64}$/);assert.match(entry.headBlob,/^[a-f0-9]{40}$/);}}
+  validateInventory(lock.thlibFiles,'Library');validateInventory(lock.runtimeFiles,'Runtime');
   assert.equal(inventoryDigest(lock.thlibFiles),lock.thlibSha256,'Invalid library inventory digest');
   assert.equal(inventoryDigest(lock.runtimeFiles),lock.runtimeSha256,'Invalid runtime inventory digest');
-  for(const file of lock.runtimeFiles){safeRelative(file.source);
-    if(file.generatedContent!==undefined){assert.equal(file.path,'PACKAGE.json','Only SDK metadata may be generated locally');
-      assert.equal(typeof file.generatedContent,'string');assert.equal(Buffer.byteLength(file.generatedContent),file.bytes);assert.equal(shaText(file.generatedContent),file.sha256);
-      assert.match(file.sourceSha256,/^[a-f0-9]{64}$/);const sdk=JSON.parse(file.generatedContent);
-      assert.equal(sdk.binarySha256,lock.executableSha256);assert.equal(sdk.derivedFor.commit,lock.commit);assert.equal(sdk.derivedFor.upstreamPackageSha256,file.sourceSha256);}}
-  const binary=lock.runtimeFiles.find(file=>file.path==='ts-stg.exe');assert.ok(binary);
-  assert.equal(binary.sha256,lock.executableSha256.toLowerCase());
-  if(lock.nativeBuild){
-    const build=lock.nativeBuild;assert.equal(build.configuration,'Release');
-    assert.equal(build.executableSource,binary.source);assert.equal(build.binarySha256,binary.sha256);
-    safeRelative(build.packageSource);assert.match(build.packageSha256,/^[a-f0-9]{64}$/);
-    assert.ok(Array.isArray(build.sourceFiles)&&build.sourceFiles.length>0);
-    const seen=new Set();for(const file of build.sourceFiles){safeRelative(file.path);assert.ok(!seen.has(file.path));seen.add(file.path);
-      assert.ok(Number.isSafeInteger(file.bytes)&&file.bytes>=0);assert.match(file.sha256,/^[a-f0-9]{64}$/);}
-    assert.equal(inventoryDigest(build.sourceFiles),build.sourceSha256,'Invalid native source inventory digest');
-    for(const entry of [build.hostObject,build.dependencyLog]){safeRelative(entry.source);assert.match(entry.sha256,/^[a-f0-9]{64}$/);}
-    const sdk=lock.runtimeFiles.find(file=>file.path==='PACKAGE.json');assert.ok(sdk,'Native build provenance must be retained');
-    assert.equal(sdk.source,build.packageSource);assert.equal(sdk.sha256,build.packageSha256);
-    if(build.derivedPackage){assert.ok(sdk.generatedContent);assert.equal(sdk.sourceSha256,build.packageTemplateSha256);}
-    for(const entry of [...(build.objects??[]),...(build.linkInputs??[]),...(build.linkLog?[build.linkLog]:[])]){safeRelative(entry.source);assert.match(entry.sha256,/^[a-f0-9]{64}$/);}
-  }
+  const build=lock.thlibBuild;assert.ok(build,'Committed TypeScript build provenance is required');
+  assert.equal(build.compiler.name,'typescript');assert.match(build.compiler.version,/^\d+\.\d+\.\d+$/);
+  for(const name of ['implementationSha256','packageSha256','standardLibrarySha256'])assert.match(build.compiler[name],/^[a-f0-9]{64}$/);
+  validateInventory(build.sourceFiles,'Library source');validateInventory(build.outputFiles,'Library output');
+  assert.equal(inventoryDigest(build.sourceFiles),build.sourceSha256,'Invalid TypeScript source inventory digest');
+  assert.equal(inventoryDigest(build.outputFiles),build.outputSha256,'Invalid TypeScript output inventory digest');
+  assert.ok(build.sourceFiles.every(file=>!file.path.startsWith('dist/')),'Compiled files cannot be source inputs');
+  assert.ok(build.sourceFiles.filter(file=>file.path.startsWith('src/')).every(file=>file.path.endsWith('.ts')),'Library source must be TypeScript');
+  assert.ok(build.outputFiles.every(file=>file.path.startsWith('dist/')),'Build products must stay under dist');
+  assert.deepEqual([...build.sourceFiles,...build.outputFiles].sort((a,b)=>ordinal(a.path,b.path)),lock.thlibFiles,'Library snapshot must exactly combine committed sources and generated output');
+  const binary=lock.runtimeFiles.find(file=>file.path==='ts-stg.exe');assert.ok(binary);assert.equal(binary.sha256,lock.executableSha256);
+  for(const file of lock.runtimeFiles)safeRelative(file.source);
+  if(lock.nativeBuild){const native=lock.nativeBuild;assert.equal(native.configuration,'Release');assert.equal(native.binarySha256,binary.sha256);assert.equal(native.executableSource,binary.source);
+    validateInventory(native.sourceFiles,'Native source');assert.equal(inventoryDigest(native.sourceFiles),native.sourceSha256,'Invalid native source inventory digest');
+    const sdk=lock.runtimeFiles.find(file=>file.path==='PACKAGE.json');assert.ok(sdk);assert.equal(sdk.source,native.packageSource);assert.equal(sdk.sha256,native.packageSha256);
+    for(const entry of [native.hostObject,native.dependencyLog,...native.objects,...native.linkInputs,native.linkLog]){safeRelative(entry.source);assert.match(entry.sha256,/^[a-f0-9]{64}$/);}}
   return lock;
 }
 function compareTree(directory,expected,label){
@@ -139,48 +132,24 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
   }
   let sourceVerified=false,buildEvidenceVerified=false;
   if(checkSource||checkBuild||source){
-    const location=fs.realpathSync(source??lock.source);
-    if(lock.thlibContent==='git-blob'){
-      assert.deepEqual(inventoryGitThlib(location,lock.commit),lock.thlibFiles,'Snapshot differs from the complete public thlib Git commit');
-      sourceVerified=true;
-    }
-    // Portable source verification reads immutable Git objects. Rechecking the
-    // producer's compiler outputs is separate and needs its original build tree.
-    // Legacy locks retain their previous working-tree verification behavior.
-    if(lock.thlibContent!=='git-blob'||checkBuild){
-      const commit=execFileSync('git',['-C',location,'rev-parse','HEAD'],{encoding:'utf8',windowsHide:true}).trim();
-      assert.equal(commit,lock.commit,'Engine source commit differs from lock');
-      inspectSourceState(location,{recorded:lock.sourceState});
-      // The public code and selected common pack are complete subtrees. Other
-      // asset packs remain excluded from this private consumer snapshot.
-      for(const directory of ['src','assets/touhou-common']){
-        const files=inventoryTrackedThlibTree(location,directory);
-        const expected=lock.thlibFiles.filter(file=>file.path.startsWith(directory+'/'));
-        if(lock.thlibContent==='git-blob')assert.deepEqual(files.map(file=>file.path),expected.map(file=>file.path),'Source public tree inventory differs: '+directory);
-        else assert.equal(inventoryDigest(files),inventoryDigest(expected),'Snapshot does not contain the complete public thlib tree: '+directory);
-      }
-      if(lock.thlibContent!=='git-blob')for(const file of lock.thlibFiles){const sourceFile=inside(path.join(location,'packages/thlib'),file.path);
-        assert.ok(!fs.lstatSync(sourceFile).isSymbolicLink(),'Source library file may not be a link');
-        assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source library file size differs');
-        assert.equal(shaFile(sourceFile),file.sha256,'Source library file hash differs');}
-      for(const file of lock.runtimeFiles){const sourceFile=inside(location,file.source);
-        if(file.generatedContent!==undefined)assert.equal(shaFile(sourceFile),file.sourceSha256,'Source SDK metadata template hash differs');
-        else{assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source runtime file size differs');
-          assert.equal(shaFile(sourceFile),file.sha256,'Source runtime file hash differs');}}
-      if(lock.nativeBuild){
-        for(const file of lock.nativeBuild.sourceFiles){const sourceFile=inside(location,file.path);
-          assert.equal(fs.statSync(sourceFile).size,file.bytes,'Native build source size differs');
-          assert.equal(shaFile(sourceFile),file.sha256,'Native build source hash differs');}
-        for(const entry of [lock.nativeBuild.hostObject,lock.nativeBuild.dependencyLog,...(lock.nativeBuild.objects??[]),...(lock.nativeBuild.linkInputs??[]),...(lock.nativeBuild.linkLog?[lock.nativeBuild.linkLog]:[])])
-          assert.equal(shaFile(inside(location,entry.source)),entry.sha256,'Native compiler evidence hash differs');
-      }
-      sourceVerified=true;buildEvidenceVerified=true;
+    const location=fs.realpathSync(source??lock.source),rebuilt=buildGitThlib(location,lock.commit,{compilerRoot:root});
+    assert.deepEqual(rebuilt.build,lock.thlibBuild,'Pinned TypeScript inputs, compiler, or generated output differ from the lock');
+    assert.deepEqual(inventoryBuffers(rebuilt.files),lock.thlibFiles,'Snapshot differs from the complete committed TypeScript build');sourceVerified=true;
+    if(checkBuild){
+      assert.equal(git(location,['rev-parse','HEAD']).trim(),lock.commit,'Engine source commit differs from lock');inspectSourceState(location,{recorded:lock.sourceState});
+      for(const file of lock.runtimeFiles){const sourceFile=inside(location,file.source);assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source runtime file size differs');assert.equal(shaFile(sourceFile),file.sha256,'Source runtime file hash differs');}
+      assert.ok(lock.nativeBuild,'Native compiler evidence is missing');
+      for(const file of lock.nativeBuild.sourceFiles){const sourceFile=inside(location,file.path);assert.equal(fs.statSync(sourceFile).size,file.bytes,'Native build source size differs');assert.equal(shaFile(sourceFile),file.sha256,'Native build source hash differs');}
+      for(const entry of [lock.nativeBuild.hostObject,lock.nativeBuild.dependencyLog,...lock.nativeBuild.objects,...lock.nativeBuild.linkInputs,lock.nativeBuild.linkLog])
+        assert.equal(shaFile(inside(location,entry.source)),entry.sha256,'Native compiler evidence hash differs');
+      buildEvidenceVerified=true;
     }
   }
-  return{passed:true,commit:lock.commit,backend:lock.backend,supportedBackends:lock.supportedBackends,
+  return{passed:true,commit:lock.commit,backend:lock.backend,supportedBackends:lock.supportedBackends,sourceModified:false,
     executableSha256:lock.executableSha256,thlibFiles:lock.thlibFiles.length,runtimeFiles:lock.runtimeFiles.length,
-    thlibSha256:lock.thlibSha256,runtimeSha256:lock.runtimeSha256,thlibContent:lock.thlibContent??'legacy-working-tree',sourceVerified,buildEvidenceVerified,nativeBuildRecorded:!!lock.nativeBuild,
-    recordedSourceGitClean:lock.sourceState?.gitClean??true,recordedSourceChanges:lock.sourceState?.changes??[]};
+    thlibSha256:lock.thlibSha256,runtimeSha256:lock.runtimeSha256,thlibContent:lock.thlibContent,compiler:lock.thlibBuild.compiler,
+    sourceVerified,buildEvidenceVerified,nativeBuildRecorded:!!lock.nativeBuild,
+    recordedSourceGitClean:lock.sourceState?.gitClean??true,excludedSourceChanges:lock.sourceState?.excludedChanges??[]};
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

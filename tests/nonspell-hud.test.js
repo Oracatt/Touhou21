@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {Keys} from '@ts-stg/thlib';
 import {createTouhouResources,TouhouRNG,TouhouBossHud,TouhouPlayer} from '@ts-stg/thlib/touhou';
-import {CampaignScene} from '../src/scene.js';
-import {CampaignBossHud} from '../src/campaign-boss-hud.js';
-import {STAGES} from '../src/content.js';
+import {CampaignScene} from '../dist/src/scene.js';
+import {CampaignBossHud} from '../dist/src/campaign-boss-hud.js';
+import {STAGES} from '../dist/src/content.js';
 
 function fixture({midboss=false,spell=false}={}){
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11});

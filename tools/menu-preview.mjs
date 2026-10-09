@@ -9,11 +9,11 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {DrawList,Keys} from '@ts-stg/thlib';
 import {createStandInBank} from './danmaku-lab.js';
-import {GameArt} from '../src/art.js';
-import {TextPainter} from '../src/text.js';
-import {ProjectTitleMenu} from '../src/menu.js';
-import {ListPage} from '../src/pages.js';
-import {ALL_SPELLS,STAGES} from '../src/content.js';
+import {GameArt} from '../dist/src/art.js';
+import {TextPainter} from '../dist/src/text.js';
+import {ProjectTitleMenu} from '../dist/src/menu.js';
+import {ListPage} from '../dist/src/pages.js';
+import {ALL_SPELLS,STAGES} from '../dist/src/content.js';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),OUT=path.join(ROOT,'reports','menu');
 const textures={};let nextId=100;

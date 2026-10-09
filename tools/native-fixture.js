@@ -1,5 +1,5 @@
-import {ProjectApplication} from '../src/application.js';
-import {EndingPage} from '../src/pages.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {EndingPage} from '../dist/src/pages.js';
 const native=globalThis.tsstg,scenario=JSON.parse(native.readText('build/scenario.json'));
 const memory=new Map(),host=Object.fromEntries(Object.getOwnPropertyNames(native).map(key=>[key,native[key]]));
 host.readText=path=>path.startsWith('userdata/')?(memory.get(path)??''):native.readText(path);

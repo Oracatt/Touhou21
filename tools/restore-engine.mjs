@@ -1,4 +1,4 @@
-/** Restore only the private thlib tree from the lock's committed Git bytes.
+/** Restore the private thlib tree from committed TypeScript and its pinned compiler.
  * Runtime binaries and the lock remain unchanged. No producer build is needed. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -6,7 +6,7 @@ import path from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {PROJECT_ROOT,inside,inventoryTree,inventoryDigest,readEngineLock,shaFile,verifyEngineLock} from './verify-engine-lock.mjs';
-import {readGitThlib} from './engine-git.mjs';
+import {buildGitThlib,inventoryBuffers} from './engine-git.mjs';
 
 const ordinal=(a,b)=>a<b?-1:a>b?1:0;
 const fold=value=>process.platform==='win32'?value.toLowerCase():value;
@@ -28,16 +28,6 @@ function separateRoots(root,source){
   assert.ok(fold(a)!==fold(b)&&!fold(a).startsWith(fold(b)+path.sep)&&!fold(b).startsWith(fold(a)+path.sep),
     'The game and source engine must be separate directories.');
   return{root:a,source:b};
-}
-function gitInventory(files){
-  const names=new Set();
-  const result=[...files].map(([name,bytes])=>{
-    // inside also rejects unsafe paths; case aliases cannot be exported on Windows.
-    inside(PROJECT_ROOT,name);assert.ok(Buffer.isBuffer(bytes),'Git reader must return raw blob buffers');
-    assert.ok(!names.has(name.toLowerCase()),'Git thlib paths collide on a case-insensitive filesystem');names.add(name.toLowerCase());
-    return{path:name,bytes:bytes.length,sha256:shaBytes(bytes)};
-  });
-  return result.sort((a,b)=>ordinal(a.path,b.path));
 }
 function assertExactTree(directory,expected,label){
   assertPlainPath(directory);
@@ -102,12 +92,12 @@ function installedNode(root,expected){
 export function planEngineRestore({root=PROJECT_ROOT,source=null,commit=null}={}){
   root=path.resolve(root);assertPlainPath(path.join(root,'engine.lock.json'));
   const lock=readEngineLock(root);
-  assert.equal(lock.thlibContent,'git-blob','Restore requires a canonical git-blob lock; migrate a legacy lock through guarded engine sync first.');
   if(commit!==null)assert.equal(commit,lock.commit,'Restore commit must equal the pinned engine commit');
   ({root,source}=separateRoots(root,path.resolve(source??lock.source)));
   for(const name of ['packages/thlib','runtime','build'])assertPlainPath(inside(root,name));
   assertExactTree(inside(root,'runtime'),lock.runtimeFiles,'Private runtime');
-  const committed=readGitThlib(source,lock.commit),thlibFiles=gitInventory(committed);
+  const rebuilt=buildGitThlib(source,lock.commit,{compilerRoot:root}),committed=rebuilt.files,thlibFiles=inventoryBuffers(committed);
+  assert.deepEqual(rebuilt.build,lock.thlibBuild,'Pinned compiler or TypeScript build differs from the lock');
   assert.deepEqual(thlibFiles,lock.thlibFiles.map(({path,bytes,sha256})=>({path,bytes,sha256})).sort((a,b)=>ordinal(a.path,b.path)),
     'Locked thlib inventory differs from the pinned Git commit');
   assert.equal(inventoryDigest(thlibFiles),lock.thlibSha256,'Pinned Git thlib digest differs from the lock');
@@ -135,7 +125,8 @@ export function applyEngineRestore(plan){
   fs.mkdirSync(staging,{recursive:true});
   const next=inside(staging,'thlib'),backup=inside(staging,'backup-thlib'),failed=inside(staging,'failed-thlib');
   fs.mkdirSync(next);
-  const committed=readGitThlib(source,commit);
+  const rebuilt=buildGitThlib(source,commit,{compilerRoot:root}),committed=rebuilt.files;
+  assert.deepEqual(rebuilt.build,readEngineLock(root).thlibBuild,'Pinned compiler or TypeScript build changed during staging');
   for(const entry of fresh.thlibFiles){
     const bytes=committed.get(entry.path);assert.ok(bytes&&bytes.length===entry.bytes&&shaBytes(bytes)===entry.sha256,'Committed bytes changed during restore staging');
     const output=inside(next,entry.path);assertPlainPath(output);fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,bytes);

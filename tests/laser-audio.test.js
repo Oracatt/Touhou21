@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {ProjectApplication} from '../src/application.js';
-import {AttackKit} from '../src/danmaku.js';
-import {SHINO} from '../src/attacks/shino.js';
-import {KOTONE} from '../src/attacks/kotone.js';
-import {updateRoadEnemy} from '../src/roads.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {AttackKit} from '../dist/src/danmaku.js';
+import {SHINO} from '../dist/src/attacks/shino.js';
+import {KOTONE} from '../dist/src/attacks/kotone.js';
+import {updateRoadEnemy} from '../dist/src/roads.js';
 
 // Real public resources, laser owner and audio queue; only platform handles
 // and playback are observed, with no disk saves or audible output.

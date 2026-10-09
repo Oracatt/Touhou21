@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {Keys} from '@ts-stg/thlib';
-import {MusicController} from '../src/music.js';
-import {ProjectApplication} from '../src/application.js';
-import {STAGES} from '../src/content.js';
-import {musicTrack} from '../src/music-data.js';
+import {MusicController} from '../dist/src/music.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {STAGES} from '../dist/src/content.js';
+import {musicTrack} from '../dist/src/music-data.js';
 
 function transport(){
   let next=1;const files=new Map(),calls=[];

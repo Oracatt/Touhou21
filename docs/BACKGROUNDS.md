@@ -1,6 +1,6 @@
 # 道中三维与抽象符卡背景
 
-背景使用游戏自己的 [src/background.js](../src/background.js)、[src/background-art.js](../src/background-art.js) 与 [src/spell-background.js](../src/spell-background.js)。道中通过 TS-STG 公共 DrawList.mesh3d 绘制贴图构建的实时三维空间；符卡切换为七位 Boss 各自独立的全幅抽象纹样。稳态符卡不提交道中景物或三维符卡舞台，进退期间才与道路画面交叉淡化。
+背景使用游戏自己的 [src/background.ts](../src/background.ts)、[src/background-art.ts](../src/background-art.ts) 与 [src/spell-background.ts](../src/spell-background.ts)。道中通过 TS-STG 公共 DrawList.mesh3d 绘制贴图构建的实时三维空间；符卡切换为七位 Boss 各自独立的全幅抽象纹样。稳态符卡不提交道中景物或三维符卡舞台，进退期间才与道路画面交叉淡化。
 
 ## 原作构建方法与本作边界
 
@@ -32,7 +32,7 @@ assets/art/stage01.png 至 stage07.png 仍以低亮度提供远处天空、山�
 
 ## 动态符卡背景
 
-[src/spell-background.js](../src/spell-background.js) 只负责本作的视觉内容。只读参考是 TS-STG 的 games/rushboss/src/stage-artwork.js：默认竖屏 Demo 在 priority 11 调用 drawSpell，各张卡独立保存 age、scroll、alpha 与 leaving，底纹和另一层流纹按不同方向采样，结束后继续移动并淡出。这里借鉴其分层与生命周期设计，不复制 Rush 的图像、私有代码、魔法阵或扭曲效果。
+[src/spell-background.ts](../src/spell-background.ts) 只负责本作的视觉内容。只读参考是 TS-STG 的 games/rushboss/src/stage-artwork.ts：默认竖屏 Demo 在 priority 11 调用 drawSpell，各张卡独立保存 age、scroll、alpha 与 leaving，底纹和另一层流纹按不同方向采样，结束后继续移动并淡出。这里借鉴其分层与生命周期设计，不复制 Rush 的图像、私有代码、魔法阵或扭曲效果。
 
 原作抽象纹样的只读依据还包括 Touhou20Reconstruction 的 scripts/recovered/anm/st01enm.anm.txt:1068–1137 和 st03enm.anm.txt:1008–1085：底图与独立大尺度 pattern 分层，使用不同的 UV 位移、相反旋转以及减色/加色控制亮度。七面原作入口使用 60 帧淡入；例如一面是底图、加色纹样、减色纹样，三面是底图和以不同角速度反转的两层纹样。本作采用两张独立图和三层合成，按自己的主题调节透明度及加减色，不使用原作纹理，也不宣称逐参数复现其 ANM。
 

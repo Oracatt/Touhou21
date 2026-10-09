@@ -1,8 +1,8 @@
 import {Keys} from '@ts-stg/thlib';
-import {ProjectApplication} from '../src/application.js';
-import {CampaignScene} from '../src/scene.js';
-import {STAGES} from '../src/content.js';
-import {musicTrack} from '../src/music-data.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {CampaignScene} from '../dist/src/scene.js';
+import {STAGES} from '../dist/src/content.js';
+import {musicTrack} from '../dist/src/music-data.js';
 
 /** Real App/dialogue/Pause inputs with only the final speaker boundary muted.
  * Native music handles, seek/stop commands and the production music clock are

@@ -6,10 +6,10 @@
 
 | 文件 | 内容 |
 | --- | --- |
-| [`src/danmaku.js`](../src/danmaku.js) | 共享编写工具 `AttackKit`：弹型 / 颜色常量、按难度缩放的运动指令（弯曲、加速、停顿后瞄准、停顿后转向、等待、反弹、横向环绕、移动到点、自我消弹）、扇形 / 环 / 缺口环 / 瞄准扇 / 叠层发射、预告激光、延迟子弹分裂与 Boss 平滑移动 |
-| [`src/attacks/shapes.js`](../src/attacks/shapes.js) | 正多边形、星形、玫瑰线的扩散轮廓：所有子弹从同一点出发，速度与轮廓上的点成正比，因此轮廓在扩散时保持形状 |
-| [`src/attacks/*.js`](../src/attacks) | 七位 Boss 各一个模块，包含各自的非符、符卡与道中 Boss 攻击；Extra 道中 Boss 的三张卡位于房枝模块 |
-| [`src/patterns.js`](../src/patterns.js) | 攻击目录与导演入口：`updateSpellPattern`、`updateMidbossSpellPattern`、`updateNonspellPattern`、`updateMidbossNonspellPattern` |
+| [`src/danmaku.ts`](../src/danmaku.ts) | 共享编写工具 `AttackKit`：弹型 / 颜色常量、按难度缩放的运动指令（弯曲、加速、停顿后瞄准、停顿后转向、等待、反弹、横向环绕、移动到点、自我消弹）、扇形 / 环 / 缺口环 / 瞄准扇 / 叠层发射、预告激光、延迟子弹分裂与 Boss 平滑移动 |
+| [`src/attacks/shapes.ts`](../src/attacks/shapes.ts) | 正多边形、星形、玫瑰线的扩散轮廓：所有子弹从同一点出发，速度与轮廓上的点成正比，因此轮廓在扩散时保持形状 |
+| [`src/attacks/*.ts`](../src/attacks) | 七位 Boss 各一个模块，包含各自的非符、符卡与道中 Boss 攻击；Extra 道中 Boss 的三张卡位于房枝模块 |
+| [`src/patterns.ts`](../src/patterns.ts) | 攻击目录与导演入口：`updateSpellPattern`、`updateMidbossSpellPattern`、`updateNonspellPattern`、`updateMidbossNonspellPattern` |
 
 旧版的“准备 → 短句 → 强制休止”节奏表 `spell-cadence.js` 已删除。旧版每张卡由 2～3 个互不相关的定时层叠成，且每个周期有 120～270 帧不发射新弹，Normal 实测峰值仅 60～110 发。新版每张卡围绕一个可读的核心机制连续展开，Boss 在卡内按需要移动。
 

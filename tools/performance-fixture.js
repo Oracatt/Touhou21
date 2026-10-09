@@ -1,4 +1,4 @@
-import {ProjectApplication} from '../src/application.js';
+import {ProjectApplication} from '../dist/src/application.js';
 import {Keys} from '@ts-stg/thlib';
 const native=globalThis.tsstg,scenario=JSON.parse(native.readText('build/performance-scenario.json'));
 const memory=new Map([['userdata/guiming-settings.json',JSON.stringify({musicVolume:0,soundVolume:0,startingLives:2,autoSaveReplay:false})]]);

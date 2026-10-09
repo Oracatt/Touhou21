@@ -1,6 +1,6 @@
 import {DrawList,Keys} from '@ts-stg/thlib';
 import {TouhouPause,TouhouGameOver} from '@ts-stg/thlib/touhou';
-import {ProjectApplication} from '../src/application.js';
+import {ProjectApplication} from '../dist/src/application.js';
 
 /** Short native display fixture. All writes are memory-only; pause/confirmation
  * use real App input, while result menus explicitly use the public entry API. */
