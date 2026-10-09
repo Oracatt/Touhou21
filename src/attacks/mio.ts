@@ -4,6 +4,7 @@ import type {AttackKit, Attack, BossAttacks} from '../danmaku.js';
 import {T,C,C8,DOWN,TAU,clamp,lerp,wrap} from '../danmaku.js';
 import {polygon,star,rose,inGap,burstShape} from './shapes.js';
 import {FUSAE} from './fusae.js';
+import {anmEasing} from '@ts-stg/thlib/touhou';
 
 /** Queue an echo `delay` frames later; `fire(k)` runs at that time. */
 function echo(k: AttackKit,delay:number,fire:Attack){(k.state.echoes??=[]).push({at:k.t+delay,fire});}
@@ -12,6 +13,19 @@ function runEchoes(k: AttackKit){
   for(let i=0;i<queue.length;){if(queue[i].at===k.t){const e=queue.splice(i,1)[0];e.fire(k);}else i++;}
 }
 const echoed=(attack:Attack):Attack=>{const run:Attack=(k: AttackKit)=>{runEchoes(k);attack(k);};Object.defineProperty(run,'name',{value:attack.name});if(attack.home)run.home=attack.home;return run;};
+
+/** Join a continuous authored path from the actual actor position. Keeping the
+ * attack clock untouched preserves volleys and delayed echoes when a survival
+ * section starts halfway through another attack's periodic movement. */
+function followVoicePath(k:AttackKit,id:string,x:number,y:number,finishAt=Infinity){
+  let entry=k.state.pathEntry;
+  if(!entry||entry.id!==id||entry.lastFrame!==k.t-1)
+    entry=k.state.pathEntry={id,lastFrame:k.t,age:0,x:k.boss!.x,y:k.boss!.y};
+  else{entry.age++;entry.lastFrame=k.t;}
+  const join=anmEasing(9,Math.min(60,entry.age),60);
+  const settle=anmEasing(9,clamp(finishAt-k.t,0,30),30);
+  k.place(lerp(k.boss!.x,lerp(entry.x,x,join),settle),lerp(k.boss!.y,lerp(entry.y,y,join),settle));
+}
 
 /* ---- eight nonspells ---- */
 function halfSpokenVoice(k: AttackKit){
@@ -67,9 +81,9 @@ function wallOfEcho(k: AttackKit){
 /** The voice is replayed: the Boss walks a slow loop leaving a still dot every
  * few frames, and after a breath the dots fall in the order they were left,
  * so the path it walked comes down as a slanted curtain. */
-function replayedVoice(k: AttackKit){
+function replayedVoice(k: AttackKit,finishAt=Infinity){
   const a=k.t*.035;
-  k.place(Math.sin(a)*90,92+Math.sin(a*2)*26);
+  followVoicePath(k,'replayed',Math.sin(a)*90,92+Math.sin(a*2)*26,finishAt);
   if(k.every(k.pick(10,9,8,7))){
     const lean=Math.sin(k.t*.011)*.18;
     k.shot(k.ox,k.oy,DOWN,0,T.AMULET,(k.t/7|0)%2?C.SKY:C.WHITE,[k.wait(110),k.set(DOWN+lean,k.pick(1.6,1.8,1.9,2))],{silent:k.t%28!==0});
@@ -151,22 +165,25 @@ windingCalls.home={x:0,y:104};
 /** 镜声「与汝相反之回响」: the Boss drifts to the opposite side of the hall
  * from you and pours a sweeping curtain down; aimed fans arrive from both the
  * Boss and its mirror image. */
-function mirroredVoice(k: AttackKit){
+function mirroredVoice(k: AttackKit,finishAt=Infinity){
   const target=clamp(-k.px*.85,-140,140);
-  k.place(k.boss!.x+(target-k.boss!.x)*.045,96+10*Math.sin(k.t*.03));
+  followVoicePath(k,'mirrored',k.boss!.x+(target-k.boss!.x)*.045,96+10*Math.sin(k.t*.03),finishAt);
   if(k.every(9))k.shot(k.ox,k.oy,DOWN+Math.sin(k.t*.045)*.2,2.1,T.NEEDLE,C.SKY,null,{silent:k.t%27!==0});
   if(k.every(k.pick(100,88,80,74),30)){const x=k.ox,y=k.oy;
     k.aimed(x,y,k.pick(3,3,5,5),2.7,.15,T.RICE,C.WHITE,null,{rows:2,speedStep:1.8});
     echo(k,22,(k: AttackKit)=>k.aimed(-x,y,3,2.5,.15,T.RICE,C.ROSE,null,{rows:2,speedStep:1.7}));}
 }
-mirroredVoice.home={x:0,y:100};
+mirroredVoice.home={x:0,y:96};
 
 /** 耐响「末次呼唤之六十余息」 (survival): six echoes of this hall, ten
  * seconds each, with a breath between them. */
 function lastCallSixtyBreaths(k: AttackKit){
   const segment=Math.min(5,k.t/620|0),c=k.t%620;k.state.segment=segment;
   if(c>=590)return;
-  [silentCorridor,farBells,windingCalls,mirroredVoice,wallOfEcho,replayedVoice][segment](k);
+  const finishAt=k.t+590-c;
+  if(segment===3)mirroredVoice(k,finishAt);
+  else if(segment===5)replayedVoice(k,finishAt);
+  else [silentCorridor,farBells,windingCalls,mirroredVoice,wallOfEcho,replayedVoice][segment](k);
 }
 lastCallSixtyBreaths.home={x:0,y:108};
 

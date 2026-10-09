@@ -152,6 +152,7 @@ export class CampaignScene extends TouhouGame {
   }
   decorateBoss(enemy:CampaignBoss,{bossId,midboss}:{bossId:string;midboss:boolean}){
     enemy._spriteDirection=0;
+    this.bossSprites.attach(enemy);
     const renderBody=(draw:AnmDrawList,bodyView:AnmView)=>{
       const x=(bodyView.x??336)+enemy.x*(bodyView.scale??1.5),y=(bodyView.y??24)+enemy.y*(bodyView.scale??1.5);
       this.bossSprites.draw(draw,enemy,bossId,{x,y,scale:bodyView.scale??1.5,height:midboss?55:68,color:enemy.hitThisFrame?0xffccccff:0xffffffff});
@@ -246,7 +247,12 @@ export class CampaignScene extends TouhouGame {
     if(this.options.autoCapture&&['combat','midboss-combat'].includes(this.director.state)&&this.director.phaseFrame>=125&&!verificationPhase?.spec?.survival)
       this.context.damageEnemy!(this.director.boss!,10000000,{kind:'verification-shot',x:this.player.x,y:this.player.y});
     const wasPaused=this.paused,previousFrame=this.frame,previousBoss=this.director.boss,previousBossX=previousBoss?.x;super.update(mask);
-    if(this.frame!==previousFrame)this.background.update?.(this);
+    if(this.frame!==previousFrame){
+      this.background.update?.(this);
+      // Held Bosses still have visible bodies during results, dialogue and
+      // retreat. Their gameplay age is intentionally frozen by thlib.
+      const boss=this.director.boss;if(boss?.alive)this.bossSprites.update(boss);
+    }
     this.player.highScore=Math.max(this.player.highScore,this.player.score);
     if(!wasPaused&&!this.paused&&previousBoss&&previousBoss===this.director.boss){
       const delta=previousBoss.x-previousBossX!;previousBoss._spriteDirection=Math.abs(delta)>.15?Math.sign(delta):0;

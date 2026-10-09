@@ -13,7 +13,7 @@ export interface NormalPhase extends PhaseBase {spell:false;spec?:undefined;spel
 export type CampaignPhase=SpellPhase|NormalPhase;
 interface DirectorEvent {event:string;stage:number;frame:number;waveId?:string;sectionId?:string;attack?:string;formation?:string;role?:string;count?:number;roadFrame?:number;index?:number;spell?:boolean;timeout?:boolean;defeated?:boolean;}
 
-import {TouhouBossPhasePlan,TouhouItemType,clearTouhouBossPhase,TouhouRNG,TOUHOU_BOSS_PROFILES} from '@ts-stg/thlib/touhou';
+import {AnmInterpolation,TouhouBossPhasePlan,TouhouItemType,clearTouhouBossPhase,TouhouRNG,TOUHOU_BOSS_PROFILES} from '@ts-stg/thlib/touhou';
 import {updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern,updateMidbossNonspellPattern,STAGE_PATTERN_OFFSETS} from './patterns.js';
 import {createRoadPlan,spawnRoadFormation} from './roads.js';
 import {bossNonspellHealth,midbossNormalHealth,midbossSpellHealth} from './boss-health.js';
@@ -21,6 +21,8 @@ import {bossNonspellHealth,midbossNormalHealth,midbossSpellHealth} from './boss-
 const clamp=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
 /** Frames a defeated recurring midboss hangs in place before she retreats. */
 const MIDBOSS_DEFEAT_PAUSE=75;
+// st01mbs/st02mbs ECL401: 100-frame outQuad arrival, not a linear hard stop.
+const MIDBOSS_ENTRY_FRAMES=100;
 // TH20's Boss WAVs contain about 0.7 s of near-silence before their first note.
 // Our authored tracks start immediately, so this game's cue supplies that lead-in.
 const BOSS_MUSIC_SILENCE_FRAMES=42;
@@ -36,6 +38,7 @@ export class CampaignDirector{
  declare rng:TouhouRNG;declare state:string;declare stageFrame:number;declare phaseFrame:number;declare phaseIndex:number;declare waitFrames:number;declare boss:CampaignBoss|null;declare phases:CampaignPhase[];declare phasePlan:TouhouBossPhasePlan<CampaignPhase>|null;declare patternState:AttackState;
  declare captures:CaptureRecord[];declare completed:boolean;declare destroyed:boolean;declare dialogueContinuation:(()=>void)|null;declare stageContinuation:(()=>void)|null;declare midbossDone:boolean;declare finishing:boolean;declare finalResult:{timeout:boolean;survival:boolean}|null;declare events:DirectorEvent[];declare totalClock:number;
  declare chargeCue:{owner:TouhouBossCharge;releasePlayed:boolean}|null;declare game:TouhouGame;declare originalStage:TouhouGame['stage'];declare originalEvent:TouhouGame['onEvent'];declare originalInteraction:Pick<TouhouGame['context'],'dialogue'|'inputBlocked'|'bossSuppressed'|'enemyContactBlocked'>;
+ declare transitionMove:AnmInterpolation|null;
  declare roadPlan:ReturnType<typeof createRoadPlan>;declare roadWaveIndex:number;declare roadSectionIndex:number;declare midbossSpec:MidbossDefinition|undefined;declare midbossExit:'escape'|'defeat';declare midbossPhases:CampaignPhase[];declare midbossPhaseIndex:number;declare midbossDuration:number;declare pendingEscape:{boss:CampaignBoss;source:unknown;timeout:boolean;delay:number}|null;declare midbossExitFrames:number;declare bossAppeared:boolean;declare bossMusicStarted:boolean;declare dialogueKind:DialogueKind;
   constructor({stages,midbosses=[],character=0,difficulty=1,mode='normal',stageId=1,spellId=null,callbacks={},seed=1}:DirectorOptions={} as DirectorOptions){
     if(!Array.isArray(stages)||stages.length!==7)throw new TypeError('The campaign requires six stages and Extra');
@@ -47,7 +50,7 @@ export class CampaignDirector{
     this.waitFrames=0;this.boss=null;this.phases=[];this.phasePlan=null;this.patternState={};
     this.captures=[];this.completed=false;this.destroyed=false;this.dialogueContinuation=null;this.stageContinuation=null;
     this.midbossDone=false;this.finishing=false;this.finalResult=null;this.events=[];this.totalClock=0;
-    this.chargeCue=null;
+    this.chargeCue=null;this.transitionMove=null;
   }
   attach(game:TouhouGame){
     if(this.game)throw new Error('Director already attached');this.game=game;
@@ -68,7 +71,7 @@ export class CampaignDirector{
   }
   _startStage(game:TouhouGame){
     const stage=this.stage;if(!stage)throw new RangeError(`Missing stage ${this.stageId}`);
-    this.stageFrame=0;this.phaseFrame=0;this.phaseIndex=-1;this.midbossDone=false;this.boss=null;this.patternState={};
+    this.stageFrame=0;this.phaseFrame=0;this.phaseIndex=-1;this.midbossDone=false;this.boss=null;this.patternState={};this.transitionMove=null;
     this.roadPlan=createRoadPlan(stage.id,stage.roadFrames);this.roadWaveIndex=0;this.roadSectionIndex=-1;
     game.session.stage=stage.id;game.spell.stage=stage.id;game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.context.dialogue=false;game.context.inputBlocked=false;
@@ -112,7 +115,8 @@ export class CampaignDirector{
       deathBank:game.banks.effect,drop:[]}) as CampaignBoss;
     game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
     boss.kind='midboss';boss.bossId=this.midbossSpec?.bossId??this.stage.bossId;boss.maximumHp=hp;boss.invulnerable=true;this.boss=boss;
-    game.enterBoss(boss,{profile:'midboss',distortion:{color:TOUHOU_BOSS_PROFILES.boss.color},entrance:{mode:'halfFog',readyFrame:60,follow:boss}});
+    this.transitionMove=new AnmInterpolation([boss.x,boss.y],[0,105],MIDBOSS_ENTRY_FRAMES,4);
+    game.enterBoss(boss,{profile:'midboss',distortion:{color:TOUHOU_BOSS_PROFILES.boss.color},entrance:{mode:'halfFog',readyFrame:MIDBOSS_ENTRY_FRAMES,follow:boss}});
     game.setBossEffects({aura:true,distortion:true});
     game.setBossHud({name:this.stage.midbossName??this.stage.bossId,remainingSpells:this.midbossPhases.filter(p=>p.spell).length,dialogue:true,
       healthBars:[{current:hp,maximum:hp,phaseHealth:hp,markers:[]}]});
@@ -128,7 +132,10 @@ export class CampaignDirector{
     game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({dialogue:false,remainingSpells:this.midbossPhases.slice(index+1).filter(p=>p.spell).length,
       healthBars:[{current:phase.hp,maximum:phase.hp,phaseHealth:phase.hp,markers:[],animateFill:false}]});
-    this._charge(game,phase.spell?'red':(['yellow','cyan','yellow','magenta','red','yellow','white'] as TouhouBossChargeColor[])[this.stageId-1]);
+    // This game's entry fog already supplies the first nonspell's preparation
+    // and sound54. Later cards retain their own attack-charge sequence.
+    if(index===0&&!phase.spell)this.chargeCue=null;
+    else this._charge(game,phase.spell?'red':(['yellow','cyan','yellow','magenta','red','yellow','white'] as TouhouBossChargeColor[])[this.stageId-1]);
     if(phase.spell)game.beginSpell({...this._spellPresentation(phase,boss,true),id:phase.code,name:phase.spec.name,
       duration:phase.duration,survival,boss});
     this.events.push({event:'midboss-phase-start',stage:this.stageId,index,spell:phase.spell,frame:this.totalClock});
@@ -307,6 +314,11 @@ export class CampaignDirector{
     if(!phase.spell)this._beginPhase(game,this.phaseIndex+1);
     else{
       this.state='phase-wait';this.waitFrames=60;this.phaseFrame=0;
+      // A finite ECL easing track reaches its endpoint before the next phase.
+      // Keep this game's 60-frame gap; mode9 supplies a smooth departure/arrival.
+      const boss=this.boss!;
+      boss.motion.flags=0;boss.motion.speed=0;Object.assign(boss.motion.delta,{x:0,y:0,z:0});
+      this.transitionMove=new AnmInterpolation([boss.x,boss.y],[80*Math.sin((this.phaseIndex+1)*1.7),105],this.waitFrames,9);
       const next=this.phases[this.phaseIndex+1];next.spell?this.boss!.prepareSpellHealth(next.hp):this.boss!.prepareNormalHealth(next.hp);this.boss!.maximumHp=next.hp;
       game.setBossHud({...this.phasePlan!.hudState(this.phaseIndex+1),dialogue:false,
         healthBars:this.phasePlan!.hudState(this.phaseIndex+1).healthBars.map(bar=>({...bar,animateFill:false}))});
@@ -365,9 +377,8 @@ export class CampaignDirector{
       if(!this.midbossDone&&t>=(this.midbosses.find(entry=>entry.stageId===this.stageId)?.atFrame??Math.floor(roadFrames*.43))){this._spawnMidboss(game);return;}
       if(t>=roadFrames){this._beginPrelude(game);return;}this.stageFrame++;
     }else if(this.state==='midboss-enter'){
-      this.phaseFrame++;const fraction=Math.min(1,this.phaseFrame/60);
-      actorPosition(this.boss!,-150*(1-fraction),20+fraction*85);
-      if(this.phaseFrame>=60&&game.bossPresentation!.entranceReady){const route=this.character?'marisa':'reimu';
+      this.phaseFrame++;const [x,y]=this.transitionMove!.sample();actorPosition(this.boss!,x,y);
+      if(this.phaseFrame>=MIDBOSS_ENTRY_FRAMES&&game.bossPresentation!.entranceReady){this.transitionMove=null;const route=this.character?'marisa':'reimu';
         this._dialogue(game,'midboss',()=>this._beginMidbossPhase(game,0),this.midbossSpec?.dialogues?.[route]??[]);}
     }else if(this.state==='midboss-combat'){
       const phase=this.midbossPhase!,common={game,boss:this.boss,frame:this.phaseFrame,difficulty:this.difficulty,stageId:this.stageId,state:this.patternState,rng:this.rng};
@@ -384,9 +395,8 @@ export class CampaignDirector{
     }else if(this.state==='phase-wait'){
       // The ring is already shown with the upcoming group's HP while the
       // sixty-frame card result and movement preparation run.
-      const target=80*Math.sin((this.phaseIndex+1)*1.7),boss=this.boss!;
-      actorPosition(boss,boss.x+(target-boss.x)*.035,boss.y+(105-boss.y)*.035);
-      if(--this.waitFrames<=0)this._beginPhase(game,this.phaseIndex+1);
+      const [x,y]=this.transitionMove!.sample();actorPosition(this.boss!,x,y);
+      if(--this.waitFrames<=0){this.transitionMove=null;this._beginPhase(game,this.phaseIndex+1);}
     }else if(this.state==='combat'){
       const phase=this.phase!,boss=this.boss!,t=this.phaseFrame;
       // Each authored score owns its reposition/windup. Do not move every Boss
@@ -407,6 +417,7 @@ export class CampaignDirector{
     completed:this.completed,dialogueKind:this.dialogueKind??null,captures:this.captures.map(record=>({...record})),
     rng:this.rng.state,totalClock:this.totalClock,pattern:this.phase?.spell?this.phase.spec.id:null};}
   destroy(){if(this.destroyed)return;this.destroyed=true;this.dialogueContinuation=null;this.stageContinuation=null;
+    this.transitionMove=null;
     if(this.game){this.game.stopBossCombat();this.game.setBossEffects({aura:false,distortion:false});this.game.stage=this.originalStage;this.game.onEvent=this.originalEvent;
       if(this.boss?.alive)this.game.removeBoss(this.boss);Object.assign(this.game.context,this.originalInteraction);}
   }

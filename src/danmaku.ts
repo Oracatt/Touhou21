@@ -8,6 +8,7 @@ export type AttackGame = Pick<TouhouGame, 'bullets' | 'lasers' | 'player' | 'rng
 export interface AttackState {
   authorRng?: TouhouRNG;
   move?: {x0:number;y0:number;x:number;y:number;age:number;frames:number} | null;
+  pathEntry?: {id:string;lastFrame:number;age:number;x:number;y:number};
   later?: Array<{at:number;bullets:TouhouBullet[];spawn:(bullet:TouhouBullet)=>unknown}>;
   echoes?: Array<{at:number;fire:Attack}>;
   spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;segment?:number;

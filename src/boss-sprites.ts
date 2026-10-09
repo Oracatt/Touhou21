@@ -88,14 +88,24 @@ export function bossSpriteRegion(layout:BossSpriteLayout, frame:number) {
 
 /** draw() takes screen pixel center x/y and logical visible body height before view scale.
  * Direction is presentation-only: callers may assign -1/0/1 to enemy._spriteDirection.
- * Atlas cadence depends on actor age, never wall time or random state.
+ * Registered actors use a separate presentation clock so a held attack clock
+ * cannot freeze their clothes and movement poses. Drawing never advances it.
  */
 export class BossSpriteCatalog {
  declare art:GameArt;declare cache:Map<string,{layout:BossSpriteLayout;asset:ArtTexture}>;
+ private clocks=new WeakMap<BossSpriteActor,number>();
   constructor({art}:{art:GameArt}) {
     if (!art || typeof art.load !== 'function') throw new TypeError('BossSpriteCatalog needs GameArt');
     this.art = art;
     this.cache = new Map();
+  }
+  attach(enemy:BossSpriteActor){this.clocks.set(enemy,0);return this;}
+  update(enemy:BossSpriteActor){
+    const age=this.clocks.get(enemy);if(age!==undefined)this.clocks.set(enemy,age+1);
+    return this;
+  }
+  frame(enemy:BossSpriteActor){
+    return bossSpriteFrame({age:this.clocks.get(enemy)??enemy.age,vx:enemy.vx,_spriteDirection:enemy._spriteDirection});
   }
   load(bossId:string) {
     const layout = BOSS_SPRITE_LAYOUTS[bossId];
@@ -112,7 +122,7 @@ export class BossSpriteCatalog {
     if (![x,y,scale,height,alpha].every(Number.isFinite) || scale<=0 || height<=0)
       throw new TypeError('Boss sprite drawing needs finite coordinates and positive dimensions');
     const {layout,asset} = this.load(bossId);
-    const frame = bossSpriteFrame(enemy), region = bossSpriteRegion(layout,frame);
+    const frame = this.frame(enemy), region = bossSpriteRegion(layout,frame);
     const factor = height * scale / layout.bodyHeight;
     // Stable shared actor pivot; animation does not shift the collision point or crop shoes.
     const dx = x + (region.width/2 - layout.pivotX) * factor;
@@ -125,5 +135,5 @@ export class BossSpriteCatalog {
     draw.alphaTest(0);
     return frame;
   }
-  clear(){this.cache.clear();}
+  clear(){this.cache.clear();this.clocks=new WeakMap();}
 }

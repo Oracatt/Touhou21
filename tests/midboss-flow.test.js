@@ -90,8 +90,8 @@ test('midboss effects start during flight, survive its dialogue and switch to th
     assert.equal(presentation.combatActive,false);assert.equal(game.isBossCombatReady(boss),false);
     const phase=distortion.phaseX;
     assert.deepEqual({x:boss.x,y:boss.y},{x:-150,y:20},'right-side fog accompanies an upper-left Boss entrance');
-    for(let i=0;i<30;i++)game.update(0);
-    assert.deepEqual({x:boss.x,y:boss.y},{x:-75,y:62.5});
+    for(let i=0;i<50;i++)game.update(0);
+    assert.deepEqual({x:boss.x,y:boss.y},{x:-37.5,y:83.75});
     assert.equal(director.state,'midboss-enter');assert.equal(presentation.combatActive,false);
     assert.equal(aura.x,boss.x);assert.equal(aura.y,boss.y,'the existing effect follows the corrected route');
     for(let i=0;i<90&&!midbossDialogue;i++)game.update(0);
@@ -121,9 +121,13 @@ test('the final midboss card timing out keeps the same live aura and distortion 
   const f=fixture({stageId:2,midbosses}),game=f.game,director=f.director,boss=director.boss,presentation=game.bossPresentation;
   try{
     const aura=presentation.aura[0],distortion=presentation.distortion;
+    const beforeCharge=f.sounds.filter(sound=>sound.id===54).length;
+    assert.equal(presentation.charges.length,0,'entry nonspell uses only the half-fog preparation');
     boss.damage(100000,{type:'open-card'},game.context);
     for(let i=0;i<120&&director.state!=='midboss-combat';i++)game.update(0);
     assert.equal(game.spell.active,true);assert.equal(presentation.aura[0],aura);assert.equal(presentation.distortion,distortion);
+    assert.equal(presentation.charges.length,1,'the later midboss spell keeps its own attack charge');
+    assert.equal(f.sounds.filter(sound=>sound.id===54).length,beforeCharge+1);
     game.spell.age.set(game.spell.duration-1);game.update(0);
     assert.equal(director.state,'midboss-exit');assert.equal(game.spell.active,false);
     assert.equal(director.pendingEscape,null,'timeouts begin the flight without a defeat hold');
@@ -162,16 +166,16 @@ test('different midboss outcomes remain authorable, with escape opt-in and final
   }
 });
 
-test('one phase preparation emits one original charge sound and one convergence cohort',()=>{
+test('entry fog replaces the first midboss nonspell charge while main Boss phases retain one charge each',()=>{
   const f=fixture({enterCombat:false}),entranceSounds=f.sounds.filter(sound=>sound.id===54).length;
   for(let i=0;i<160&&f.director.state!=='midboss-combat';i++)f.game.update(0);
-  const charge=f.game.bossPresentation.charges[0];assert.equal(f.director.state,'midboss-combat');
-  assert.equal(charge.repeatCount,1);assert.equal(charge.emitted,1);assert.equal(charge.releaseFrame,60);
-  assert.equal(f.sounds.filter(sound=>sound.id===54).length,entranceSounds+1);
+  assert.equal(f.director.state,'midboss-combat');
+  assert.equal(f.game.bossPresentation.charges.length,0);
+  assert.equal(f.sounds.filter(sound=>sound.id===54).length,entranceSounds);
   for(let i=0;i<65;i++)f.game.update(0);
-  assert.equal(charge.emitted,1);assert.equal(charge.released,true);
-  assert.equal(f.sounds.filter(sound=>sound.id===54).length,entranceSounds+1,'ordinary updates do not retrigger the cue');
-  assert.equal(f.sounds.filter(sound=>sound.id===6).length,1,'one release accompanies the same charge');
+  assert.equal(f.game.bossPresentation.charges.length,0);
+  assert.equal(f.sounds.filter(sound=>sound.id===54).length,entranceSounds,'the first nonspell does not repeat the fog cue');
+  assert.equal(f.sounds.filter(sound=>sound.id===6).length,0,'no orphaned release sound after the skipped charge');
   const boss=f.director.boss;boss.damage(100000,{type:'transition-test'},f.game.context);
   for(let i=0;i<200&&f.director.state!=='road';i++)f.game.update(0);
   f.director.midbossDone=true;f.director.stageFrame=STAGES[0].roadFrames;

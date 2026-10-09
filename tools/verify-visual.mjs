@@ -24,6 +24,8 @@ const cases=[
   {id:'scene-reveal',preRoll:60,actions:[{frame:0,type:'play'}]},
   {id:'road',options:base,preRoll:480},
   {id:'midboss-entrance',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:25},
+  {id:'midboss-arrival',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:90},
+  {id:'boss-reposition',options:{...base,skipRoad:true,autoDialogue:true,autoCapture:true},until:{state:'phase-wait'},phaseRoll:30},
   ...[{id:'midboss-defeated',phaseRoll:30},{id:'midboss-escaping',phaseRoll:95},{id:'midboss-removed',phaseRoll:140}].map(test=>({
     ...test,options:{...base,mode:'stage-practice',stageId:2,autoDialogue:true,autoCapture:true},until:{state:'midboss-exit'}})),
   {id:'bgm-caption',options:base,preRoll:90},
