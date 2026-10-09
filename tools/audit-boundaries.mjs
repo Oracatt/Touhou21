@@ -57,7 +57,11 @@ export function auditBoundaries({root=PROJECT_ROOT,verifyDependencies=true}={}){
   for(const file of artPaths){assert.match(file,/^assets\/(art|portraits|sprites|scenery|spells)\/[^/]+\.png$/);assert.equal(shaFile(inside(root,file)),art.assets[file].sha256,`Game art hash changed: ${file}`);}
   for(const character of [...PLAYERS,...CHARACTERS])assert.ok(art.assets[`assets/portraits/${character.id}.png`],'Character portrait is missing');
   for(const character of CHARACTERS)assert.ok(art.assets[`assets/sprites/${character.id}.png`],'Boss animation atlas is missing');
-  for(const character of CHARACTERS)assert.ok(art.assets[`assets/spells/${character.id}.png`],'Boss spell pattern is missing');
+  for(const character of CHARACTERS){
+    const pattern=art.assets[`assets/spells/${character.id}.png`],base=art.assets[`assets/spells/${character.id}-base.png`];
+    assert.ok(pattern&&base,'Boss spell requires a separate base and pattern image');
+    assert.notEqual(base.sha256,pattern.sha256,'Boss spell base cannot duplicate its pattern image');
+  }
   for(const stage of STAGES)assert.ok(art.assets[`assets/art/stage${String(stage.id).padStart(2,'0')}.png`],'Stage far landscape is missing');
   const expectedMusic=['title',...Array.from({length:6},(_,index)=>[`stage0${index+1}`,`boss0${index+1}`]).flat(),'extra','bossExtra','ending','staff','playersScore'];
   assert.deepEqual(MUSIC_TRACKS.map(track=>track.id),expectedMusic,'Music is not this game\'s 18-track programme');

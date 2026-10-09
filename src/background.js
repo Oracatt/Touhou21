@@ -142,7 +142,7 @@ export class StageBackground{
     if(this.spellBackground.clock===null)this.update(game,{clock});
     const visualClock=this.spellBackground.clock??clock,cards=this.spellBackground.visibleCards();
     const id=this.stage.id,spell=Boolean(game?.spell?.active),theme=THEMES[id-1],camera=cameraForStage(id,visualClock);
-    const roadVisible=!cards.some(card=>card.opacity===1);
+    const roadVisible=!cards.some(card=>this.spellBackground.coversRoad(card));
     draw.rect(48,24,576,672,theme.fog);
     let meshCalls=0,vertices=0;
     if(roadVisible){

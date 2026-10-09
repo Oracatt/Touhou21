@@ -1,0 +1,76 @@
+{
+  "format": "guiming-spell-base-sources-v1",
+  "tool": "built-in image_gen",
+  "sources": [
+    {
+      "bossId": "akari",
+      "role": "base",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-058c261f-00cd-44e5-8f4b-fbe10078e701.png",
+      "path": "assets/spells/akari-base.png",
+      "transform": "None; original generated PNG copied byte-for-byte.",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "9e4b8a41afb083a3b0f8acb114fce0c983cccffb1133a7b1a246f8f6501ab312"
+    },
+    {
+      "bossId": "shizuri",
+      "role": "base",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-c3774b66-5c0c-47cc-94e6-30c1fed3bab7.png",
+      "path": "assets/spells/shizuri-base.png",
+      "transform": "None; original generated PNG copied byte-for-byte.",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "06d88efb41649e8fa8ef36c8dd06c8fc38747eb0cf8e4d7f5966809e02be4d49"
+    },
+    {
+      "bossId": "watari",
+      "role": "base",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-4c85bf93-cd87-485d-888d-8a5ae15c80cd.png",
+      "path": "assets/spells/watari-base.png",
+      "transform": "None; original generated PNG copied byte-for-byte.",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "bb2bd305d9cdf37fa2fb7cfde8581cd1fef1b3c154f29b14e1d016d38eab6a90"
+    },
+    {
+      "bossId": "shino",
+      "role": "base",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-32ddf3e2-de68-4cec-af31-ff5f745fb313.png",
+      "path": "assets/spells/shino-base.png",
+      "transform": "None; original generated PNG copied byte-for-byte.",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "e455478f6d3f88ad8c33975ced1c5a5380649077d413e9cc05d4ca6ca1f9696b"
+    },
+    {
+      "bossId": "fusae",
+      "role": "base",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-6e209a3f-d32e-4a7b-9a25-c9b1b1c62f84.png",
+      "path": "assets/spells/fusae-base.png",
+      "transform": "None; original generated PNG copied byte-for-byte.",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "ad62f33714474813b14647bc2a67bfd1be81cc621c2253cf2a63ab10732a6acc"
+    },
+    {
+      "bossId": "kotone",
+      "role": "base",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-de076e18-0d39-4316-8c40-847cd00b399e.png",
+      "path": "assets/spells/kotone-base.png",
+      "transform": "None; original generated PNG copied byte-for-byte.",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "1b3ba283cf92a972be25d0b0c6c2d631c46ac9a4320c1c085351620baf4a4169"
+    },
+    {
+      "bossId": "mio",
+      "role": "base",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-877d8068-fa69-46a7-b99a-4896ede8a323.png",
+      "path": "assets/spells/mio-base.png",
+      "transform": "None; original generated PNG copied byte-for-byte.",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "13b2dc3429a6baa636b6aa559d4c630325db2e70ae3fda5edee47cebad3d9d17"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 /** Consumer-owned abstract spell patterns. These borrow GameArt textures and
  * never reuse road scenery, touch battle RNG or own a rendering target. */
 import {spellBackgroundStyle} from './background-art.js';
-const TAU=Math.PI*2,FADE_IN=48,FADE_OUT=24,MAX_CARDS=2;
+const TAU=Math.PI*2,FADE_IN=60,FADE_OUT=24,MAX_CARDS=2;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const alpha=(color,value)=>((color&0xffffff00)|Math.round(clamp(value,0,1)*(color&255)))>>>0;
 function phaseFor(seed,key){let word=(seed??0)>>>0;for(let i=0;i<key.length;i++){word=Math.imul(word^key.charCodeAt(i),16777619)>>>0;}return(word/4294967296)*TAU;}
@@ -12,7 +12,7 @@ export function spellBackgroundOpacity(card,clock){const entry=clamp((clock-card
 /** A whole-image plane with shared low-density vertices for subtle flow.
  * Overscan covers the viewport diagonal, every drift and the deformation even
  * after rotation. No wrap, repeated tile, atlas crop or out-of-range UV exists. */
-function textureLayer(card,profile,layer,texture,{x,y,width,height},index){
+function textureLayer(card,layer,texture,{x,y,width,height},index){
   const time=card.age,phase=card.phase+index*1.37;
   const dx=Math.sin(time*layer.rate[0]+phase)*layer.drift[0],dy=Math.cos(time*layer.rate[1]+phase*.79)*layer.drift[1];
   const rotation=layer.angle+phase*.027+time*layer.rotation+Math.sin(time*.0027+phase)*(layer.sway??0);
@@ -22,8 +22,7 @@ function textureLayer(card,profile,layer,texture,{x,y,width,height},index){
   const scale=size*zoom/Math.min(texture.width,texture.height),w=texture.width*scale,h=texture.height*scale;
   const c=Math.cos(rotation),s=Math.sin(rotation),cx=x+width/2+dx,cy=y+height/2+dy;
   const vertices=[],indices=[],grid=layer.grid;
-  const opacity=index===0?card.opacity:card.opacity*[.11,.085,.10,.09,.075,.10,.125][profile.stage-1];
-  const color=alpha(profile.tint,opacity);
+  const color=alpha(layer.tint,card.opacity*layer.opacity);
   for(let row=0;row<=grid;row++)for(let column=0;column<=grid;column++){
     const u=column/grid,v=row/grid,lx=(u-.5)*w,ly=(v-.5)*h;
     // Waves deform the image plane rather than sample neighbouring images.
@@ -61,14 +60,21 @@ export class DynamicSpellBackground{
     this.clock=clock;this.cards=this.cards.filter(card=>card.retired===null||spellBackgroundOpacity(card,clock)>0);return this;
   }
   visibleCards(){return this.clock===null?[]:this.cards.map(card=>({...card,opacity:spellBackgroundOpacity(card,this.clock),age:Math.max(0,this.clock-card.born)})).filter(card=>card.opacity>0);}
+  coversRoad(card){
+    const base=spellBackgroundStyle(card.bossId,card.style).layers.find(layer=>layer.texture==='base');
+    return !!base&&base.blend==='alpha'&&card.opacity*base.opacity===1;
+  }
   drawCard(draw,card,{viewport={x:48,y:24,width:576,height:672}}={}){
     if(this.destroyed)throw new Error('Spell background is destroyed');if(card.opacity<=0)return{meshCalls:0,vertices:0};
-    const profile=spellBackgroundStyle(card.bossId,card.style),texture=this.art.load(profile.path);
-    if(!(texture.width>0&&texture.height>0&&Number.isFinite(texture.width)&&Number.isFinite(texture.height)))throw new RangeError('Spell artwork requires its actual positive dimensions');
-    draw.sampler(texture.id,'bilinear','clamp','clamp');let vertices=0;
+    const profile=spellBackgroundStyle(card.bossId,card.style),textures=new Map();let vertices=0;
     profile.layers.forEach((layer,index)=>{
-      const mesh=textureLayer(card,profile,layer,texture,viewport,index);vertices+=mesh.vertices.length;
-      draw.blendFactors('srcAlpha','oneMinusSrcAlpha','add','one','zero','add')
+      const file=profile.textures[layer.texture];if(!file)throw new RangeError('Unknown spell texture '+layer.texture);
+      let texture=textures.get(file);if(!texture){texture=this.art.load(file);textures.set(file,texture);}
+      if(!(texture.width>0&&texture.height>0&&Number.isFinite(texture.width)&&Number.isFinite(texture.height)))throw new RangeError('Spell artwork requires its actual positive dimensions');
+      const mesh=textureLayer(card,layer,texture,viewport,index);vertices+=mesh.vertices.length;
+      const destination=layer.blend==='alpha'?'oneMinusSrcAlpha':'one',operation=layer.blend==='subtract'?'reverseSubtract':'add';
+      if(!['alpha','add','subtract'].includes(layer.blend))throw new RangeError('Unknown spell blend '+layer.blend);
+      draw.sampler(texture.id,'bilinear','clamp','clamp').blendFactors('srcAlpha',destination,operation,'zero','one','add')
         .mesh(texture.id,mesh.vertices,mesh.indices).blendEnd();
     });
     return{meshCalls:profile.layers.length,vertices};

@@ -15,9 +15,9 @@ const PIXELS=[
 export const SCENERY_ATLASES=Object.freeze(PIXELS.map((cells,i)=>Object.freeze({stage:i+1,path:`assets/scenery/stage0${i+1}-atlas.png`,width:1254,height:1254,regions:Object.freeze(Object.fromEntries(Object.entries(cells).map(([key,rect])=>[key,Object.freeze(rect.map(v=>v/1254))])))})));
 export function sceneryRegion(stage,region){const rect=SCENERY_ATLASES[stage-1]?.regions[region];if(!rect)throw new RangeError(`Unknown scenery region ${stage}/${region}`);return rect;}
 
-/** Full, opaque abstract spell artwork is independent from the road atlases.
- * Extra's paper-shikigami midboss keeps her own identity and texture. Each
- * layer samples one complete image; no repeating atlas cells or scene cutouts. */
+/** Separate low-frequency base and authored pattern images for each Boss.
+ * Extra's paper-shikigami midboss retains her own artwork. Every layer has
+ * explicit texture, blend, opacity and tint rather than layer-index policy. */
 const layer=value=>Object.freeze({...value,drift:Object.freeze(value.drift),rate:Object.freeze(value.rate)});
 export const SPELL_BACKGROUND_STYLES=Object.freeze([
   {bossId:'akari',stage:1,motif:'copper-flower-seal',tint:0xb8adaaff,layers:[
@@ -41,12 +41,21 @@ export const SPELL_BACKGROUND_STYLES=Object.freeze([
     {rotation:-.00121,angle:.46,drift:[62,34],rate:[.0042,.0024],zoom:.075,breath:.0028,wave:0,grid:1},
   ]},
   {bossId:'kotone',stage:6,motif:'indigo-word-mandala',tint:0xb8b3c2ff,layers:[
-    {rotation:-.00087,angle:0,drift:[29,37],rate:[.0021,.0028],zoom:.07,breath:.0033,wave:0,grid:1},
-    {rotation:.00174,angle:.35,drift:[44,24],rate:[.0037,-.0031],zoom:.095,breath:.0024,wave:0,grid:1},
+    {rotation:-.00087,angle:0,drift:[29,37],rate:[.0021,.0028],zoom:.07,breath:.0033,wave:5,grid:6},
+    {rotation:.00174,angle:.35,drift:[44,24],rate:[.0037,-.0031],zoom:.095,breath:.0024,wave:6,grid:6},
   ]},
   {bossId:'mio',stage:7,motif:'inverted-mirror-echo',tint:0xb4b3c5ff,layers:[
     {rotation:-.00091,angle:.17,sway:.04,drift:[47,42],rate:[.0041,.0033],zoom:.065,breath:.0046,wave:10,grid:6},
     {rotation:.00137,angle:-.21,drift:[42,57],rate:[-.0034,.0047],zoom:.085,breath:.0031,wave:12,grid:6,mirror:true},
   ]},
-].map(style=>Object.freeze({...style,path:`assets/spells/${style.bossId}.png`,layers:Object.freeze(style.layers.map(layer))})));
+].map(style=>{
+  const first=style.layers[0],second=style.layers[1];
+  const base={rotation:first.rotation*.18,angle:first.angle*.3,drift:first.drift.map(value=>value*.38),rate:first.rate.map(value=>value*.47),
+    zoom:first.zoom*.35,breath:first.breath*.4,wave:0,grid:1,texture:'base',blend:'alpha',opacity:1,tint:0xe4e4e4ff};
+  const pattern={...first,texture:'pattern',blend:'alpha',opacity:[.46,.48,.42,.50,.43,.45,.46][style.stage-1],tint:style.tint};
+  const echo={...second,texture:'pattern',blend:['add','add','subtract','subtract','subtract','add','add'][style.stage-1],opacity:[.095,.08,.085,.075,.08,.095,.105][style.stage-1],tint:style.tint};
+  return Object.freeze({bossId:style.bossId,stage:style.stage,motif:style.motif,
+    textures:Object.freeze({base:`assets/spells/${style.bossId}-base.png`,pattern:`assets/spells/${style.bossId}.png`}),
+    layers:Object.freeze([base,pattern,echo].map(layer))});
+}));
 export function spellBackgroundStyle(bossId,stage=1){return SPELL_BACKGROUND_STYLES.find(style=>style.bossId===bossId)??SPELL_BACKGROUND_STYLES[stage-1]??SPELL_BACKGROUND_STYLES[0];}

@@ -441,6 +441,83 @@
         "height": 1254
       },
       "sha256": "b25b8a55d8e4daf6a23d278d614538b6c8bac0470c8c96a2d24ce27cc58117ae"
+    },
+    "assets/spells/akari-base.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "9e4b8a41afb083a3b0f8acb114fce0c983cccffb1133a7b1a246f8f6501ab312"
+    },
+    "assets/spells/shizuri-base.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "06d88efb41649e8fa8ef36c8dd06c8fc38747eb0cf8e4d7f5966809e02be4d49"
+    },
+    "assets/spells/watari-base.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "bb2bd305d9cdf37fa2fb7cfde8581cd1fef1b3c154f29b14e1d016d38eab6a90"
+    },
+    "assets/spells/shino-base.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "e455478f6d3f88ad8c33975ced1c5a5380649077d413e9cc05d4ca6ca1f9696b"
+    },
+    "assets/spells/fusae-base.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "ad62f33714474813b14647bc2a67bfd1be81cc621c2253cf2a63ab10732a6acc"
+    },
+    "assets/spells/kotone-base.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "1b3ba283cf92a972be25d0b0c6c2d631c46ac9a4320c1c085351620baf4a4169"
+    },
+    "assets/spells/mio-base.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "13b2dc3429a6baa636b6aa559d4c630325db2e70ae3fda5edee47cebad3d9d17"
     }
   }
 }

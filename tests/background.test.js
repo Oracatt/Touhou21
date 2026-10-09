@@ -7,9 +7,10 @@ import {SCENERY_ATLASES,SPELL_BACKGROUND_STYLES,sceneryRegion} from '../src/back
 import {DynamicSpellBackground,SPELL_BACKGROUND_TIMING} from '../src/spell-background.js';
 
 const close=(a,b,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`${a} != ${b}`);
-function artFixture({width=1024,height=1024}={}){
+function artFixture({width=1024,height=1024,baseSize=[width,height],patternSize=[width,height]}={}){
   const unloads=[],loads=[],backgrounds=[];
-  return{unloads,loads,backgrounds,host:{createTexture:()=>{throw new Error('Scenery must use generated PNGs');},unloadTexture:id=>unloads.push(id)},load:path=>{loads.push(path);return{id:92,width,height};},
+  return{unloads,loads,backgrounds,host:{createTexture:()=>{throw new Error('Scenery must use generated PNGs');},unloadTexture:id=>unloads.push(id)},load:path=>{
+    loads.push(path);const base=path.endsWith('-base.png'),spell=path.startsWith('assets/spells/'),size=spell?(base?baseSize:patternSize):[width,height];return{id:spell?(base?93:94):92,width:size[0],height:size[1]};},
     background(draw,id){backgrounds.push(id);draw.rect(48,24,576,672,0x12343dff);}};
 }
 
@@ -98,15 +99,15 @@ test('seven Boss themes animate their independent full-image abstract textures w
     game.frame=61;background.update(game);const a=new DrawList();background.draw(a,game);
     game.frame=181;background.update(game);const b=new DrawList();background.draw(b,game);
     const animatedA=a.commands.filter(command=>command[0]==='mesh'),animatedB=b.commands.filter(command=>command[0]==='mesh');
-    assert.equal(animatedA.length,2);assert.equal(animatedA.length,animatedB.length);
+    assert.equal(animatedA.length,3);assert.equal(animatedA.length,animatedB.length);
     assert.notDeepEqual(animatedA,animatedB,'changing only a 3D camera is not texture animation');
     const displacement=Math.max(...animatedA.flatMap((command,n)=>command[2].map((v,i)=>Math.hypot(v[0]-animatedB[n][2][i][0],v[1]-animatedB[n][2][i][1]))));
     assert.ok(displacement>25,'motion must be plainly visible over two seconds');
     signatures.add(createHash('sha256').update(JSON.stringify(animatedA)).digest('hex'));
-    for(const [,texture,vertices,indices]of animatedB){assert.equal(texture,92);assert.ok(vertices.every(v=>v.length===5&&v.every(Number.isFinite)&&v[2]>=0&&v[2]<=1&&v[3]>=0&&v[3]<=1));assert.ok(indices.every(i=>Number.isInteger(i)&&i>=0&&i<vertices.length));}
-    assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,2);assert.ok(background.stats.vertices<=98);
+    for(const [,texture,vertices,indices]of animatedB){assert.ok(texture===93||texture===94);assert.ok(vertices.every(v=>v.length===5&&v.every(Number.isFinite)&&v[2]>=0&&v[2]<=1&&v[3]>=0&&v[3]<=1));assert.ok(indices.every(i=>Number.isInteger(i)&&i>=0&&i<vertices.length));}
+    assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,3);assert.ok(background.stats.vertices<=102);
     assert.ok(!a.commands.some(command=>command[0]==='mesh3d'));assert.equal(art.backgrounds.length,0,'steady cards must never submit distant road scenery');
-    assert.ok(art.loads.includes(SPELL_BACKGROUND_STYLES[id-1].path));background.destroy();
+    assert.ok(art.loads.includes(SPELL_BACKGROUND_STYLES[id-1].textures.base));assert.ok(art.loads.includes(SPELL_BACKGROUND_STYLES[id-1].textures.pattern));background.destroy();
   }
   assert.equal(signatures.size,7);
 });
@@ -131,16 +132,16 @@ test('spell entry and retirement fade over simulation frames; rapid changes stay
   const game={frame:0,spell:{active:false},context:{boss:{bossId:'fusae'}}};background.update(game);
   game.frame=1;game.spell={active:true,id:22,age:{current:0}};background.update(game);
   assert.equal(background.spellBackground.visibleCards().length,0);
-  game.frame=25;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
-  game.frame=49;background.update(game);const card=background.spellBackground.visibleCards()[0];assert.equal(card.style,5,'Extra midboss has her own theme');assert.equal(card.opacity,1);
+  game.frame=31;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
+  game.frame=61;background.update(game);const card=background.spellBackground.visibleCards()[0];assert.equal(card.style,5,'Extra midboss has her own theme');assert.equal(card.opacity,1);
   const extraMid=new DrawList();background.draw(extraMid,game);assert.ok(art.loads.includes('assets/spells/fusae.png'));assert.ok(!art.loads.includes('assets/spells/mio.png'));
-  game.frame=50;game.spell.active=false;background.update(game);assert.equal(background.spellBackground.visibleCards()[0].opacity,1);
-  game.frame=62;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
-  game.frame=74;background.update(game);assert.equal(background.spellBackground.visibleCards().length,0);
+  game.frame=62;game.spell.active=false;background.update(game);assert.equal(background.spellBackground.visibleCards()[0].opacity,1);
+  game.frame=74;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
+  game.frame=86;background.update(game);assert.equal(background.spellBackground.visibleCards().length,0);
   const road=new DrawList();background.draw(road,game);assert.equal(background.stats.meshCalls,7);
   game.context.boss.bossId='mio';game.spell.active=true;
   for(let i=0;i<8;i++){game.frame+=4;game.spell.id=30+i;background.update(game);assert.ok(background.spellBackground.cards.length<=SPELL_BACKGROUND_TIMING.maxCards);}
-  game.frame+=12;background.update(game);const draw=new DrawList();background.draw(draw,game);assert.ok(background.stats.meshCalls<=11);assert.ok(background.stats.vertices<=628);
+  game.frame+=12;background.update(game);const draw=new DrawList();background.draw(draw,game);assert.ok(background.stats.meshCalls<=13);assert.ok(background.stats.vertices<=636);
   background.setStage(1);assert.equal(background.spellBackground.cards.length,0);background.destroy();assert.equal(background.spellBackground.cards.length,0);
 });
 
@@ -207,33 +208,34 @@ test('whole-image spell planes cover every playfield corner through rotation, dr
   };
   const corners=[[48,24],[624,24],[624,696],[48,696]];
   for(const [width,height]of [[1024,1024],[1254,1254],[1536,1536],[1536,1024]])for(const profile of SPELL_BACKGROUND_STYLES){
-    const owner=new DynamicSpellBackground({art:artFixture({width,height}),seed:105});
+    const owner=new DynamicSpellBackground({art:artFixture({baseSize:[width,height],patternSize:[height,width]}),seed:105});
     owner.update({frame:120,context:{boss:{bossId:profile.bossId}},spell:{active:true,id:1,age:{current:120}}});
     const original=owner.visibleCards()[0];
     for(const age of [0,31,120,240,999,10000,1000000]){
       const draw=new DrawList();owner.drawCard(draw,{...original,age,opacity:1});
-      const meshes=draw.commands.filter(command=>command[0]==='mesh');assert.equal(meshes.length,2);
+      const meshes=draw.commands.filter(command=>command[0]==='mesh');assert.equal(meshes.length,3);
       for(const [,texture,vertices,indices]of meshes){
-        assert.equal(texture,92);assert.ok(vertices.length<=49);
+        assert.ok(texture===93||texture===94);assert.ok(vertices.length<=49);
         assert.ok(vertices.every(vertex=>vertex.every(Number.isFinite)&&vertex[2]>=0&&vertex[2]<=1&&vertex[3]>=0&&vertex[3]<=1));
         assert.equal(Math.min(...vertices.map(v=>v[2])),0);assert.equal(Math.max(...vertices.map(v=>v[2])),1);
         assert.equal(Math.min(...vertices.map(v=>v[3])),0);assert.equal(Math.max(...vertices.map(v=>v[3])),1);
         for(const corner of corners)assert.ok(indices.some((_,i)=>i%3===0&&contains(corner,vertices[indices[i]],vertices[indices[i+1]],vertices[indices[i+2]])),`${profile.bossId}/${age} leaves a playfield corner uncovered`);
       }
       assert.ok(meshes[0][2].every(vertex=>(vertex[4]&255)===255),'the primary image must be opaque at steady state');
-      assert.ok(meshes[1][2].every(vertex=>(vertex[4]&255)<40),'secondary flow must remain low alpha');
+      assert.ok(meshes[1][2].every(vertex=>(vertex[4]&255)<=140),'primary pattern opacity is independent of the opaque base');
+      assert.ok(meshes[2][2].every(vertex=>(vertex[4]&255)<30),'echo flow must remain low alpha');
     }
     owner.destroy();
   }
 });
 
-test('rain, ripple, brocade and mirrored echo deform shared image vertices without changing UVs or introducing tile seams',()=>{
-  for(const bossId of ['shizuri','watari','shino','mio']){
+test('rain, ripple, brocade, mandala and mirrored echo deform shared image vertices without changing UVs or introducing tile seams',()=>{
+  for(const bossId of ['shizuri','watari','shino','kotone','mio']){
     const owner=new DynamicSpellBackground({art:artFixture(),seed:13});
     owner.update({frame:100,context:{boss:{bossId}},spell:{active:true,id:1,age:{current:100}}});
     const a=new DrawList(),b=new DrawList(),card=owner.visibleCards()[0];owner.drawCard(a,card);owner.drawCard(b,{...card,age:card.age+60});
     const meshes=a.commands.filter(command=>command[0]==='mesh'),other=b.commands.filter(command=>command[0]==='mesh');
-    for(let n=0;n<meshes.length;n++){
+    for(let n=1;n<meshes.length;n++){
       const vertices=meshes[n][2];assert.equal(vertices.length,49);assert.deepEqual(vertices.map(v=>v.slice(2,4)),other[n][2].map(v=>v.slice(2,4)));
       const bend=Math.max(...[1,2,3,4,5].map(i=>Math.hypot(vertices[i][0]-(vertices[0][0]+(vertices[6][0]-vertices[0][0])*i/6),vertices[i][1]-(vertices[0][1]+(vertices[6][1]-vertices[0][1])*i/6))));
       assert.ok(bend>.5,'the image must bend rather than only rotate');
@@ -248,15 +250,55 @@ test('two abstract cards have a bounded shared capture lifecycle without submitt
   const art=artFixture(),background=new StageBackground({art});background.setStage(1);
   const game={frame:0,spell:{active:false},context:{boss:{bossId:'akari'}}};background.update(game);
   game.frame=1;game.spell={active:true,id:1,age:{current:0}};background.update(game);
-  game.frame=49;background.update(game);game.frame=50;game.spell.id=2;background.update(game);
-  let draw=new DrawList();background.draw(draw,game);assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,2);
-  game.frame=62;background.update(game);draw=new DrawList();background.draw(draw,game);
-  assert.equal(background.spellBackground.visibleCards().length,2);assert.equal(background.stats.meshCalls,11);
-  assert.equal(draw.commands.filter(command=>command[0]==='mesh').length,4);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,7);
-  assert.ok(!('spellSets'in background));assert.ok(!('spellGeometry'in background));assert.ok(background.stats.vertices<=628);
-  game.frame=98;background.update(game);draw=new DrawList();background.draw(draw,game);
-  assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,2);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,0);
+  game.frame=61;background.update(game);game.frame=62;game.spell.id=2;background.update(game);
+  let draw=new DrawList();background.draw(draw,game);assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,3);
+  game.frame=74;background.update(game);draw=new DrawList();background.draw(draw,game);
+  assert.equal(background.spellBackground.visibleCards().length,2);assert.equal(background.stats.meshCalls,13);
+  assert.equal(draw.commands.filter(command=>command[0]==='mesh').length,6);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,7);
+  assert.ok(!('spellSets'in background));assert.ok(!('spellGeometry'in background));assert.ok(background.stats.vertices<=636);
+  game.frame=122;background.update(game);draw=new DrawList();background.draw(draw,game);
+  assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,3);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,0);
   background.destroy();assert.deepEqual(art.unloads,[]);
+});
+
+test('each Boss uses two different texture handles and explicit, independent blending for all three layers',()=>{
+  const blends=new Set();
+  for(const profile of SPELL_BACKGROUND_STYLES){
+    const art=artFixture({baseSize:[1536,1024],patternSize:[1024,1536]}),owner=new DynamicSpellBackground({art,seed:129});
+    owner.update({frame:120,context:{boss:{bossId:profile.bossId}},spell:{active:true,id:1,age:{current:120}}});
+    const snapshot=owner.snapshot(),draw=new DrawList();owner.drawCard(draw,owner.visibleCards()[0]);assert.deepEqual(owner.snapshot(),snapshot);
+    assert.notEqual(profile.textures.base,profile.textures.pattern);assert.deepEqual(art.loads,[profile.textures.base,profile.textures.pattern]);
+    const meshes=draw.commands.filter(command=>command[0]==='mesh');assert.deepEqual(meshes.map(command=>command[1]),[93,94,94]);
+    assert.deepEqual(profile.layers.map(layer=>layer.texture),['base','pattern','pattern']);
+    let activeBlend=null,index=0;
+    for(const command of draw.commands){
+      if(command[0]==='blendFactors'){assert.equal(activeBlend,null);activeBlend=command;}
+      else if(command[0]==='blendEnd'){assert.notEqual(activeBlend,null);activeBlend=null;}
+      else if(command[0]==='mesh'){
+        const layer=profile.layers[index++];blends.add(layer.blend);
+        assert.deepEqual(activeBlend,['blendFactors','srcAlpha',layer.blend==='alpha'?'oneMinusSrcAlpha':'one',layer.blend==='subtract'?'reverseSubtract':'add','zero','one','add']);
+        assert.ok(command[2].every(vertex=>(vertex[4]&255)===Math.round(layer.opacity*(layer.tint&255))));
+        assert.ok(command[2].every(vertex=>(vertex[4]>>>8)===(layer.tint>>>8)),'each layer uses its own tint');
+      }
+    }
+    assert.equal(index,3);assert.equal(activeBlend,null);owner.destroy();assert.deepEqual(art.unloads,[]);
+  }
+  assert.deepEqual([...blends].sort(),['add','alpha','subtract']);
+});
+
+test('the independent base alone covers roads after the 60-frame entry and every layer shares the retirement envelope',()=>{
+  assert.deepEqual(SPELL_BACKGROUND_TIMING,{fadeIn:60,fadeOut:24,maxCards:2});
+  const owner=new DynamicSpellBackground({art:artFixture(),seed:18}),game={frame:0,spell:{active:false},context:{boss:{bossId:'watari'}}};owner.update(game);
+  game.frame=1;game.spell={active:true,id:2,age:{current:0}};owner.update(game);assert.equal(owner.visibleCards().length,0);
+  game.frame=31;owner.update(game);assert.equal(owner.coversRoad(owner.visibleCards()[0]),false);close(owner.visibleCards()[0].opacity,.5);
+  game.frame=60;owner.update(game);assert.equal(owner.coversRoad(owner.visibleCards()[0]),false);
+  game.frame=61;owner.update(game);assert.equal(owner.coversRoad(owner.visibleCards()[0]),true);
+  game.frame=62;game.spell.active=false;owner.update(game);game.frame=74;owner.update(game);
+  const card=owner.visibleCards()[0],profile=SPELL_BACKGROUND_STYLES[2],draw=new DrawList();close(card.opacity,.5);assert.equal(owner.coversRoad(card),false);owner.drawCard(draw,card);
+  const meshes=draw.commands.filter(command=>command[0]==='mesh');
+  meshes.forEach((command,index)=>assert.ok(command[2].every(vertex=>(vertex[4]&255)===Math.round(.5*profile.layers[index].opacity*(profile.layers[index].tint&255)))));
+  const paused=owner.snapshot();owner.update({...game,frame:1000,paused:true});assert.deepEqual(owner.snapshot(),paused);
+  game.frame=86;owner.update(game);assert.equal(owner.visibleCards().length,0);owner.destroy();
 });
 
 test('all scene faces sample an authored atlas cell, including walls facing into a 3D corridor',()=>{
