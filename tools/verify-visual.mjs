@@ -6,9 +6,12 @@ import {spawnSync} from 'node:child_process';
 import {Keys} from '@ts-stg/thlib';
 import {STAGES,ALL_SPELLS,PLAYERS,ENDINGS} from '../src/content.js';
 
-const root=path.resolve(import.meta.dirname,'..'),out=path.join(root,'reports/visual');
+const root=path.resolve(import.meta.dirname,'..'),args=process.argv.slice(2);
+const label=args.includes('--label')?args[args.indexOf('--label')+1]:'';
+assert.ok(!label||/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(label),'Visual report label must be a simple directory name');
+const out=path.join(root,'reports/visual',label);
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(path.join(root,'build'),{recursive:true});
-const args=process.argv.slice(2),filter=args.includes('--cases')?args[args.indexOf('--cases')+1].split(','):null;
+const filter=args.includes('--cases')?args[args.indexOf('--cases')+1].split(','):null;
 const backends=args.includes('--backends')?args[args.indexOf('--backends')+1].split(','):['v8','quickjs'];
 const result={character:0,difficulty:1,mode:'normal',ending:'good',score:9876543,continues:0,captures:[{captured:true}]};
 const base={autostart:true,invincible:true};

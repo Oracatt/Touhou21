@@ -5,18 +5,20 @@ import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 
 const root=path.resolve(import.meta.dirname,'..'),args=process.argv.slice(2);
-let stages=[1,2,3,4,5,6,7],backends=['v8','quickjs'],modes=['road','spell'],frames=36;
+let stages=[1,2,3,4,5,6,7],backends=['v8','quickjs'],modes=['road','spell'],frames=36,label='';
 for(let i=0;i<args.length;i++){
   if(args[i]==='--stages')stages=args[++i].split(',').map(Number);
   else if(args[i]==='--backends')backends=args[++i].split(',');
   else if(args[i]==='--modes')modes=args[++i].split(',');
   else if(args[i]==='--frames')frames=Number(args[++i]);
+  else if(args[i]==='--label')label=args[++i];
   else throw new Error(`Unknown argument ${args[i]}`);
 }
 assert.ok(stages.every(id=>Number.isInteger(id)&&id>=1&&id<=7));
 assert.ok(backends.every(backend=>['v8','quickjs'].includes(backend)));
 assert.ok(modes.every(mode=>['road','spell'].includes(mode)));
-const binary=path.join(root,'runtime/ts-stg.exe'),out=path.join(root,'reports/backgrounds'),scratch=path.join(root,'build/background-fixtures');
+assert.ok(!label||/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(label),'Background report label must be a simple directory name');
+const binary=path.join(root,'runtime/ts-stg.exe'),out=path.join(root,'reports/backgrounds',label),scratch=path.join(root,'build/background-fixtures');
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(scratch,{recursive:true});
 const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex'),results=[];
 function compareState(a,b,location='$'){

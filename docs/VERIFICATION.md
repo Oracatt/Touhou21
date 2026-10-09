@@ -1,5 +1,19 @@
 # 验收方法与覆盖范围
 
+## 2026-10-09 拾取飘字与七套动态符卡纹样
+
+公共依赖升级至 `c804fc93f91ee0ed8ecb01fa049a18fada92a94c`，357 个 thlib / 150 个运行时文件。新的 `TouhouFloatingScores` 默认接入 `TouhouItems`，`TouhouGame` 提供共享字体；使用现有 ASCII960 原图的数字、POWER UP 与逐位退场图块，没有生成替代字图。只读依据是 `Touhou20Reconstruction/source_reconstruction/small_score/{state,frame}.cpp` 和 `item_system/rewards.cpp`。保留原计分及提示条件、10 槽循环覆盖、float32 上浮衰减、先更新后拾取、超过 60 帧退场、距离透明度与 owner51。视觉 owner 不进入游戏模拟快照，不推进任何 RNG；本次游戏 / 回放修订仍为 7。
+
+- 公共相关回归 **42/42** 及严格 TypeScript 消费者检查通过，新增 API 正例与 3 个负例，总计拒绝 94 种误用。引擎 V8 / QuickJS 各 31 帧的真实公共入口无窗口检查通过，状态严格一致，见引擎 `reports/floating-score/source-native.json`。
+- 本作实际 `ProjectApplication → CampaignScene → items.spawn → app.update` 拾取专项 **8 场景、16 次原生运行通过**（2 次无窗口、14 次 GPU）。覆盖普通 / 满额蓝点、满灵力小 P、灵力升级及普通小 P 无提示，检查实际奖励与 0/30/60/61 帧时序、原图 UV / 尺寸 / 颜色 / 优先级及重复绘制不推进状态。7 对 PNG 和全部状态在 V8 / QuickJS 严格相同，7 张 V8 图已逐张检查。报告 `reports/item-score-full/report.json`；实际执行 31.357 秒，内存存档，不改用户数据。
+- 七位 Boss 各用独立 1254×1254 抽象纹样，主题依次是朱铜花结、雨墨、水纹、紫金织锦、墨绿印纹、靛紫云莲和镜羽。满幅双层纹理各有旋转、漂移、呼吸参数，四种主题叠加低密度面片波动；保留 48 帧进入 / 24 帧退出。实际 Boss 身份决定资源，Extra 道中房枝仍使用自己的印纹。它们由 imagegen 生成，提示和 SHA-256 见 `SPELL-PATTERN-PROMPTS.json` / `SPELL-PATTERN-SOURCES.json`，仅属于游戏业务层。
+- 同步后游戏背景与依赖边界 Node 回归 **24/24 通过**（17 项背景、7 项依赖）。
+- 背景专用 GPU **42 次通过**：七套符卡各在 120 / 240 帧 × 两后端，另七面道中在 240 帧 × 两后端。每对 PNG 严格相同，七套实际纹理在两个时间点均有变化，已查看七张独立符卡截图；报告 `reports/backgrounds/spell-patterns-120/`、`spell-patterns-240/` 与后者的 `motion-comparison.json`。稳态符卡两次纹理 mesh、8 或 98 顶点，不再提交三维道中。这组孤立背景检查执行于飘字依赖同步前，不使用新飘字 owner。
+- 同步后的真实游戏合成检查 **七位 Boss × 两个弹幕时刻 × 两后端 = 28 次 GPU 通过**。14 对状态及 PNG 严格一致，已逐张检查 14 张 V8 图：满幅纹理无接缝，弹幕与激光可辨，法阵 / 扭曲由公共合成器处理，符卡名、计时和 HUD 位于正确层次。报告 `reports/visual/spell-patterns/selected-report.json` 与 `visual-review.json`。这是指定符卡的画面检查，不宣称全部弹设可玩性或与原作逐像素相同。
+- 续关回放与暂停外部页面回放 **4/4** 原生检查通过，后端状态一致，11,772 次应用更新、19.371 秒；报告 `reports/integration/floating-scores/summary.json`。公共入口双后端烟测也通过。
+
+带源 Git 内容和本地构建证据的依赖锁检查、业务 / 公共库边界审计通过。新的 thlib 清单摘要是 `19898d41f035cd5e782f219256a4cb7a0908f89b2524d8e1562540f01e400da6`。原生程序未改动；目标 SDK 元数据记录新公共提交，所以运行时清单摘要更新。锁仍按原始 Git blob 导出，未提交的用户编辑器启动脚本保持原有哈希且不属于库内容。源公共修复先提交，再同步本作；备份在 `build/engine-upgrade-02a6e9bc-bebf-4cb3-8672-46aa299db9a2`。没有启动持久游戏窗口，未重跑完整战役或作帧率保证。
+
 ## 2026-10-09 跨机器依赖锁修复
 
 复查 `479ef4f` 发布的锁与 TS-STG `a6487455888d86b9569a3d8e3254e0df44ba9a23`：本机工作区 / 依赖副本的 355 项均符合旧锁，但其中 **28 项（20 个声明、8 个 JS）**与提交的原始 Git blob 不同，差异全部且仅为 CRLF / LF；没有缺失的 thlib 逻辑提交。另一台机器报告的 21 项未提供完整名单，此处 28 项是本机对全部清单的检查结果。证据为忽略目录 `build/engine-byte-evidence/a648745-before.json`。源唯一未提交修改仍是独立的编辑器启动脚本，既有哈希未变。

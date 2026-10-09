@@ -15,6 +15,7 @@
     "audit": "node tools/audit-boundaries.mjs",
     "verify:visual": "node tools/verify-visual.mjs",
     "verify:background": "node tools/verify-background.mjs",
+    "verify:item-score": "node tools/verify-item-score.mjs",
     "verify:routes": "node tools/verify-attack-routes.mjs",
     "preview": "node tools/preview-danmaku.mjs",
     "preview:report": "node tools/danmaku-report.mjs",

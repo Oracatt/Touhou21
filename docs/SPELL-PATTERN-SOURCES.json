@@ -1,0 +1,76 @@
+{
+  "format": "guiming-spell-pattern-sources-v1",
+  "tool": "built-in image_gen",
+  "sources": [
+    {
+      "bossId": "akari",
+      "theme": "Vermilion lamp-flower brocade",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-54880816-c3d6-4d73-a4f0-7ab0b6c2ba4e.png",
+      "path": "assets/spells/akari.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "04025e83fcbe5f2e1db20d3142a87e7a86d4ff37f41a2cbb799ee7a32d414e48",
+      "transform": "None; original generated PNG copied byte-for-byte."
+    },
+    {
+      "bossId": "shizuri",
+      "theme": "Rain-script marbling",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-740b309f-0f08-4eb2-b789-85db3207fb2e.png",
+      "path": "assets/spells/shizuri.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "a90afc094a90d209bb875ad22578654e384ccf5e462f6b345a41ed73a6cfb2c0",
+      "transform": "None; original generated PNG copied byte-for-byte."
+    },
+    {
+      "bossId": "watari",
+      "theme": "Wandering river ripples",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-879c27c5-0991-4608-a457-7d0b822f298c.png",
+      "path": "assets/spells/watari.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "88fd60aea496d2166bdee81c6562341c53d61b9d542a41c6675e9d2d03514ba6",
+      "transform": "None; original generated PNG copied byte-for-byte."
+    },
+    {
+      "bossId": "shino",
+      "theme": "Eightfold memory brocade",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-7a4c4be9-8c04-426f-8ad5-0b43949ab27c.png",
+      "path": "assets/spells/shino.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "5c7bd71a61840ebd4e9bab970408e00cb34603cc9c1778599708cfaf0f08a151",
+      "transform": "None; original generated PNG copied byte-for-byte."
+    },
+    {
+      "bossId": "fusae",
+      "theme": "Forest-green archive seals",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-bcd7f74b-e619-40dc-9dcd-8ab79ccb36fd.png",
+      "path": "assets/spells/fusae.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "80fd343db1c2effbcf380eb697f7394a2e0d54187962bcebdf5fd6bf17ee46ae",
+      "transform": "None; original generated PNG copied byte-for-byte."
+    },
+    {
+      "bossId": "kotone",
+      "theme": "Unspoken names in cloud brocade",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-0c97b9fc-d780-4b30-b667-1b84740e973a.png",
+      "path": "assets/spells/kotone.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "a93443cf9c263a8d4faa066809ef1acac4976b97d8c051672b3a23712446e982",
+      "transform": "None; original generated PNG copied byte-for-byte."
+    },
+    {
+      "bossId": "mio",
+      "theme": "Reversed echo mirrorwork",
+      "sourcePath": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-be4b2bfd-77f6-4439-bb07-86a8b7fd93ac.png",
+      "path": "assets/spells/mio.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "b25b8a55d8e4daf6a23d278d614538b6c8bac0470c8c96a2d24ce27cc58117ae",
+      "transform": "None; original generated PNG copied byte-for-byte."
+    }
+  ]
+}

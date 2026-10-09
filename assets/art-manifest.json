@@ -364,6 +364,83 @@
         "height": 803
       },
       "sha256": "5cfecce2f055e4cd32b1f292e26c57418d1cb02ad9b9d16da783cf8ace07fedb"
+    },
+    "assets/spells/akari.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "04025e83fcbe5f2e1db20d3142a87e7a86d4ff37f41a2cbb799ee7a32d414e48"
+    },
+    "assets/spells/shizuri.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "a90afc094a90d209bb875ad22578654e384ccf5e462f6b345a41ed73a6cfb2c0"
+    },
+    "assets/spells/watari.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "88fd60aea496d2166bdee81c6562341c53d61b9d542a41c6675e9d2d03514ba6"
+    },
+    "assets/spells/shino.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "5c7bd71a61840ebd4e9bab970408e00cb34603cc9c1778599708cfaf0f08a151"
+    },
+    "assets/spells/fusae.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "80fd343db1c2effbcf380eb697f7394a2e0d54187962bcebdf5fd6bf17ee46ae"
+    },
+    "assets/spells/kotone.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "a93443cf9c263a8d4faa066809ef1acac4976b97d8c051672b3a23712446e982"
+    },
+    "assets/spells/mio.png": {
+      "width": 1254,
+      "height": 1254,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1254,
+        "height": 1254
+      },
+      "sha256": "b25b8a55d8e4daf6a23d278d614538b6c8bac0470c8c96a2d24ce27cc58117ae"
     }
   }
 }

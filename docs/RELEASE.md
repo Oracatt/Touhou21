@@ -8,7 +8,7 @@
 
 ## 锁定快照
 
-依赖源为本地 `D:/AIWorkspace/TS-STG`，Git 提交为 `a6487455888d86b9569a3d8e3254e0df44ba9a23`。游戏的日常业务开发将源引擎视为只读依赖；按用户要求，公共暂停层次修复、场上气泡、逐句入口和立绘撤回 / 再入能力在源 thlib 独立提交，再用同步工具升级本作。公共状态栏的行、字图、数字、图层和语言选择也由 thlib 实现；本作只提供背景 / 标题皮肤、颜色与 zh-CN 选择。角色的出场台词、出现顺序、锚点和音乐选择仍在本作业务层。`engine.lock.json` 完整列出 355 个 thlib 文件与 150 个运行时 / 许可文件；可执行程序 SHA-256 为 `c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8`，与升级前一致。thlib 包含该提交全部公开 `src/` 代码、声明和选定的公共资源；运行时保留完整第三方许可，没有复制演示业务、符卡编辑器或源引擎仓库。
+依赖源为本地 `D:/AIWorkspace/TS-STG`，Git 提交为 `c804fc93f91ee0ed8ecb01fa049a18fada92a94c`。游戏的日常业务开发将源引擎视为只读依赖；按用户要求，公共暂停层次修复、场上气泡、逐句入口和立绘撤回 / 再入能力在源 thlib 独立提交，再用同步工具升级本作。公共状态栏的行、字图、数字、图层和语言选择，以及本次新增的道具拾取分数 / POWER UP 飘字，均由 thlib 实现；本作只提供背景 / 标题皮肤、颜色与 zh-CN 选择。角色的出场台词、出现顺序、锚点和音乐选择仍在本作业务层。`engine.lock.json` 完整列出 357 个 thlib 文件与 150 个运行时 / 许可文件；可执行程序 SHA-256 为 `c62172a90bfb25892a99be0be5411b5b6d6ff8b5c8f5946ec9d09397960745e8`，与升级前一致。thlib 包含该提交全部公开 `src/` 代码、声明和选定的公共资源；运行时保留完整第三方许可，没有复制演示业务、符卡编辑器或源引擎仓库。
 
 锁中 `nativeBuild` 保存全部原生输入、八个编译对象、编译 / 链接依赖日志及三个本地静态库的哈希。此次采用源引擎现成 Release 构建：2026-10-05 10:58:11 UTC 编译 host 对象，11:39:52 UTC 编译最新 V8 对象，11:39:53 UTC 链接程序。逐个编译单元检查依赖文件时间不晚于对应对象，八个对象均在链接输入中，二进制晚于全部原生输入和对象。这是本地构建匹配证据，不是可复现构建认证。
 
@@ -31,8 +31,8 @@ node tools/verify-engine-smoke.mjs
 `setup-local.ps1` 只恢复锁定版本；`-WhatIf` 可预览安装操作，`-VerifyOnly` 不写文件。升级使用下面的同步工具，必须给出预期完整提交；不带 `--apply` 时只校验和预览。
 
 ```powershell
-node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit a6487455888d86b9569a3d8e3254e0df44ba9a23 --allow-source-change start-spellcard-editor.cmd --derive-sdk-manifest
-node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit a6487455888d86b9569a3d8e3254e0df44ba9a23 --allow-source-change start-spellcard-editor.cmd --derive-sdk-manifest --apply
+node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit c804fc93f91ee0ed8ecb01fa049a18fada92a94c --allow-source-change start-spellcard-editor.cmd --derive-sdk-manifest
+node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit c804fc93f91ee0ed8ecb01fa049a18fada92a94c --allow-source-change start-spellcard-editor.cmd --derive-sdk-manifest --apply
 ```
 
 公共资源清单从源提交中完整、已跟踪的 `assets/touhou-common` 目录建立，包含新增标签与语言包；不沿用旧锁的资源名单。生产者资源及其父目录不得为链接。`--check-source` / `--source <路径>` 按锁定提交核对完整公共源码和公共资源清单，无需该仓库的当前 HEAD 等于锁；`--check-build` 另检查原机器的工作区和编译产物。已有运行时的其他机器可用 `npm run restore:engine -- --source <本地引擎仓库> --apply` 重建 thlib；它不要求构建目录，不修改运行时、锁或存档，保留备份，并拒绝覆盖换行以外的内容差异。没有 `--apply` 时仅预览。
@@ -64,6 +64,6 @@ node tools/sync-engine.mjs --source D:\AIWorkspace\TS-STG --commit a6487455888d8
 
 默认 Git 排除 `packages/`、`runtime/`、`node_modules/`、`userdata/`、`reports/`、`build/`、日志与环境文件。公开源码包不得绕过这些规则把私有公共原作资源或用户存档混入。若未来制作可执行发行包，应使用具有明确发行权限的依赖资源，并保留运行时第三方许可；本地可运行不代表获得商业素材授权。此任务没有上传或发布发行包。
 
-当前游戏版本为 `2.0.0`，回放内容修订为 `GAME_REVISION = 7`。本次依赖锁换行修复不改变游戏代码、模拟或输入时钟，维持修订 7。此前的 Boss 出场对白分离场中角色与立绘，并新增 60 帧文字等待 / 94 帧输入门控，改变了确定性对白推进时钟，因此同时递增 `GAME.contentRevision` 与回放修订。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增该修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。
+当前游戏版本为 `2.0.0`，回放内容修订为 `GAME_REVISION = 7`。本次公共拾取飘字和七位 Boss 的动态抽象纹样仅改变表现，不改变计分、模拟、RNG 或输入时钟，维持修订 7。此前的 Boss 出场对白分离场中角色与立绘，并新增 60 帧文字等待 / 94 帧输入门控，改变了确定性对白推进时钟，因此同时递增 `GAME.contentRevision` 与回放修订。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增该修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。
 
 静态审计是范围检查：它验证公开导入、资源清单和排除规则；流程验证实际检查公共对象与状态。它们均不等同于对全部资源权利、游戏体验或未执行平台的保证。

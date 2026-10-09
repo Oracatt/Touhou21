@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {DrawList} from '@ts-stg/thlib';
 import {BACKGROUND_VIEWPORT,StageBackground,cameraForStage,lookAt3d,multiply3d,perspective3d,project3d,transform3d,viewport3d} from '../src/background.js';
-import {SCENERY_ATLASES,sceneryRegion} from '../src/background-art.js';
+import {SCENERY_ATLASES,SPELL_BACKGROUND_STYLES,sceneryRegion} from '../src/background-art.js';
 import {DynamicSpellBackground,SPELL_BACKGROUND_TIMING} from '../src/spell-background.js';
 
 const close=(a,b,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`${a} != ${b}`);
-function artFixture(){
-  const unloads=[],loads=[];
-  return{unloads,loads,host:{createTexture:()=>{throw new Error('Scenery must use generated PNGs');},unloadTexture:id=>unloads.push(id)},load:path=>{loads.push(path);return{id:92,width:1024,height:1024};},
-    background(draw){draw.rect(48,24,576,672,0x12343dff);}};
+function artFixture({width=1024,height=1024}={}){
+  const unloads=[],loads=[],backgrounds=[];
+  return{unloads,loads,backgrounds,host:{createTexture:()=>{throw new Error('Scenery must use generated PNGs');},unloadTexture:id=>unloads.push(id)},load:path=>{loads.push(path);return{id:92,width,height};},
+    background(draw,id){backgrounds.push(id);draw.rect(48,24,576,672,0x12343dff);}};
 }
 
 test('column-major multiplication and look-at retain the camera-space world geometry',()=>{
@@ -43,26 +43,25 @@ test('clip coordinates map exactly onto the portrait playfield, outside the side
   assert.equal(BACKGROUND_VIEWPORT.canvasHeight,720);
 });
 
-test('seven material-atlas roads and spell sets have distinct 3D landmarks and world depth',()=>{
-  const background=new StageBackground({art:artFixture()}),roads=new Set(),arenas=new Set();
+test('seven material-atlas roads retain distinct 3D landmarks and world depth',()=>{
+  const background=new StageBackground({art:artFixture()}),roads=new Set();
   const expected=['torii','bamboo','arched-bridge','loom','bookshelf','name-pillar','mirror-pillar'];
   for(let id=1;id<=7;id++){
     background.setStage(id);assert.ok(background.geometryVariants.some(mesh=>mesh.features.has(expected[id-1])),`${id}/${expected[id-1]}`);
-    assert.ok(background.spellGeometry.features.has(expected[id-1]),`${id}/spell/${expected[id-1]}`);
-    for(const [mesh,signatures] of [[background.geometry,roads],[background.spellGeometry,arenas]]){
-      signatures.add(createHash('sha256').update(JSON.stringify(mesh.vertices)).digest('hex'));
+    for(const mesh of background.geometryVariants){
+      if(mesh===background.geometry)roads.add(createHash('sha256').update(JSON.stringify(mesh.vertices)).digest('hex'));
       const ys=mesh.vertices.map(v=>v[1]),zs=mesh.vertices.map(v=>v[2]);
       assert.ok(Math.max(...ys)-Math.min(...ys)>6,'a flat picture is not a 3D scene');
       assert.ok(Math.max(...zs)-Math.min(...zs)>10,'the scene has no world depth');
     }
   }
-  assert.equal(roads.size,7);assert.equal(arenas.size,7);background.destroy();
+  assert.equal(roads.size,7);assert.ok(!('spellGeometry'in background));background.destroy();
 });
 
-test('camera flight and slower spell orbit are deterministic and continuously move',()=>{
-  for(let id=1;id<=7;id++)for(const spell of [false,true]){
-    const a=cameraForStage(id,1000,spell),b=cameraForStage(id,1001,spell);
-    assert.deepEqual(a,cameraForStage({id},1000,spell));assert.notDeepEqual(a.eye,b.eye);
+test('road camera flight remains deterministic and continuously moves',()=>{
+  for(let id=1;id<=7;id++){
+    const a=cameraForStage(id,1000),b=cameraForStage(id,1001);
+    assert.deepEqual(a,cameraForStage({id},1000));assert.notDeepEqual(a.eye,b.eye);
     assert.ok(Math.hypot(...a.eye.map((value,index)=>value-b.eye[index]))<.2);
     for(const vector of [a.eye,a.target])assert.ok(vector.every(Number.isFinite));
   }
@@ -75,13 +74,13 @@ test('native draw commands have valid UVs, finite MVPs and cached static vertice
     game.frame=540;game.spell.age.current=60;background.update(game);
     const draw=new DrawList();background.draw(draw,game);
     const meshes=draw.commands.filter(command=>command[0]==='mesh3d');
-    assert.equal(meshes.length,active?8:7);assert.ok(background.stats.vertices<=1300);
+    assert.equal(meshes.length,active?0:7);assert.ok(background.stats.vertices<=432);
     for(const [,texture,vertices,indices,mvp] of meshes){
       assert.equal(texture,92);assert.equal(mvp.length,16);assert.ok(mvp.every(Number.isFinite));
       assert.ok(vertices.every(v=>v.length===6&&v.every(Number.isFinite)&&v[3]>=0&&v[3]<=1&&v[4]>=0&&v[4]<=1));
       assert.ok(indices.length>0&&indices.length%3===0);
       assert.ok(indices.every(index=>Number.isInteger(index)&&index>=0&&index<vertices.length));
-      const cachedMeshes=[background.spellGeometry,...background.geometryVariants];
+      const cachedMeshes=background.geometryVariants;
       assert.ok(cachedMeshes.some(mesh=>[...mesh.fogCache.values()].some(cached=>cached[0]===vertices[0])),'static vertices were rebuilt');
     }
     const source=background.geometry.vertices;background.setStage(id);assert.equal(background.geometry.vertices,source);
@@ -90,21 +89,24 @@ test('native draw commands have valid UVs, finite MVPs and cached static vertice
   background.destroy();
 });
 
-test('seven Boss themes visibly animate authored textures independently of camera movement',()=>{
+test('seven Boss themes animate their independent full-image abstract textures without road geometry',()=>{
   const signatures=new Set();
   for(let id=1;id<=7;id++){
-    const background=new StageBackground({art:artFixture(),seed:771});background.setStage(id);
+    const art=artFixture(),background=new StageBackground({art,seed:771});background.setStage(id);
     const game={frame:0,spell:{active:false}};background.update(game);
     game.spell={active:true,id:34,age:{current:0}};game.frame=1;background.update(game);
     game.frame=61;background.update(game);const a=new DrawList();background.draw(a,game);
     game.frame=181;background.update(game);const b=new DrawList();background.draw(b,game);
     const animatedA=a.commands.filter(command=>command[0]==='mesh'),animatedB=b.commands.filter(command=>command[0]==='mesh');
-    assert.ok(animatedA.length>=2&&animatedA.length<=3);assert.equal(animatedA.length,animatedB.length);
+    assert.equal(animatedA.length,2);assert.equal(animatedA.length,animatedB.length);
     assert.notDeepEqual(animatedA,animatedB,'changing only a 3D camera is not texture animation');
-    const firstA=animatedA[0][2][0],firstB=animatedB[0][2][0];assert.ok(Math.hypot(firstA[0]-firstB[0],firstA[1]-firstB[1])>25,'motion must be plainly visible over two seconds');
+    const displacement=Math.max(...animatedA.flatMap((command,n)=>command[2].map((v,i)=>Math.hypot(v[0]-animatedB[n][2][i][0],v[1]-animatedB[n][2][i][1]))));
+    assert.ok(displacement>25,'motion must be plainly visible over two seconds');
     signatures.add(createHash('sha256').update(JSON.stringify(animatedA)).digest('hex'));
     for(const [,texture,vertices,indices]of animatedB){assert.equal(texture,92);assert.ok(vertices.every(v=>v.length===5&&v.every(Number.isFinite)&&v[2]>=0&&v[2]<=1&&v[3]>=0&&v[3]<=1));assert.ok(indices.every(i=>Number.isInteger(i)&&i>=0&&i<vertices.length));}
-    assert.ok(background.stats.meshCalls<=11&&background.stats.vertices<=1300);background.destroy();
+    assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,2);assert.ok(background.stats.vertices<=98);
+    assert.ok(!a.commands.some(command=>command[0]==='mesh3d'));assert.equal(art.backgrounds.length,0,'steady cards must never submit distant road scenery');
+    assert.ok(art.loads.includes(SPELL_BACKGROUND_STYLES[id-1].path));background.destroy();
   }
   assert.equal(signatures.size,7);
 });
@@ -125,19 +127,20 @@ test('spell clock is seeded and reproducible; draw calls and pause cannot advanc
 });
 
 test('spell entry and retirement fade over simulation frames; rapid changes stay bounded',()=>{
-  const background=new StageBackground({art:artFixture()});background.setStage(7);
+  const art=artFixture(),background=new StageBackground({art});background.setStage(7);
   const game={frame:0,spell:{active:false},context:{boss:{bossId:'fusae'}}};background.update(game);
   game.frame=1;game.spell={active:true,id:22,age:{current:0}};background.update(game);
   assert.equal(background.spellBackground.visibleCards().length,0);
   game.frame=25;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
   game.frame=49;background.update(game);const card=background.spellBackground.visibleCards()[0];assert.equal(card.style,5,'Extra midboss has her own theme');assert.equal(card.opacity,1);
+  const extraMid=new DrawList();background.draw(extraMid,game);assert.ok(art.loads.includes('assets/spells/fusae.png'));assert.ok(!art.loads.includes('assets/spells/mio.png'));
   game.frame=50;game.spell.active=false;background.update(game);assert.equal(background.spellBackground.visibleCards()[0].opacity,1);
   game.frame=62;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
   game.frame=74;background.update(game);assert.equal(background.spellBackground.visibleCards().length,0);
   const road=new DrawList();background.draw(road,game);assert.equal(background.stats.meshCalls,7);
   game.context.boss.bossId='mio';game.spell.active=true;
   for(let i=0;i<8;i++){game.frame+=4;game.spell.id=30+i;background.update(game);assert.ok(background.spellBackground.cards.length<=SPELL_BACKGROUND_TIMING.maxCards);}
-  game.frame+=12;background.update(game);const draw=new DrawList();background.draw(draw,game);assert.ok(background.stats.meshCalls<=15);assert.ok(background.stats.vertices<2300);
+  game.frame+=12;background.update(game);const draw=new DrawList();background.draw(draw,game);assert.ok(background.stats.meshCalls<=11);assert.ok(background.stats.vertices<=628);
   background.setStage(1);assert.equal(background.spellBackground.cards.length,0);background.destroy();assert.equal(background.spellBackground.cards.length,0);
 });
 
@@ -170,7 +173,7 @@ test('near-plane crossings remain homogeneous and bounded through the entire til
 test('stage changes release CPU scenery and leave borrowed texture ownership to GameArt',()=>{
   const art=artFixture(),background=new StageBackground({art});background.setStage(1);
   const mesh=background.geometry;background.draw(new DrawList(),{frame:200});assert.ok(mesh.fogCache.size>0);
-  background.setStage(2);assert.notEqual(background.geometry,mesh);assert.notEqual(background.spellGeometry.label,'stage1-spell');
+  background.setStage(2);assert.notEqual(background.geometry,mesh);
   background.destroy();background.destroy();assert.deepEqual(art.unloads,[]);
   assert.deepEqual(art.loads,['assets/scenery/stage01-atlas.png','assets/scenery/stage02-atlas.png']);
   assert.throws(()=>background.draw(new DrawList(),{frame:0}),/destroyed/);
@@ -180,7 +183,7 @@ test('the ground UV is continuous at every subdivision and atlas cells cannot sa
   const background=new StageBackground({art:artFixture()});
   for(let id=1;id<=7;id++){
     background.setStage(id);
-    for(const mesh of [background.geometry,background.spellGeometry]){
+    for(const mesh of background.geometryVariants){
       const floors=mesh.faces.filter(face=>face.region==='ground');
       for(let i=1;i<floors.length;i++){
         const a=mesh.vertices[floors[i-1].indices[2]],b=mesh.vertices[floors[i].indices[0]];
@@ -196,11 +199,71 @@ test('the ground UV is continuous at every subdivision and atlas cells cannot sa
   assert.equal(new Set(SCENERY_ATLASES.map(asset=>asset.path)).size,7);background.destroy();
 });
 
+test('whole-image spell planes cover every playfield corner through rotation, drift, waves and actual texture dimensions',()=>{
+  const contains=(point,a,b,c)=>{
+    const cross=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
+    const values=[cross(a,b,point),cross(b,c,point),cross(c,a,point)];
+    return values.every(v=>v>=-1e-7)||values.every(v=>v<=1e-7);
+  };
+  const corners=[[48,24],[624,24],[624,696],[48,696]];
+  for(const [width,height]of [[1024,1024],[1254,1254],[1536,1536],[1536,1024]])for(const profile of SPELL_BACKGROUND_STYLES){
+    const owner=new DynamicSpellBackground({art:artFixture({width,height}),seed:105});
+    owner.update({frame:120,context:{boss:{bossId:profile.bossId}},spell:{active:true,id:1,age:{current:120}}});
+    const original=owner.visibleCards()[0];
+    for(const age of [0,31,120,240,999,10000,1000000]){
+      const draw=new DrawList();owner.drawCard(draw,{...original,age,opacity:1});
+      const meshes=draw.commands.filter(command=>command[0]==='mesh');assert.equal(meshes.length,2);
+      for(const [,texture,vertices,indices]of meshes){
+        assert.equal(texture,92);assert.ok(vertices.length<=49);
+        assert.ok(vertices.every(vertex=>vertex.every(Number.isFinite)&&vertex[2]>=0&&vertex[2]<=1&&vertex[3]>=0&&vertex[3]<=1));
+        assert.equal(Math.min(...vertices.map(v=>v[2])),0);assert.equal(Math.max(...vertices.map(v=>v[2])),1);
+        assert.equal(Math.min(...vertices.map(v=>v[3])),0);assert.equal(Math.max(...vertices.map(v=>v[3])),1);
+        for(const corner of corners)assert.ok(indices.some((_,i)=>i%3===0&&contains(corner,vertices[indices[i]],vertices[indices[i+1]],vertices[indices[i+2]])),`${profile.bossId}/${age} leaves a playfield corner uncovered`);
+      }
+      assert.ok(meshes[0][2].every(vertex=>(vertex[4]&255)===255),'the primary image must be opaque at steady state');
+      assert.ok(meshes[1][2].every(vertex=>(vertex[4]&255)<40),'secondary flow must remain low alpha');
+    }
+    owner.destroy();
+  }
+});
+
+test('rain, ripple, brocade and mirrored echo deform shared image vertices without changing UVs or introducing tile seams',()=>{
+  for(const bossId of ['shizuri','watari','shino','mio']){
+    const owner=new DynamicSpellBackground({art:artFixture(),seed:13});
+    owner.update({frame:100,context:{boss:{bossId}},spell:{active:true,id:1,age:{current:100}}});
+    const a=new DrawList(),b=new DrawList(),card=owner.visibleCards()[0];owner.drawCard(a,card);owner.drawCard(b,{...card,age:card.age+60});
+    const meshes=a.commands.filter(command=>command[0]==='mesh'),other=b.commands.filter(command=>command[0]==='mesh');
+    for(let n=0;n<meshes.length;n++){
+      const vertices=meshes[n][2];assert.equal(vertices.length,49);assert.deepEqual(vertices.map(v=>v.slice(2,4)),other[n][2].map(v=>v.slice(2,4)));
+      const bend=Math.max(...[1,2,3,4,5].map(i=>Math.hypot(vertices[i][0]-(vertices[0][0]+(vertices[6][0]-vertices[0][0])*i/6),vertices[i][1]-(vertices[0][1]+(vertices[6][1]-vertices[0][1])*i/6))));
+      assert.ok(bend>.5,'the image must bend rather than only rotate');
+      assert.notDeepEqual(vertices,other[n][2]);
+      assert.ok(meshes[n][3].length===216&&new Set(meshes[n][3]).size===49,'cells share their border vertices');
+    }
+    owner.destroy();
+  }
+});
+
+test('two abstract cards have a bounded shared capture lifecycle without submitting old spell scenery',()=>{
+  const art=artFixture(),background=new StageBackground({art});background.setStage(1);
+  const game={frame:0,spell:{active:false},context:{boss:{bossId:'akari'}}};background.update(game);
+  game.frame=1;game.spell={active:true,id:1,age:{current:0}};background.update(game);
+  game.frame=49;background.update(game);game.frame=50;game.spell.id=2;background.update(game);
+  let draw=new DrawList();background.draw(draw,game);assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,2);
+  game.frame=62;background.update(game);draw=new DrawList();background.draw(draw,game);
+  assert.equal(background.spellBackground.visibleCards().length,2);assert.equal(background.stats.meshCalls,11);
+  assert.equal(draw.commands.filter(command=>command[0]==='mesh').length,4);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,7);
+  assert.ok(!('spellSets'in background));assert.ok(!('spellGeometry'in background));assert.ok(background.stats.vertices<=628);
+  game.frame=98;background.update(game);draw=new DrawList();background.draw(draw,game);
+  assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,2);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,0);
+  background.destroy();assert.deepEqual(art.unloads,[]);
+});
+
 test('all scene faces sample an authored atlas cell, including walls facing into a 3D corridor',()=>{
   const background=new StageBackground({art:artFixture()});
   for(let id=1;id<=7;id++){
     background.setStage(id);
-    for(const mesh of [...background.geometryVariants,background.spellGeometry])for(const face of mesh.faces){
+    for(const mesh of background.geometryVariants)for(const face of mesh.faces){
       const [u0,v0,u1,v1]=sceneryRegion(id,face.region);
       for(const index of new Set(face.indices)){const v=mesh.vertices[index];assert.ok(v[3]>=u0&&v[3]<=u1&&v[4]>=v0&&v[4]<=v1);}
     }
