@@ -144,7 +144,7 @@ function signature(k,stageId,p,age,state){
     k.later(54,letters,b=>k.ring(b.x,b.y,k.pick(6,8,10,12),1.5,k.unit()*TAU,T.BALL,C.AZURE,null,{silent:true}));
     k.fan(k.ox,k.oy,k.pick(5,7,9,11),2.2,DOWN,.2,T.NEEDLE,C.SKY);}
   else if(s===3)k.ring(k.ox,k.oy,k.pick(14,18,24,28),2.9,wave*.21,T.OVAL,wave%2?C8.CYAN:C8.GREEN,[k.stopTurn(48,Math.PI,1.5)]);
-  else if(s===4){if(wave%3===0)for(let j=0;j<4;j++)k.beam(k.ox,k.oy,wave*.4+j*Math.PI/2+Math.PI/4,{width:8,delay:60,sustain:50,color:C.MAGENTA,sound:j?-1:26});
+  else if(s===4){if(wave%3===0)for(let j=0;j<4;j++)k.beam(k.ox,k.oy,wave*.4+j*Math.PI/2+Math.PI/4,{width:8,delay:60,sustain:50,color:C.MAGENTA,sound:j?-1:18});
     k.ring(k.ox,k.oy,k.pick(14,20,24,28),1.5,k.unit()*TAU,T.BALL,C.PINK);}
   else if(s===5){const n=k.pick(9,11,13,15),blank=(n>>1)+((wave%3)-1);
     for(let i=0;i<n;i++)if(Math.abs(i-blank)>1)k.shot(k.ox+(i-(n-1)/2)*22,k.oy+10,DOWN,1.8,T.AMULET,wave%2?C.PALE:C.GREEN,null,{silent:i>0});

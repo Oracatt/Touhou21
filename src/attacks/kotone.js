@@ -123,7 +123,7 @@ function gardenBeyondForgetting(k){
   const step=k.t/gateTime|0,order=[0,1,2,3,4,5,4,3,2,1],gate=order[step%order.length];
   const center=DOWN+(gate-2.5)*.36;
   if(k.t%gateTime===0)for(const side of[-1,1])
-    k.beam(k.ox,k.oy,center+side*half,{width:10,delay:50,grow:10,sustain:gateTime-62,shrink:12,color:C.PALE,sound:side>0?-1:26});
+    k.beam(k.ox,k.oy,center+side*half,{width:10,delay:50,grow:10,sustain:gateTime-62,shrink:12,color:C.PALE,sound:side>0?-1:18});
   if(k.every(k.pick(12,10,8,7))){
     const spread=k.pick(.115,.098,.084,.076),base=(k.t*.37)%spread;
     let first=true;

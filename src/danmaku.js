@@ -87,10 +87,12 @@ export class AttackKit {
   /** Pattern 4: a ring whose nearest gap faces the player. */
   ringGap(x,y,count,speed,type,color,cmds,extra){return this.emit({x,y,angle:extra?.offset??0,speed,type,color,cmds,pattern:4,count,...extra});}
 
-  beam(x,y,angle,{width=14,delay=60,grow=14,sustain=60,shrink=14,color=C.WHITE,length=720,angular=0,sound=26}={}){
+  // Original enemy laser birth: se_lazer00 (18), once when its warning line is created.
+  // thlib merges same-frame requests; -1 still explicitly silences a companion beam.
+  beam(x,y,angle,{width=14,delay=60,grow=14,sustain=60,shrink=14,color=C.WHITE,length=720,angular=0,sound=18}={}){
     return this.game.lasers.spawnInfinite({x,y,angle,width,length,color,type:0,delay,grow,sustain,shrink,angularVelocity:angular,sound});
   }
-  laser(x,y,angle,speed,length,{width=10,color=C.WHITE,sound=-1}={}){
+  laser(x,y,angle,speed,length,{width=10,color=C.WHITE,sound=18}={}){
     return this.game.lasers.spawnStraight({x,y,angle,speed:speed*this.sp,length,width,color,type:0,initialLength:0,sound});
   }
   sound(id,x=this.ox){this.game.context?.sound?.(id,x);}

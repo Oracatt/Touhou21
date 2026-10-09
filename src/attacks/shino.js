@@ -75,7 +75,7 @@ function acquaintanceWarpWeft(k){
     const offset=round%2?spacing/2:0;k.state.threads=[];
     for(let x=-192+offset+spacing/2;x<192;x+=spacing){
       if(Math.abs(x)>182)continue;k.state.threads.push(x);
-      k.beam(x,-12,DOWN,{width:10,delay:56,grow:12,sustain:cycle-90,shrink:14,color:C.MAGENTA,sound:k.state.threads.length===1?26:-1});
+      k.beam(x,-12,DOWN,{width:10,delay:56,grow:12,sustain:cycle-90,shrink:14,color:C.MAGENTA,sound:k.state.threads.length===1?18:-1});
     }
   }
   const threads=k.state.threads??[];
@@ -112,7 +112,7 @@ function eightfoldWebGarden(k){
   const cycle=300,c=k.t%cycle,round=k.t/cycle|0;
   if(c===0){
     const base=round*Math.PI/8,turn=(round%2?1:-1)*k.pick(.0022,.0025,.0027,.0028);
-    for(let j=0;j<8;j++)k.beam(k.ox,k.oy,base+j*Math.PI/4,{width:9,delay:62,grow:12,sustain:200,shrink:14,color:C.PALE,angular:turn,sound:j?-1:26});
+    for(let j=0;j<8;j++)k.beam(k.ox,k.oy,base+j*Math.PI/4,{width:9,delay:62,grow:12,sustain:200,shrink:14,color:C.PALE,angular:turn,sound:j?-1:18});
   }
   if(c>=62&&c<276&&k.every(k.pick(42,33,28,25),62))
     k.ring(k.ox,k.oy,k.pick(24,32,38,44),1.25,k.unit()*TAU,T.BALL,C.MAGENTA);
