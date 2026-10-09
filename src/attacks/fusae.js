@@ -75,7 +75,7 @@ function closedStacks(k){
   if(k.every(period,period/2|0))k.aimed(k.ox,k.oy,k.pick(1,3,3,5),2.7,.2,T.BIG,C8.RED);
 }
 
-/** 札符「不收原件的归名书库」: rows of blank pages fall with a winding
+/** 札符「不收原件之书库」: rows of blank pages fall with a winding
  * empty cell; vermilion seals are stamped down that aisle. */
 function archiveRefusesOriginals(k){
   const period=k.pick(28,23,20,18),spacing=k.pick(32,28,26,24),cells=Math.floor(368/spacing)+1;
@@ -88,7 +88,7 @@ function archiveRefusesOriginals(k){
 }
 archiveRefusesOriginals.home={x:0,y:84};
 
-/** 翻页「今名与旧名的错页」: radial page lines sweep across like a page
+/** 翻页「今名旧名之错页」: radial page lines sweep across like a page
  * turning, then every line folds aside; pages alternate direction. */
 function misfiledPages(k){
   const cycle=k.pick(104,90,80,72),c=k.t%cycle,side=(k.t/cycle|0)%2?1:-1,steps=k.pick(11,14,16,18);
@@ -114,7 +114,7 @@ function fivefoldSeal(k){
 }
 fivefoldSeal.home={x:0,y:120};
 
-/** 式札「守门人无字的签名」: the gatekeeper signs a five-pointed star of
+/** 式札「守门人无字签名」: the gatekeeper signs a five-pointed star of
  * paper; after a breath the whole signature folds to one side. */
 function blankSignature(k){
   const period=k.pick(80,62,52,46);
@@ -126,7 +126,7 @@ function blankSignature(k){
 }
 blankSignature.home={x:0,y:108};
 
-/** Extra midboss 1 — 抄札「只准借阅的旧名目录」: columns of copies fall;
+/** Extra midboss 1 — 抄札「仅限借阅之旧名目录」: columns of copies fall;
  * halfway down, alternate columns trade lanes with their neighbours. */
 function borrowOnlyCatalogue(k){
   const period=8,spacing=46,lanes=Math.floor(352/spacing)+1;

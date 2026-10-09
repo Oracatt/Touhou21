@@ -72,7 +72,7 @@ function beforeTheLastPage(k){
   if(k.every(period*3,period*2))k.wander(40);
 }
 
-/** 名符「无人再唤的白纸神」: three paper familiars circle the god; each
+/** 名符「无人再唤之白纸神」: three paper familiars circle the god; each
  * releases rings of blank paper that bend alternately, gaps toward the player. */
 function paperGodUncalled(k){
   const period=k.pick(38,29,25,21),a0=k.t*.012;
@@ -87,7 +87,7 @@ function paperGodUncalled(k){
 }
 paperGodUncalled.home={x:0,y:112};
 
-/** 铃名「千户应答的金色声纹」: on every beat the god calls with a golden
+/** 铃名「千户应答之金色声纹」: on every beat the god calls with a golden
  * ring; houses on both banks answer in turn with aimed replies. */
 function thousandHouseholdsAnswer(k){
   const beat=k.pick(42,34,29,25),b=k.t/beat|0,c=k.t%beat;
@@ -100,7 +100,7 @@ function thousandHouseholdsAnswer(k){
 }
 thousandHouseholdsAnswer.home={x:0,y:104};
 
-/** 归名「生者与旧称的错列」: warm living names fall one way, cold old names
+/** 归名「生者旧称之错列」: warm living names fall one way, cold old names
  * the other, crossing into a moving lattice; every few seconds the rows pause
  * for a breath and then swap directions. */
 function livingAndOldNames(k){
@@ -116,7 +116,7 @@ function livingAndOldNames(k){
 }
 livingAndOldNames.home={x:0,y:92};
 
-/** 神名「连忘却也不许抵达的庭」: of six gates across the lower garden, one
+/** 神名「忘却亦不可及之庭」: of six gates across the lower garden, one
  * stands open between two warned beams; the rest is filled with paper. The
  * open gate walks from gate to gate. */
 function gardenBeyondForgetting(k){
@@ -137,7 +137,7 @@ function gardenBeyondForgetting(k){
 }
 gardenBeyondForgetting.home={x:0,y:84};
 
-/** 「写回幻想乡的每一个名字」: a golden name-rose blooms throughout; every
+/** 「将每一个名字写回幻想乡」: a golden name-rose blooms throughout; every
  * ten seconds a different journey motif returns beside it — lantern doors,
  * rain letters, returning boats, crossed chains, page rows and bells. */
 function writeBackEveryName(k){

@@ -79,7 +79,7 @@ function replayedVoice(k){
 replayedVoice.home={x:0,y:92};
 
 /* ---- ten spell cards ---- */
-/** 回声「迟到半拍的自我介绍」 */
+/** 回声「迟到半拍之自我介绍」 */
 function lateSelfIntroduction(k){
   const beat=30;
   if(k.every(beat)){const b=k.t/beat|0,a=b*.27,x=k.ox,y=k.oy;
@@ -91,7 +91,7 @@ function lateSelfIntroduction(k){
 }
 lateSelfIntroduction.home={x:50,y:104};
 
-/** 倒铃「从铃口归来的声音」 */
+/** 倒铃「自铃口归来之声」 */
 function voiceFromBellMouth(k){
   if(k.every(34)){const wave=k.t/34|0;
     k.ring(k.ox,k.oy,34,3.3,wave*.23,T.SCALE,wave%2?C.ROSE:C.SKY,[k.stopTurn(36,Math.PI,2.2),k.wait(34),k.stopTurn(28,Math.PI+(wave%2?.4:-.4),2.5)]);}
@@ -99,7 +99,7 @@ function voiceFromBellMouth(k){
 }
 voiceFromBellMouth.home={x:0,y:120};
 
-/** 回廊「只在静默处通行的长廊」: dotted lanes of voices cross the hall in
+/** 回廊「唯静默可通之长廊」: dotted lanes of voices cross the hall in
  * alternating directions, slightly tilted so the lanes weave. Every lane
  * keeps one silence, and the silences are staggered from lane to lane. */
 function silentCorridor(k){
@@ -118,7 +118,7 @@ function silentCorridor(k){
 }
 silentCorridor.home={x:0,y:96};
 
-/** 余响「远处才响起的钟」: slow bells drift down the hall. Each one rings
+/** 余响「远方迟来之钟」: slow bells drift down the hall. Each one rings
  * again and again as it falls, and every ring keeps a gap toward you. */
 function farBells(k){
   const period=k.pick(290,250,220,200),pulse=k.pick(66,58,54,50),n=k.pick(8,10,12,12);
@@ -134,7 +134,7 @@ function farBells(k){
 }
 farBells.home={x:0,y:96};
 
-/** 回环「绕回原处的呼唤」: rings curl into tight spirals as they leave, and
+/** 回环「回旋呼唤」: rings curl into tight spirals as they leave, and
  * the echo ring curls the other way through the gaps of the first. */
 function windingCalls(k){
   const period=k.pick(58,46,40,36),n=k.pick(8,10,12,14);
@@ -147,7 +147,7 @@ function windingCalls(k){
 }
 windingCalls.home={x:0,y:104};
 
-/** 镜声「与你相反的回响」: the Boss drifts to the opposite side of the hall
+/** 镜声「与汝相反之回响」: the Boss drifts to the opposite side of the hall
  * from you and pours a sweeping curtain down; aimed fans arrive from both the
  * Boss and its mirror image. */
 function mirroredVoice(k){
@@ -160,7 +160,7 @@ function mirroredVoice(k){
 }
 mirroredVoice.home={x:0,y:100};
 
-/** 耐响「最后一次呼唤的六十余息」 (survival): six echoes of this hall, ten
+/** 耐响「末次呼唤之六十余息」 (survival): six echoes of this hall, ten
  * seconds each, with a breath between them. */
 function lastCallSixtyBreaths(k){
   const segment=Math.min(5,k.t/620|0),c=k.t%620;k.state.segment=segment;
@@ -169,7 +169,7 @@ function lastCallSixtyBreaths(k){
 }
 lastCallSixtyBreaths.home={x:0,y:108};
 
-/** 封名「旧册背面的白纸花」 */
+/** 封名「旧册背面白纸花」 */
 function whitePaperFlowerOnBack(k){
   if(k.every(46)){const wave=k.t/46|0,dir=wave%2?1:-1;
     burstShape(k,k.ox,k.oy,rose(5,60),2.6,wave*.41,T.AMULET,wave%2?C.WHITE:C.ROSE,[k.wait(30),k.stopTurn(24,dir*2.2,2.1)]);}
@@ -177,9 +177,9 @@ function whitePaperFlowerOnBack(k){
 }
 whitePaperFlowerOnBack.home={x:0,y:112};
 
-/** 耐响「最后一次呼唤的六十余息」 (survival): six echoes of the journey,
+/** 耐响「末次呼唤之六十余息」 (survival): six echoes of the journey,
  * each a little quieter than the one before. */
-/** 言灵「没有说出口的第一个名字」 */
+/** 言灵「未出口之初名」 */
 function firstUnspokenName(k){
   const a1=k.t*.032,a2=a1+Math.PI-.7*Math.sin(k.t*.011);
   const p1={x:k.ox+Math.cos(a1)*70,y:k.oy+Math.sin(a1)*44},p2={x:k.ox+Math.cos(a2)*70,y:k.oy+Math.sin(a2)*44};

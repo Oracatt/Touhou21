@@ -13,7 +13,7 @@ function spinningShuttle(k){
   if(k.every(210,170))k.wander(40);
 }
 
-/** 缝符「先缝住影子的一针」: needles fly to a ring around the player's
+/** 缝符「缝影一针」: needles fly to a ring around the player's
  * shadow, hold the circle, then stitch inward through the old centre. */
 function stitchTheShadow(k){
   const period=k.pick(132,108,94,84);
@@ -68,7 +68,7 @@ function untiedKnots(k){
   if(k.every(240,200))k.wander(40);
 }
 
-/** 糸符「相识之人的经纬」: warned vertical threads divide the field into
+/** 糸符「相识者之经纬」: warned vertical threads divide the field into
  * corridors while beads fall inside them; each cycle the lattice loosens and
  * shifts by half a corridor. */
 function acquaintanceWarpWeft(k){
@@ -93,7 +93,7 @@ function acquaintanceWarpWeft(k){
 }
 acquaintanceWarpWeft.home={x:0,y:92};
 
-/** 结忆「昨天与明天的错针」: yesterday's chain turns one way, tomorrow's
+/** 结忆「昨日明日之错针」: yesterday's chain turns one way, tomorrow's
  * the other; where they cross, diamond-shaped openings appear and move. */
 function crossedStitchesOfDays(k){
   const interval=k.pick(7,5,4,3),arms=k.pick(3,3,4,5);
@@ -108,7 +108,7 @@ function crossedStitchesOfDays(k){
 }
 crossedStitchesOfDays.home={x:0,y:120};
 
-/** 蛛符「八方皆有归路的丝庭」: eight warned spokes turn slowly; web rings
+/** 蛛符「八方归路之丝庭」: eight warned spokes turn slowly; web rings
  * expand between them, so the safe sector travels around the Boss. */
 function eightfoldWebGarden(k){
   const cycle=300,c=k.t%cycle,round=k.t/cycle|0;
@@ -122,7 +122,7 @@ function eightfoldWebGarden(k){
 }
 eightfoldWebGarden.home={x:0,y:112};
 
-/** 缝忆「没有署名的团圆衣」: two sleeves swing beads up against the walls
+/** 缝忆「无署名之团圆衣」: two sleeves swing beads up against the walls
  * and the ceiling; each bead reflects once, loses its momentum and drops as
  * part of a hem that drapes across the lower field. Square patches of beads
  * are sent toward the player. */

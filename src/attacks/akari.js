@@ -42,7 +42,7 @@ function lanternRows(k){
   if(c===112)k.wander(46);
 }
 
-/** 灯符「无人认领的门灯」: expanding square door frames of door plates.
+/** 灯符「无主门灯」: expanding square door frames of door plates.
  * Each frame leaves its door facing where the player stood at that moment. */
 function unclaimedDoorLamp(k){
   const period=k.pick(62,47,40,34),edge=k.pick(10,13,16,19);
@@ -56,7 +56,7 @@ function unclaimedDoorLamp(k){
 }
 unclaimedDoorLamp.home={x:0,y:104};
 
-/** 迎火「百户空白的灯笼坂」: lanterns on both sides of the slope light from
+/** 迎火「百户无字灯笼坂」: lanterns on both sides of the slope light from
  * the top toward the player. Each releases a slowly swirling ring whose gap
  * faces the player, so the crossing rings form a street with readable doors. */
 function lanternSlope(k){

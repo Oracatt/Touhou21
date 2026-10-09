@@ -63,7 +63,7 @@ function scatteredGreetings(k){
   if(k.every(180,150))k.wander(42);
 }
 
-/** 雨符「收件人空白的细雨」: fine swaying rain is the texture. Envelopes
+/** 雨符「无人签收之雨」: fine swaying rain is the texture. Envelopes
  * aimed at the player stop, then burst open into rings of blank addresses. */
 function blankAddresseeDrizzle(k){
   const sway=.16*Math.sin(k.t*.004);
@@ -76,7 +76,7 @@ function blankAddresseeDrizzle(k){
 }
 blankAddresseeDrizzle.home={x:0,y:100};
 
-/** 墨雨「被洗去的第一句问候」: ink drops are lobbed high and fall under
+/** 墨雨「洗去首句问候」: ink drops are lobbed high and fall under
  * gravity; where each lands it splashes into a ring. Light rain continues. */
 function washedGreeting(k){
   if(k.every(k.pick(11,8,6,5)))drizzle(k,1,{type:T.RICE,lean:.04,speed:[2.1,2.7],color:C.SKY});
@@ -97,7 +97,7 @@ function washedGreeting(k){
 }
 washedGreeting.home={x:0,y:118};
 
-/** 送雨「千万封尚未抵达的信」: square bundles of letters spread, stop, and
+/** 送雨「千万封未达之信」: square bundles of letters spread, stop, and
  * are all re-addressed toward the player at once. Rain fills the margins. */
 function undeliveredLetters(k){
   const period=k.pick(110,86,72,62),edge=k.pick(7,9,10,12),speed=k.pick(2.2,2.6,2.8,3);

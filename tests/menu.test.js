@@ -49,7 +49,7 @@ test('locked Extra is skipped by the cursor and explains its requirement; the st
 });
 
 test('utility pages share the animated title scene and keep their list cursor',()=>{
-  const host=recordingHost(),page=new ListPage({title:'符卡练习',rows:[{label:'01　灯符「无人认领的门灯」'},{label:'02　迎火「百户空白的灯笼坂」'}],
+  const host=recordingHost(),page=new ListPage({title:'符卡练习',rows:[{label:'01　灯符「无主门灯」'},{label:'02　迎火「百户无字灯笼坂」'}],
     text:new TextPainter(host),art:new GameArt(host),sound(){},detail:()=>'说明'});
   for(let i=0;i<12;i++)page.update(i===10?Keys.DOWN:0);
   const commands=page.draw(new DrawList()).commands;assert.equal(page.selection,1);

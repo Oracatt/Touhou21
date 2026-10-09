@@ -13,7 +13,7 @@ function oarStrokes(k){
   if(c===80&&(k.t/96|0)%2)k.wander(36);
 }
 
-/** 船费「一枚铜钱的渡口」: copper coins are tossed in arcs and fall like a
+/** 船费「一文钱渡口」: copper coins are tossed in arcs and fall like a
  * fountain; ticket bundles are sold to the player in between. */
 function copperCoinFerry(k){
   if(k.every(k.pick(5,3,3,2)))for(let i=k.pick(1,1,2,2);i>0;i--){
@@ -62,7 +62,7 @@ function ripplesBeforeLanding(k){
   if(k.every(192,150))k.wander(40);
 }
 
-/** 舟符「不记彼岸的单程票」: tickets launch from both banks and bend down
+/** 舟符「无岸单程票」: tickets launch from both banks and bend down
  * into the river. Banks alternate, so arcs cross in a woven X. */
 function oneWayTicket(k){
   const period=k.pick(30,23,20,17),n=k.pick(7,10,12,13);
@@ -74,7 +74,7 @@ function oneWayTicket(k){
 }
 oneWayTicket.home={x:0,y:96};
 
-/** 水路「回到原处的渡船」: rings of boats brake, turn around and return to
+/** 水路「去而复返之舟」: rings of boats brake, turn around and return to
  * the place they left, crossing the next ring on its way out. */
 function returningFerry(k){
   const period=k.pick(72,56,46,40),n=k.pick(18,24,30,36);
@@ -88,7 +88,7 @@ function returningFerry(k){
 }
 returningFerry.home={x:0,y:104};
 
-/** 渡符「两岸都不回答的芦苇洲」: reeds fall in swaying columns; paper boats
+/** 渡符「两岸无应之芦苇洲」: reeds fall in swaying columns; paper boats
  * cross between them and leave a wake that slowly sinks. */
 function silentReedBanks(k){
   const spacing=k.pick(64,56,50,46),columns=Math.floor(352/spacing)+1;
