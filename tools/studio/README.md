@@ -37,8 +37,8 @@ toward the audio that precedes the loop start on a straight play-through. `loop_
 positions; the file ends exactly where the loop body ends.
 
 A song module defines `BPM`, `INTRO_BARS`, `LOOP_BARS`, `CHORDS`, `SECTIONS`, `SCALE`, `LEAD`/`LEADS` and `build()`.
-Every bar has four beats; a compound meter such as 12/8 (`boss06`) counts `BPM` in dotted quarters and writes an
-eighth note as `4/3` of a sixteenth unit.
+Every bar has four beats; a compound meter such as 12/8 would count `BPM` in dotted quarters and write an eighth
+note as `4/3` of a sixteenth unit.
 The builder checks that strong-beat lead notes are chord or scale tones, flags semitone clashes against other parts,
 balances every part to a role level inside the mix, evens out section loudness with a periodic per-bar ride,
 normalises to -13 LUFS with a -1 dBTP ceiling, and scans both seams for clicks.

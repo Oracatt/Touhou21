@@ -135,13 +135,13 @@ export const MUSIC_TRACKS = Object.freeze([
     "title": "校勘者与消失的句号",
     "file": "assets/music/boss05.wav",
     "sampleRate": 32000,
-    "frames": 2133333,
-    "loopStartFrame": 213333,
-    "loopEndFrame": 2133333,
-    "duration": 66.666656,
-    "bpm": 144,
-    "description": "校对者把每一行都誊成卡农。独奏小提琴拉着十六分音符的无穷动，其他声部一个接一个照抄，铜管在每个和弦上盖章。",
-    "sha256": "ef4cde9b0212b3fda7b7173bf09f49fea85e92bdd4643a7f59917402fe68e134"
+    "frames": 1685853,
+    "loopStartFrame": 187317,
+    "loopEndFrame": 1685853,
+    "duration": 52.682906,
+    "bpm": 164,
+    "description": "校对者在影子里划掉一行又一行。小号用三三二的重音写下句子，中段乐队一次次停在半句，空白里只剩响棒数拍，长号与圆号在副歌里回应。",
+    "sha256": "669dc0e02fdb2db9e1b9a9868d9a9f5ca118cfdaecdaf80970a59b39b2932375"
   },
   {
     "id": "stage06",
@@ -161,13 +161,13 @@ export const MUSIC_TRACKS = Object.freeze([
     "title": "给世界最后一个名字",
     "file": "assets/music/boss06.wav",
     "sampleRate": 32000,
-    "frames": 2468572,
-    "loopStartFrame": 274286,
-    "loopEndFrame": 2468572,
-    "duration": 77.142875,
-    "bpm": 112,
-    "description": "给世界命名的仪式。管风琴与管钟在 12/8 拍里行进，圆号的小调主题转入大调圣咏，最后钟声用整条音阶回答开头的两响。",
-    "sha256": "49c46db05ac66e2dc8b87400521503c77b3cbdb91a2f38f1daf41212cec29cc3"
+    "frames": 1607442,
+    "loopStartFrame": 178605,
+    "loopEndFrame": 1607442,
+    "duration": 50.232563,
+    "bpm": 172,
+    "description": "庄重的开场白，需要足够坦然的人来说。小号与圆号立起仪式的架子，中段管钟两声一组往上敲，大提琴与通鼓踏着行进的步子走进副歌。",
+    "sha256": "9addc2f762894b06bf664a17dfba4236c184b3c2442d26f0aa6b2c3fb5aedd5c"
   },
   {
     "id": "extra",
