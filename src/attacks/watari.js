@@ -38,13 +38,14 @@ function pairedCurrents(k){
   if(k.every(240,200))k.wander(44);
 }
 
-/** Nonspell 2: wide ticket fans brake, swing back diagonally and pass
- * through the next fan on their way home. */
+/** Nonspell 2: wide ticket fans are thrown out behind the Boss, brake,
+ * swing back diagonally past her and cross the next outgoing fan on their
+ * way down to the passenger. */
 function ticketsHomeward(k){
   const period=k.pick(70,54,46,40);
   if(k.every(period)){
-    const wave=k.t/period|0,turn=Math.PI+(wave%2?.55:-.55),n=k.pick(9,13,15,19);
-    k.fan(k.ox,k.oy,n,3.2,k.aim(),2.3/(n-1),T.AMULET,wave%2?C.MINT:C.WHITE,[k.stopTurn(46,turn,1.9)]);
+    const wave=k.t/period|0,turn=Math.PI+(wave%2?.5:-.5),n=k.pick(9,13,15,19),step=1.8/(n-1);
+    k.fan(k.ox,k.oy,n,3.2,k.aim()+Math.PI+k.signed()*step/2,step,T.AMULET,wave%2?C.MINT:C.WHITE,[k.stopTurn(46,turn,1.9)]);
   }
   if(k.rank>=1&&k.every(period,period/2|0))k.ringGap(k.ox,k.oy,k.pick(12,16,22,26),1.8,T.SCALE,C.AZURE);
   if(k.every(period*3,period*2))k.wander(44);

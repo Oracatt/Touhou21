@@ -101,17 +101,18 @@ function thousandHouseholdsAnswer(k){
 thousandHouseholdsAnswer.home={x:0,y:104};
 
 /** 归名「生者与旧称的错列」: warm living names fall one way, cold old names
- * the other, crossing into a moving lattice; every few seconds they swap. */
+ * the other, crossing into a moving lattice; every few seconds the rows pause
+ * for a breath and then swap directions. */
 function livingAndOldNames(k){
-  const period=k.pick(22,18,15,13),spacing=k.pick(56,50,44,40),swap=(k.t/300|0)%2?-1:1;
-  if(k.every(period)){
+  const period=k.pick(28,23,20,17),spacing=k.pick(68,60,54,50),swap=(k.t/300|0)%2?-1:1;
+  if(k.every(period)&&k.t%300<270){
     const row=k.t/period|0,shift=(row%2)*spacing/2;
     for(let x=-184+shift;x<=184;x+=spacing){
-      k.shot(x,-4,DOWN-swap*.5,1.6,T.BALL,C.ORANGE,[k.wrapX(1)],{silent:x>-184+shift,safe:2304});
-      k.shot(x+spacing/4,-4,DOWN+swap*.5,1.6,T.BALL,C.SKY,[k.wrapX(1)],{silent:true,safe:2304});
+      k.shot(x,-4,DOWN-swap*.42,1.55,T.BALL,C.ORANGE,[k.wrapX(1)],{silent:x>-184+shift,safe:2304});
+      k.shot(x+spacing/4,-4,DOWN+swap*.42,1.55,T.BALL,C.SKY,[k.wrapX(1)],{silent:true,safe:2304});
     }
   }
-  if(k.every(96,48))k.aimed(k.ox,k.oy,k.pick(1,3,3,5),2.8,.18,T.AMULET,C.WHITE,null,{rows:2,speedStep:2});
+  if(k.every(120,60))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.6,.2,T.AMULET,C.WHITE,null,{rows:2,speedStep:1.9});
 }
 livingAndOldNames.home={x:0,y:92};
 

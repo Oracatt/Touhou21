@@ -44,10 +44,12 @@ function warpAndWeft(k){
 }
 
 /** Nonspell 2: old memories behind threads — warned beams fence the aim
- * while rings with a gap pass between them. */
+ * while rings pass between them; every other ring points a bead at the
+ * player instead of a gap, so the player sidesteps from ring to ring. */
 function memoriesBehindThreads(k){
   if(k.every(150)){const aim=k.aim();for(const off of k.rank>=2?[-.5,0,.5]:[-.42,.42])k.beam(k.ox,k.oy,aim+off,{width:10,delay:54,sustain:44,color:C.MAGENTA});}
-  if(k.every(k.pick(40,30,26,22),12))k.ringGap(k.ox,k.oy,k.pick(16,22,28,32),1.95,T.BALL,C.PALE);
+  const ringEvery=k.pick(40,30,26,22),n=k.pick(16,22,28,32);
+  if(k.every(ringEvery,12))k.ringGap(k.ox,k.oy,n,1.95,T.BALL,C.PALE,null,{offset:((k.t-12)/ringEvery&1)*Math.PI/n});
   if(k.every(300,250))k.wander(36);
 }
 
@@ -120,13 +122,16 @@ function eightfoldWebGarden(k){
 }
 eightfoldWebGarden.home={x:0,y:112};
 
-/** 缝忆「没有署名的团圆衣」: two sleeves sweep beads up against the walls;
- * they reflect once and fall back as hems, while square patches of beads are
- * sent toward the player. */
+/** 缝忆「没有署名的团圆衣」: two sleeves swing beads up against the walls
+ * and the ceiling; each bead reflects once, loses its momentum and drops as
+ * part of a hem that drapes across the lower field. Square patches of beads
+ * are sent toward the player. */
 function unsignedReunionRobe(k){
-  if(k.every(k.pick(4,3,3,2)))for(const side of[-1,1]){
-    const sweep=(k.t*.035)%1,a=side<0?Math.PI+.15+sweep*1.2:-.15-sweep*1.2;
-    k.shot(k.ox+side*62,k.oy+6,a,2.5,T.BALL,side<0?C.PINK:C.PALE,[k.bounce(1,13)],{silent:side>0||k.t%9!==0});
+  if(k.every(k.pick(7,5,4,4)))for(const side of[-1,1]){
+    const swing=.5+.5*Math.sin(k.t*.04+(side<0?0:Math.PI)),lift=lerp(.12,1.3,swing);
+    const drape=lerp(.55,1.55,.5+.5*Math.sin(k.t*.017+(side<0?Math.PI/2:0)));
+    k.shot(k.ox+side*62,k.oy+6,side<0?Math.PI+lift:-lift,2.5,T.BALL,side<0?C.PINK:C.PALE,
+      [k.bounce(1,13,drape),k.accel(.026,100,DOWN)],{silent:side>0||k.t%9!==0});
   }
   if(k.every(k.pick(130,110,96,86),50)){
     const aim=k.aim(),size=k.pick(2,3,3,4);

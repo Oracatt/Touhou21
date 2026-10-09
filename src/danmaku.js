@@ -60,7 +60,8 @@ export class AttackKit {
   /** Instant redirect; angle >= 990 means player-relative (angle - 999). */
   set(angle,speed){return touhouBulletCommand(18,{floats:[angle,speed<-990?speed:speed*this.sp]});}
   aimNow(speed,offset=0){return this.set(999+offset,speed);}
-  bounce(count=1,mask=12){return touhouBulletCommand(6,{floats:[-999,384,448],ints:[count,mask]});}
+  /** Reflect off the masked walls `count` times; `speed` replaces the speed at each reflection. */
+  bounce(count=1,mask=12,speed=-999){return touhouBulletCommand(6,{floats:[speed>-990?speed*this.sp:-999,384,448],ints:[count,mask]});}
   /** Re-enter from the opposite side wall `count` times (screen wrap). */
   wrapX(count=1){return touhouBulletCommand(12,{ints:[count,12]});}
   restyle(type,color){return touhouBulletCommand(9,{ints:[type,color]});}

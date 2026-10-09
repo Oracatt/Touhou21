@@ -18,17 +18,21 @@ function postmanBeforeRain(k){
   if(k.every(144,100))k.wander(44);
 }
 
-/** 封缄「雨停前请勿拆阅」: sealed envelopes rise and hang in the air; when
- * they open, each lets a short fan of rain fall and the letter itself is
- * delivered toward the player. */
+/** 封缄「雨停前请勿拆阅」: sealed envelopes rise and hang in the air; they
+ * open one after another along the row, each letting a short fan of rain
+ * fall before the letter itself is delivered toward the player. */
 function sealedUntilRainStops(k){
-  const period=k.pick(92,72,60,52);
-  if(k.every(k.pick(9,7,6,5)))drizzle(k,1,{lean:.05,speed:[2,2.8]});
+  const period=k.pick(104,84,70,60);
+  if(k.every(k.pick(12,10,8,7)))drizzle(k,1,{lean:.05,speed:[1.9,2.6]});
   if(k.every(period)){
-    const m=k.pick(5,7,9,11),wave=k.t/period|0;
-    const envelopes=k.fan(k.ox,k.oy,m,3.1,-DOWN+(wave%2?.12:-.12),2.5/(m-1),T.AMULET,wave%2?C.PALE:C.WHITE,
-      [k.hold(40),k.wait(36),k.aimNow(k.pick(1.8,2.2,2.4,2.6))]);
-    k.later(70,envelopes,b=>k.fan(b.x,b.y,k.pick(3,4,5,5),1.9,DOWN,k.pick(.3,.24,.2,.18),T.NEEDLE,C.SKY,null,{silent:true}));
+    const m=k.pick(4,5,7,9),wave=k.t/period|0,spread=2.4/(m-1),first=-DOWN+(wave%2?.12:-.12)-spread*(m-1)/2;
+    const envelopes=[];
+    for(let i=0;i<m;i++){
+      const turn=wave%2?m-1-i:i;
+      envelopes.push(...k.shot(k.ox,k.oy,first+i*spread,3.1,T.AMULET,wave%2?C.PALE:C.WHITE,
+        [k.hold(40),k.wait(30+turn*k.pick(9,8,6,5)),k.aimNow(k.pick(1.6,1.9,2.1,2.3))],{silent:i>0}));
+    }
+    k.later(70,envelopes,b=>k.fan(b.x,b.y,k.pick(2,3,4,5),1.8,DOWN,k.pick(.4,.3,.24,.2),T.NEEDLE,C.SKY,null,{silent:true}));
   }
 }
 

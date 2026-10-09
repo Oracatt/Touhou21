@@ -22,26 +22,32 @@ function shelfSorting(k){
   if(k.every(200,160))k.wander(40);
 }
 
-/** 规章「借阅证不得转借」: every ring is sorted after it opens — red cards
- * to one bank, green cards to the other — so two sheets cross below. */
+/** 规章「借阅证不得转借」: every burst of cards is sorted onto two slanted
+ * shelves, red and green, that cross in an X; each shelf then slides toward
+ * its own bank, so the crossing of the two curtains walks down to the player. */
 function nonTransferableCard(k){
-  const period=k.pick(56,43,36,31),n=k.pick(8,11,13,15);
+  const period=k.pick(64,50,42,36),spacing=k.pick(46,38,33,29),lean=.42,slope=Math.tan(lean);
   if(k.every(period)){
-    const a=k.unit()*TAU,lean=k.pick(.55,.6,.62,.64);
-    k.ring(k.ox,k.oy,n,2.5,a,T.AMULET,C.RED,[k.stopTo(34,DOWN+lean,2.15)]);
-    k.ring(k.ox,k.oy,n,2.5,a+Math.PI/n,T.AMULET,C.GREEN,[k.stopTo(34,DOWN-lean,2.15)]);
+    const cross=k.signed()*70;
+    for(const [color,dir] of [[C.RED,1],[C.GREEN,-1]])
+      for(let x=-184+k.unit()*spacing,i=0;x<=184;x+=spacing,i++){
+        const y=clamp(118+dir*slope*(x-cross),24,220);
+        k.shot(k.ox,k.oy,Math.atan2(y-k.oy,x-k.ox),.4,T.AMULET,color,[k.goTo(x,y,34),k.stopTo(14,DOWN+dir*lean,1.9)],{silent:i>0});
+      }
   }
   if(k.rank>=2&&k.every(120,80))k.aimed(k.ox,k.oy,5,2.9,.13,T.AMULET,C.WHITE,null,{rows:2,speedStep:2});
   if(k.every(period*4,period*3))k.wander(40,{y:[92,118]});
 }
 nonTransferableCard.home={x:0,y:104};
 
-/** Nonspell 1: a sequence of vermilion seals stamps toward the player
- * while blank-paper rings pass with one gap. */
+/** Nonspell 1: a sequence of vermilion seals is stamped in a line that
+ * sweeps across the player, while blank-paper rings alternate between a gap
+ * and a card toward the player. */
 function sealSequence(k){
-  const c=k.t%140;
-  if(c<k.pick(3,5,5,6)*14&&c%14===0)k.aimed(k.ox,k.oy,1,1.9,0,T.BIG,C8.RED,null,{offset:((c/14)%2?1:-1)*.12});
-  if(c%k.pick(28,22,19,16)===0)k.ringGap(k.ox,k.oy,k.pick(14,20,24,28),2.1,T.AMULET,(c/22|0)%2?C.PALE:C.GREEN);
+  const c=k.t%140,seals=k.pick(3,5,5,6),sweep=(k.t/140|0)%2?1:-1;
+  if(c<seals*14&&c%14===0)k.aimed(k.ox,k.oy,1,1.9,0,T.BIG,C8.RED,null,{offset:(c/14-(seals-1)/2)*.09*sweep});
+  const ringEvery=k.pick(28,22,19,16),n=k.pick(14,20,24,28);
+  if(c%ringEvery===0)k.ringGap(k.ox,k.oy,n,2.1,T.AMULET,(c/22|0)%2?C.PALE:C.GREEN,null,{offset:(c/ringEvery&1)*Math.PI/n});
   if(c===120)k.wander(40);
 }
 
