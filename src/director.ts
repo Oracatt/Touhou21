@@ -13,7 +13,7 @@ export interface NormalPhase extends PhaseBase {spell:false;spec?:undefined;spel
 export type CampaignPhase=SpellPhase|NormalPhase;
 interface DirectorEvent {event:string;stage:number;frame:number;waveId?:string;sectionId?:string;attack?:string;formation?:string;role?:string;count?:number;roadFrame?:number;index?:number;spell?:boolean;timeout?:boolean;defeated?:boolean;}
 
-import {TouhouBossPhasePlan,TouhouItemType,clearTouhouBossPhase,TouhouRNG} from '@ts-stg/thlib/touhou';
+import {TouhouBossPhasePlan,TouhouItemType,clearTouhouBossPhase,TouhouRNG,TOUHOU_BOSS_PROFILES} from '@ts-stg/thlib/touhou';
 import {updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern,updateMidbossNonspellPattern,STAGE_PATTERN_OFFSETS} from './patterns.js';
 import {createRoadPlan,spawnRoadFormation} from './roads.js';
 import {bossNonspellHealth,midbossNormalHealth,midbossSpellHealth} from './boss-health.js';
@@ -112,7 +112,7 @@ export class CampaignDirector{
       deathBank:game.banks.effect,drop:[]}) as CampaignBoss;
     game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
     boss.kind='midboss';boss.bossId=this.midbossSpec?.bossId??this.stage.bossId;boss.maximumHp=hp;boss.invulnerable=true;this.boss=boss;
-    game.enterBoss(boss,{profile:'midboss',entrance:{mode:'halfFog',readyFrame:60,follow:boss}});
+    game.enterBoss(boss,{profile:'midboss',distortion:{color:TOUHOU_BOSS_PROFILES.boss.color},entrance:{mode:'halfFog',readyFrame:60,follow:boss}});
     game.setBossEffects({aura:true,distortion:true});
     game.setBossHud({name:this.stage.midbossName??this.stage.bossId,remainingSpells:this.midbossPhases.filter(p=>p.spell).length,dialogue:true,
       healthBars:[{current:hp,maximum:hp,phaseHealth:hp,markers:[]}]});

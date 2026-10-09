@@ -24,6 +24,8 @@
 
 道中入场显式使用 `enterBoss(...,{profile:'midboss',entrance:{mode:'halfFog',readyFrame:60,follow:boss}})`，即本体立即可见的公共半黑雾、effect99 与半径 128 的扭曲，并立即调用 `setBossEffects({aura:true,distortion:true})`。半黑雾使用原作 153/159/161 三组动画与一次音效 54，60 帧飞入和原有对话时钟保持不变；中 Boss 对话只停战斗，不关闭这两个表现开关。随后主 Boss 必须重新指定 `profile:'boss'`，恢复 effect99/108 与半径 160 的扭曲；主 Boss 黑雾入场与对话期间关闭表现，在 `_beginPhase` 开始攻击时才显式开启。主 Boss 对话、结算和导演销毁明确关闭表现，不能再依赖 `stopBossCombat` 隐式清除法阵。入场音效与后续攻击准备的聚能音效分别属于两个时间点，每次聚能仍只播放一次。
 
+本作在道中 `enterBoss` 中额外指定 `distortion:{color:TOUHOU_BOSS_PROFILES.boss.color}`，使扭曲颜色与关底一致。只覆盖颜色，道中半径128、effect99及持续时间仍沿用原配置；thlib 的公共 `midboss` 默认配色保持原样。
+
 默认根据 `midbossSpec.bossId === stage.bossId` 选择 `escape`，不同身份默认选择 `defeat`；业务可显式配置 `midbossSpec.exit` 为这两种值。不同身份的真正击破仍保留公共死亡演出；不同身份超时则飞离。Extra 中 Boss 御影房枝与最终 Boss 玉继未央是不同角色，保留自己的三张符卡及最终击破。
 
 原作参考不是“所有中 Boss 一律没有击破演出”：
