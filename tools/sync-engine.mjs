@@ -8,6 +8,7 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {randomUUID} from 'node:crypto';
 import {PROJECT_ROOT,inside,inventoryTree,inventoryTrackedThlibTree,inventoryDigest,readEngineLock,shaFile,shaText,inspectSourceState,verifyEngineLock} from './verify-engine-lock.mjs';
+import {inventoryGitThlib,readGitThlib} from './engine-git.mjs';
 
 const git=(root,args)=>execFileSync('git',['-C',root,...args],{encoding:'utf8',windowsHide:true}).trim();
 const relative=file=>file.split(path.sep).join('/');
@@ -107,9 +108,11 @@ export function planEngineUpgrade({root=PROJECT_ROOT,source,commit,binary='build
   verifyEngineLock({root});const old=readEngineLock(root),sourceState=verifySource(source,commit,{allowChanges:allowSourceChanges});
   assert.equal(fs.realpathSync(path.join(root,'node_modules/@ts-stg/thlib')),fs.realpathSync(path.join(root,'packages/thlib')),'Upgrade requires the existing local thlib junction, not a separately installed Node copy.');
   const {nativeBuild,packageContent}=assertBuild(source,binary,{commit,deriveSdkManifest}),libraryRoot=inside(source,'packages/thlib');
-  const publicCode=inventoryTrackedThlibTree(source,'src');
-  const common=inventoryTrackedThlibTree(source,'assets/touhou-common');
-  const thlibFiles=[fileEntry(libraryRoot,'LICENSE'),fileEntry(libraryRoot,'package.json'),...publicCode,...common].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
+  // Keep producer checkout guards, but hash/export committed bytes. Git's
+  // clean/smudge EOL conversion may leave a clean worktree with different bytes.
+  inventoryTrackedThlibTree(source,'src');inventoryTrackedThlibTree(source,'assets/touhou-common');
+  fileEntry(libraryRoot,'LICENSE');fileEntry(libraryRoot,'package.json');
+  const thlibFiles=inventoryGitThlib(source,commit);
   const runtimeNames=new Map(old.runtimeFiles.map(entry=>[entry.path,entry.path==='ts-stg.exe'?binary:entry.source]));
   runtimeNames.set('PACKAGE.json','dist/TS-STG/PACKAGE.json');
   const runtimeFiles=[...runtimeNames].map(([name,origin])=>{
@@ -123,7 +126,7 @@ export function planEngineUpgrade({root=PROJECT_ROOT,source,commit,binary='build
     for(const entry of [nativeBuild.dependencyLog,nativeBuild.linkLog])assert.ok(!fs.readFileSync(inside(source,entry.source),'utf16le').toLowerCase().includes(excluded.toLowerCase()),'Excluded source path participates in compiler/link inputs');
   }
   const lock={...old,source:relative(source),commit,executableSha256:nativeBuild.binarySha256,
-    sourceModified:!sourceState.gitClean,sourceState,
+    sourceModified:!sourceState.gitClean,sourceState,thlibContent:'git-blob',
     thlibSha256:inventoryDigest(thlibFiles),runtimeSha256:inventoryDigest(runtimeFiles),thlibFiles,runtimeFiles,nativeBuild};
   return {root,source,old,lock,oldLockSha256:shaFile(path.join(root,'engine.lock.json')),
     summary:{from:old.commit,to:commit,thlibFiles:thlibFiles.length,runtimeFiles:runtimeFiles.length,
@@ -139,14 +142,18 @@ export function applyEngineUpgrade(plan){
     {name:'thlib',target:inside(root,'packages/thlib'),entries:lock.thlibFiles,source:inside(source,'packages/thlib')},
     {name:'runtime',target:inside(root,'runtime'),entries:lock.runtimeFiles,source},
   ];
+  const committedThlib=readGitThlib(source,lock.commit);
   for(const group of groups){
     const stage=inside(staging,group.name);fs.mkdirSync(stage);
     for(const entry of group.entries){
       const origin=inside(group.source,group.name==='runtime'?entry.source:entry.path),output=inside(stage,entry.path);
       assertNoLinks(origin,group.source);assertNoLinks(output,root);
-      assert.equal(shaFile(origin),entry.sourceSha256??entry.sha256,'A source input changed during staging.');
       fs.mkdirSync(path.dirname(output),{recursive:true});
-      if(entry.generatedContent!==undefined)fs.writeFileSync(output,entry.generatedContent,'utf8');else fs.copyFileSync(origin,output);
+      if(group.name==='thlib')fs.writeFileSync(output,committedThlib.get(entry.path));
+      else{
+        assert.equal(shaFile(origin),entry.sourceSha256??entry.sha256,'A source input changed during staging.');
+        if(entry.generatedContent!==undefined)fs.writeFileSync(output,entry.generatedContent,'utf8');else fs.copyFileSync(origin,output);
+      }
       assert.equal(shaFile(output),entry.sha256,'Staged file does not match planned content.');
     }
     group.stage=stage;group.backup=inside(staging,'backup-'+group.name);
@@ -167,7 +174,7 @@ export function applyEngineUpgrade(plan){
       fs.renameSync(group.stage,group.target);
     }
     fs.renameSync(newLock,path.join(root,'engine.lock.json'));
-    verifyEngineLock({root,source});
+    verifyEngineLock({root,source,checkBuild:true});
   }catch(error){
     for(const group of moved.reverse()){
       if(fs.existsSync(group.target))fs.renameSync(group.target,inside(staging,'failed-'+group.name));

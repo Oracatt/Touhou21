@@ -10,6 +10,8 @@ $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $lockPath = Join-Path $projectRoot 'engine.lock.json'
 $lock = Get-Content -LiteralPath $lockPath -Raw -Encoding UTF8 | ConvertFrom-Json
 if ($lock.format -ne 'touhou21-engine-lock-v1' -or $lock.commit -notmatch '^[a-f0-9]{40}$') { throw 'Invalid engine.lock.json.' }
+$gitLibrary = $lock.PSObject.Properties.Name -contains 'thlibContent'
+if ($gitLibrary -and $lock.thlibContent -cne 'git-blob') { throw 'Unknown thlib content representation.' }
 if (-not $EngineSource) { $EngineSource = $lock.source }
 $engineRoot = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $EngineSource).Path)
 $projectPrefix = $projectRoot.TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
@@ -151,6 +153,14 @@ function Assert-InstalledTree([string]$Directory, $Entries) {
     return $missing.ToArray()
 }
 
+function Invoke-GitLibrary([string]$OutputDirectory) {
+    if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw 'Node.js 24 or newer is required to restore the pinned Git library.' }
+    $arguments = @((Join-Path $PSScriptRoot 'export-engine-thlib.mjs'), '--source', $engineRoot)
+    if ($OutputDirectory) { $arguments += @('--output', $OutputDirectory) }
+    & node @arguments | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw 'Pinned Git library verification or export failed.' }
+}
+
 Assert-NoLinks $projectRoot $projectRoot
 Assert-NoLinks $engineRoot $engineRoot
 Assert-InventoryDigest $lock.thlibFiles $lock.thlibSha256
@@ -172,7 +182,16 @@ if ($lock.PSObject.Properties.Name -contains 'nativeBuild') {
 $sourceLibrary = Resolve-ListedPath $engineRoot 'packages/thlib'
 $libraryTarget = Assert-OwnedPath (Join-Path $projectRoot 'packages/thlib')
 $runtimeTarget = Assert-OwnedPath (Join-Path $projectRoot 'runtime')
-foreach ($entry in $lock.thlibFiles) { Assert-File (Resolve-ListedPath $sourceLibrary $entry.path) $entry 'Read-only source library' }
+if ($gitLibrary) {
+    # Git provides content, but a copied dependency source still may not contain
+    # linked paths or omit tracked files in its checked-out public tree.
+    foreach ($entry in $lock.thlibFiles) {
+        $sourceFile = Resolve-ListedPath $sourceLibrary $entry.path
+        if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "Read-only source library is missing: $($entry.path)" }
+    }
+    Invoke-GitLibrary
+}
+else { foreach ($entry in $lock.thlibFiles) { Assert-File (Resolve-ListedPath $sourceLibrary $entry.path) $entry 'Read-only source library' } }
 foreach ($entry in $lock.runtimeFiles) { Assert-RuntimeSource $entry }
 $missingLibrary = @(Assert-InstalledTree $libraryTarget $lock.thlibFiles)
 $missingRuntime = @(Assert-InstalledTree $runtimeTarget $lock.runtimeFiles)
@@ -204,6 +223,10 @@ if (-not $PSCmdlet.ShouldProcess($projectRoot, 'Restore missing, byte-pinned pri
 
 $staging = Assert-OwnedPath (Join-Path $projectRoot ('build/dependency-staging-' + [Guid]::NewGuid().ToString('N')))
 New-Item -ItemType Directory -Path $staging -Force | Out-Null
+if ($gitLibrary -and $missingLibrary.Count -gt 0) {
+    $sourceLibrary = Assert-OwnedPath (Join-Path $staging 'git-thlib')
+    Invoke-GitLibrary $sourceLibrary
+}
 $pending = [Collections.Generic.List[object]]::new()
 foreach ($group in @(@{Entries=$missingLibrary;Source=$sourceLibrary;Target=$libraryTarget;Stage='thlib'}, @{Entries=$missingRuntime;Source=$engineRoot;Target=$runtimeTarget;Stage='runtime'})) {
     foreach ($entry in $group.Entries) {

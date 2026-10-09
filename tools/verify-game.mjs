@@ -6,6 +6,7 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {createHash} from 'node:crypto';
 import {performance} from 'node:perf_hooks';
+import {inventoryGitThlib} from './engine-git.mjs';
 
 const reportGroup=process.env.TOUHOU21_REPORT_GROUP??'';
 if(reportGroup&&!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(reportGroup))throw new Error('Native report group must be a simple directory name');
@@ -15,8 +16,10 @@ const started=performance.now(),cases=[];
 const binary=resolve(root,'runtime/ts-stg.exe'),binaryHash=createHash('sha256').update(readFileSync(binary)).digest('hex');
 const hashTree=(directory,base=root)=>Object.fromEntries(readdirSync(resolve(base,directory),{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?Object.entries(hashTree(`${directory}/${entry.name}`,base)):[[`${directory}/${entry.name}`,createHash('sha256').update(readFileSync(resolve(base,directory,entry.name))).digest('hex')]]));
 const libraryHashes=hashTree('packages/thlib/src');
-const referenceRoot=JSON.parse(readFileSync(resolve(root,'engine.lock.json'),'utf8')).source;
-const referenceHashes=existsSync(resolve(referenceRoot,'packages/thlib/src'))?hashTree('packages/thlib/src',referenceRoot):null;
+const engineLock=JSON.parse(readFileSync(resolve(root,'engine.lock.json'),'utf8')),referenceRoot=engineLock.source;
+const referenceWorktreeHashes=existsSync(resolve(referenceRoot,'packages/thlib/src'))?hashTree('packages/thlib/src',referenceRoot):null;
+const referenceHashes=referenceWorktreeHashes&&engineLock.thlibContent==='git-blob'
+  ?Object.fromEntries(inventoryGitThlib(referenceRoot,engineLock.commit).filter(file=>file.path.startsWith('src/')).map(file=>['packages/thlib/'+file.path,file.sha256])):referenceWorktreeHashes;
 if(referenceHashes)assert.deepEqual(libraryHashes,referenceHashes,'The game dependency remains the unmodified public thlib source snapshot');
 const sourceHashes=hashTree('src'),execute=promisify(execFile),errors=[],pairs=new Map();
 // BossSpriteCatalog only submits business draw commands; it never advances
@@ -95,9 +98,9 @@ const workers=Math.min(tasks.length,Math.max(1,Math.min(4,Number(process.env.TOU
 const results=await Promise.allSettled(Array.from({length:workers},()=>worker()));
 for(const item of results)if(item.status==='rejected')errors.push(String(item.reason?.stack??item.reason));
 for(const [id,matching]of pairs){if(matching.length===2){try{compare(normalise(matching[0]),normalise(matching[1]));for(const entry of cases.filter(value=>value.id===id))entry.backendParity=true;}catch(error){errors.push(`${id} backend parity: ${error.message}`);}}}
-function writeSummary(){const libraryStable=JSON.stringify(hashTree('packages/thlib/src'))===JSON.stringify(libraryHashes),currentSource=hashTree('src'),gameStable=JSON.stringify(currentSource)===JSON.stringify(sourceHashes),rulesStable=JSON.stringify(simulationHashes(currentSource))===JSON.stringify(ruleHashes),referenceStable=referenceHashes?JSON.stringify(hashTree('packages/thlib/src',referenceRoot))===JSON.stringify(referenceHashes):null;
+function writeSummary(){const libraryStable=JSON.stringify(hashTree('packages/thlib/src'))===JSON.stringify(libraryHashes),currentSource=hashTree('src'),gameStable=JSON.stringify(currentSource)===JSON.stringify(sourceHashes),rulesStable=JSON.stringify(simulationHashes(currentSource))===JSON.stringify(ruleHashes),referenceStable=referenceWorktreeHashes?JSON.stringify(hashTree('packages/thlib/src',referenceRoot))===JSON.stringify(referenceWorktreeHashes):null;
   const report={passed:libraryStable&&rulesStable&&referenceStable!==false&&errors.length===0&&cases.length===tasks.length&&cases.every(value=>value.passed),backends,workers,executableSha256:binaryHash,
-  librarySha256:libraryHashes,libraryUnmodifiedDuringVerification:libraryStable,libraryMatchesReference:referenceHashes?JSON.stringify(referenceHashes)===JSON.stringify(libraryHashes):null,referenceSourceUnmodifiedDuringVerification:referenceStable,
+  librarySha256:libraryHashes,libraryUnmodifiedDuringVerification:libraryStable,libraryMatchesReference:referenceHashes?Object.entries(libraryHashes).every(([name,hash])=>referenceHashes[name]===hash):null,referenceContent:engineLock.thlibContent??'legacy-working-tree',referenceSourceUnmodifiedDuringVerification:referenceStable,
   gameSourceSha256:sourceHashes,gameSourceUnmodifiedDuringVerification:gameStable,simulationSourceSha256:ruleHashes,simulationSourceUnmodifiedDuringVerification:rulesStable,verificationFixtureSha256:fixtureHashes,errors,
   retainedCampaignBaseline:baselineCompatible?{name:baselineName,scope:'Explicit baseline retention after human review of the intervening application/presentation revisions. Automated compatibility verifies director, patterns, content, public library and engine identity; it does not certify arbitrary Scene/storage revisions. Latest Continue, replay and UI controls are rerun.',gameSourceSha256:baseline.gameSourceSha256}:null,
   elapsedMs:Math.round(performance.now()-started),cases:cases.length,simulationUpdates:cases.reduce((sum,value)=>sum+(value.sceneUpdateCalls??0),0),applicationUpdates:cases.reduce((sum,value)=>sum+(value.applicationUpdateCalls??0),0),

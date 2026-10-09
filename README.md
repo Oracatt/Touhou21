@@ -8,7 +8,7 @@
 
 Windows 下双击 `Play.cmd`，使用带 JIT 的 V8 后端；`Play-QuickJS.cmd` 使用 QuickJS。游戏以固定 60 帧模拟，画面为 960 × 720，采用纵向游戏区与右侧状态栏。已经还原本地依赖时，运行游戏不需要 Node.js。
 
-源码克隆不包含私有引擎、thlib 或其导入素材。使用锁文件对应的本地 TS-STG 检出及已构建程序还原依赖：
+源码克隆不包含私有引擎、thlib 或其导入素材。安装需要 Node.js 24 或更新版本；使用锁文件对应的本地 TS-STG 检出及已构建程序还原依赖：
 
 ```powershell
 pwsh -NoProfile -File tools/setup-local.ps1 -EngineSource D:\AIWorkspace\TS-STG
@@ -16,6 +16,18 @@ pwsh -NoProfile -File tools/setup-local.ps1 -VerifyOnly
 ```
 
 安装器只把锁定的文件复制到本游戏内的 `runtime/` 与 `packages/thlib/`，并建立本地依赖连接。它校验引擎提交、文件大小和 SHA-256；若已有文件不符合锁定内容，会停止并保留文件。源引擎目录始终只读。详见 [发行与依赖说明](docs/RELEASE.md)。
+
+已有运行时、更新代码后只需恢复 thlib 时，使用以下命令。它直接读取锁定提交的 Git 对象，不依赖源目录的换行格式、当前 HEAD 或原机器的编译产物；源仓库需要包含该提交，路径可以不同：
+
+```powershell
+git pull --ff-only
+npm run restore:engine -- --source D:\AIWorkspace\TS-STG --apply
+npm run verify:engine -- --source D:\AIWorkspace\TS-STG
+```
+
+省略 `--apply` 只检查并显示计划。恢复前保留旧副本；仅允许补回缺失文件或修正文本换行差异，遇到额外文件、实际内容改动或链接会停止。该命令不改运行时、锁文件或存档；缺少运行时的新安装仍使用上面的安装器。新安装若缺少 Node 依赖连接，可运行 `npm install --ignore-scripts`。
+
+锁中的 `thlibContent: "git-blob"` 表示 thlib 哈希对应 Git 原始内容。`sourceModified` 与 `sourceState` 是生成锁时的工作区记录；已列明的独立编辑器启动脚本例外不属于 thlib。它们不表示库中混入了未提交代码。
 
 ## 操作
 
@@ -64,7 +76,7 @@ node tools/measure-performance.mjs
 
 弹幕与菜单另有不依赖私有素材的开发工具：`npm run preview -- --stage 3 --difficulty 1,3` 用真实 thlib 子弹场和避弹机器人输出接触印样到 `reports/danmaku/`，`npm run preview:menu` 用记录型宿主与 System.Drawing 输出标题与工具页的布局预览到 `reports/menu/`。`tests/danmaku.test.js`、`tests/director-flow.test.js` 与 `tests/menu.test.js` 在没有私有素材时也能运行；需要私有素材的测试在缺少素材时会注明原因跳过或失败。
 
-`verify:engine` 检查本地私有依赖是否仍符合锁定快照；追加 `-- --check-source` 可同时检查本地源引擎。`audit` 检查业务导入、资源清单、依赖边界及 Git 排除规则。`verify` 以 V8 / QuickJS 实际运行完整流程；`verify:visual` 检查实际渲染画面；`verify:routes` 搜索符卡的真实低速输入路线，追加 `-- --kind all` 包含全部非符。报告写入忽略的 `reports/`。自动通关、路线搜索和截图各自验证不同范围，不能代替人工弹幕难度、画面和听感评测。
+`verify:engine` 检查本地私有依赖是否仍符合锁定快照；追加 `-- --check-source` 或 `-- --source <引擎路径>` 可按锁定 Git 提交核对完整 thlib。`-- --check-build` 额外复核原生成机器的工作区、运行时来源与编译证据，需要它的构建目录；跨机器恢复不需要这个选项。`audit` 检查业务导入、资源清单、依赖边界及 Git 排除规则。`verify` 以 V8 / QuickJS 实际运行完整流程；`verify:visual` 检查实际渲染画面；`verify:routes` 搜索符卡的真实低速输入路线，追加 `-- --kind all` 包含全部非符。报告写入忽略的 `reports/`。自动通关、路线搜索和截图各自验证不同范围，不能代替人工弹幕难度、画面和听感评测。
 
 默认后端为 V8；当前版本的实际场景耗时、QuickJS 对照与适用范围见 [性能实测](docs/PERFORMANCE.md)。
 

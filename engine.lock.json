@@ -12,7 +12,7 @@
   "sourceModified": true,
   "dependencies": "Private byte-pinned local snapshots only. Imported common reference materials retain their original notices and are excluded from the original-code MIT grant.",
   "format": "touhou21-engine-lock-v1",
-  "thlibSha256": "4b2516f4bc9e0745dbfa3439e9288f7b8140389575f19c3287115c2aa55048ee",
+  "thlibSha256": "9212df93ddc146eef2d7181e16c8f33ba5ef783c65cd522dac099d24adde1613",
   "runtimeSha256": "65508ece09eac5a0b58c73edca35492bc9de87b73e3915fbc53e0a72a81c9ec5",
   "thlibFiles": [
     {
@@ -1137,8 +1137,8 @@
     },
     {
       "path": "src/touhou/anm.d.ts",
-      "bytes": 5377,
-      "sha256": "d6faaca944bf7acf9a79055269ad6fcb94b7d96ed87c3bd89d41094042aae936"
+      "bytes": 5337,
+      "sha256": "920b7ea2011ffe51e1a75cf75c30ccaaf6a3946b1bc3e7322c7a09375e159453"
     },
     {
       "path": "src/touhou/anm.js",
@@ -1167,8 +1167,8 @@
     },
     {
       "path": "src/touhou/bombs.d.ts",
-      "bytes": 874,
-      "sha256": "8d5a582e0a205d2115168b7f07fa6b0243df68c89f45a6cf6d9c76be0807c336"
+      "bytes": 868,
+      "sha256": "d23fbdd51f93cdb3e3dc8dadaff9b964725233e4294963a7ea3bd35c3c1d766e"
     },
     {
       "path": "src/touhou/bombs.js",
@@ -1217,8 +1217,8 @@
     },
     {
       "path": "src/touhou/boss-hud.d.ts",
-      "bytes": 2597,
-      "sha256": "853e10d08f1487b938ada986a2ba0c7eff7cc9ebd0547f57e1cf2043ba2b638c"
+      "bytes": 2591,
+      "sha256": "8d382a12bd9948e279b82e86624097946a7c3f6e9373642cb0d158e61ff71da6"
     },
     {
       "path": "src/touhou/boss-hud.js",
@@ -1317,8 +1317,8 @@
     },
     {
       "path": "src/touhou/bullets.d.ts",
-      "bytes": 3573,
-      "sha256": "40878238ea974329e572795eabf25953689b37ffd3ad5bf51dccda69ab44a7bf"
+      "bytes": 3560,
+      "sha256": "0fa9f68f6f97d668066d651f0aeacfb9221b4815859971f608c277b1c0bee242"
     },
     {
       "path": "src/touhou/bullets.js",
@@ -1362,13 +1362,13 @@
     },
     {
       "path": "src/touhou/distortion.js",
-      "bytes": 4434,
-      "sha256": "218a3347de84a1dbc5c860ca949e3b450081ef11ccf289ec581c05d81befb21a"
+      "bytes": 4433,
+      "sha256": "f179e9304b45bfd03a592f89d85fe0bafbefb5fee76b4ace9de7589663cad851"
     },
     {
       "path": "src/touhou/enemy.d.ts",
-      "bytes": 4365,
-      "sha256": "85990ae4c495471751a5e44a5760c771328ca49cd7689e58c06a56d4718ffda9"
+      "bytes": 4347,
+      "sha256": "e9596b16bdcb9544b62d43a848e7f089a59472ccf7e8ff94b65191c3b8f6d368"
     },
     {
       "path": "src/touhou/enemy.js",
@@ -1377,8 +1377,8 @@
     },
     {
       "path": "src/touhou/font.d.ts",
-      "bytes": 841,
-      "sha256": "e0708f334924c1ac33f25cf47241d9f13d21b407fbce8a7767cd8a2c43e5cbaa"
+      "bytes": 831,
+      "sha256": "995f2a7bcd791e21e13b3b8395e402a53d47e9ec3dd6140297aaf448c531ddd5"
     },
     {
       "path": "src/touhou/font.js",
@@ -1387,23 +1387,23 @@
     },
     {
       "path": "src/touhou/game-over.d.ts",
-      "bytes": 3767,
-      "sha256": "0b4a7404af2c6686ad86802e8c8eaee645bd5e5b0cd522598a4e9ac1b5e69e8a"
+      "bytes": 3747,
+      "sha256": "0c0d133109a421948550348cd2e1ed6eb05f81fe791cd9af746b571c9200a1cd"
     },
     {
       "path": "src/touhou/game-over.js",
-      "bytes": 15522,
-      "sha256": "1b095f0f1dfe16070f8ec3fdb86e31d4505f8dedc00bf5215df93c99136d36fd"
+      "bytes": 15372,
+      "sha256": "d15130459d48833a716b089e4220da62f12ed0a0f8d65dc83a168273b1b3bd62"
     },
     {
       "path": "src/touhou/game.d.ts",
-      "bytes": 8642,
-      "sha256": "b753d5450c2a83f121d9b530a8982e1b070ee1cdc8f00e5de38df7046ca8ad21"
+      "bytes": 8611,
+      "sha256": "a3453a228956c05626b8d7b0076c3457182605b2f75d87af0f928a1141a5f651"
     },
     {
       "path": "src/touhou/game.js",
-      "bytes": 27901,
-      "sha256": "6dd016628357c40035a0e9e40b3ee360c4f70de1d1bfbeb05787f6e0a8c00e76"
+      "bytes": 27819,
+      "sha256": "8a9c8173eeb9aee554a618320833d36424e5c1acba1a94504b5bddb33d3486a0"
     },
     {
       "path": "src/touhou/gameplay-compositor.d.ts",
@@ -1427,8 +1427,8 @@
     },
     {
       "path": "src/touhou/hud.d.ts",
-      "bytes": 4231,
-      "sha256": "2cc4461de190c0e5494e6e12c8711064eede99f25dcfc596701569217b8a2afa"
+      "bytes": 4227,
+      "sha256": "df41db6156100917c673e713ff054862c30c90cdbddd02c4c4bf71f7dd389780"
     },
     {
       "path": "src/touhou/hud.js",
@@ -1447,8 +1447,8 @@
     },
     {
       "path": "src/touhou/items.d.ts",
-      "bytes": 4546,
-      "sha256": "2f6747491873019f30deb62d342e6914110a23c1f40a1c1c033484a5b5ade527"
+      "bytes": 4540,
+      "sha256": "ab32331e32e8879fcdc502414e8b46a1b6e2cdc6ea8ebef968de15f40a17ceec"
     },
     {
       "path": "src/touhou/items.js",
@@ -1462,8 +1462,8 @@
     },
     {
       "path": "src/touhou/laser-cancellation.js",
-      "bytes": 7018,
-      "sha256": "3d493b7dae4d448e5b8acac563672e234da538237ff89a1ab37ae30b46ef5d4c"
+      "bytes": 6963,
+      "sha256": "9a9390d73231064a5cae13b633332dd809081b12d5048de1632a31eaca7054a4"
     },
     {
       "path": "src/touhou/laser-collision.d.ts",
@@ -1477,13 +1477,13 @@
     },
     {
       "path": "src/touhou/lasers.d.ts",
-      "bytes": 4255,
-      "sha256": "0f1f6722b9e9833f948e5ceab372f0b9819b299b8048a15531880f87290edcf9"
+      "bytes": 4246,
+      "sha256": "fbdb68388fabb9816f2380f96c999e128db3e630d4469b9632acf3522eb2a61d"
     },
     {
       "path": "src/touhou/lasers.js",
-      "bytes": 25579,
-      "sha256": "fd7a3aea88ee2d7cd9c3b5842fd952c6d602277d9679cfc9adc895bcf929db2b"
+      "bytes": 25395,
+      "sha256": "4f1052436a7639e870eded8f031c194fbae5bb2a58d5119900d203b9c1d3d945"
     },
     {
       "path": "src/touhou/math.d.ts",
@@ -1507,8 +1507,8 @@
     },
     {
       "path": "src/touhou/menu.d.ts",
-      "bytes": 2999,
-      "sha256": "7333f80c53cc3efb9f57ffab8c4a650e608285f709b33fd44bc8097ab6d8ba94"
+      "bytes": 2992,
+      "sha256": "1948fae41cf2f6cb2aa94ce5eaff93ff8d97474a585df700a09b5c40ea80329e"
     },
     {
       "path": "src/touhou/menu.js",
@@ -1547,8 +1547,8 @@
     },
     {
       "path": "src/touhou/pause-capture.d.ts",
-      "bytes": 1226,
-      "sha256": "c3998eb8185a38868f2d6f85f6cbe31ce3ad921a358ae711771435cf3c5a8cc9"
+      "bytes": 1213,
+      "sha256": "8cc530eb8c851ad5f99b6642fa8362f11c70f6e414dba80fdb789514004666d2"
     },
     {
       "path": "src/touhou/pause-capture.js",
@@ -1557,13 +1557,13 @@
     },
     {
       "path": "src/touhou/pause.d.ts",
-      "bytes": 1467,
-      "sha256": "3dc773c00ac7ddabfa0cedaf06c8862426bdd7f53610a0e654ab341a30be38da"
+      "bytes": 1446,
+      "sha256": "e098784ff335ea1c5f2bc76dd37605555dc65aaedafd09d6cce8064df2ec9086"
     },
     {
       "path": "src/touhou/pause.js",
-      "bytes": 7337,
-      "sha256": "c217f78a127db3465d4b5f4b41535e843d3fbbfa9439b7aaae52ea72092d1210"
+      "bytes": 7246,
+      "sha256": "c0dd60c1aae84fce053b26a548bf5c563ef0f78d53c688aeab5b966f3c63a6de"
     },
     {
       "path": "src/touhou/phase-sequence.d.ts",
@@ -1607,13 +1607,13 @@
     },
     {
       "path": "src/touhou/player.d.ts",
-      "bytes": 6614,
-      "sha256": "a7ef4b2904151733268ae5b8b41fd13d6816d865d18cb6e7cb7aaf621d01b58f"
+      "bytes": 6585,
+      "sha256": "d50ec90425f4af7461870194b4b0b60e6c9152bfebed022bcf77837c12f63c39"
     },
     {
       "path": "src/touhou/player.js",
-      "bytes": 27901,
-      "sha256": "d80ee26015e4cbc3705790930e4dc8662887782a3ad66cb44abf747e2d802374"
+      "bytes": 27637,
+      "sha256": "e4a3f5ffd57c455b9b02777b49f30e1e67aaa91a845c0ef7c43862fbb2ffd8da"
     },
     {
       "path": "src/touhou/point-value.d.ts",
@@ -1647,13 +1647,13 @@
     },
     {
       "path": "src/touhou/render-queue.d.ts",
-      "bytes": 977,
-      "sha256": "966756bb088df599b67de914c62e008265df81f89c2199c3eca376e31cd42719"
+      "bytes": 965,
+      "sha256": "3930c5b90560e5b9b31b0b1e328b087f377223006c534bae71b3de7c60746ee0"
     },
     {
       "path": "src/touhou/render-queue.js",
-      "bytes": 1588,
-      "sha256": "7380cd5984889f2d6ef49a9e6432ccb921d8de63597adaba1393165ea418f860"
+      "bytes": 1587,
+      "sha256": "9e1267264f78281fcbebb396d8822a1fdb0ac875e862e82d7e47672a4cd9d3b5"
     },
     {
       "path": "src/touhou/resources.d.ts",
@@ -1687,8 +1687,8 @@
     },
     {
       "path": "src/touhou/short-line.d.ts",
-      "bytes": 699,
-      "sha256": "3b05641f15ee8a78ac03ef5f8dc077b5c512bb7ea134bb78b750b2c3ac82fa1a"
+      "bytes": 694,
+      "sha256": "62d0a00f23bcf92ab9f261f2e7039e66b1ca4a9f1e590d8be4e1aee75fbd5947"
     },
     {
       "path": "src/touhou/short-line.js",
@@ -1707,8 +1707,8 @@
     },
     {
       "path": "src/touhou/shots.d.ts",
-      "bytes": 1025,
-      "sha256": "e890f0c24742404bb1f44d2eea9216ee2912e29cd812113db2c918463e932467"
+      "bytes": 1020,
+      "sha256": "ed4e32b00fef4eb834be2e19efdee34c2966fbe1c70c3c4c96f5fe8b2d028685"
     },
     {
       "path": "src/touhou/shots.js",
@@ -1717,8 +1717,8 @@
     },
     {
       "path": "src/touhou/spell.d.ts",
-      "bytes": 3721,
-      "sha256": "894a51c4a9d4b0b35c786ab2fca68462482cabfdf55405d4a0603241971d966d"
+      "bytes": 3704,
+      "sha256": "d0a72288dd34765c771b613fd4953593a890f3cc9d1e0329cfcc8a4b243b2dd8"
     },
     {
       "path": "src/touhou/spell.js",
@@ -1767,8 +1767,8 @@
     },
     {
       "path": "src/touhou/title-background.d.ts",
-      "bytes": 562,
-      "sha256": "dea2624960c69576ce3b3f7c34739f4fbeea71cc55634bd6822f7ccd41382792"
+      "bytes": 554,
+      "sha256": "a0ea3cf83c50cc664a16797d2ac0ee495890f636bc742af4aa6e10c7d8f2cba0"
     },
     {
       "path": "src/touhou/title-background.js",
@@ -2886,5 +2886,6 @@
       }
     ],
     "policy": "Only the unstaged editor launcher is excluded; SDK, native inputs and copied files remain byte-pinned."
-  }
+  },
+  "thlibContent": "git-blob"
 }

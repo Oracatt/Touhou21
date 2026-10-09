@@ -4,6 +4,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {inventoryGitThlib} from './engine-git.mjs';
 
 export const PROJECT_ROOT=path.resolve(import.meta.dirname,'..');
 export const shaFile=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -81,6 +82,7 @@ export function readEngineLock(root=PROJECT_ROOT){
   const lock=JSON.parse(fs.readFileSync(path.join(root,'engine.lock.json'),'utf8'));
   assert.equal(lock.format,'touhou21-engine-lock-v1');assert.equal(lock.engine,'TS-STG');assert.equal(lock.library,'@ts-stg/thlib');
   assert.match(lock.commit,/^[a-f0-9]{40}$/);assert.match(lock.executableSha256,/^[a-f0-9]{64}$/i);
+  if(lock.thlibContent!==undefined)assert.equal(lock.thlibContent,'git-blob','Unknown thlib content representation');
   assert.deepEqual(lock.supportedBackends,['v8','quickjs']);assert.equal(lock.backend,'v8');assert.equal(typeof lock.sourceModified,'boolean');
   if(lock.sourceState){
     assert.equal(lock.sourceModified,!lock.sourceState.gitClean);assert.ok(Array.isArray(lock.sourceState.changes));
@@ -127,7 +129,7 @@ function compareTree(directory,expected,label){
     assert.equal(found.bytes,file.bytes,`${label}: size changed for ${file.path}`);
     assert.equal(found.sha256,file.sha256,`${label}: hash changed for ${file.path}`);}
 }
-export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=false,checkNode=true}={}){
+export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=false,checkBuild=false,checkNode=true}={}){
   const lock=readEngineLock(root),library=path.join(root,'packages/thlib'),runtime=path.join(root,'runtime');
   compareTree(library,lock.thlibFiles,'Private thlib snapshot');compareTree(runtime,lock.runtimeFiles,'Private runtime snapshot');
   if(checkNode){
@@ -135,47 +137,59 @@ export function verifyEngineLock({root=PROJECT_ROOT,source=null,checkSource=fals
     assert.ok(resolved===fs.realpathSync(library)||resolved.startsWith(fs.realpathSync(root)+path.sep),'Node dependency resolves outside this game');
     if(resolved!==fs.realpathSync(library))compareTree(resolved,lock.thlibFiles,'Installed Node dependency');
   }
-  let sourceVerified=false;
-  if(checkSource||source){
+  let sourceVerified=false,buildEvidenceVerified=false;
+  if(checkSource||checkBuild||source){
     const location=fs.realpathSync(source??lock.source);
-    const commit=execFileSync('git',['-C',location,'rev-parse','HEAD'],{encoding:'utf8',windowsHide:true}).trim();
-    assert.equal(commit,lock.commit,'Engine source commit differs from lock');
-    inspectSourceState(location,{recorded:lock.sourceState});
-    // The public code and selected common pack are complete subtrees. Other
-    // asset packs remain excluded from this private consumer snapshot.
-    for(const directory of ['src','assets/touhou-common']){
-      const files=inventoryTrackedThlibTree(location,directory);
-      assert.equal(inventoryDigest(files),inventoryDigest(lock.thlibFiles.filter(file=>file.path.startsWith(directory+'/'))),'Snapshot does not contain the complete public thlib tree: '+directory);
+    if(lock.thlibContent==='git-blob'){
+      assert.deepEqual(inventoryGitThlib(location,lock.commit),lock.thlibFiles,'Snapshot differs from the complete public thlib Git commit');
+      sourceVerified=true;
     }
-    for(const file of lock.thlibFiles){const sourceFile=inside(path.join(location,'packages/thlib'),file.path);
-      assert.ok(!fs.lstatSync(sourceFile).isSymbolicLink(),'Source library file may not be a link');
-      assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source library file size differs');
-      assert.equal(shaFile(sourceFile),file.sha256,'Source library file hash differs');}
-    for(const file of lock.runtimeFiles){const sourceFile=inside(location,file.source);
-      if(file.generatedContent!==undefined)assert.equal(shaFile(sourceFile),file.sourceSha256,'Source SDK metadata template hash differs');
-      else{assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source runtime file size differs');
-        assert.equal(shaFile(sourceFile),file.sha256,'Source runtime file hash differs');}}
-    if(lock.nativeBuild){
-      for(const file of lock.nativeBuild.sourceFiles){const sourceFile=inside(location,file.path);
-        assert.equal(fs.statSync(sourceFile).size,file.bytes,'Native build source size differs');
-        assert.equal(shaFile(sourceFile),file.sha256,'Native build source hash differs');}
-      for(const entry of [lock.nativeBuild.hostObject,lock.nativeBuild.dependencyLog,...(lock.nativeBuild.objects??[]),...(lock.nativeBuild.linkInputs??[]),...(lock.nativeBuild.linkLog?[lock.nativeBuild.linkLog]:[])])
-        assert.equal(shaFile(inside(location,entry.source)),entry.sha256,'Native compiler evidence hash differs');
+    // Portable source verification reads immutable Git objects. Rechecking the
+    // producer's compiler outputs is separate and needs its original build tree.
+    // Legacy locks retain their previous working-tree verification behavior.
+    if(lock.thlibContent!=='git-blob'||checkBuild){
+      const commit=execFileSync('git',['-C',location,'rev-parse','HEAD'],{encoding:'utf8',windowsHide:true}).trim();
+      assert.equal(commit,lock.commit,'Engine source commit differs from lock');
+      inspectSourceState(location,{recorded:lock.sourceState});
+      // The public code and selected common pack are complete subtrees. Other
+      // asset packs remain excluded from this private consumer snapshot.
+      for(const directory of ['src','assets/touhou-common']){
+        const files=inventoryTrackedThlibTree(location,directory);
+        const expected=lock.thlibFiles.filter(file=>file.path.startsWith(directory+'/'));
+        if(lock.thlibContent==='git-blob')assert.deepEqual(files.map(file=>file.path),expected.map(file=>file.path),'Source public tree inventory differs: '+directory);
+        else assert.equal(inventoryDigest(files),inventoryDigest(expected),'Snapshot does not contain the complete public thlib tree: '+directory);
+      }
+      if(lock.thlibContent!=='git-blob')for(const file of lock.thlibFiles){const sourceFile=inside(path.join(location,'packages/thlib'),file.path);
+        assert.ok(!fs.lstatSync(sourceFile).isSymbolicLink(),'Source library file may not be a link');
+        assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source library file size differs');
+        assert.equal(shaFile(sourceFile),file.sha256,'Source library file hash differs');}
+      for(const file of lock.runtimeFiles){const sourceFile=inside(location,file.source);
+        if(file.generatedContent!==undefined)assert.equal(shaFile(sourceFile),file.sourceSha256,'Source SDK metadata template hash differs');
+        else{assert.equal(fs.statSync(sourceFile).size,file.bytes,'Source runtime file size differs');
+          assert.equal(shaFile(sourceFile),file.sha256,'Source runtime file hash differs');}}
+      if(lock.nativeBuild){
+        for(const file of lock.nativeBuild.sourceFiles){const sourceFile=inside(location,file.path);
+          assert.equal(fs.statSync(sourceFile).size,file.bytes,'Native build source size differs');
+          assert.equal(shaFile(sourceFile),file.sha256,'Native build source hash differs');}
+        for(const entry of [lock.nativeBuild.hostObject,lock.nativeBuild.dependencyLog,...(lock.nativeBuild.objects??[]),...(lock.nativeBuild.linkInputs??[]),...(lock.nativeBuild.linkLog?[lock.nativeBuild.linkLog]:[])])
+          assert.equal(shaFile(inside(location,entry.source)),entry.sha256,'Native compiler evidence hash differs');
+      }
+      sourceVerified=true;buildEvidenceVerified=true;
     }
-    sourceVerified=true;
   }
   return{passed:true,commit:lock.commit,backend:lock.backend,supportedBackends:lock.supportedBackends,
     executableSha256:lock.executableSha256,thlibFiles:lock.thlibFiles.length,runtimeFiles:lock.runtimeFiles.length,
-    thlibSha256:lock.thlibSha256,runtimeSha256:lock.runtimeSha256,sourceVerified,nativeBuildRecorded:!!lock.nativeBuild,
-    sourceGitClean:lock.sourceState?.gitClean??true,recordedSourceChanges:lock.sourceState?.changes??[]};
+    thlibSha256:lock.thlibSha256,runtimeSha256:lock.runtimeSha256,thlibContent:lock.thlibContent??'legacy-working-tree',sourceVerified,buildEvidenceVerified,nativeBuildRecorded:!!lock.nativeBuild,
+    recordedSourceGitClean:lock.sourceState?.gitClean??true,recordedSourceChanges:lock.sourceState?.changes??[]};
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
-  let checkSource=false,source=null;
+  let checkSource=false,checkBuild=false,source=null;
   for(let i=2;i<process.argv.length;i++){
     if(process.argv[i]==='--check-source')checkSource=true;
+    else if(process.argv[i]==='--check-build')checkBuild=true;
     else if(process.argv[i]==='--source')source=process.argv[++i];
     else throw new Error(`Unknown argument ${process.argv[i]}`);
   }
-  console.log(JSON.stringify(verifyEngineLock({checkSource,source}),null,2));
+  console.log(JSON.stringify(verifyEngineLock({checkSource,checkBuild,source}),null,2));
 }

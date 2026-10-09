@@ -5,6 +5,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {planEngineUpgrade,applyEngineUpgrade} from '../tools/sync-engine.mjs';
 import {PROJECT_ROOT,readEngineLock,shaFile,inspectSourceState,verifyEngineLock,inventoryTree,inventoryDigest,inventoryTrackedThlibTree} from '../tools/verify-engine-lock.mjs';
+import {inventoryGitThlib,readGitThlib} from '../tools/engine-git.mjs';
 
 function inventoryFixture(){
   const build=path.join(PROJECT_ROOT,'build');fs.mkdirSync(build,{recursive:true});
@@ -71,6 +72,38 @@ test('public inventory rejects untracked files, missing tracked files and Git sy
   assert.throws(()=>inventoryTrackedThlibTree(symlink.source,'assets/touhou-common'),/nonregular Git entry/);
 });
 
+test('Git source verification is portable but installed snapshot and producer build checks remain strict',()=>{
+  const{directory,source,run,write}=inventoryFixture(),root=path.join(directory,'portable-consumer');
+  fs.mkdirSync(path.join(root,'runtime'),{recursive:true});
+  fs.copyFileSync(path.join(source,'ts-stg.exe'),path.join(root,'runtime/ts-stg.exe'));
+  const runtimeFiles=inventoryTree(path.join(root,'runtime')).map(entry=>({...entry,source:'absent-build/'+entry.path}));
+  const commit=run(['rev-parse','HEAD']),thlibFiles=inventoryGitThlib(source,commit);
+  for(const[name,bytes]of readGitThlib(source,commit)){
+    const file=path.join(root,'packages/thlib',name);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes);
+  }
+  const lock={format:'touhou21-engine-lock-v1',engine:'TS-STG',library:'@ts-stg/thlib',source:'Z:/unavailable-producer',commit,
+    executableSha256:runtimeFiles[0].sha256,sourceModified:false,supportedBackends:['v8','quickjs'],backend:'v8',
+    thlibContent:'git-blob',thlibFiles,thlibSha256:inventoryDigest(thlibFiles),runtimeFiles,runtimeSha256:inventoryDigest(runtimeFiles)};
+  const save=()=>fs.writeFileSync(path.join(root,'engine.lock.json'),JSON.stringify(lock));save();
+  const verified=verifyEngineLock({root,source,checkNode:false});
+  assert.equal(verified.sourceVerified,true);assert.equal(verified.buildEvidenceVerified,false);
+  assert.throws(()=>verifyEngineLock({root,source,checkBuild:true,checkNode:false}),/ENOENT/,'compiler evidence is still checked explicitly');
+  // HEAD and mutable checkout are not the pinned revision. A portable verifier
+  // must read the requested objects without resetting another user's worktree.
+  write('packages/thlib/src/index.js','export const fixture = false;\n');run(['add','.']);
+  run(['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','--quiet','-m','Later revision']);
+  write('packages/thlib/src/index.js','uncommitted later work\n');
+  assert.equal(verifyEngineLock({root,source,checkNode:false}).passed,true);
+  assert.throws(()=>verifyEngineLock({root,source,checkBuild:true,checkNode:false}),/commit differs/);
+  const script=path.join(root,'packages/thlib/src/index.js'),original=fs.readFileSync(script);
+  fs.writeFileSync(script,original.toString().replaceAll('\n','\r\n'));
+  assert.throws(()=>verifyEngineLock({root,source,checkNode:false}),/size changed/,'verification must not silently normalize a changed installed file');
+  fs.writeFileSync(script,original);
+  const removed=lock.thlibFiles.pop();fs.unlinkSync(path.join(root,'packages/thlib',removed.path));
+  lock.thlibSha256=inventoryDigest(lock.thlibFiles);save();
+  assert.throws(()=>verifyEngineLock({root,source,checkNode:false}),/complete public thlib Git commit/,'a self-consistent subset lock cannot pass source verification');
+});
+
 test('public inventory rejects both nested junctions and links in a selected directory ancestor',()=>{
   const{directory,source}=inventoryFixture(),external=path.join(directory,'external');fs.mkdirSync(external);fs.writeFileSync(path.join(external,'secret'),'outside bytes');
   fs.symlinkSync(external,path.join(source,'packages/thlib/assets/touhou-common/link'),process.platform==='win32'?'junction':'dir');
@@ -117,6 +150,13 @@ test('engine synchronization preserves local edits and user data while retaining
   fs.copyFileSync(path.join(PROJECT_ROOT,'engine.lock.json'),path.join(fixture,'engine.lock.json'));
   fs.mkdirSync(path.join(fixture,'node_modules/@ts-stg'),{recursive:true});
   fs.symlinkSync(path.join(fixture,'packages/thlib'),path.join(fixture,'node_modules/@ts-stg/thlib'),'junction');
+  // Reproduce the previously published working-tree lock, even after the real
+  // project has migrated: it is internally valid, but remembers CRLF bytes.
+  const legacy=readEngineLock(fixture),scriptEntry=legacy.thlibFiles.find(entry=>entry.path.endsWith('.js'));
+  const legacyScript=path.join(fixture,'packages/thlib',scriptEntry.path);
+  fs.writeFileSync(legacyScript,fs.readFileSync(legacyScript,'utf8').replaceAll('\r\n','\n').replaceAll('\n','\r\n'));
+  delete legacy.thlibContent;legacy.thlibFiles=inventoryTree(path.join(fixture,'packages/thlib'));legacy.thlibSha256=inventoryDigest(legacy.thlibFiles);
+  fs.writeFileSync(path.join(fixture,'engine.lock.json'),JSON.stringify(legacy,null,2)+'\n');
   const lock=readEngineLock(fixture),license=path.join(fixture,'packages/thlib/LICENSE'),original=fs.readFileSync(license);
   fs.writeFileSync(license,Buffer.concat([original,Buffer.from('\nlocal alteration that must survive\n')]));
   const edited=shaFile(license),lockHash=shaFile(path.join(fixture,'engine.lock.json'));
@@ -131,6 +171,8 @@ test('engine synchronization preserves local edits and user data while retaining
   if(options.deriveSdkManifest)assert.throws(()=>planEngineUpgrade({...options,deriveSdkManifest:false}),/SDK is stale/);
   const sourceBefore=inspectSourceState(lock.source,{recorded:lock.sourceState});
   const plan=planEngineUpgrade(options),applied=applyEngineUpgrade(plan);
+  assert.equal(plan.lock.thlibContent,'git-blob');
+  assert.deepEqual(plan.lock.thlibFiles,inventoryGitThlib(lock.source,lock.commit),'legacy upgrade pins Git bytes, not the producer or consumer checkout EOL');
   assert.equal(verifyEngineLock({root:fixture,checkSource:true}).passed,true);
   assert.equal(fs.readFileSync(save,'utf8'),'owned save content; never an engine dependency');
   const backup=path.resolve(fixture,applied.backup);

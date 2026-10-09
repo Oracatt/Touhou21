@@ -11,6 +11,7 @@
     "verify:engine": "node tools/verify-engine-lock.mjs",
     "verify:engine-smoke": "node tools/verify-engine-smoke.mjs",
     "sync:engine": "node tools/sync-engine.mjs",
+    "restore:engine": "node tools/restore-engine.mjs",
     "audit": "node tools/audit-boundaries.mjs",
     "verify:visual": "node tools/verify-visual.mjs",
     "verify:background": "node tools/verify-background.mjs",
