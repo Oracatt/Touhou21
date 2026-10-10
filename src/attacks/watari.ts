@@ -89,19 +89,33 @@ function returningFerry(k: AttackKit){
 }
 returningFerry.home={x:0,y:104};
 
-/** 渡符「两岸无应之芦苇洲」: reeds start along the top edge and keep swaying
- * left and right as they fall; neighbouring reeds sway against each other and
- * twist into a woven bed. Paper boats cross at any height; their wake rests on
- * the water for a moment, then slowly spreads up and down in a V. */
+/** 渡符「两岸无应之芦苇洲」: reeds fall from evenly spaced lanes and keep
+ * swaying left and right; neighbouring lanes sway against each other, so the
+ * reeds twist into a woven bed. Each lane grows a reed for a random while,
+ * then stays empty for a random while, so the bed is never complete. Paper
+ * boats cross at any height; their wake rests on the water for a moment, then
+ * slowly spreads up and down in a V. */
 function silentReedBanks(k: AttackKit){
   const sources=k.pick(6,6,8,8),reedEvery=k.pick(13,10,8,6),turn=.012,bend=56;
-  // Each reed starts at one edge of its swing; its swing is centred on an evenly spaced lane.
-  const swing=2*k.sp*(1-Math.cos(turn*bend))/turn,lane=(384-2*swing-8)/(sources-1);
-  if(k.every(reedEvery))for(let i=0;i<sources;i++){
-    // Consecutive turns must be separated by wait(0), or the later turn replaces the earlier one at once.
-    const w=i%2?-turn:turn,centre=-192+4+swing+lane*i;
-    const sway=[k.curve(w,bend),k.wait(0),k.curve(-w,bend*2),k.wait(0),k.curve(w,bend*2),k.wait(0),k.curve(-w,bend*2)];
-    k.shot(centre+(i%2?swing:-swing),-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,sway,{silent:i>0,safe:0});
+  const length=[[50,110],[60,130],[80,150],[90,170]][k.extra?3:k.rank],gap=[[70,160],[60,140],[40,110],[30,90]][k.extra?3:k.rank];
+  const swingOf=(w:number)=>2*k.sp*(1-Math.cos(w*bend))/w;
+  // Lanes leave room for the widest swing and the largest shift, so no reed reaches a bank.
+  const lane=(384-2*swingOf(turn*1.1)-20)/(sources-1);
+  const lanes=(k.state.reeds??=Array.from({length:sources},()=>({from:k.t+lerp(0,gap[1]*.6,k.unit()),until:0,turn,shift:0})));
+  if(k.every(reedEvery)){
+    let loud=true;
+    lanes.forEach((reed,i)=>{
+      if(reed.until===0)reed.until=reed.from+lerp(length[0],length[1],k.unit());
+      if(k.t>=reed.until){
+        reed.from=k.t+lerp(gap[0],gap[1],k.unit());reed.until=reed.from+lerp(length[0],length[1],k.unit());
+        reed.turn=turn*lerp(.9,1.1,k.unit());reed.shift=(k.unit()-.5)*12;
+      }
+      if(k.t<reed.from)return;
+      // Consecutive turns must be separated by wait(0), or the later turn replaces the earlier one at once.
+      const w=i%2?-reed.turn:reed.turn,swing=swingOf(reed.turn),centre=-192+10+swingOf(turn*1.1)+lane*i+reed.shift;
+      const sway=[k.curve(w,bend),k.wait(0),k.curve(-w,bend*2),k.wait(0),k.curve(w,bend*2),k.wait(0),k.curve(-w,bend*2)];
+      k.shot(centre+(i%2?swing:-swing),-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,sway,{silent:!loud,safe:0});loud=false;
+    });
   }
   const boatPeriod=k.pick(210,170,140,115),wakeEvery=k.pick(20,18,15,13);
   if(k.every(boatPeriod,30)){
