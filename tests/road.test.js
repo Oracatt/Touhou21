@@ -147,3 +147,20 @@ test('director dispatches authored road events and public Boss holds resume at o
   for(let i=0;i<60;i++)game.update(0);assert.equal(director.phaseIndex,2);assert.equal(game.isBossHeld(boss),false);assert.equal(game.bossPresentation.charges.length,1);
   director.destroy();assert.equal(game.bossRegistry.size,0);assert.equal(game.bossHolds.size,0);f.dispose();
 });
+
+test('every repeating road shot is heard: the first volley sounds and no stretch of fire stays silent',needsAssets,()=>{
+  const f=actualFixture(),game=f.game,emit=game.bullets.emit.bind(game.bullets);let calls=[];
+  game.bullets.emit=params=>{calls.push({sound:params.shotSound});return emit(params);};
+  try{
+    for(const attack of ROAD_ATTACKS)for(const stageId of[1,2,3,4,5,6,7])for(let difficulty=0;difficulty<=4;difficulty++)for(const index of[0,2]){
+      const enemy={id:1,x:60,y:100},state={};let lastSound=-Infinity,firing=0;
+      for(let frame=0;frame<420;frame++){
+        calls=[];game.player.invulnerability.set(9999999);
+        updateRoadEnemy({game,enemy,frame,attack,state,stageId,difficulty,index,count:4,side:-1,rng:new TouhouRNG(frame+1)});game.update(0);
+        const direct=calls.length>0,heard=calls.some(c=>c.sound>=0);if(heard)lastSound=frame;
+        if(direct){firing++;assert.ok(frame-lastSound<=96,`${attack} on stage ${stageId} at difficulty ${difficulty}, member ${index} stayed silent from frame ${lastSound} to ${frame}`);}
+      }
+      for(const bullet of game.bullets.bullets)game.bullets.retire(bullet);for(const laser of game.lasers.lasers)game.lasers.erase(laser,{check:false});
+    }
+  }finally{f.dispose();}
+});

@@ -14,7 +14,7 @@ export interface RoadSection {id:string;title:string;start:number;end:number;wav
 export interface RoadScript {stageId:number;theme:string;sections:RoadSection[];}
 export interface RoadAttackEvent {attack:string;mechanism:string;enemyId:number;stageId:number;age:number;count:number;lasers:number;}
 export type RoadGame = AttackGame & Pick<TouhouGame,'spawnEnemy'|'banks'|'items'>;
-type RoadState = AttackState & {echoAt?:number;mirror?:{at:number;x:number;y:number}|null};
+type RoadState = AttackState & {echoAt?:number;mirror?:{at:number;x:number;y:number}|null;soundAt?:number};
 type Point = {x:number;y:number};
 interface RoadPathOptions {index:number;count:number;side?:number;life?:number;jitter?:number;rank?:number;}
 interface RoadRole {script:number;hp:number;life:number;power:number;points:number;directional?:boolean;}
@@ -210,6 +210,12 @@ function ringVolley(k:AttackKit,p:typeof PALETTES[number],stageId:number,side:nu
   else k.ringGap(x,y,n,1.8,p.type,color,accent(k,stageId,side,30),{safe:4096});
 }
 
+/** A repeating shot is silent when its enemy sounded fewer than gap frames ago, so the first shot is always heard. */
+function hush(state:RoadState,age:number,gap:number){
+  if(state.soundAt!==undefined&&age-state.soundAt<gap)return true;
+  state.soundAt=age;return false;
+}
+
 /** Fairy attacks are authored by role and age; Hard and Lunatic add layers
  * and density, Easy removes companions. Fire only from the upper field. */
 function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
@@ -236,8 +242,8 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       if(state.mirror?.at===age){const m=state.mirror;state.mirror=null;
         if(fan)fanVolley(k,p,stageId,m.x,m.y,p.accent);else ringVolley(k,p,stageId,side,m.x,m.y,p.alt);}
       break;}
-    case 'spray':if(age>=10&&age%k.pick(14,10,8,6)===0)k.shot(k.ox,k.oy,DOWN+(k.unit()-.5)*1.1,lerp(1.8,2.6,k.unit()),p.type,p.main,null,{safe:4096,silent:age%28!==0});break;
-    case 'drizzle':if(age>=12&&age%k.pick(32,22,18,15)===0)k.shot(k.ox+(k.unit()-.5)*16,k.oy+6,DOWN,lerp(2.4,3,k.unit()),p.type,p.accent,null,{safe:4096,rows:k.pick(1,1,2,2),speedStep:2.1,silent:age%44!==0});break;
+    case 'spray':if(age>=10&&age%k.pick(14,10,8,6)===0)k.shot(k.ox,k.oy,DOWN+(k.unit()-.5)*1.1,lerp(1.8,2.6,k.unit()),p.type,p.main,null,{safe:4096,silent:hush(state,age,28)});break;
+    case 'drizzle':if(age>=12&&age%k.pick(32,22,18,15)===0)k.shot(k.ox+(k.unit()-.5)*16,k.oy+6,DOWN,lerp(2.4,3,k.unit()),p.type,p.accent,null,{safe:4096,rows:k.pick(1,1,2,2),speedStep:2.1,silent:hush(state,age,44)});break;
     case 'letter':{const r=relay(age,40,o);if(r.phase===0&&r.round<k.pick(1,2,2,3,9)){const letter=k.aimed(k.ox,k.oy,1,3,0,p.needle,C.WHITE,[k.wait(28),k.hold(24),k.wait(12),k.vanish()],{safe:4096});
       k.later(58,letter,b=>k.ring(b.x,b.y,k.pick(4,5,6,7),1.5,k.unit()*TAU,p.type,p.alt,null,{silent:true}));}break;}
     case 'side':if(age>=20&&age%k.pick(26,20,17,15)===0){
@@ -246,17 +252,17 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       else k.fan(k.ox,k.oy,k.pick(1,2,2,3),2.3,DOWN-side*.45,.3,p.needle,p.main,null,{safe:4096});}break;
     case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172))k.ring(k.ox,k.oy,k.pick(6,8,10,14),2,k.unit()*TAU,p.type,p.accent,[k.stopTo(40,DOWN+side*.25,k.pick(1.1,1.3,1.4,1.5))],{safe:4096});break;
     case 'current':if(age>=24&&age%k.pick(34,20,14,11)===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
-      k.shot(k.ox,k.oy,a,2,p.needle,s<0?p.main:p.alt,[k.curve(Math.sign(turn)*.02,Math.round(Math.abs(turn)/.02))],{safe:4096,silent:s>0||age%44!==0});}break;
+      k.shot(k.ox,k.oy,a,2,p.needle,s<0?p.main:p.alt,[k.curve(Math.sign(turn)*.02,Math.round(Math.abs(turn)/.02))],{safe:4096,silent:s>0||hush(state,age,44)});}break;
     case 'stitch':{const step=k.pick(34,16,13,10);if(age>=16&&age%step===0){const warp=o.formation==='warp',a=warp?DOWN+((age/step|0)%2?.55:-.55):DOWN;
-      k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),k.set(a,k.pick(1.6,1.9,2.1,2.3))],{safe:4096,silent:age%32!==0});}break;}
+      k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),k.set(a,k.pick(1.6,1.9,2.1,2.3))],{safe:4096,silent:hush(state,age,32)});}break;}
     case 'line':if(age===40||age===100||(k.rank>=2&&age===160)||(k.rank>=3&&age===220)){const n=k.pick(4,5,6,8),blank=(k.unit()*(n-1))|0;
-      for(let i=0;i<n;i++)if(i!==blank&&i!==blank+1)k.shot(k.ox+(i-(n-1)/2)*18,k.oy+8,DOWN,1.7,p.needle,i%2?p.main:p.accent,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:1.35,silent:i>0});}break;
+      for(let i=0;i<n;i++)if(i!==blank&&i!==blank+1)k.shot(k.ox+(i-(n-1)/2)*18,k.oy+8,DOWN,1.7,p.needle,i%2?p.main:p.accent,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:1.35,silent:i!==(blank===0?2:0)});}break;
     case 'seal':if(relay(age,56,o).phase===0){k.aimed(k.ox,k.oy,1,1.7,0,T.BIG,p.orb,null,{safe:4096});
       if(k.rank>=1)k.aimed(k.ox,k.oy,k.pick(0,2,2,4),2.3,.34,p.needle,p.alt,null,{safe:4096,silent:true});}break;
     case 'chime':{const r=relay(age,40,o);if(r.phase===0&&r.round<k.pick(1,1,2,3,4)){const n=k.pick(6,7,8,9),a=k.unit()*TAU;
       k.ring(k.ox,k.oy,n,1.9,a,p.type,p.main,null,{safe:4096});if(k.rank>=1)k.ring(k.ox,k.oy,n,1.45,a+Math.PI/n,p.type,p.accent,null,{safe:4096,silent:true});}break;}
     case 'toll':if(age>=50&&(age-50)%k.pick(32,26,22,16)===0){const c=o.center,a=c?Math.atan2(k.oy-c.y,k.ox-c.x):o.heading;
-      k.fan(k.ox,k.oy,1,2.1,a,0,p.type,p.main,null,{safe:4096,rows:k.pick(1,2,2,3),speedStep:1.6,silent:o.index>0});
+      k.fan(k.ox,k.oy,1,2.1,a,0,p.type,p.main,null,{safe:4096,rows:k.pick(1,2,2,3),speedStep:1.6,silent:o.index>0&&hush(state,age,90)});
       if(k.rank>=3)k.fan(k.ox,k.oy,1,1.4,a+Math.PI,0,p.needle,p.accent,null,{safe:4096,silent:true});}break;
     case 'flower':{const step=k.pick(7,6,5,4);if(age<60||age%step)break;const arms=k.pick(3,4,4,5),a=age*.055*(side||1);
       if(stageId===6&&(age/step|0)%4===3)break;
@@ -264,7 +270,7 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       for(let j=0;j<arms;j++){const base=j*TAU/arms,spin=a+base,angle=j%2&&stageId===4?base-a:j%2&&stageId===7?Math.PI-spin:spin;
         // Stage 5 folds the spiral into a square page: diagonals fly fastest.
         const speed=stageId===5?2.2*Math.SQRT1_2/Math.max(Math.abs(Math.cos(angle)),Math.abs(Math.sin(angle))):1.9;
-        k.shot(k.ox,k.oy,angle,speed,p.type,j%2?p.main:p.accent,cmds,{silent:j>0||age%12!==0});}break;}
+        k.shot(k.ox,k.oy,angle,speed,p.type,j%2?p.main:p.accent,cmds,{silent:j>0||hush(state,age,12)});}break;}
     case 'rings':{const period=k.pick(40,32,28,25);if(age>=56&&(age-56)%period===0){const w=(age-56)/period|0,n=k.pick(12,16,18,22),c=w%2?p.main:p.alt;
       if(stageId===5){const door=k.aim();burstShape(k,k.ox,k.oy,polygon(4,Math.max(3,n>>2)),1.8,w*.31,p.type,c,null,{skip:(q,a)=>inGap(a,door,.26)});}
       else if(stageId===6)k.ringGap(k.ox,k.oy,k.pick(6,8,10,12),1.8,p.type,c,null,{rows:2,speedStep:1.4});
