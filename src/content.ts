@@ -386,7 +386,7 @@ export const STAGES: StageDefinition[] = [
     nonspellNames: ['经纬的起针', '隔着丝线的旧事', '解不开的小结'],
     phaseLayout: 'NSNSNSS',
     midbossSpells: [
-      spell('s04-mid', '缝符「缝影一针」', 'weave', 'weave_shadow', '针弹飞到自机周围排成一圈，停留片刻后一同向圆心缝合；两侧袖口持续洒下米弹。', 35),
+      spell('s04-mid', '缝符「缝影一针」', 'weave', 'weave_shadow', '一线针弹落到自机上方，沿圆周向两侧缝开，每个针脚留下一枚针；成圈时针不入圈内，停留片刻后一同向圆心缝合。两侧袖口持续洒下米弹。', 35),
     ],
     spells: [
       spell('s04-01', '糸符「相识者之经纬」', 'weave', 'weave_grid', '预告后的竖直丝线把场地分成几条走廊，珠弹在走廊内落下；每轮丝线松开并错开半条走廊。', 45),

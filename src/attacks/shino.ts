@@ -1,7 +1,7 @@
 import type {AttackKit, BossAttacks} from '../danmaku.js';
 ﻿/** 糸守紫乃 — Stage 4. Threads first divide space, then beads travel inside
  * it: lattices, counter-rotating chains and an eight-spoke web. */
-import {T,C,C8,DOWN,TAU,clamp,lerp} from '../danmaku.js';
+import {T,C,C8,DOWN,TAU,lerp,wrap} from '../danmaku.js';
 
 /** Midboss: two shuttles orbit the Boss and spray needles along their path. */
 function spinningShuttle(k: AttackKit){
@@ -14,16 +14,36 @@ function spinningShuttle(k: AttackKit){
   if(k.every(210,170))k.wander(40);
 }
 
-/** 缝符「缝影一针」: needles fly to a ring around the player's
- * shadow, hold the circle, then stitch inward through the old centre. */
+const onField=(x:number,y:number)=>Math.abs(x)<=184&&y>=12&&y<=440;
+const arcOnField=(cx:number,cy:number,r:number,from:number,sweep:number)=>{
+  const steps=Math.max(1,Math.ceil(Math.abs(sweep)*r/6));
+  for(let i=0;i<=steps;i++){const a=from+sweep*i/steps;if(!onField(cx+Math.cos(a)*r,cy+Math.sin(a)*r))return false;}
+  return true;
+};
+
+/** 缝符「缝影一针」: a thread of needles comes down to the top of a circle
+ * around the player's shadow and is sewn both ways round it, one needle left
+ * at each stitch. Forming needles never enter the circle, so a player who
+ * stands still is untouched until the ring is released through the old centre;
+ * stitches that would leave the field are not sewn. */
 function stitchTheShadow(k: AttackKit){
-  const period=k.pick(132,108,94,84);
+  const period=k.pick(240,220,204,190);
   if(k.every(period)){
-    const cx=k.px,cy=k.py,n=k.pick(12,16,20,24),r=k.pick(106,96,88,82),turn=k.unit()*TAU;
-    for(let i=0;i<n;i++){
-      const a=turn+i*TAU/n,tx=clamp(cx+Math.cos(a)*r,-184,184),ty=clamp(cy+Math.sin(a)*r,16,440);
-      k.shot(k.ox,k.oy,a,0,T.NEEDLE,i%2?C.MAGENTA:C.PALE,[k.goTo(tx,ty,48),k.wait(k.pick(30,26,24,22)),k.set(Math.atan2(cy-ty,cx-tx),2.5)],{silent:i>0});
+    const cx=k.px,cy=k.py,n=k.pick(12,16,18,20),r=k.pick(100,96,92,90),turn=k.unit()*TAU;
+    const top=Math.atan2(k.oy-cy,k.ox-cx),ex=cx+Math.cos(top)*r,ey=cy+Math.sin(top)*r;
+    const speed=k.pick(2.3,2.5,2.6,2.7),omega=speed*k.sp/r,descent=Math.max(36,Math.round(Math.hypot(ex-k.ox,ey-k.oy)/(speed*k.sp)));
+    const stitches:{a:number,sweep:number,frames:number}[]=[];
+    if(onField(ex,ey))for(let i=0;i<n;i++){
+      const a=turn+i*TAU/n,near=wrap(a-top),sweep=[near,near-Math.sign(near||1)*TAU].find(s=>arcOnField(cx,cy,r,top,s));
+      if(sweep!==undefined)stitches.push({a,sweep,frames:Math.round(Math.abs(sweep)/omega)});
     }
+    const release=descent+Math.max(0,...stitches.map(s=>s.frames))+k.pick(52,46,42,38);
+    stitches.forEach((s,i)=>{
+      const inward=s.a+Math.PI,cmds=[k.goTo(ex,ey,descent,0)];
+      if(s.frames)cmds.push(k.set(top+Math.sign(s.sweep)*Math.PI/2,speed),k.curve(Math.sign(s.sweep)*omega,s.frames));
+      cmds.push(k.set(inward,0),k.wait(release-descent-s.frames),k.set(inward,k.pick(1.6,1.8,1.9,2)));
+      k.shot(k.ox,k.oy,top+Math.PI,0,T.NEEDLE,i%2?C.MAGENTA:C.PALE,cmds,{silent:i>0});
+    });
   }
   if(k.every(k.pick(40,30,26,22),20))for(const side of[-1,1])
     k.fan(k.ox+side*40,k.oy,k.pick(3,4,5,5),2.1,DOWN-side*(.55+.25*Math.sin(k.t*.03)),.16,T.RICE,C.PINK,null,{silent:side>0});
