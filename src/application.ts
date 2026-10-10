@@ -119,7 +119,7 @@ export class ProjectApplication {
   }
   openMusicRoom(){this.page=new ListPage({...this.pageOptions('音乐室'),rows:MUSIC_TRACKS.map((track,index)=>({label:`${String(index+1).padStart(2,'0')}　${track.title}`,track})),
     detail:row=>MUSIC_COMMENTS[row.track.id]?.comment??row.track.description,
-    onSelect:(row,page)=>{this.music.play(row.track.id,true);page.message=`正在播放：${row.track.title}\n${row.track.description}`;}});}
+    onSelect:(row,page)=>{this.music.play(row.track.id,true);page.message=`正在播放：${row.track.title}`;}});}
   openOptions(inGame=false,close?:()=>void){const settings=this.storage.settings,rows:OptionRow[]=[
     {id:'musicVolume',label:()=>`BGM 音量　${settings.musicVolume}%`},{id:'soundVolume',label:()=>`音效音量　${settings.soundVolume}%`},
     {id:'startingLives',label:()=>`初始生命　${settings.startingLives+1}`},{id:'autoSaveReplay',label:()=>`自动保存回放　${settings.autoSaveReplay?'开启':'关闭'}`},{id:'defaults',label:'恢复默认设置'}];
