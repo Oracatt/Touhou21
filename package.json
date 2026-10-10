@@ -17,6 +17,8 @@
     "restore:engine": "node tools/restore-engine.mjs",
     "build:macos": "node tools/macos/build-host.mjs",
     "verify:macos": "node tools/macos/build-host.mjs --verify",
+    "package:windows": "node tools/package-windows.mjs",
+    "verify:windows-release": "node tools/verify-windows-release.mjs",
     "audit": "node tools/audit-boundaries.mjs",
     "verify:visual": "node tools/verify-visual.mjs",
     "verify:background": "node tools/verify-background.mjs",

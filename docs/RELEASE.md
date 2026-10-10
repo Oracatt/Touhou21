@@ -43,6 +43,36 @@ thlib 包含可复用的应用流程、自机、武器、Bomb、弹幕、道具�
 
 默认 Git 排除 `packages/`、`runtime/`、`node_modules/`、`userdata/`、`reports/`、`build/`、`dist/`、日志与环境文件。公开源码包不得绕过这些规则把私有公共原作资源或用户存档混入。若未来制作可执行发行包，应使用具有明确发行权限的依赖资源，并保留运行时第三方许可；本地可运行不代表获得商业素材授权。此任务没有上传或发布发行包。
 
-当前游戏版本为 `2.0.0`，回放内容修订为 `GAME_REVISION = 12`。修订 12 重排七面道中（见 [ROADS.md](ROADS.md)）：自机狙改为编队内接力开火，单列编队拉开间隔，各面换用专属的入场路线与小妖精弹幕样式。修订 9～11 调整道中 Boss：被击破或撤退时保留气场与黑雾（9），改为从左上方入场（10），平滑 Boss 移动曲线并取消重复的入场聚能（11），详见 [BOSS-FLOW.md](BOSS-FLOW.md)。修订 8 改写了三面二非、四面二非与终符、五面一非与道中符卡的弹道，并降低二面道中符卡与六面第三符卡的密度，同时重写灵梦 / 魔理沙两条路线的对白，因此同时递增 `GAME.contentRevision` 与回放修订。修订 7 改用 thlib 的 `classic` 最大得点计分（见 [VERIFICATION.md](VERIFICATION.md)）；其后的公共拾取飘字和七位 Boss 的动态抽象纹样仅改变表现，不改变计分、模拟、RNG 或输入时钟，没有递增修订。修订 6 的状态栏与语言包只改变表现，未改变模拟或输入时钟。更早的 Boss 出场对白分离场中角色与立绘，并新增 60 帧文字等待 / 94 帧输入门控，改变了确定性对白推进时钟，因此同时递增 `GAME.contentRevision` 与回放修订。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增该修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm run typecheck`、`npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。
+当前游戏版本为 `2.0.0`，回放内容修订以 `src/storage.ts` 的 `GAME_REVISION` 和 `src/content.ts` 的 `GAME.contentRevision` 为准（当前为 19）。两者必须相同，打包器会检查。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm run typecheck`、`npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。历史修订与验收结果见 [VERIFICATION.md](VERIFICATION.md)、[ROADS.md](ROADS.md) 和 [BOSS-FLOW.md](BOSS-FLOW.md)。
+
+## Windows 可执行包
+
+在 Windows x64 的已还原开发环境中运行：
+
+```powershell
+npm run package:windows
+```
+
+默认要求 `runtime/` 完整匹配引擎锁。游戏入口和业务资源必须已提交，thlib 全部文件必须匹配锁；工具先使用锁定的 TypeScript 编译器构建游戏，再以白名单暂存文件。输出在独立的 `build/releases/<时间与随机标识>/` 中，包含 `Touhou-Guiminglu-<版本>-r<修订>-windows-x64.zip`、对应 `.sha256` 和 `release-result.json`。工具不创建标签、推送代码或上传 GitHub Release。
+
+包内保留编译后的游戏与 thlib、游戏图像与18首音乐、当前使用的两个公共资源包、原生引擎及原始许可说明。不会复制 Node.js、npm、开发依赖、TypeScript 源码、source map、测试、用户存档或本机环境文件。`runtime/licenses/` 中部分第三方原始声明嵌在 C/C++ 头文件内，按原样保留。两个专用发行启动器直接运行原生引擎，不执行 `npm run build`。完整解压后双击 `Play.cmd`（V8）或 `Play-QuickJS.cmd`；数据在包内的 `userdata/`，升级前保留该目录。
+
+每个包包含 `RELEASE-MANIFEST.json`（游戏提交、内容修订、引擎提交与实际 EXE 哈希、逐文件 SHA-256）及 `runtime/NATIVE-BUILD.json`。清单不把自身纳入文件哈希，以避免自引用。打包器先将暂存包复制到含中文和空格的全新目录，使用仅包含 Windows 系统目录的 PATH，从包外运行两个 CMD，随后检查七关背景、符卡、UI 输入和回放。所有原生检查均有帧数上限。最终 ZIP 再单独解压并逐文件比对；测试副本生成的存档和 QA 文件不会进入 ZIP。报告位于同一输出目录的 `verification/`。
+
+可以独立复查一个解压包：
+
+```powershell
+npm run verify:windows-release -- --package <解压后的Touhou-Guiminglu目录> --report build/release-recheck
+```
+
+### 同源码的本地 Release 构建
+
+当锁定生产者的 EXE 不可取得时，不改锁也不使用旧运行时冒充。可传入经过核验的本地构建清单：
+
+```powershell
+npm run package:windows -- --native-allowlist build/native-release-audit/packaging-allowlist.json
+```
+
+此清单及其原生凭据由构建审计生成，属于本机构建输入，不提交 Git。它必须绑定当前锁的17个原生源码 SHA-256、Release 配置、两个后端的已有验证、实际 EXE 和所附每份第三方声明的 SHA-256。打包器重查所有输入哈希，并再次执行发行包验证。若实际 EXE 与锁内 EXE 不同，清单明确标记 `exactLockedBinary: false`，同时保留两个哈希；这表示使用同一锁定源码的本地编译版，不表示二进制可复现。本路径不改变开发 `runtime/`，也不把仍失败的 `verify:engine` 记作通过。没有提供相应审计输入时，默认路径会报错并停止打包。
 
 静态审计是范围检查：它验证公开导入、资源清单和排除规则；流程验证实际检查公共对象与状态。它们均不等同于对全部资源权利、游戏体验或未执行平台的保证。
