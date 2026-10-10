@@ -89,28 +89,24 @@ function returningFerry(k: AttackKit){
 }
 returningFerry.home={x:0,y:104};
 
-/** 渡符「两岸无应之芦苇洲」: reeds fall straight down in columns while the
- * wind sways where they start, so every column is a wave that slides down the
- * screen. Neighbouring columns sway against each other: the channel between
- * them narrows and widens the same way at the top and at the bottom. Paper
- * boats cross the river and leave a short wake. */
+/** 渡符「两岸无应之芦苇洲」: reeds start along the top edge, bow left and
+ * right in turn and cross into a woven lattice; reeds that reach a bank are
+ * turned back, so the weave fills the river down to the bottom. Paper boats
+ * cross at any height and leave a V-shaped wake that spreads up and down
+ * through the reeds. */
 function silentReedBanks(k: AttackKit){
-  const spacing=k.pick(72,58,50,46),sway=k.pick(10,14,18,20),reedEvery=k.pick(14,10,7,6);
-  const columns=Math.round(384/spacing),left=-(columns-1)*spacing/2;
-  if(k.every(reedEvery)){
-    const wind=Math.sin(k.t*TAU/150)*sway;
-    for(let i=0;i<columns;i++)
-      k.shot(left+i*spacing+(i%2?wind:-wind),-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,null,{silent:i>0,safe:0});
+  const sources=k.pick(6,6,8,8),reedEvery=k.pick(13,10,8,6),spacing=384/sources;
+  if(k.every(reedEvery))for(let i=0;i<sources;i++){
+    const lean=i%2?-.013:.013;
+    k.shot(-192+spacing*(i+.5),-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,[k.curve(lean,56),k.bounce(2)],{silent:i>0,safe:0});
   }
-  // Boats cross from one bank each time; a second boat comes from the other bank on Lunatic, and every boat leaves a longer wake that fades after a short while.
-  const boatPeriod=k.pick(180,140,112,90),wakeLength=k.pick(16,22,24,28),wakeCount=2;
+  const boatPeriod=k.pick(210,170,140,115),wakeEvery=k.pick(16,14,12,10);
   if(k.every(boatPeriod,30)){
-    const first=(k.t/boatPeriod|0)%2?1:-1;
-    for(const side of k.rank>=3?[first,-first]:[first]){
-      const y=lerp(130,270,k.unit());
-      const boat=k.shot(side*190,y,side<0?0:Math.PI,1.3,T.OVAL,C8.WHITE,null,{safe:3600});
-      for(let step=1;step<=wakeLength;step++)k.later(step*11,boat,b=>k.fan(b.x,b.y,wakeCount,.9,side<0?Math.PI*.75:Math.PI*.25,1.6,T.BALL,C.SKY,[k.accel(.01,90,DOWN),k.vanish()],{silent:true}));
-    }
+    const side=(k.t/boatPeriod|0)%2?1:-1,y=lerp(70,330,k.unit());
+    const boat=k.shot(side*190,y,side<0?0:Math.PI,1.3,T.OVAL,C8.WHITE,null,{safe:3600});
+    for(let step=1;step<=Math.ceil(300/wakeEvery);step++)k.later(step*wakeEvery,boat,b=>{
+      for(const up of[-1,1])k.shot(b.x,b.y,up*DOWN,.8,T.PELLET,C.SKY,null,{silent:true});
+    });
   }
   if(k.every(k.pick(150,120,92,72),55))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.7,.2,T.AMULET,C.WHITE,null,{rows:k.pick(1,2,2,3),speedStep:2});
 }
