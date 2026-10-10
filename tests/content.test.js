@@ -7,8 +7,8 @@ import {
 import { MUSIC_TRACKS } from '../dist/src/music-data.js';
 import { GAME_REVISION } from '../dist/src/storage.js';
 
-test('the stage 1, 2 and 4 pattern retune advances content and replay revisions together',()=>{
-  assert.equal(GAME.contentRevision,15);assert.equal(GAME_REVISION,GAME.contentRevision);
+test('the stage 2 and 3 spell rework advances content and replay revisions together',()=>{
+  assert.equal(GAME.contentRevision,16);assert.equal(GAME_REVISION,GAME.contentRevision);
 });
 
 test('campaign covers six connected stages and a separately identified Extra', () => {
