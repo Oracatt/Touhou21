@@ -1,106 +1,88 @@
-"""Stage 5 Boss: Mikage Fusae, the proofreader of shadow. B-flat minor, 164 BPM.
+"""Stage 5 Boss: Mikage Fusae, the upright proofreader of the blank library. A minor, 160 BPM.
 
-4-bar intro (a lone clarinet reading the first line aloud), then a 32-bar loop:
-A (a dotted, march-like theme sung by horn and clarinet over a marimba "typewriter" and a four-on-the-floor kit) /
-B (stop-time: the band stamps 3+3+2 over a bass walking down from B-flat while claves tick through the gaps
-and xylophone or low reeds cross out a word; then an F pedal winds the strings and snare up) /
-chorus (a wide, slow hymn for violins and oboe in half-time, horn counter-line, trumpet doubling an octave below, timpani and gong) /
-A' (the theme again, now on trumpet over horn and clarinet).
-F major closes every section so the loop returns to B-flat minor."""
-from studio import intros
-from studio.layers import (K, bass_part, crash_at, cymbal_swell, double, drum_part, figure_bass, fill_at, fit, lead, pick, swell,
-                           timp_roll, tpt_hits, trem, within)
-from studio.library import BATTERY
-from studio.score import arpeggio, drums, progression, stabs, sustained
+She is a paper shikigami: courteous, orderly, and happy to accept an exception once it is proved. The music is
+upright and symmetrical in the same way: a solo violin states a four-bar question and answers it a step higher,
+a piano keeps a steady Baroque motor of sixteenths underneath, and everything is plucked or bowed crisply like a
+page being folded. Nothing swings and nothing shouts.
+
+4-bar intro (the violin reads the first line alone over harp), then a 32-bar loop:
+A (solo violin, piano motor, plucked cellos, tight kit) /
+B (the exception is granted: oboe over harp in the relative major, the violin joins in unison and the strings rise) /
+chorus (the whole string section sings an arching tune, flute and oboe on top, harp sweeps, horns and timpani) /
+A' (the violin again, flute doubling an octave up, oboe in unison).
+E major closes every section, so the loop returns to A minor."""
+from studio.layers import (K, bass_part, crash_at, double, drum_part, fill_at, lead, pick, pizz, swell, timp_roll, tpt_hits, trem, within)
+from studio.score import arpeggio, progression, sustained
 from studio.core import Note, midi
 
 TITLE = 'boss05'
-BPM = 164
+BPM = 160
 INTRO_BARS, LOOP_BARS = 4, 32
 SEED = 205
 HALL = 2.0
-LEAD = 'trumpet'
-MELODIC = ('oboe', 'piccolo', 'clarinet')
-LEADS = ('trumpet', 'violins', 'horn')
-TARGETS = {'trombone': -8.5, 'horn#2': -9.5, 'bassoon': -10.0, 'oboe': -9.0, 'clarinet': -8.5, 'piccolo': -11.5, 'xylo': -12.0,
-           'battery': -12.5, 'gong': -14.0}
-SCALE = {10, 0, 1, 3, 5, 6, 8, 9}   # B-flat natural minor plus A
+LEAD = 'violins'
+MELODIC = ('oboe', 'oboe#2', 'flute', 'clarinet')
+LEADS = ('violins', 'oboe')
+TARGETS = {'clarinet': -9.5, 'flute': -9.5, 'oboe#2': -9.5, 'horn': -10.5, 'harp': -10.0, 'glock': -12.0, 'gong': -14.0}
+SCALE = {9, 11, 0, 2, 4, 5, 7, 8}   # A natural minor plus the leading tone G#
 
-INTRO = progression('Bbm | Gb | Ab | F', bar=0)
-A_CH = progression('Bbm | Bbm | Gb | Ab | Bbm | Bbm | Ebm | F', bar=4)
-B_CH = progression('Bbm | Bbm/A | Bbm/Ab | Bbm6/G | Bbm/F | Db/F | Ebm/F | F', bar=12)
-C_CH = progression('Gb | Ab | Bbm | F | Gb | Ab | Ebm | F', bar=20)
-A2_CH = progression('Bbm | Bbm | Gb | Ab | Bbm | Bbm | Ebm | F', bar=28)
+INTRO = progression('Am | F | Dm | E', bar=0)
+A_CH = progression('Am | F | Dm | E | Am | F | Dm | E', bar=4)
+B_CH = progression('C | G | Am | Em | F | C/E | Dm | E', bar=12)
+C_CH = progression('Am | F | C | G | Am | F | Dm | E', bar=20)
+A2_CH = progression('Am | F | Dm | E | Am | F | Dm | E', bar=28)
 CHORDS = INTRO + A_CH + B_CH + C_CH + A2_CH
 SECTIONS = [('intro', 0, 4), ('A', 4, 12), ('B', 12, 20), ('chorus', 20, 28), ("A'", 28, 36)]
 
-# Dotted "long-short" theme in the middle register (horn / clarinet written pitch, trombone an octave down).
-A_MEL = ('Bb4:6 Ab4:2 F4:4 Bb4:4 | Db5:6 C5:2 Bb4:8 | Gb4:6 F4:2 Db4:4 Gb4:4 | Ab4:6 Gb4:2 F4:4 C5:4 | '
-         'Bb4:6 Db5:2 F5:4 Db5:4 | Eb5:6 Db5:2 F4:4 Bb4:4 | Gb4:6 F4:2 Eb4:4 Gb4:4 | A4:4 C5:4 F5:8 |')
-B_MEL = ('Bb5:3^ Bb5:3^ Db6:2^ r:8 | Bb5:3^ Bb5:3^ Db6:2^ r:8 | Db6:3^ Db6:3^ F6:2^ r:8 | G5:3^ Bb5:3^ Db6:2^ r:8 | '
-         'Db6:3^ C6:3 Bb5:2 F5:4 Bb5:4 | Eb6:3^ Db6:3 C6:2 Ab5:4 Db6:4 | F6:3^ Eb6:3 Db6:2 Bb5:4 Eb6:4 | A5:3^ A5:3^ C6:2^ C6:8 |')
-B_HIGH = 'r:8 Bb5:1 C6 Db6 Eb6 F6 Eb6 Db6:2 | r:16 | r:8 Db6:1 Eb6 F6 Gb6 Ab6 Gb6 F6:2 | r:16 |'
-B_LOW = ('Bb2:3^ Bb2:3^ Bb2:2^ r:8 | A2:3^ A2:3^ A2:2^ F3:1 Eb3 Db3 C3 Bb2 C3 A2:2 | Ab2:3^ Ab2:3^ Ab2:2^ r:8 | '
-         'G2:3^ G2:3^ G2:2^ r:8 |')
-B_BASS = 'Bb1:3. Bb1:3. Bb1:2. r:8 | A1:3. A1:3. A1:2. r:8 | Ab1:3. Ab1:3. Ab1:2. r:8 | G1:3. G1:3. G1:2. r:8 |'
-STAMP = 'X..x..x.........'
-B_FILL = {'K': STAMP, 'S': '......x.xx......', 'T1': '..........xx....', 'T3': '............xx..', 'T4': '..............xX'}
-# Wide, slow hymn: held notes and sixth/octave leaps instead of repeated-note riffs.
-C_MEL = ('Db6:8 Eb6:2 Db6:2 Bb5:4 | C6:6 Eb6:2 Ab6:8 | F6:6 Eb6:2 Db6:4 Bb5:4 | C6:4 A5:4 C6:4 F6:4 | '
-         'Gb6:6 F6:2 Eb6:4 Db6:4 | Eb6:4 C6:4 Eb6:8 | Gb6:6 Bb6:2 Gb6:4 Eb6:4 | A6:6 F6:2 C6:8 |')
-COUNTER = 'Bb4:8 Db5:8 | C5:8 Eb5:8 | Db5:8 F5:8 | C5:8 A4:8 | Bb4:8 Db5:8 | C5:8 Eb5:8 | Gb4:8 Bb4:8 | A4:8 C5:8 |'
-TROMBONE = 'Gb2:8 Db3:8 | Ab2:8 Eb3:8 | Bb2:8 F3:8 | F2:8 C3:8 | Gb2:8 Db3:8 | Ab2:8 Eb3:8 | Eb2:8 Bb2:8 | F2:8 C3:8 |'
+# The violin reads the first line alone.
+I_MEL = 'r:8 E5:4 A5:4 | C6:6 B5:2 A5:4 F5:4 | D6:6 C6:2 B5:4 A5:4 | G#5:4 B5:4 E6:8 |'
+# A: a question (bars 1-4) and its answer a step higher (bars 5-8), both closing on the dominant.
+A_MEL = ('E5:4 A5:2 B5:2 C6:4 B5:2 A5:2 | A5:4 F5:2 G5:2 A5:6 C6:2 | D6:4 C6:2 A5:2 B5:4 A5:2 F5:2 | E5:6 G#5:2 B5:4 E6:4 | '
+         'A5:4 C6:2 E6:2 A6:4 G6:2 E6:2 | F6:4 E6:2 C6:2 A5:6 C6:2 | D6:4 F6:2 E6:2 D6:4 C6:2 B5:2 | B5:4 G#5:4 E5:8 |')
+# B: the exception granted, a calm singing line in C major.
+B_MEL = ('E5:6 G5:2 C6:8 | B5:6 A5:2 G5:8 | A5:4 C6:4 E6:8 | G5:6 B5:2 E6:4 D6:4 | '
+         'C6:6 A5:2 F5:8 | G5:6 E5:2 G5:4 C6:4 | D6:6 C6:2 D6:4 F6:4 | E6:8 B5:4 G#5:2 B5:2 |')
+# Chorus: one long arch, up to A6 and back down to the dominant.
+C_MEL = ('A5:6 C6:2 E6:8 | F6:6 E6:2 C6:8 | E6:6 D6:2 C6:4 G5:4 | B5:4 D6:4 G6:8 | '
+         'A6:6 G6:2 E6:4 C6:4 | F6:4 A6:4 G6:4 F6:4 | A5:4 D6:4 F6:4 D6:4 | D6:4 B5:4 G#5:8 |')
 
 
 def build():
     P = {}
     A_SPANS = pick(CHORDS, 4, 12) + pick(CHORDS, 28, 36)
-    P['trumpet'] = (fit(lead(B_MEL, 12, 96), 'F3', 'G6')
-                    + fit(within(double(lead(C_MEL, 20, 84), -12), 24, 28), 'F3', 'G6')
-                    + fit(lead(A_MEL, 28, 100), 'F3', 'G6'))
-    P['horn'] = fit(lead(A_MEL, 4, 92, gate=0.98) + lead(A_MEL, 28, 82, gate=0.98), 'F3', 'F5')
-    P['clarinet'] = fit(lead(A_MEL, 4, 66) + lead(A_MEL, 28, 60), 'E3', 'C6')
-    P['violins'] = double(lead(C_MEL, 20, 80), 0)
-    P['oboe'] = double(lead(C_MEL, 20, 56), 0)
-    P['piccolo'] = lead(B_HIGH, 12, 56) + double(lead(C_MEL, 20, 56), 12)
-    P['xylo'] = lead(B_HIGH, 12, 66) + within(lead(B_MEL, 12, 58), 16, 20)
-    P['marimba'] = arpeggio(A_SPANS, 'Bb3', 'Bb5', [0, 2, 1, 2], step=0.25, vel=58, accent=8)
-    P['trombone'] = (fit(double(lead(A_MEL, 4, 76), -12), 'E2', 'B4') + lead(B_LOW, 12, 82)
-                     + swell(lead('F2:16 | F2:16 | F2:16 | F2:16 |', 16, 68, gate=1.0), 16, 20, -2, 14)
-                     + lead(TROMBONE, 20, 74, gate=1.0) + fit(double(lead(A_MEL, 28, 80), -12), 'E2', 'B4'))
-    P['horn#2'] = (stabs(pick(CHORDS, 12, 16), 'Bb3', 'Bb4', 3, STAMP, vel=86, gate=0.7)
-                   + swell(sustained(pick(CHORDS, 16, 20), 'F3', 'F4', 3, vel=58), 16, 20, -2, 18)
-                   + lead(COUNTER, 20, 72, gate=1.0))
-    P['bassoon'] = (arpeggio(A_SPANS, 'Bb2', 'Bb3', [0, None, 1, None], step=0.5, vel=74, accent=8)
-                    + lead(B_LOW, 12, 72))
-    P['piano'] = (stabs(A_SPANS, 'Bb2', 'Bb4', 4, '.x..x..x.x..x...', vel=74, gate=0.6)
-                  + stabs(pick(CHORDS, 12, 16), 'Bb2', 'Bb4', 4, STAMP, vel=84, gate=0.6)
-                  + swell(stabs(pick(CHORDS, 16, 20), 'Bb2', 'Bb3', 3, 'x..x..x.x..x..x.', vel=70, gate=0.6), 16, 20, 0, 16)
-                  + arpeggio(pick(CHORDS, 20, 28), 'Bb3', 'Bb5', [0, 2, 1, 2, 3, 2, 1, 2], step=0.25, vel=66, accent=8))
-    P['violins#2'] = (trem(sustained(A_SPANS, 'Bb3', 'Bb4', 3, vel=58))
-                      + stabs(pick(CHORDS, 12, 16), 'Bb4', 'Bb5', 3, STAMP, vel=76, gate=0.5)
-                      + swell(arpeggio(pick(CHORDS, 16, 20), 'Bb4', 'Bb6', [0, 1, 2, 3, 4, 3, 2, 1], step=0.25, vel=54, accent=8), 16, 20, 0, 24)
-                      + trem(sustained(pick(CHORDS, 20, 28), 'Bb3', 'Bb4', 3, vel=64)))
-    P['celli'] = (arpeggio(A_SPANS, 'Bb1', 'Bb2', [0, 1, 0, 2], step=0.25, vel=70, accent=10)
-                  + lead(B_LOW, 12, 78) + figure_bass(pick(CHORDS, 16, 20), 'F2', 'E3', 'RO', 0.5, vel=74)
-                  + arpeggio(pick(CHORDS, 20, 28), 'Bb1', 'Bb2', [0, 1], step=0.5, vel=76, accent=8))
-    P['violas'] = (stabs(pick(CHORDS, 12, 16), 'F3', 'F4', 2, STAMP, vel=72, gate=0.5)
-                   + swell(stabs(pick(CHORDS, 16, 20), 'F3', 'F4', 2, 'x.x.x.x.x.x.x.x.', vel=58, gate=0.5), 16, 20, 0, 18)
-                   + sustained(pick(CHORDS, 20, 28), 'Bb3', 'Bb4', 3, vel=60))
-    P['pad'] = sustained(pick(CHORDS, 20, 36), 'Bb3', 'Bb4', 3, vel=56)
-    P['bass'] = (bass_part(pick(CHORDS, 4, 12), 'push', 96, context=CHORDS) + lead(B_BASS, 12, 104)
-                 + bass_part(pick(CHORDS, 16, 18), 'eighth', 94, context=CHORDS) + bass_part(pick(CHORDS, 18, 20), 'steady', 96, context=CHORDS)
-                 + bass_part(pick(CHORDS, 20, 24), 'half', 98, context=CHORDS) + bass_part(pick(CHORDS, 24, 28), 'octave', 100, context=CHORDS)
-                 + bass_part(pick(CHORDS, 28, 36), 'push', 100, context=CHORDS)
-                 + bass_part(pick(CHORDS, 2, 4), 'whole', 82, context=CHORDS))
-    P['drums'] = (drum_part([(4, 12, 'march'), (20, 24, 'half'), (24, 28, 'dance'), (28, 36, 'march')]) + fill_at(3, 'stop')
-                  + drums({'K': STAMP, 'S': '......x.........'}, bar=12, bars=3, kit=K) + drums(B_FILL, bar=15, kit=K)
-                  + drums({'K': 'x...x...x...x...', 'S': 'o.o.o.o.x.x.x.x.'}, bar=16, bars=3, kit=K) + fill_at(19, 'roll')
-                  + crash_at(12) + crash_at(16))
-    P['battery'] = drums({'CL': 'x.o.x.o.x.o.x.o.'}, bar=12, bars=4, kit=BATTERY) + [cymbal_swell(20 * 4, BPM, 104)]
-    P['timpani'] = (tpt_hits(4, 'Bb1', 112) + [Note(12 * 4, 1, midi('Bb1'), 104, '', {}), Note(14 * 4, 1, midi('Ab1'), 100, '', {})]
-                    + swell(lead('F2:4 F2 F2 F2 | F2:4 F2 F2 F2 | F2:4 F2 F2 F2 | F2:4 F2 r:8 |', 16, 70), 16, 20, 0, 30)
-                    + timp_roll(19, 'F2', 'Bb1') + timp_roll(35, 'F2', 'Bb1')[:-1])
+    B_SPANS = pick(CHORDS, 12, 20)
+    C_SPANS = pick(CHORDS, 20, 28)
+    P['violins'] = (lead(I_MEL, 0, 66) + lead(A_MEL, 4, 90) + within(lead(B_MEL, 12, 70), 16, 20)
+                    + lead(C_MEL, 20, 84) + lead(A_MEL, 28, 94))
+    P['violins#2'] = swell(sustained(pick(CHORDS, 16, 20), 'A3', 'A4', 3, vel=50), 16, 20, 0, 18)
+    P['clarinet'] = lead(A_MEL, 4, 50) + lead(A_MEL, 28, 52)
+    P['oboe'] = lead(B_MEL, 12, 82)
+    P['oboe#2'] = lead(C_MEL, 20, 56) + lead(A_MEL, 28, 56)
+    P['flute'] = double(lead(C_MEL, 20, 62), 12) + double(lead(A_MEL, 28, 64), 12)
+    P['piano'] = (arpeggio(A_SPANS, 'A3', 'A5', [0, 2, 1, 2, 3, 2, 1, 2], step=0.25, vel=54, accent=10, gate=0.8)
+                  + arpeggio(B_SPANS, 'A2', 'A4', [0, 2, 1, 2], step=0.5, vel=46, accent=6, gate=0.9)
+                  + arpeggio(C_SPANS, 'A3', 'A5', [0, 2, 1, 2, 3, 2, 1, 2], step=0.25, vel=60, accent=10, gate=0.8))
+    P['harp'] = (arpeggio(pick(CHORDS, 0, 4), 'A2', 'A5', [0, 1, 2, 3, 2, 1], step=0.5, vel=52, accent=0, gate=1.4)
+                 + arpeggio(B_SPANS, 'C3', 'C6', [0, 1, 2, 3, 4, 3, 2, 1], step=0.5, vel=56, accent=0, gate=1.4)
+                 + arpeggio(C_SPANS, 'A3', 'A6', [0, 1, 2, 3, 4, 5, 4, 3], step=0.5, vel=50, accent=0, gate=1.4))
+    P['celli'] = (pizz(arpeggio(A_SPANS, 'A1', 'A2', [0, None, 1, None], step=1.0, vel=72, accent=8))
+                  + swell(sustained(pick(CHORDS, 0, 4), 'A1', 'A2', 2, vel=40), 0, 4, 0, 14)
+                  + sustained(B_SPANS, 'A1', 'A2', 2, vel=58)
+                  + arpeggio(C_SPANS, 'A1', 'A2', [0, 1], step=0.5, vel=74, accent=8))
+    P['violas'] = (swell(sustained(pick(CHORDS, 0, 4), 'A3', 'A4', 3, vel=34), 0, 4, 0, 14)
+                   + trem(sustained(A_SPANS, 'A3', 'A4', 3, vel=50))
+                   + sustained(B_SPANS, 'A3', 'A4', 3, vel=48)
+                   + trem(sustained(C_SPANS, 'A3', 'A4', 3, vel=58)))
+    P['horn'] = sustained(C_SPANS, 'E3', 'E4', 3, vel=58)
+    P['pad'] = sustained(pick(CHORDS, 20, 36), 'A3', 'A4', 3, vel=52)
+    P['bass'] = (bass_part(pick(CHORDS, 4, 12), 'drive', 96, context=CHORDS)
+                 + bass_part(pick(CHORDS, 12, 20), 'half', 90, context=CHORDS)
+                 + bass_part(pick(CHORDS, 20, 28), 'octave', 100, context=CHORDS)
+                 + bass_part(pick(CHORDS, 28, 36), 'drive', 100, context=CHORDS)
+                 + bass_part(pick(CHORDS, 2, 4), 'whole', 74, context=CHORDS))
+    P['drums'] = (drum_part([(4, 12, 'drive'), (12, 16, 'light'), (16, 20, 'build'), (20, 28, 'drive2'), (28, 36, 'rock')])
+                  + fill_at(3, 'roll') + crash_at(12))
+    P['timpani'] = (tpt_hits(4, 'A1', 108) + timp_roll(3, 'E2', 'A1', 96)[:-1] + tpt_hits(12, 'A1', 96)
+                    + timp_roll(19, 'E2', 'A1') + tpt_hits(28, 'A1', 108) + timp_roll(35, 'E2', 'A1')[:-1])
     P['gong'] = [Note(20 * 4, 4, 60, 100, '', {})]
-    intros.apply(P, 'lyric_solo', INTRO, lead='clarinet')
-    return P, {'trombone': {'gain': 2.0}}
+    return P, {}

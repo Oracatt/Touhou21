@@ -135,13 +135,13 @@ export const MUSIC_TRACKS = Object.freeze([
     "title": "校勘者与消失的句号",
     "file": "assets/music/boss05.wav",
     "sampleRate": 32000,
-    "frames": 1685853,
-    "loopStartFrame": 187317,
-    "loopEndFrame": 1685853,
-    "duration": 52.682906,
-    "bpm": 164,
-    "description": "校对者在影子里逐行读校样。圆号与单簧管先用带附点的长短句念出第一行，木琴般的马林巴像打字机一样在底下敲，中段乐队一次次停在半句，空白里只剩响棒数拍；副歌放慢成宽阔的圣歌，小提琴与双簧管把句子读完。",
-    "sha256": "22a3b1fec9771fa1a343917c36e13cebdbcba4d6fa0479f5624bf7a4aab2e154"
+    "frames": 1728000,
+    "loopStartFrame": 192000,
+    "loopEndFrame": 1728000,
+    "duration": 54,
+    "bpm": 160,
+    "description": "校对者端正地坐在空白的书库里，把规矩一页一页折好。小提琴先念出一句话，再抬高一步答回去，钢琴像不歇的笔尖，十六分音符走得又稳又整齐；中段她认下了一个证明充分的例外，双簧管在大调里温和地唱起来；副歌里整组弦乐连成一道长弧，竖琴扫过，把整页校样读完。",
+    "sha256": "09722ebf518a32133ecd0a0ee7fbb928aedbb901fc23bdffb50b8054cd8f4308"
   },
   {
     "id": "stage06",
