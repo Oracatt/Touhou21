@@ -111,9 +111,6 @@ function silentReedBanks(k: AttackKit){
     }
   }
   if(k.rank>=1&&k.every(k.pick(999,120,92,72),55))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.7,.2,T.AMULET,C.WHITE,null,{rows:k.pick(1,2,2,3),speedStep:2});
-  // A ring with a gap rolls down from the Boss on Hard and Lunatic: the
-  // channel narrows before the next reeds arrive.
-  if(k.rank>=2&&k.every(k.pick(999,999,230,170),95))k.ringGap(k.ox,k.oy,k.pick(18,18,20,22),1.7,T.BALL,C.SKY,[k.accel(.02,160,DOWN)]);
 }
 silentReedBanks.home={x:0,y:96};
 
