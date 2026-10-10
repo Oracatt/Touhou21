@@ -2,27 +2,19 @@
   "format": "touhou21-engine-lock-v2",
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
-  "source": "D:/AIWorkspace/TS-STG",
-  "commit": "c030f926d7516731f704d040a5f2b48015fe2989",
+  "source": "D:/github/TS-STG",
+  "commit": "6a0ec573a26bc0b985d9f71d6eee9bb12125a176",
   "backend": "v8",
   "supportedBackends": [
     "v8",
     "quickjs"
   ],
-  "executableSha256": "512183414f22e58085d7816b4891324ee0476c058eb3e32a42db0bb7a14287cb",
+  "executableSha256": "06e6ffd4ca719cdfbb58709b79c144ea70637ba5413eea7e71bb6510b72ae5a8",
   "sourceModified": false,
   "sourceState": {
-    "gitClean": false,
+    "gitClean": true,
     "dependencyInputsClean": true,
-    "excludedChanges": [
-      {
-        "path": "start-spellcard-editor.cmd",
-        "status": " M",
-        "bytes": 559,
-        "sha256": "7121aa214d9f0e526f8c8188293cb07d93d6b9200600f8eab4c13e26fccd4901",
-        "headBlob": "866fdcae7127d368029972d12d4b8ba597648431"
-      }
-    ],
+    "excludedChanges": [],
     "policy": "All dependency/build inputs come from the pinned commit. Unstaged editor-launcher preferences are unrelated and never copied."
   },
   "dependencies": "Committed public TypeScript source and common presets, rebuilt with the exact pinned compiler. Native artifacts retain their build provenance and original notices.",
@@ -43,13 +35,13 @@
       },
       {
         "path": "assets/README.md",
-        "bytes": 5487,
-        "sha256": "8f77f0dec7719f8ae25cc87367eb6b0531c05d5aeec65701fa0c3958cd9059d6"
+        "bytes": 5316,
+        "sha256": "b687799de2d20a19eae1c12b0ac0a479cccad6bf1236c020930e5dd25e8378b3"
       },
       {
         "path": "assets/TOUHOU-COMMON.md",
-        "bytes": 4145,
-        "sha256": "3f54135fcbcee143799790dbf937c56fc8ab063651a44118aae3be34f3bfecb1"
+        "bytes": 4141,
+        "sha256": "8b877cbae8e3c852c8d423d2006dd116bc67db677506758e1de9cc9ae614ca89"
       },
       {
         "path": "assets/audio/bomb.wav",
@@ -88,8 +80,8 @@
       },
       {
         "path": "assets/reference-common/NOTICE.md",
-        "bytes": 2021,
-        "sha256": "cbd55169d88efe254c962dec6b5c1d69a390f32b46c6a56cb79f8a42f124468f"
+        "bytes": 2007,
+        "sha256": "f08615be3dfe2a583509465056d3260c38d21d116fa7633a0889cb1fc5ed61b9"
       },
       {
         "path": "assets/reference-common/manifest.json",
@@ -1627,7 +1619,7 @@
         "sha256": "bf6dbafbd67e762ac716826a68e6ecc17894b0e110ad177446857a77a1fadbe3"
       }
     ],
-    "sourceSha256": "a4e6df1b9bcc51d013e20c76b2fb658430d7530e909c0cdd3450b6b87b8f6315",
+    "sourceSha256": "d32a69d2fc24f83fbafdcda41b1849dd4aa9b8fef4eaec9d8121e1836bfc98c2",
     "outputFiles": [
       {
         "path": "dist/animation.d.ts",
@@ -3732,8 +3724,8 @@
     ],
     "outputSha256": "b16e4d95bdab1f2dfa259a44abb7f5cdbcadf4187f612106171a04150ec7261e"
   },
-  "thlibSha256": "04dc014c780785e2fce5cba3ed8529d98d03c665aec11b46117657936ac539b8",
-  "runtimeSha256": "b5ca32f97d0d53627b537cc656474c4f306ee60be7a3b4c67e5c422cd1871108",
+  "thlibSha256": "da19557bbc760fb782bdc67332756a992ccb71554581b9f0c445a0bb331246f6",
+  "runtimeSha256": "27d552728ddafb3cca5ce6781f49676baa49e84a0fbc2c27ce3b2b5fcc6228bd",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -3742,13 +3734,13 @@
     },
     {
       "path": "assets/README.md",
-      "bytes": 5487,
-      "sha256": "8f77f0dec7719f8ae25cc87367eb6b0531c05d5aeec65701fa0c3958cd9059d6"
+      "bytes": 5316,
+      "sha256": "b687799de2d20a19eae1c12b0ac0a479cccad6bf1236c020930e5dd25e8378b3"
     },
     {
       "path": "assets/TOUHOU-COMMON.md",
-      "bytes": 4145,
-      "sha256": "3f54135fcbcee143799790dbf937c56fc8ab063651a44118aae3be34f3bfecb1"
+      "bytes": 4141,
+      "sha256": "8b877cbae8e3c852c8d423d2006dd116bc67db677506758e1de9cc9ae614ca89"
     },
     {
       "path": "assets/audio/bomb.wav",
@@ -3787,8 +3779,8 @@
     },
     {
       "path": "assets/reference-common/NOTICE.md",
-      "bytes": 2021,
-      "sha256": "cbd55169d88efe254c962dec6b5c1d69a390f32b46c6a56cb79f8a42f124468f"
+      "bytes": 2007,
+      "sha256": "f08615be3dfe2a583509465056d3260c38d21d116fa7633a0889cb1fc5ed61b9"
     },
     {
       "path": "assets/reference-common/manifest.json",
@@ -7436,13 +7428,13 @@
     {
       "path": "PACKAGE.json",
       "bytes": 3960,
-      "sha256": "b18937a91e41aa57368a9b96033b9213e4b8663a1f74c8f97b0254bf0f173450",
+      "sha256": "d9a076d0e5c9970ef64ea5fbf8431e240806e02241922e4dc79c2a5bccb6c5c2",
       "source": "dist/TS-STG/PACKAGE.json"
     },
     {
       "path": "THIRD_PARTY.md",
-      "bytes": 5252,
-      "sha256": "cfb8295afcb568232d5f18dfeb21326ae6f6518633a6b66d1b20b08647a59053",
+      "bytes": 4290,
+      "sha256": "fdae9726aaa1eb580e0b10660305497cf424afff035ff3ca9c9ff5892ae267b5",
       "source": "THIRD_PARTY.md"
     },
     {
@@ -8227,8 +8219,8 @@
     },
     {
       "path": "licenses/v8-sdk-manifest.json",
-      "bytes": 4955,
-      "sha256": "3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac",
+      "bytes": 8751,
+      "sha256": "6078d9f38edb3e546a0b45d0e44dbc4d576fb4ab1a888bbd42baa9203b9fbb46",
       "source": "dist/TS-STG/licenses/v8-sdk-manifest.json"
     },
     {
@@ -8323,8 +8315,8 @@
     },
     {
       "path": "ts-stg.exe",
-      "bytes": 23282688,
-      "sha256": "512183414f22e58085d7816b4891324ee0476c058eb3e32a42db0bb7a14287cb",
+      "bytes": 23399936,
+      "sha256": "06e6ffd4ca719cdfbb58709b79c144ea70637ba5413eea7e71bb6510b72ae5a8",
       "source": "build/Release/ts-stg.exe"
     }
   ],
@@ -8332,13 +8324,13 @@
     "configuration": "Release",
     "executableSource": "build/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "b18937a91e41aa57368a9b96033b9213e4b8663a1f74c8f97b0254bf0f173450",
-    "binarySha256": "512183414f22e58085d7816b4891324ee0476c058eb3e32a42db0bb7a14287cb",
+    "packageSha256": "d9a076d0e5c9970ef64ea5fbf8431e240806e02241922e4dc79c2a5bccb6c5c2",
+    "binarySha256": "06e6ffd4ca719cdfbb58709b79c144ea70637ba5413eea7e71bb6510b72ae5a8",
     "sourceFiles": [
       {
         "path": "CMakeLists.txt",
-        "bytes": 18750,
-        "sha256": "e6342388b4f3497660bf9ed2662af47889b6574a3895259e031be81ead9566c0"
+        "bytes": 16072,
+        "sha256": "ebf350ac18675642fb26a51a15aa6fedecbe9067c3ae9ab709a0d51ba59d20cb"
       },
       {
         "path": "native/include/tsstg/backend.hpp",
@@ -8421,85 +8413,85 @@
         "sha256": "ae18e973ee276ee777cf40fa0ccf4c73e23ec0280d3abd4bca39f205145ebf9a"
       }
     ],
-    "sourceSha256": "0ae015360d3754821ce4517f690b51c92655ca1d3e7588ab4e2acefe658d404c",
+    "sourceSha256": "685ee7ca3871b72e7e22f6d6128d747a19394ccd4b1c9e3e10ea6c8c4e95e57e",
     "dependencyLog": {
       "source": "build/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
-      "sha256": "f293c7a9c8a9bb85ee55f54a724821b3b930b2172d138058620cbd602b2e278d"
+      "sha256": "ebc553f834a86c2cf7cd9012a73edad88dc4bd684dbb52f268da83e7d4ab3bdd"
     },
     "hostObject": {
       "source": "build/ts-stg.dir/Release/host.obj",
-      "sha256": "af579738903cb6f556dc0b96698fde7c1a426fa4c592ade0316225155a0fbf8d"
+      "sha256": "80bf6adccb860d341ed8fff02c3aea52fc423d7215d30772f1b03ed974aa06e4"
     },
-    "outputUtc": "2026-10-09T14:06:32.539Z",
-    "hostObjectUtc": "2026-10-09T14:06:30.408Z",
-    "latestSourceUtc": "2026-10-09T14:06:25.065Z",
+    "outputUtc": "2026-10-10T07:03:54.263Z",
+    "hostObjectUtc": "2026-10-10T07:03:52.914Z",
+    "latestSourceUtc": "2026-10-10T06:41:53.906Z",
     "objects": [
       {
         "source": "build/ts-stg.dir/Release/frame_stream.obj",
-        "sha256": "a2366f238060f0af71d78143e895347803749d17eb3371bda8ec76e78ee89854",
+        "sha256": "578c3db591d5d331e7d200ae674ca634e35aeb7fd8db963bf09dd6d5efeb2097",
         "sourcePath": "native/src/frame_stream.cpp",
-        "outputUtc": "2026-10-05T10:58:10.293Z"
+        "outputUtc": "2026-10-10T07:03:52.083Z"
       },
       {
         "source": "build/ts-stg.dir/Release/geometry.obj",
-        "sha256": "68a28ac00cf607b624689f1553b8443f23e70076f107c520fc458736efcd3f19",
+        "sha256": "676a393f9840638ba3378467f596232b79ba5580f45f51c6207b2889c73ec649",
         "sourcePath": "native/src/geometry.cpp",
-        "outputUtc": "2026-10-04T14:21:21.386Z"
+        "outputUtc": "2026-10-10T07:03:53.553Z"
       },
       {
         "source": "build/ts-stg.dir/Release/host.obj",
-        "sha256": "af579738903cb6f556dc0b96698fde7c1a426fa4c592ade0316225155a0fbf8d",
+        "sha256": "80bf6adccb860d341ed8fff02c3aea52fc423d7215d30772f1b03ed974aa06e4",
         "sourcePath": "native/src/host.cpp",
-        "outputUtc": "2026-10-09T14:06:30.408Z"
+        "outputUtc": "2026-10-10T07:03:52.914Z"
       },
       {
         "source": "build/ts-stg.dir/Release/main.obj",
-        "sha256": "051933b871bfd9fc183fd9fee7f371ded159c2b4b985028d3901f29dad7da2f8",
+        "sha256": "642dda3ffa1ca02fcc45726a3a5cf262390aa1d38f87ded79162d893ec8ed18d",
         "sourcePath": "native/src/main.cpp",
-        "outputUtc": "2026-10-05T10:58:11.730Z"
+        "outputUtc": "2026-10-10T07:03:53.071Z"
       },
       {
         "source": "build/ts-stg.dir/Release/quickjs_backend.obj",
-        "sha256": "b3bacaa7ddbf02c4da1f701d1450facac88933795acaf7f13e4abd19ac41cbb1",
+        "sha256": "15c6629af94fedc10a5aac57348d76613c93ad767d5d63133872607a0732db85",
         "sourcePath": "native/src/quickjs_backend.cpp",
-        "outputUtc": "2026-10-04T14:21:19.631Z"
+        "outputUtc": "2026-10-10T07:03:51.831Z"
       },
       {
         "source": "build/ts-stg.dir/Release/text_gdi.obj",
-        "sha256": "def1027d9ab743e329d28b836bfcc61d2ca88b610658532feb44b0e3df7d5699",
+        "sha256": "af78eaf9f5e063c061705c59c73b5f35c4641b90b5142b14f1cf5b4238fe3015",
         "sourcePath": "native/src/text_gdi.cpp",
-        "outputUtc": "2026-10-04T14:21:18.594Z"
+        "outputUtc": "2026-10-10T07:03:51.928Z"
       },
       {
         "source": "build/ts-stg.dir/Release/text_win32.obj",
-        "sha256": "5b28ffbc6a7c64541c259e9831861c1744db63e71eaae3344c545cfac79024c2",
+        "sha256": "0d037f54522505a2103d24c4f116e62cd6aa4f91bde7397fa85f3d5bbe97af74",
         "sourcePath": "native/src/text_win32.cpp",
-        "outputUtc": "2026-10-04T14:21:18.476Z"
+        "outputUtc": "2026-10-10T07:03:52.025Z"
       },
       {
         "source": "build/ts-stg.dir/Release/v8_backend.obj",
-        "sha256": "d55bd550782ef38e4b0a9c2a8e5f8352323b4edb0ec4b8e787e599c4d9fb8591",
+        "sha256": "a1dad54f8f26d831913ef3039f64acd18c46fb4936a08453897053333a1c850c",
         "sourcePath": "native/src/v8_backend.cpp",
-        "outputUtc": "2026-10-05T11:39:52.095Z"
+        "outputUtc": "2026-10-10T07:03:50.995Z"
       }
     ],
     "linkInputs": [
       {
         "source": "BUILD/_DEPS/RAYLIB-BUILD/RAYLIB/RELEASE/RAYLIB.LIB",
-        "sha256": "55ecff08e44f44a387773007583796a62fa7766f0a85365e6939851f67b4f60b"
+        "sha256": "e3b940c3f8192a7489d719e19cfab346b558e69a75fea48646be3b2739451eee"
       },
       {
         "source": "BUILD/_DEPS/QUICKJS-BUILD/RELEASE/QJS.LIB",
-        "sha256": "b099e7cbc8ebb0657e98fd6258e983d581b8cb3702e9cae4ba61e7ed41566aeb"
+        "sha256": "3bc2fe8c1c54aec00f884e06190024a348c428fc3c3f176ecf372699996e0366"
       },
       {
         "source": "BUILD/V8-SDK/V8-HOST.LIB",
-        "sha256": "4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87"
+        "sha256": "cbdedf94c55aa2e6a2c92acfef0131e96fc5c496cad54a3431ec69d7ca48e935"
       }
     ],
     "linkLog": {
       "source": "build/ts-stg.dir/Release/ts-stg.tlog/link.read.1.tlog",
-      "sha256": "bc191d120db2964c49e19a6b6a3c79e29b16923ef667e807d5eae1c8a81dcb81"
+      "sha256": "88238c4c31cdccd6f9385a6fbe7dca3c8d943de273fcf8bc1cb9bcde84187578"
     },
     "evidence": "Byte-pinned native/public-library inputs, compiler dependency and all translation-unit object checks, linker input hashes and later link time. Excluded editor-launcher preferences are recorded separately. This is local build evidence, not a reproducible-build attestation."
   }
