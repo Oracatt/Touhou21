@@ -47,12 +47,12 @@ test('all 39 spell cards have distinct IDs, names, patterns and persistent recor
     assert.ok(/^.+「.+」$|^「.+」$/.test(card.name), card.name);
     assert.ok(motifs.has(card.motif), card.id);
     assert.ok(card.description.length > 15, card.id);
-    assert.ok(Number.isInteger(card.seconds) && card.seconds >= 35 && card.seconds <= 65, card.id);
+    assert.ok(Number.isInteger(card.seconds) && card.seconds >= (card.survival ? 30 : 35) && card.seconds <= 65, card.id);
     assert.equal(typeof card.survival, 'boolean');
     assert.equal(SPELL_BY_ID.get(card.id), card);
   }
   const survival = ALL_SPELLS.filter((card) => card.survival);
-  assert.deepEqual(survival.map((card) => [card.id, card.seconds]), [['s06-04', 60], ['ex-08', 65]]);
+  assert.deepEqual(survival.map((card) => [card.id, card.seconds]), [['s06-04', 30], ['ex-08', 65]]);
 });
 
 test('every stage has a complete, distinct conversation for each playable character', () => {

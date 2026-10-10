@@ -137,8 +137,8 @@ function fenceAngles(ox: number,oy: number){
  * narrow, the open gate rests less often and the seals throw more sparks. */
 function gardenBeyondForgetting(k: AttackKit){
   if(k.t<(k.state.nextAt??0))return;
-  // Fences fired after about 55 seconds no longer reach the player before time runs out.
-  const ramp=(a: number,b: number)=>lerp(a,b,Math.min(1,k.t/3300));
+  // Fences fired after about 27 seconds no longer reach the player before time runs out.
+  const ramp=(a: number,b: number)=>lerp(a,b,Math.min(1,k.t/1650));
   k.state.nextAt=k.t+Math.round(ramp(k.pick(100,84,72,64),k.pick(72,58,48,42)));
   const door=k.state.door,half=ramp(k.pick(.23,.2,.18,.16),k.pick(.19,.16,.14,.12)),gate=(g: number)=>DOWN+(g-2.5)*.2;
   const stay=k.unit()<ramp(k.pick(.5,.4,.3,.2),k.pick(.3,.2,.1,0));

@@ -49,11 +49,12 @@ test('occupancy keeps protected bullets and DP checks intermediate frames rather
 });
 
 test('the stage 6 survival garden keeps a focused zero-hit route through its open gates to the end',()=>{
+  const card=attackRouteCases().find(spec=>spec.id==='s06-04');
   for(const difficulty of[1,3]){
-    const spec={kind:'spell',stageId:6,spellIndex:3,difficulty,frames:3600};
+    const spec={...card,difficulty};
     const result=searchAttackRoute(spec,{iterations:8});assert.equal(result.passed,true,`difficulty ${difficulty}`);
     const replay=replayAttackRoute(spec,result.route);
-    assert.equal(replay.hits,0);assert.equal(replay.misses,0);assert.equal(replay.gameplayFrames,3600);
+    assert.equal(replay.hits,0);assert.equal(replay.misses,0);assert.equal(replay.gameplayFrames,card.frames);
   }
 });
 
