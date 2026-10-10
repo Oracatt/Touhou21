@@ -17,7 +17,7 @@ export function createBackgroundFixture(scenarioPath){
   const game=()=>({frame:scenario.clockStart+frame,spell:{active:spell,id:scenario.stage,age:{current:scenario.clockStart+frame}}});
   const snapshot=()=>JSON.stringify(background.spellBackground.snapshot());
   function inspect(commands){
-    const expectedPaths=new Set(Object.values(profile.textures)),samplers=new Map(),meshes=[],allMeshes=[];
+    const expectedPaths=new Set(Object.values(profile.textures)),samplers=new Map(),meshes=[],allMeshes=[],ambientMeshes=[];
     let blend=null,blendStart=-1,scope=0;
     commands.forEach((command,index)=>{
       if(command[0]==='sampler')samplers.set(command[1],command.slice(2));
@@ -25,7 +25,16 @@ export function createBackgroundFixture(scenarioPath){
       else if(command[0]==='blendEnd'){blend=null;blendStart=-1;}
       else if(command[0]==='mesh'||command[0]==='mesh3d'){
         const file=texturePaths.get(command[1]);allMeshes.push({type:command[0],path:file??null});
-        if(!expectedPaths.has(file))return;
+        if(!expectedPaths.has(file)){
+          if(command[0]==='mesh'){
+            const vertices=command[2],indices=command[3];
+            assert(samplers.get(command[1])?.join(',')==='bilinear,clamp,clamp','Ambient atlas samples clamp inside each cell');
+            assert(vertices.every(v=>v.length===5&&v.every(Number.isFinite)&&v[2]>=0&&v[2]<=1&&v[3]>=0&&v[3]<=1),'Ambient vertices and UVs are finite');
+            assert(indices.every(i=>Number.isInteger(i)&&i>=0&&i<vertices.length),'Ambient batch indices are valid');
+            ambientMeshes.push({path:file,vertices,indices});
+          }
+          return;
+        }
         assert(command[0]==='mesh','Spell artwork is submitted by the production 2D mesh path');
         assert(blend&&blendStart>=0,'Every spell image has its own explicit blend scope');
         assert(commands[index+1]?.[0]==='blendEnd','Each image closes its blend scope immediately after submission');
@@ -57,9 +66,12 @@ export function createBackgroundFixture(scenarioPath){
       if(card.opacity===1&&profile.layers[0].blend==='alpha'&&profile.layers[0].opacity===1){
         assert(!background.stats.roadVisible&&!allMeshes.some(mesh=>mesh.type==='mesh3d'),'A fully opaque spell base hides road meshes');
       }
-    }else assert(meshes.length===0&&allMeshes.some(mesh=>mesh.type==='mesh3d'),'Ordinary road rendering is retained without spell image submissions');
+    }else{
+      assert(meshes.length===0&&allMeshes.some(mesh=>mesh.type==='mesh3d'),'Ordinary road rendering is retained without spell image submissions');
+      assert(ambientMeshes.length>0&&ambientMeshes.length<=4&&background.stats.atmosphere.particles>0,'Each road draws bounded ambient batches');
+    }
     return{bossId:profile.bossId,clock:scenario.clockStart+frame,fadeIn:SPELL_BACKGROUND_TIMING.fadeIn,declaredTextures:{...profile.textures},
-      distinctTextureIds:[...new Set(meshes.map(mesh=>mesh.textureId))],meshes,
+      distinctTextureIds:[...new Set(meshes.map(mesh=>mesh.textureId))],meshes,ambientMeshes,
       layers:profile.layers.map(layer=>({texture:layer.texture,path:profile.textures[layer.texture],blend:layer.blend,opacity:layer.opacity,tint:layer.tint})),
       sourceTexturePaths:[...new Set(meshes.map(mesh=>mesh.path))],roadMeshCount:allMeshes.filter(mesh=>mesh.type==='mesh3d').length};
   }
@@ -73,14 +85,14 @@ export function createBackgroundFixture(scenarioPath){
     update(){frame++;background.update(game());},
     render(){
       const before=snapshot(),commands=drawScene();assert(snapshot()===before,'Rendering does not advance the spell animation clock');
-      const proof=inspect(commands),geometry=JSON.stringify(proof.meshes.map(mesh=>mesh.vertices));
+      const proof=inspect(commands),geometry=JSON.stringify((spell?proof.meshes:proof.ambientMeshes).map(mesh=>mesh.vertices));
       if(firstGeometry===null){firstGeometry=geometry;firstClock=proof.clock;}
       if(frame!==lastRenderFrame&&lastGeometry!==null&&geometry!==lastGeometry)movingFrames++;
       lastGeometry=geometry;lastRenderFrame=frame;
       if(frame===scenario.frames){
         const repeated=drawScene();assert(JSON.stringify(repeated)===JSON.stringify(commands)&&snapshot()===before,'Repeated rendering at the capture frame is identical and does not tick animation');
         proof.motion={firstClock,lastClock:proof.clock,movingFrames,changedSinceFirst:firstGeometry!==geometry};
-        if(spell&&scenario.frames>1)assert(proof.motion.changedSinceFirst&&movingFrames>0,'Independent spell layers continue moving between native frames');
+        if(scenario.frames>1)assert(proof.motion.changedSinceFirst&&movingFrames>0,'Independent background layers continue moving between native frames');
         proof.repeatedRenderIdentical=true;
       }
       lastProof=proof;return commands;

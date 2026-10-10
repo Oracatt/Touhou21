@@ -13,6 +13,7 @@ const out=path.join(root,'reports/visual',label);
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(path.join(root,'build'),{recursive:true});
 const filter=args.includes('--cases')?args[args.indexOf('--cases')+1].split(','):null;
 const backends=args.includes('--backends')?args[args.indexOf('--backends')+1].split(','):['v8','quickjs'];
+const binary=path.resolve(root,args.includes('--binary')?args[args.indexOf('--binary')+1]:'runtime/ts-stg.exe');
 const result={character:0,difficulty:1,mode:'normal',ending:'good',score:9876543,continues:0,captures:[{captured:true}]};
 const base={autostart:true,invincible:true};
 const cases=[
@@ -81,7 +82,7 @@ for(const scenario of cases.filter(value=>!filter||filter.includes(value.id))){
   const runs=[];
   for(const backend of backends){
     const prefix=path.join(out,`${scenario.id}-${backend}`);
-    const child=spawnSync(path.join(root,'runtime/ts-stg.exe'),['tools/native-fixture.js','--root',root,'--backend',backend,'--benchmark','--frames',String(frames),'--screenshot',prefix+'.png','--snapshot',prefix+'.json'],{cwd:root,encoding:'utf8',windowsHide:true,timeout:120000});
+    const child=spawnSync(binary,['tools/native-fixture.js','--root',root,'--backend',backend,'--benchmark','--frames',String(frames),'--screenshot',prefix+'.png','--snapshot',prefix+'.json'],{cwd:root,encoding:'utf8',windowsHide:true,timeout:120000});
     fs.writeFileSync(prefix+'.log',(child.stdout??'')+(child.stderr??''));
     if(child.error)throw child.error;assert.equal(child.status,0,`${scenario.id}/${backend}: ${child.stderr}`);
     const state=JSON.parse(fs.readFileSync(prefix+'.json','utf8'));
@@ -131,4 +132,4 @@ for(const scenario of cases.filter(value=>!filter||filter.includes(value.id))){
   if(runs.length===2){assert.deepEqual(parity(runs[0].state),parity(runs[1].state),`${scenario.id} state parity`);if(!backendLabel)assert.equal(runs[0].pngSha256,runs[1].pngSha256,`${scenario.id} pixels parity`);}
   report.push({id:scenario.id,passed:true,pixelComparison:backendLabel?'Backend name intentionally differs':'Exact PNG equality',runs});console.log(`PASS ${scenario.id}`);
 }
-fs.writeFileSync(path.join(out,filter?'selected-report.json':'report.json'),JSON.stringify({passed:true,binarySha256:sha(path.join(root,'runtime/ts-stg.exe')),gameSourceSha256:Object.fromEntries(fs.readdirSync(path.join(root,'src')).filter(name=>name.endsWith('.ts')).map(name=>[name,sha(path.join(root,'src',name))])),artManifestSha256:sha(path.join(root,'assets/art-manifest.json')),cases:report},null,2)+'\n');
+fs.writeFileSync(path.join(out,filter?'selected-report.json':'report.json'),JSON.stringify({passed:true,binarySha256:sha(binary),gameSourceSha256:Object.fromEntries(fs.readdirSync(path.join(root,'src')).filter(name=>name.endsWith('.ts')).map(name=>[name,sha(path.join(root,'src',name))])),artManifestSha256:sha(path.join(root,'assets/art-manifest.json')),cases:report},null,2)+'\n');

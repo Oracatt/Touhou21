@@ -1,15 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {DrawList} from '@ts-stg/thlib';
 import {BACKGROUND_VIEWPORT,StageBackground,cameraForStage,lookAt3d,multiply3d,perspective3d,project3d,transform3d,viewport3d} from '../dist/src/background.js';
 import {SCENERY_ATLASES,SPELL_BACKGROUND_STYLES,sceneryRegion} from '../dist/src/background-art.js';
 import {DynamicSpellBackground,SPELL_BACKGROUND_TIMING,spellLayerOpacity} from '../dist/src/spell-background.js';
+const commonManifest=readFileSync(new URL('../packages/thlib/assets/spell-common/manifest.json',import.meta.url),'utf8');
 
 const close=(a,b,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`${a} != ${b}`);
 function artFixture({width=1024,height=1024,baseSize=[width,height],patternSize=[width,height]}={}){
   const unloads=[],loads=[],backgrounds=[];
-  return{unloads,loads,backgrounds,host:{createTexture:()=>{throw new Error('Scenery must use generated PNGs');},unloadTexture:id=>unloads.push(id)},load:path=>{
+  return{unloads,loads,backgrounds,host:{readText:()=>commonManifest,createTexture:()=>{throw new Error('Scenery must use authored PNGs');},unloadTexture:id=>unloads.push(id)},load:path=>{
     loads.push(path);const base=path.endsWith('-base.png'),spell=path.startsWith('assets/spells/'),size=spell?(base?baseSize:patternSize):[width,height];return{id:spell?(base?93:94):92,width:size[0],height:size[1]};},
     background(draw,id){backgrounds.push(id);draw.rect(48,24,576,672,0x12343dff);}};
 }
@@ -68,6 +70,33 @@ test('road camera flight remains deterministic and continuously moves',()=>{
   }
 });
 
+test('ambient layers move independently, freeze with roads, and remain below spell overlays',()=>{
+  for(let stage=1;stage<=7;stage++){
+    const background=new StageBackground({art:artFixture(),seed:927});background.setStage(stage);
+    const game={frame:300,spell:{active:false}};background.update(game);
+    const first=new DrawList();background.draw(first,game);
+    game.frame=420;background.update(game);const later=new DrawList();background.draw(later,game);
+    const weather=draw=>draw.commands.filter(command=>command[0]==='mesh');
+    assert.ok(weather(first).length>0&&weather(first).length<=4);
+    assert.notDeepEqual(weather(first),weather(later),'Ambient motion must not rely on camera changes');
+    assert.ok(background.stats.atmosphere.particles>0);
+    const lastRoad=later.commands.findLastIndex(command=>command[0]==='mesh3d');
+    assert.ok(later.commands.findIndex(command=>command[0]==='mesh')>lastRoad);
+    const snapshot=structuredClone(background.stats),paused={...game,frame:10000,paused:true};background.update(paused);
+    const repeat=new DrawList();background.draw(repeat,paused);assert.deepEqual(repeat.commands,later.commands);assert.deepEqual(background.stats,snapshot);
+    game.frame=421;game.spell={active:true,id:1,age:{current:0}};background.update(game);
+    game.frame=451;background.update(game);const blend=new DrawList();background.draw(blend,game);
+    const meshes=weather(blend),ambient=background.stats.atmosphere;
+    assert.ok(ambient.particles>0);assert.equal(meshes.length,ambient.meshCalls+3);
+    assert.deepEqual(meshes.slice(ambient.meshCalls).map(command=>command[1]),[93,94,94]);
+    game.frame=481;background.update(game);const opaque=new DrawList();background.draw(opaque,game);
+    assert.equal(background.stats.atmosphere,null);assert.deepEqual(weather(opaque).map(command=>command[1]),[93,94,94]);
+    background.setStage(stage===7?1:stage+1);background.setStage(stage);background.update({frame:300,spell:{active:false}});
+    const returned=new DrawList();background.draw(returned,{frame:300,spell:{active:false}});assert.deepEqual(returned.commands,first.commands,'Stage re-entry has no stale particles');
+    background.destroy();
+  }
+});
+
 test('native draw commands have valid UVs, finite MVPs and cached static vertices',()=>{
   const background=new StageBackground({art:artFixture()});
   for(let id=1;id<=7;id++)for(const active of [false,true]){
@@ -75,7 +104,8 @@ test('native draw commands have valid UVs, finite MVPs and cached static vertice
     game.frame=540;game.spell.age.current=60;background.update(game);
     const draw=new DrawList();background.draw(draw,game);
     const meshes=draw.commands.filter(command=>command[0]==='mesh3d');
-    assert.equal(meshes.length,active?0:7);assert.ok(background.stats.vertices<=432);
+    assert.equal(meshes.length,active?0:7);assert.ok(meshes.reduce((sum,mesh)=>sum+mesh[2].length,0)<=432);
+    assert.ok(background.stats.vertices<=1032);assert.ok((background.stats.atmosphere?.meshCalls??0)<=4);
     for(const [,texture,vertices,indices,mvp] of meshes){
       assert.equal(texture,92);assert.equal(mvp.length,16);assert.ok(mvp.every(Number.isFinite));
       assert.ok(vertices.every(v=>v.length===6&&v.every(Number.isFinite)&&v[3]>=0&&v[3]<=1&&v[4]>=0&&v[4]<=1));
@@ -138,10 +168,10 @@ test('spell entry and retirement fade over simulation frames; rapid changes stay
   game.frame=62;game.spell.active=false;background.update(game);assert.equal(background.spellBackground.visibleCards()[0].opacity,1);
   game.frame=74;background.update(game);close(background.spellBackground.visibleCards()[0].opacity,.5);
   game.frame=86;background.update(game);assert.equal(background.spellBackground.visibleCards().length,0);
-  const road=new DrawList();background.draw(road,game);assert.equal(background.stats.meshCalls,7);
+  const road=new DrawList();background.draw(road,game);assert.equal(background.stats.meshCalls,7+background.stats.atmosphere.meshCalls);
   game.context.boss.bossId='mio';game.spell.active=true;
   for(let i=0;i<8;i++){game.frame+=4;game.spell.id=30+i;background.update(game);assert.ok(background.spellBackground.cards.length<=SPELL_BACKGROUND_TIMING.maxCards);}
-  game.frame+=12;background.update(game);const draw=new DrawList();background.draw(draw,game);assert.ok(background.stats.meshCalls<=13);assert.ok(background.stats.vertices<=636);
+  game.frame+=12;background.update(game);const draw=new DrawList();background.draw(draw,game);assert.ok(background.stats.meshCalls<=17);assert.ok(background.stats.vertices<=1236);
   background.setStage(1);assert.equal(background.spellBackground.cards.length,0);background.destroy();assert.equal(background.spellBackground.cards.length,0);
 });
 
@@ -176,7 +206,7 @@ test('stage changes release CPU scenery and leave borrowed texture ownership to 
   const mesh=background.geometry;background.draw(new DrawList(),{frame:200});assert.ok(mesh.fogCache.size>0);
   background.setStage(2);assert.notEqual(background.geometry,mesh);
   background.destroy();background.destroy();assert.deepEqual(art.unloads,[]);
-  assert.deepEqual(art.loads,['assets/scenery/stage01-atlas.png','assets/scenery/stage02-atlas.png']);
+  assert.deepEqual(art.loads,['assets/scenery/stage01-atlas.png','packages/thlib/assets/spell-common/textures/legacy-petals.png','assets/scenery/stage02-atlas.png']);
   assert.throws(()=>background.draw(new DrawList(),{frame:0}),/destroyed/);
 });
 
@@ -253,9 +283,9 @@ test('two abstract cards have a bounded shared capture lifecycle without submitt
   game.frame=61;background.update(game);game.frame=62;game.spell.id=2;background.update(game);
   let draw=new DrawList();background.draw(draw,game);assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,3);
   game.frame=74;background.update(game);draw=new DrawList();background.draw(draw,game);
-  assert.equal(background.spellBackground.visibleCards().length,2);assert.equal(background.stats.meshCalls,13);
-  assert.equal(draw.commands.filter(command=>command[0]==='mesh').length,6);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,7);
-  assert.ok(!('spellSets'in background));assert.ok(!('spellGeometry'in background));assert.ok(background.stats.vertices<=636);
+  assert.equal(background.spellBackground.visibleCards().length,2);assert.equal(background.stats.meshCalls,13+background.stats.atmosphere.meshCalls);
+  assert.equal(draw.commands.filter(command=>command[0]==='mesh').length,6+background.stats.atmosphere.meshCalls);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,7);
+  assert.ok(!('spellSets'in background));assert.ok(!('spellGeometry'in background));assert.ok(background.stats.vertices<=1236);
   game.frame=122;background.update(game);draw=new DrawList();background.draw(draw,game);
   assert.equal(background.stats.roadVisible,false);assert.equal(background.stats.meshCalls,3);assert.equal(draw.commands.filter(command=>command[0]==='mesh3d').length,0);
   background.destroy();assert.deepEqual(art.unloads,[]);

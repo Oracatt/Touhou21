@@ -6,7 +6,7 @@ import {spawnSync} from 'node:child_process';
 import {spellBackgroundStyle} from '../dist/src/background-art.js';
 
 const root=path.resolve(import.meta.dirname,'..'),args=process.argv.slice(2);
-let stages=[1,2,3,4,5,6,7],backends=['v8','quickjs'],modes=['road','spell'],frames=36,label='',clockStart=480;
+let stages=[1,2,3,4,5,6,7],backends=['v8','quickjs'],modes=['road','spell'],frames=36,label='',clockStart=480,binaryPath='runtime/ts-stg.exe';
 for(let i=0;i<args.length;i++){
   if(args[i]==='--stages')stages=args[++i].split(',').map(Number);
   else if(args[i]==='--backends')backends=args[++i].split(',');
@@ -14,6 +14,7 @@ for(let i=0;i<args.length;i++){
   else if(args[i]==='--frames')frames=Number(args[++i]);
   else if(args[i]==='--label')label=args[++i];
   else if(args[i]==='--clock-start')clockStart=Number(args[++i]);
+  else if(args[i]==='--binary')binaryPath=args[++i];
   else throw new Error(`Unknown argument ${args[i]}`);
 }
 assert.ok(stages.every(id=>Number.isInteger(id)&&id>=1&&id<=7));
@@ -21,12 +22,18 @@ assert.ok(backends.every(backend=>['v8','quickjs'].includes(backend)));
 assert.ok(modes.every(mode=>['road','spell'].includes(mode)));
 assert.ok(Number.isSafeInteger(frames)&&frames>0&&Number.isSafeInteger(clockStart)&&clockStart>=0,'Positive native frame count and nonnegative starting clock');
 assert.ok(!label||/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(label),'Background report label must be a simple directory name');
-const binary=path.join(root,'runtime/ts-stg.exe'),out=path.join(root,'reports/backgrounds',label),scratch=path.join(root,'build/background-fixtures',label);
+const binary=path.resolve(root,binaryPath),out=path.join(root,'reports/backgrounds',label),scratch=path.join(root,'build/background-fixtures',label);
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(scratch,{recursive:true});
 const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex'),results=[];
-const sourceFiles=['src/background.ts','src/background-art.ts','src/spell-background.ts','src/art.ts','tools/background-fixture.js','tools/verify-background.mjs'];
+const sourceFiles=['src/background.ts','src/background-art.ts','src/stage-atmosphere.ts','src/spell-background.ts','src/art.ts','tools/background-fixture.js','tools/verify-background.mjs'];
 const sourceIdentity=()=>Object.fromEntries(sourceFiles.map(file=>[file,hash(path.join(root,file))]));
-const sourceBefore=sourceIdentity(),textureIdentity={};
+const sourceBefore=sourceIdentity(),textureIdentity={},binaryBefore=hash(binary),roadTextureIdentity={};
+if(modes.includes('road'))for(const file of [
+  ...stages.map(stage=>`assets/scenery/stage0${stage}-atlas.png`),
+  'packages/thlib/assets/spell-common/manifest.json',
+  'packages/thlib/assets/spell-common/textures/legacy-petals.png',
+  'packages/thlib/assets/spell-common/textures/legacy-aura.png',
+])roadTextureIdentity[file]=hash(path.join(root,file));
 if(modes.includes('spell'))for(const stage of stages){
   const profile=spellBackgroundStyle(null,stage),base=profile.textures.base,pattern=profile.textures.pattern;
   assert.notEqual(base,pattern,'A spell requires independently authored base and pattern paths');
@@ -35,6 +42,8 @@ if(modes.includes('spell'))for(const stage of stages){
   textureIdentity[stage]={bossId:profile.bossId,files:{[base]:baseHash,[pattern]:patternHash}};
 }
 const assertFrozen=()=>{assert.deepEqual(sourceIdentity(),sourceBefore,'Background sources and fixture stay frozen during native verification');
+  assert.equal(hash(binary),binaryBefore,'Native binary stays frozen during verification');
+  for(const [file,sha]of Object.entries(roadTextureIdentity))assert.equal(hash(path.join(root,file)),sha,'Road/common materials stay frozen during verification');
   for(const entry of Object.values(textureIdentity))for(const [file,sha]of Object.entries(entry.files))assert.equal(hash(path.join(root,file)),sha,'Authored spell textures stay frozen during verification');};
 function compareState(a,b,location='$'){
   if(typeof a==='number'&&typeof b==='number'){
@@ -59,12 +68,13 @@ for(const stage of stages)for(const mode of modes){
     fs.writeFileSync(prefix+'.log',(child.stdout??'')+(child.stderr??''));
     if(child.error)throw child.error;assert.equal(child.status,0,`${backend}/${stage}/${mode}: ${child.stderr}`);
     const state=JSON.parse(fs.readFileSync(prefix+'.json','utf8'));assert.equal(state.stats.stage,stage);
-    assert.equal(state.stats.spell,mode==='spell');assert.ok(state.stats.meshCalls>0&&state.stats.meshCalls<=15);assert.ok(state.stats.vertices<2300);
+    assert.equal(state.stats.spell,mode==='spell');assert.ok(state.stats.meshCalls>0&&state.stats.meshCalls<=17);assert.ok(state.stats.vertices<=1236);
+    assert.equal(state.textureProof.repeatedRenderIdentical,true);assert.equal(state.textureProof.motion.changedSinceFirst,frames>1);
     if(mode==='spell'){
       const proof=state.textureProof,assets=textureIdentity[stage];assert.equal(proof.bossId,assets.bossId);
       assert.deepEqual([...proof.sourceTexturePaths].sort(),Object.keys(assets.files).sort(),'The rendered native meshes use both hashed source images');
       assert.equal(proof.distinctTextureIds.length,2);assert.equal(proof.meshes.length,3);assert.equal(proof.repeatedRenderIdentical,true);
-    }
+    }else{assert.ok(state.stats.atmosphere.particles>0);assert.ok(state.stats.atmosphere.vertices<=600);assert.ok(state.textureProof.ambientMeshes.length<=4);}
     runs.push({backend,state,pngSha256:hash(prefix+'.png'),log:(child.stdout??'').trim()});
     assertFrozen();
   }
@@ -72,6 +82,6 @@ for(const stage of stages)for(const mode of modes){
   results.push({stage,mode,runs});console.log(`PASS stage ${stage} ${mode}`);
 }
 fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({passed:true,frames,clockStart,captureClock:clockStart+frames,sourceSha256:sourceBefore,
-  textureIdentity,artManifestSha256:hash(path.join(root,'assets/art-manifest.json')),binarySha256:hash(binary),results,
+  textureIdentity,roadTextureIdentity,artManifestSha256:hash(path.join(root,'assets/art-manifest.json')),binarySha256:binaryBefore,results,
   stateComparison:'Exact keys, integers and nonnumeric values; relative 1e-12 tolerance for camera/mesh trigonometry. PNG hashes must be identical.',
   scope:'Production StageBackground rendering: independent base/pattern native texture IDs, source paths and distinct file hashes, authored layer order and blend scope, motion and repeated-draw stability, road compatibility and exact backend PNG parity. No original executable run.'},null,2)+'\n');

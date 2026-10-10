@@ -1,4 +1,5 @@
 import type {AnmDrawList as DrawList} from '@ts-stg/thlib/touhou';
+import type {SpritePackManifest} from '@ts-stg/thlib';
 import type {GameArt,ArtTexture} from './art.js';
 
 import type {BackgroundGame,StageIdentity,MeshVertex3D,PanelOptions} from './ui-types.js';
@@ -6,6 +7,7 @@ import type {BackgroundGame,StageIdentity,MeshVertex3D,PanelOptions} from './ui-
  * approximations of buildings. Scenery stays in this game's business layer. */
 import {SCENERY_ATLASES,sceneryRegion} from './background-art.js';
 import {DynamicSpellBackground} from './spell-background.js';
+import {StageAtmosphere} from './stage-atmosphere.js';
 export const BACKGROUND_VIEWPORT=Object.freeze({x:48,y:24,width:576,height:672,canvasWidth:960,canvasHeight:720});
 const TILE=48,NEAR=2,FAR=220;
 const clamp=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
@@ -136,13 +138,14 @@ export function cameraForStage(stage:number|StageIdentity,clock=0){
   return{eye:[sway*(id===5?.65:2.3),t.height+lift,travel].map(Math.fround),target:[sway*.55+turn,id===6?3.5:2.7,travel+46].map(Math.fround),up:[Math.sin(roll),Math.cos(roll),0],fov:Math.fround(Math.PI*.30)};
 }
 export class StageBackground{
- declare stats:{stage:number;spell:boolean;roadVisible:boolean;meshCalls:number;vertices:number;camera:ReturnType<typeof cameraForStage>;texture:string;features:string[];dynamic:ReturnType<DynamicSpellBackground['snapshot']>}|null;
+ declare stats:{stage:number;spell:boolean;roadVisible:boolean;meshCalls:number;vertices:number;camera:ReturnType<typeof cameraForStage>;texture:string;features:string[];dynamic:ReturnType<DynamicSpellBackground['snapshot']>;atmosphere:ReturnType<StageAtmosphere['draw']>|null}|null;
   declare viewport: number[];
   declare spellBackground: DynamicSpellBackground;
+  declare atmosphere: StageAtmosphere;
   declare destroyed: boolean;
 
  declare art:GameArt;declare stage:StageIdentity|null;declare texture:ArtTexture|null;declare geometry:SceneryBatch|null;declare geometryVariants:SceneryBatch[]|null;
-  constructor({art,seed=0}:{art:GameArt;seed?:number}={} as {art:GameArt}){if(!art?.load||!art?.background)throw new TypeError('StageBackground requires GameArt');this.art=art;this.viewport=viewport3d();this.stage=null;this.texture=null;this.geometry=null;this.geometryVariants=null;this.spellBackground=new DynamicSpellBackground({art,seed});this.stats=null;this.destroyed=false;}
+  constructor({art,seed=0,atmosphereManifest}:{art:GameArt;seed?:number;atmosphereManifest?:SpritePackManifest}={} as {art:GameArt}){if(!art?.load||!art?.background)throw new TypeError('StageBackground requires GameArt');this.art=art;this.viewport=viewport3d();this.stage=null;this.texture=null;this.geometry=null;this.geometryVariants=null;this.spellBackground=new DynamicSpellBackground({art,seed});this.atmosphere=new StageAtmosphere({art,seed,manifest:atmosphereManifest});this.stats=null;this.destroyed=false;}
   setStage(stage:number|StageIdentity){
     if(this.destroyed)throw new Error('StageBackground is destroyed');const id=typeof stage==='number'?stage:stage?.id;if(!Number.isInteger(id)||id<1||id>7)throw new RangeError('Stage must be 1..7');if(this.stage?.id===id)return this;
     this.stage=typeof stage==='number'?{id,background:`stage0${id}`}:stage;this.texture=this.art.load(SCENERY_ATLASES[id-1].path);this.geometryVariants=[0,1,2].map(v=>roadGeometry(id,v));this.geometry=this.geometryVariants[0];this.spellBackground.reset(id);this.stats=null;return this;
@@ -160,18 +163,22 @@ export class StageBackground{
     const roadVisible=!cards.some(card=>this.spellBackground.coversRoad(card));
     draw.rect(48,24,576,672,theme.fog);
     let meshCalls=0,vertices=0;
+    let atmosphere:ReturnType<StageAtmosphere['draw']>|null=null;
     if(roadVisible){
       this.art.background(draw,this.stage.background??`stage0${id}`,336,360,576,672,{alpha:.37,offset:0});
       const eye=[...camera.eye],target=[...camera.target],first=Math.floor(camera.eye[2]/TILE)-1,origin=first*TILE;
       eye[2]-=origin;target[2]-=origin;
       const forward=unit(sub(target,eye)),view=lookAt3d(eye,target,camera.up),vp=multiply3d(this.viewport,multiply3d(perspective3d(camera.fov),view));draw.sampler(this.texture!.id,'bilinear','clamp','clamp');
       for(let tile=6;tile>=0;tile--){const variant=((first+tile)%3+3)%3,m=this.geometryVariants![variant],v=m.fogVertices(tile<2?0:tile-1);draw.mesh3d(this.texture!.id,v,m.orderedIndices(forward),multiply3d(vp,translation(0,0,tile*TILE)));meshCalls++;vertices+=v.length;}
+      // Ambient weather belongs to the same captured road as its scenery.
+      // Spell images cover it; public bullets, actors and HUD remain above it.
+      atmosphere=this.atmosphere.draw(draw,id,visualClock);meshCalls+=atmosphere.meshCalls;vertices+=atmosphere.vertices;
     }
     for(const card of cards){
       const dynamic=this.spellBackground.drawCard(draw,card);meshCalls+=dynamic.meshCalls;vertices+=dynamic.vertices;
     }
     draw.rect(48,24,576,672,cards.length?0x08101d3a:0x08101d1d).rect(48,24,576,105,0x070e1818);
-    this.stats={stage:id,spell,roadVisible,meshCalls,vertices,camera,texture:SCENERY_ATLASES[id-1].path,features:cards.length?['abstract-pattern',cards.at(-1)!.bossId]:[...this.geometry!.features].sort(),dynamic:this.spellBackground.snapshot()};return this;
+    this.stats={stage:id,spell,roadVisible,meshCalls,vertices,camera,texture:SCENERY_ATLASES[id-1].path,features:cards.length?['abstract-pattern',cards.at(-1)!.bossId]:[...this.geometry!.features,...(atmosphere?.features??[])].sort(),dynamic:this.spellBackground.snapshot(),atmosphere};return this;
   }
-  destroy(){if(this.destroyed)return;this.destroyed=true;this.spellBackground.destroy();this.geometry=null;this.geometryVariants=null;this.texture=null;this.stage=null;this.stats=null;/* GameArt owns the borrowed textures. */}
+  destroy(){if(this.destroyed)return;this.destroyed=true;this.spellBackground.destroy();this.atmosphere.destroy();this.geometry=null;this.geometryVariants=null;this.texture=null;this.stage=null;this.stats=null;/* GameArt owns the borrowed textures. */}
 }
