@@ -92,7 +92,7 @@ function washedGreeting(k: AttackKit){
     const drops=k.pick(1,1,2,2);
     for(let i=0;i<drops;i++){
       const angle=-DOWN+(k.unit()-.5)*1.9,speed=lerp(1.9,2.6,k.unit()),g=.045;
-      const splashY=lerp(210,290,k.unit()),vy=Math.sin(angle)*speed*k.sp,ga=g*k.sp;
+      const splashY=lerp(180,260,k.unit()),vy=Math.sin(angle)*speed*k.sp,ga=g*k.sp;
       const time=Math.round((-vy+Math.sqrt(vy*vy+2*ga*(splashY-k.oy)))/ga);
       const drop=k.shot(k.ox,k.oy,angle,speed,T.ORB,C8.BLUE,[k.accel(g,time+12,DOWN),k.vanish()]);
       k.later(time+8,drop,b=>{
