@@ -91,6 +91,8 @@ globalThis.__tsstg_game={
           center:root.attachedEffect?.center??null,near:root.attachedEffect?.nearCenter??null,far:root.attachedEffect?.farCenter??null}))??[]};
     }
     if(scenario.nameProbe){state.bossNameCard=application.core.game.bossNameCard?.snapshot()??null;state.nameProbe={...nameProbe};}
+    if(scenario.hpProbe){const game=application.core.game,boss=game.director.boss;
+      state.bossHp={hud:game.bossHud.snapshot(),animations:game.bossHud.panels[0].animations.length,held:game.isBossHeld(boss),flags:boss.primaryFlags};}
     return state;
   },
 };

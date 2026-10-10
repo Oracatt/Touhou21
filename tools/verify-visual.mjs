@@ -28,6 +28,13 @@ const cases=[
   {id:'midboss-arrival',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:89},
   {id:'midboss-fog-gather',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},expectedState:'midboss-combat',phaseRoll:129},
   {id:'boss-reposition',options:{...base,skipRoad:true,autoDialogue:true,autoCapture:true},until:{state:'phase-wait'},phaseRoll:30},
+  ...[{id:'start',phaseRoll:3,range:[.12,.13]},{id:'half',phaseRoll:18,range:[.49,.51]},{id:'full',phaseRoll:40,range:[1,1]}].map(probe=>({
+    id:`hp-fill-${probe.id}`,options:{...base,skipRoad:true,autoDialogue:true},until:{state:'combat',phaseIndex:0},phaseRoll:probe.phaseRoll,hpProbe:{range:probe.range,target:1}})),
+  ...[{id:'start',phaseRoll:3,range:[.12,.13]},{id:'half',phaseRoll:18,range:[.49,.51]},{id:'full',phaseRoll:40,range:[1,1]}].map(probe=>({
+    id:`hp-refill-${probe.id}`,options:{...base,skipRoad:true,autoDialogue:true,autoCapture:true},until:{state:'phase-wait'},phaseRoll:probe.phaseRoll,hpProbe:{range:probe.range,target:1,held:true}})),
+  {id:'hp-shared-spell',options:{...base,skipRoad:true,autoDialogue:true,autoCapture:true},until:{state:'combat',phaseIndex:1},phaseRoll:3,hpProbe:{shared:true}},
+  {id:'hp-midboss-start',options:{...base,mode:'stage-practice',stageId:2,autoDialogue:true},until:{state:'midboss-combat'},phaseRoll:3,hpProbe:{range:[.12,.13],target:1}},
+  {id:'hp-practice-start',options:{...base,mode:'spell-practice',stageId:1,spellId:STAGES[0].spells[0].id},until:{state:'combat'},phaseRoll:3,hpProbe:{range:[.12,.13],target:1}},
   ...[{id:'midboss-defeated',phaseRoll:30},{id:'midboss-escaping',phaseRoll:95},{id:'midboss-removed',phaseRoll:140}].map(test=>({
     ...test,options:{...base,mode:'stage-practice',stageId:2,autoDialogue:true,autoCapture:true},until:{state:'midboss-exit'}})),
   {id:'bgm-caption',options:base,preRoll:90},
@@ -106,6 +113,14 @@ for(const scenario of cases.filter(value=>!filter||filter.includes(value.id))){
       if(probe.exitAge!==undefined){assert.equal(card.exitAge,probe.exitAge);assert.ok(state.scene.dialogue.exit,'The real dialogue owner has begun its authored exit');}
       else assert.equal(card.age,probe.age+(probe.resume?1:0));
       assert.equal(state.scene.paused,!!probe.pauseFrames&&!probe.resume);
+    }
+    if(scenario.hpProbe){
+      const panel=state.bossHp.hud.panels[0],probe=scenario.hpProbe;
+      assert.equal(state.bossHp.animations,7,'The real public ring and its markers are present');
+      if(probe.range)assert.ok(panel.fraction>=probe.range[0]&&panel.fraction<=probe.range[1],`${scenario.id}: fraction ${panel.fraction}`);
+      if(probe.target!==undefined)assert.equal(panel.target,probe.target);
+      if(probe.held){assert.equal(state.bossHp.held,true);assert.equal(state.bossHp.flags&0x13,0x13);assert.equal(state.bossHp.hud.timerVisible,false);}
+      if(probe.shared){assert.ok(panel.target>0&&panel.target<.5);assert.equal(panel.fraction,panel.target,'The shared spell keeps its remaining segment');}
     }
     if(scenario.until){const director=state.scene.director;assert.ok(director,scenario.id);for(const [key,value] of Object.entries(scenario.until))if(key!=='spellId'){
       if(scenario.id!=='stage-transition')assert.equal(director[key],key==='state'?(scenario.expectedState??value):value,`${scenario.id}: ${key}`);

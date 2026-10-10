@@ -122,7 +122,7 @@ export class CampaignDirector{
     game.enterBoss(boss,{profile:'midboss',distortion:{color:TOUHOU_BOSS_PROFILES.boss.color},entrance:{mode:'flyIn',readyFrame:MIDBOSS_ENTRY_FRAMES,follow:boss}});
     game.setBossEffects({aura:true,distortion:true});
     game.setBossHud({name:this.stage.midbossName??this.stage.bossId,remainingSpells:this.midbossPhases.filter(p=>p.spell).length,dialogue:true,
-      healthBars:[{current:hp,maximum:hp,phaseHealth:hp,markers:[]}]});
+      healthBars:[{current:hp,maximum:hp,phaseHealth:hp,markers:[],groupIndex:0}]});
     this.callbacks.bossSpawn?.(boss,{bossId:boss.bossId,midboss:true});
   }
   get midbossPhase(){return this.midbossPhases?.[this.midbossPhaseIndex]??null;}
@@ -134,7 +134,7 @@ export class CampaignDirector{
     game.resumeBoss(boss);boss.invulnerable=survival;game.startBossCombat();game.setBossEffects({aura:true,distortion:true});
     game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({dialogue:false,remainingSpells:this.midbossPhases.slice(index+1).filter(p=>p.spell).length,
-      healthBars:[{current:phase.hp,maximum:phase.hp,phaseHealth:phase.hp,markers:[],animateFill:false}]});
+      healthBars:[{current:phase.hp,maximum:phase.hp,phaseHealth:phase.hp,markers:[],groupIndex:index}]});
     // This game's entry fog already supplies the first nonspell's preparation
     // and sound54. Later cards retain their own attack-charge sequence.
     if(index===0&&!phase.spell)this.chargeCue=null;
@@ -177,7 +177,7 @@ export class CampaignDirector{
       this.state='midboss-phase-wait';this.waitFrames=phase.spell?60:40;
       const next=this.midbossPhases[this.midbossPhaseIndex+1];
       game.setBossHud({remainingSpells:this.midbossPhases.slice(this.midbossPhaseIndex+1).filter(p=>p.spell).length,
-        healthBars:[{current:next.hp,maximum:next.hp,phaseHealth:next.hp,markers:[],animateFill:false}]});
+        healthBars:[{current:next.hp,maximum:next.hp,phaseHealth:next.hp,markers:[],groupIndex:this.midbossPhaseIndex+1}]});
     }
     else this._finishMidboss(game,source,{timeout});
   }
@@ -287,9 +287,6 @@ export class CampaignDirector{
     game.resumeBoss(boss);boss.primaryFlags&=~0x93;boss.invulnerable=!!phase.spec?.survival;
     game.startBossCombat();game.setBossEffects({aura:true,distortion:true});game.context.bossSuppressed=false;game.context.enemyContactBlocked=false;
     game.setBossHud({name:this.stage.bossName??this.stage.bossId,dialogue:false,...this.phasePlan!.hudState(index)});
-    // Ring fill must be finished before an attack begins. A shared ring carries
-    // its remaining segment from nonspell into its spell without a new refill.
-    if(index===0||!phase.spell)game.setBossHud({healthBars:this.phasePlan!.hudState(index).healthBars.map(bar=>({...bar,animateFill:false}))});
     this._charge(game,(['yellow','cyan','yellow','magenta','red','yellow','white'] as TouhouBossChargeColor[])[this.stageId-1]);
     if(phase.spell)game.beginSpell({...this._spellPresentation(phase,boss,!!phase.midboss),id:phase.code,name:phase.spec.name,
       duration:phase.duration,survival:!!phase.spec.survival,boss});
@@ -323,8 +320,7 @@ export class CampaignDirector{
       boss.motion.flags=0;boss.motion.speed=0;Object.assign(boss.motion.delta,{x:0,y:0,z:0});
       this.transitionMove=new AnmInterpolation([boss.x,boss.y],[80*Math.sin((this.phaseIndex+1)*1.7),105],this.waitFrames,9);
       const next=this.phases[this.phaseIndex+1];next.spell?this.boss!.prepareSpellHealth(next.hp):this.boss!.prepareNormalHealth(next.hp);this.boss!.maximumHp=next.hp;
-      game.setBossHud({...this.phasePlan!.hudState(this.phaseIndex+1),dialogue:false,
-        healthBars:this.phasePlan!.hudState(this.phaseIndex+1).healthBars.map(bar=>({...bar,animateFill:false}))});
+      game.setBossHud({...this.phasePlan!.hudState(this.phaseIndex+1),dialogue:false});
     }
   }
   onEvent(name:string,data:unknown,game=this.game){
@@ -388,7 +384,7 @@ export class CampaignDirector{
     }else if(this.state==='midboss-combat'){
       const phase=this.midbossPhase!,common={game,boss:this.boss,frame:this.phaseFrame,difficulty:this.difficulty,stageId:this.stageId,state:this.patternState,rng:this.rng};
       if(phase.spell)updateMidbossSpellPattern({...common,spellIndex:phase.spellIndex});else updateMidbossNonspellPattern(common);
-      const hp=this.boss!.maximumHp;game.setBossHud({healthBars:[{current:Math.max(0,this.boss!.hp),maximum:hp,phaseHealth:this.boss!.hp,markers:[]}]});
+      const hp=this.boss!.maximumHp;game.setBossHud({healthBars:[{current:Math.max(0,this.boss!.hp),maximum:hp,phaseHealth:this.boss!.hp,markers:[],groupIndex:this.midbossPhaseIndex}]});
       this.phaseFrame++;if(!phase.spell&&this.phaseFrame>=phase.duration)this._finishMidbossPhase(game,{timeout:true});
     }else if(this.state==='midboss-phase-wait'){
       if(--this.waitFrames<=0)this._beginMidbossPhase(game,this.midbossPhaseIndex+1);
