@@ -26,6 +26,11 @@ const FLIGHTS=[
   {height:15,speed:.095},{height:14,speed:.085},{height:17,speed:.082},{height:15,speed:.089},
   {height:12,speed:.081},{height:18,speed:.079},{height:15,speed:.092},
 ];
+/** World depth reached by the road camera, exactly as cameraForStage rounds it. */
+export function stageTravel(stage:number,clock:number){
+  if(!Number.isInteger(stage)||stage<1||stage>7||!Number.isFinite(clock))throw new RangeError('Invalid stage camera');
+  return Math.fround(clock*FLIGHTS[stage-1].speed);
+}
 export function cameraForStage(stage:number|StageIdentity,clock=0){
   const id=typeof stage==='number'?stage:stage?.id;if(!Number.isInteger(id)||id<1||id>7||!Number.isFinite(clock))throw new RangeError('Invalid stage camera');const t=FLIGHTS[id-1];
   const travel=clock*t.speed,sway=Math.sin(clock*.0011+id*.73),lift=Math.sin(clock*.00081+id)*.65,turn=Math.sin(clock*.00053+id)*.9,roll=id===7?Math.sin(clock*.00074)*.019:0;

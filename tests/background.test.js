@@ -206,7 +206,7 @@ test('stage changes release CPU scenery and leave borrowed texture ownership to 
   const mesh=background.geometry;background.draw(new DrawList(),{frame:200});assert.ok(mesh.fogCache.size>0);
   background.setStage(2);assert.notEqual(background.geometry,mesh);
   background.destroy();background.destroy();assert.deepEqual(art.unloads,[]);
-  assert.deepEqual(art.loads,['assets/scenery/stage01-atlas.png','packages/thlib/assets/spell-common/textures/legacy-petals.png','assets/scenery/stage02-atlas.png']);
+  assert.deepEqual(art.loads,['assets/scenery/stage01-atlas.png','packages/thlib/assets/spell-common/textures/legacy-aura.png','packages/thlib/assets/spell-common/textures/legacy-petals.png','assets/scenery/stage02-atlas.png']);
   assert.throws(()=>background.draw(new DrawList(),{frame:0}),/destroyed/);
 });
 

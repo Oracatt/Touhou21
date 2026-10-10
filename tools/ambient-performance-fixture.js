@@ -22,7 +22,7 @@ export function createAmbientPerformanceFixture(scenarioPath){
     check(!boundGame||game===boundGame,'The paired workload must remain in one scene');
     if(boundGame)return;boundGame=game;
     check(game.background?.atmosphere,'Production StageAtmosphere must be present');
-    if(!scenario.ambient)game.background.atmosphere.draw=(_draw,stage,clock)=>({stage,clock,particles:0,features:[],meshCalls:0,vertices:0});
+    if(!scenario.ambient)game.background.atmosphere.draw=(_draw,stage,clock)=>({stage,clock,particles:0,visible:0,features:[],meshCalls:0,vertices:0});
   }
   function update(){app.update(scenario.mask??0);bindGame();}
   return{
