@@ -3,13 +3,13 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/github/TS-STG",
-  "commit": "6a0ec573a26bc0b985d9f71d6eee9bb12125a176",
+  "commit": "92ce893469569d1e8f318bbde18ea158bab53691",
   "backend": "v8",
   "supportedBackends": [
     "v8",
     "quickjs"
   ],
-  "executableSha256": "06e6ffd4ca719cdfbb58709b79c144ea70637ba5413eea7e71bb6510b72ae5a8",
+  "executableSha256": "98deb8c21fdfe3d526cc19fc0c79e4c92a560591a1acb1572754df84b8654c56",
   "sourceModified": false,
   "sourceState": {
     "gitClean": true,
@@ -1155,8 +1155,8 @@
       },
       {
         "path": "src/input.ts",
-        "bytes": 912,
-        "sha256": "a5173a99939bec105446cf0b0a5882406de06831ed74d77cd5c3b97a6a258d8f"
+        "bytes": 942,
+        "sha256": "eaf3bab54ced8e5b6f2e74b533dcb3c0fe36a23d860c310adfdbb787295b684c"
       },
       {
         "path": "src/items.ts",
@@ -1225,8 +1225,8 @@
       },
       {
         "path": "src/replay.ts",
-        "bytes": 4939,
-        "sha256": "4355750963aff8150de788d9f4b93d884a91113497a7000b4fa660af62e81425"
+        "bytes": 5065,
+        "sha256": "77fcd8c7e1da9030ae34128efaaa7749c39e0bb94d3806dded000ad4d9821f3e"
       },
       {
         "path": "src/resources.ts",
@@ -1619,7 +1619,7 @@
         "sha256": "bf6dbafbd67e762ac716826a68e6ecc17894b0e110ad177446857a77a1fadbe3"
       }
     ],
-    "sourceSha256": "d32a69d2fc24f83fbafdcda41b1849dd4aa9b8fef4eaec9d8121e1836bfc98c2",
+    "sourceSha256": "6820901bf54adfe850f5c30ad37f067ba71a5e3c0dfdfbd78282ff81e6a9279f",
     "outputFiles": [
       {
         "path": "dist/animation.d.ts",
@@ -1903,23 +1903,23 @@
       },
       {
         "path": "dist/input.d.ts",
-        "bytes": 522,
-        "sha256": "87342af2b756d337052beb7d10382f4866be3c2b0ed793659bed1804a2697084"
+        "bytes": 541,
+        "sha256": "caa120d45ff2cf08f091cce87a5a4d17103b7c32a79129df926e5e64da757d09"
       },
       {
         "path": "dist/input.d.ts.map",
-        "bytes": 722,
-        "sha256": "a6fc68337de4b5fcce8a3737c2421378618349029a7764abc54ca33f42f77d2b"
+        "bytes": 747,
+        "sha256": "cc4bab83c764ee64dabcccec16a55196904e8b25da6608e11befc6779e27aba0"
       },
       {
         "path": "dist/input.js",
-        "bytes": 692,
-        "sha256": "2ed708e18fb5a630d822fec2a8a16c145bcc2e524c99931122406941f1ca4174"
+        "bytes": 707,
+        "sha256": "59c5033f98e63ace25b0644422bc2a62e8ca6d3f241ee839f6aa3e5d81a7a659"
       },
       {
         "path": "dist/input.js.map",
-        "bytes": 1182,
-        "sha256": "df4f13c54acc4a25d127cfe86c32ddf888556fd7bf1f3df2ba3fcb865e4d8e3e"
+        "bytes": 1202,
+        "sha256": "672a83e6b28691c44d1ffc68e83d761713309a38bb0c2b7f63933febb58a0454"
       },
       {
         "path": "dist/items.d.ts",
@@ -2189,17 +2189,17 @@
       {
         "path": "dist/replay.d.ts.map",
         "bytes": 1465,
-        "sha256": "6622746cc64ebcbe5383a09ed32f239c862683462970c5e578aa97506857c5c4"
+        "sha256": "3792cb064a13bd4db3d6d2f0a63adcef8fc04b1f227da350a029a4135f4171a8"
       },
       {
         "path": "dist/replay.js",
-        "bytes": 4587,
-        "sha256": "65cbf8b944109935068d44f877b5df41315bc5d35b0df47dc2f0a1aba9493926"
+        "bytes": 4705,
+        "sha256": "dbd4dee6268993b2f192e50b3ff810567518a88df0ad862450710b580576c2b6"
       },
       {
         "path": "dist/replay.js.map",
-        "bytes": 5747,
-        "sha256": "5092816df25c5b5c408f0496b75f88369d55fee701ad7e9a850c2cd5091bc35e"
+        "bytes": 5924,
+        "sha256": "832a63b9efdb1729a6ff0a49a281aa60271d06c417bd5f031d16e5cdee13e1ba"
       },
       {
         "path": "dist/resources.d.ts",
@@ -3722,10 +3722,10 @@
         "sha256": "b703b3ba74beb0892d0bed9d6694352bc5b09b7fe44ff4b56ed020fc061e971b"
       }
     ],
-    "outputSha256": "b16e4d95bdab1f2dfa259a44abb7f5cdbcadf4187f612106171a04150ec7261e"
+    "outputSha256": "aec699869c1f0a4256ce0a7d919b2658623660d546367221cde0a7c1ba6735a3"
   },
-  "thlibSha256": "da19557bbc760fb782bdc67332756a992ccb71554581b9f0c445a0bb331246f6",
-  "runtimeSha256": "27d552728ddafb3cca5ce6781f49676baa49e84a0fbc2c27ce3b2b5fcc6228bd",
+  "thlibSha256": "ab202abb345dd92aa7aa1cdbe18a050b8d08958fd0a3f887e318426b58f3279f",
+  "runtimeSha256": "4bd849c41f06467a53ae31dcf29bd5de66313c4dcd1154248c84718b049cdd6d",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -5059,23 +5059,23 @@
     },
     {
       "path": "dist/input.d.ts",
-      "bytes": 522,
-      "sha256": "87342af2b756d337052beb7d10382f4866be3c2b0ed793659bed1804a2697084"
+      "bytes": 541,
+      "sha256": "caa120d45ff2cf08f091cce87a5a4d17103b7c32a79129df926e5e64da757d09"
     },
     {
       "path": "dist/input.d.ts.map",
-      "bytes": 722,
-      "sha256": "a6fc68337de4b5fcce8a3737c2421378618349029a7764abc54ca33f42f77d2b"
+      "bytes": 747,
+      "sha256": "cc4bab83c764ee64dabcccec16a55196904e8b25da6608e11befc6779e27aba0"
     },
     {
       "path": "dist/input.js",
-      "bytes": 692,
-      "sha256": "2ed708e18fb5a630d822fec2a8a16c145bcc2e524c99931122406941f1ca4174"
+      "bytes": 707,
+      "sha256": "59c5033f98e63ace25b0644422bc2a62e8ca6d3f241ee839f6aa3e5d81a7a659"
     },
     {
       "path": "dist/input.js.map",
-      "bytes": 1182,
-      "sha256": "df4f13c54acc4a25d127cfe86c32ddf888556fd7bf1f3df2ba3fcb865e4d8e3e"
+      "bytes": 1202,
+      "sha256": "672a83e6b28691c44d1ffc68e83d761713309a38bb0c2b7f63933febb58a0454"
     },
     {
       "path": "dist/items.d.ts",
@@ -5345,17 +5345,17 @@
     {
       "path": "dist/replay.d.ts.map",
       "bytes": 1465,
-      "sha256": "6622746cc64ebcbe5383a09ed32f239c862683462970c5e578aa97506857c5c4"
+      "sha256": "3792cb064a13bd4db3d6d2f0a63adcef8fc04b1f227da350a029a4135f4171a8"
     },
     {
       "path": "dist/replay.js",
-      "bytes": 4587,
-      "sha256": "65cbf8b944109935068d44f877b5df41315bc5d35b0df47dc2f0a1aba9493926"
+      "bytes": 4705,
+      "sha256": "dbd4dee6268993b2f192e50b3ff810567518a88df0ad862450710b580576c2b6"
     },
     {
       "path": "dist/replay.js.map",
-      "bytes": 5747,
-      "sha256": "5092816df25c5b5c408f0496b75f88369d55fee701ad7e9a850c2cd5091bc35e"
+      "bytes": 5924,
+      "sha256": "832a63b9efdb1729a6ff0a49a281aa60271d06c417bd5f031d16e5cdee13e1ba"
     },
     {
       "path": "dist/resources.d.ts",
@@ -6954,8 +6954,8 @@
     },
     {
       "path": "src/input.ts",
-      "bytes": 912,
-      "sha256": "a5173a99939bec105446cf0b0a5882406de06831ed74d77cd5c3b97a6a258d8f"
+      "bytes": 942,
+      "sha256": "eaf3bab54ced8e5b6f2e74b533dcb3c0fe36a23d860c310adfdbb787295b684c"
     },
     {
       "path": "src/items.ts",
@@ -7024,8 +7024,8 @@
     },
     {
       "path": "src/replay.ts",
-      "bytes": 4939,
-      "sha256": "4355750963aff8150de788d9f4b93d884a91113497a7000b4fa660af62e81425"
+      "bytes": 5065,
+      "sha256": "77fcd8c7e1da9030ae34128efaaa7749c39e0bb94d3806dded000ad4d9821f3e"
     },
     {
       "path": "src/resources.ts",
@@ -7428,7 +7428,7 @@
     {
       "path": "PACKAGE.json",
       "bytes": 3960,
-      "sha256": "d9a076d0e5c9970ef64ea5fbf8431e240806e02241922e4dc79c2a5bccb6c5c2",
+      "sha256": "7355ca34efe2f9afcf9b8c40e5dcd9f6c218786c29680e5759f8fd1dcf77c544",
       "source": "dist/TS-STG/PACKAGE.json"
     },
     {
@@ -8316,7 +8316,7 @@
     {
       "path": "ts-stg.exe",
       "bytes": 23399936,
-      "sha256": "06e6ffd4ca719cdfbb58709b79c144ea70637ba5413eea7e71bb6510b72ae5a8",
+      "sha256": "98deb8c21fdfe3d526cc19fc0c79e4c92a560591a1acb1572754df84b8654c56",
       "source": "build/Release/ts-stg.exe"
     }
   ],
@@ -8324,13 +8324,13 @@
     "configuration": "Release",
     "executableSource": "build/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "d9a076d0e5c9970ef64ea5fbf8431e240806e02241922e4dc79c2a5bccb6c5c2",
-    "binarySha256": "06e6ffd4ca719cdfbb58709b79c144ea70637ba5413eea7e71bb6510b72ae5a8",
+    "packageSha256": "7355ca34efe2f9afcf9b8c40e5dcd9f6c218786c29680e5759f8fd1dcf77c544",
+    "binarySha256": "98deb8c21fdfe3d526cc19fc0c79e4c92a560591a1acb1572754df84b8654c56",
     "sourceFiles": [
       {
         "path": "CMakeLists.txt",
-        "bytes": 16072,
-        "sha256": "ebf350ac18675642fb26a51a15aa6fedecbe9067c3ae9ab709a0d51ba59d20cb"
+        "bytes": 16515,
+        "sha256": "790e77728b3b61449daedbf7f57a7d1af321d4bd28668227017238dc9879a511"
       },
       {
         "path": "native/include/tsstg/backend.hpp",
@@ -8379,13 +8379,13 @@
       },
       {
         "path": "native/src/host.cpp",
-        "bytes": 50441,
-        "sha256": "4e7198b6c7c6c6bd84bbbbae87f21c28fc99eadb98d8718a9644219059139351"
+        "bytes": 50481,
+        "sha256": "a8d5fc006dd77849d4b0ac68a461b3b80d68a82df3950b03daba040573b69d64"
       },
       {
         "path": "native/src/main.cpp",
-        "bytes": 4155,
-        "sha256": "a2c692893b957e94c03a552933903559a00615f65ba4bd19a3b6fc7f81d8c431"
+        "bytes": 4167,
+        "sha256": "d8d3ca51db9e6824f2eca756a1092111d8895979710661eef463b5fcd5a00903"
       },
       {
         "path": "native/src/quickjs_backend.cpp",
@@ -8413,18 +8413,18 @@
         "sha256": "ae18e973ee276ee777cf40fa0ccf4c73e23ec0280d3abd4bca39f205145ebf9a"
       }
     ],
-    "sourceSha256": "685ee7ca3871b72e7e22f6d6128d747a19394ccd4b1c9e3e10ea6c8c4e95e57e",
+    "sourceSha256": "d3226e6080195c506a99e8996f754b1b0b212b19d646cdd4798d41ea5bd303df",
     "dependencyLog": {
       "source": "build/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
-      "sha256": "ebc553f834a86c2cf7cd9012a73edad88dc4bd684dbb52f268da83e7d4ab3bdd"
+      "sha256": "8abfeee51c3377a380e84b5d2742edd75f05d3b46679c78f1509f06365b30f97"
     },
     "hostObject": {
       "source": "build/ts-stg.dir/Release/host.obj",
-      "sha256": "80bf6adccb860d341ed8fff02c3aea52fc423d7215d30772f1b03ed974aa06e4"
+      "sha256": "63f65298a085b592a274185d687c3a21247de072231ed05d287c620971877bdc"
     },
-    "outputUtc": "2026-10-10T07:03:54.263Z",
-    "hostObjectUtc": "2026-10-10T07:03:52.914Z",
-    "latestSourceUtc": "2026-10-10T06:41:53.906Z",
+    "outputUtc": "2026-10-10T09:33:08.023Z",
+    "hostObjectUtc": "2026-10-10T09:33:07.142Z",
+    "latestSourceUtc": "2026-10-10T09:32:31.546Z",
     "objects": [
       {
         "source": "build/ts-stg.dir/Release/frame_stream.obj",
@@ -8440,15 +8440,15 @@
       },
       {
         "source": "build/ts-stg.dir/Release/host.obj",
-        "sha256": "80bf6adccb860d341ed8fff02c3aea52fc423d7215d30772f1b03ed974aa06e4",
+        "sha256": "63f65298a085b592a274185d687c3a21247de072231ed05d287c620971877bdc",
         "sourcePath": "native/src/host.cpp",
-        "outputUtc": "2026-10-10T07:03:52.914Z"
+        "outputUtc": "2026-10-10T09:33:07.142Z"
       },
       {
         "source": "build/ts-stg.dir/Release/main.obj",
-        "sha256": "642dda3ffa1ca02fcc45726a3a5cf262390aa1d38f87ded79162d893ec8ed18d",
+        "sha256": "a4bc07affe358fe586f6f4f9ca5b0ca63a6c8f8f95718c988d1a11dbc31de19c",
         "sourcePath": "native/src/main.cpp",
-        "outputUtc": "2026-10-10T07:03:53.071Z"
+        "outputUtc": "2026-10-10T09:33:06.416Z"
       },
       {
         "source": "build/ts-stg.dir/Release/quickjs_backend.obj",
