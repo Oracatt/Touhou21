@@ -16,6 +16,7 @@ interface DirectorEvent {event:string;stage:number;frame:number;waveId?:string;s
 import {AnmInterpolation,TouhouBossPhasePlan,TouhouItemType,clearTouhouBossPhase,TouhouRNG,TOUHOU_BOSS_PROFILES} from '@ts-stg/thlib/touhou';
 import {updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern,updateMidbossNonspellPattern,STAGE_PATTERN_OFFSETS} from './patterns.js';
 import {createRoadPlan,spawnRoadFormation} from './roads.js';
+import {clearRoadSplits} from './road-bullet-splits.js';
 import {bossNonspellHealth,midbossNormalHealth,midbossSpellHealth} from './boss-health.js';
 
 const clamp=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
@@ -73,6 +74,7 @@ export class CampaignDirector{
     else if(this.state==='combat')this._finishPhase(this.game,{defeated:true,source});
   }
   _startStage(game:TouhouGame){
+    clearRoadSplits(game);
     const stage=this.stage;if(!stage)throw new RangeError(`Missing stage ${this.stageId}`);
     this.stageFrame=0;this.phaseFrame=0;this.phaseIndex=-1;this.midbossDone=false;this.boss=null;this.patternState={};this.transitionMove=null;
     this.roadPlan=createRoadPlan(stage.id,stage.roadFrames);this.roadWaveIndex=0;this.roadSectionIndex=-1;
@@ -83,6 +85,7 @@ export class CampaignDirector{
     if(this.mode==='spell-practice')this._spawnBoss(game,{practice:true});else this.state='road';
   }
   _clear(game:TouhouGame){
+    clearRoadSplits(game);
     clearTouhouBossPhase({x:this.boss?.x??0,y:this.boss?.y??128,cancelCircle:game.context.cancelCircle,
       clearEnemies:()=>{for(const enemy of game.enemies)if(enemy!==this.boss&&enemy.alive)game.removeBoss(enemy);
         for(const enemy of game.enemies)if(enemy!==this.boss)for(const effect of enemy.effects??[])effect.destroy();},
@@ -419,7 +422,7 @@ export class CampaignDirector{
     rng:this.rng.state,totalClock:this.totalClock,pattern:this.phase?.spell?this.phase.spec.id:null};}
   destroy(){if(this.destroyed)return;this.destroyed=true;this.dialogueContinuation=null;this.stageContinuation=null;
     this.transitionMove=null;
-    if(this.game){this.game.stopBossCombat();this.game.setBossEffects({aura:false,distortion:false});this.game.stage=this.originalStage;this.game.onEvent=this.originalEvent;
+    if(this.game){clearRoadSplits(this.game);this.game.stopBossCombat();this.game.setBossEffects({aura:false,distortion:false});this.game.stage=this.originalStage;this.game.onEvent=this.originalEvent;
       if(this.boss?.alive)this.game.removeBoss(this.boss);Object.assign(this.game.context,this.originalInteraction);}
   }
 }

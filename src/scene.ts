@@ -9,6 +9,7 @@ import {BossNameCard} from './boss-name.js';
 import {GameFrameSkin} from './frame-skin.js';
 import {CampaignBossHud} from './campaign-boss-hud.js';
 import {GAME_REVISION} from './storage.js';
+import {clearRoadSplits} from './road-bullet-splits.js';
 import {musicTrack} from './music-data.js';
 import type {NativeHost} from '@ts-stg/thlib';
 import type {AnmData,AnmInstruction,AnmInstance,AnmView,AnmDrawList,TouhouResources,TouhouGameOptions,TouhouGameContext,TouhouSpellResult,TouhouDialogueStep,TouhouDialogueEvent,TouhouPlayer} from '@ts-stg/thlib/touhou';
@@ -233,6 +234,7 @@ export class CampaignScene extends TouhouGame {
       }});
   }
   cleanStageActors(){
+    clearRoadSplits(this);
     for(const bullet of this.bullets.bullets)if(bullet.state)this.bullets.retire(bullet);this.bullets.bullets.length=0;
     for(const laser of this.lasers.lasers)if(laser.alive)this.lasers.retire(laser);this.lasers.lasers.length=0;
     for(const item of this.items.items)if(item.state)this.items.retire(item);this.items.items.length=0;

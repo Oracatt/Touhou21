@@ -20,7 +20,7 @@ function trace(stageId,difficulty,seed=73){
   for(;clock<plan.roadFrames;clock++){
     while(cursor<plan.waves.length&&plan.waves[cursor].at===clock){const wave=plan.waves[cursor++];
       spawned+=spawnRoadFormation({game:lab.game,wave,stageId,difficulty,rng,canFire:()=>clock<wave.fireUntil,
-        onAttack:p=>{attacks.push({frame:clock,wave:wave.id,...p});const e=lab.game.enemies.find(a=>a.id===p.enemyId);if(e&&(e.y<10||e.y>290))outsideFire++;}}).length;}
+        onAttack:p=>{attacks.push({frame:clock,wave:wave.id,...p});const e=lab.game.enemies.find(a=>a.id===p.enemyId);if(p.source!=='bullet'&&e&&(e.y<10||e.y>290))outsideFire++;}}).length;}
     lab.step(null);
     if(clock%24===0)for(const e of lab.game.enemies)movement.push([clock,e.roadWaveId,Math.round(e.x*10),Math.round(e.y*10)]);
   }

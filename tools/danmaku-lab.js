@@ -4,6 +4,7 @@
  * small TouhouEnemy-shaped actor with the same onUpdate -> Motion order. */
 import {TouhouBulletField,TouhouLaserField,TouhouRNG,TOUHOU_BULLET_STYLES,
   touhouCircleCollision,touhouLaserIntersectsCircle} from '@ts-stg/thlib/touhou';
+import {TaskRunner} from '@ts-stg/thlib';
 
 const BIRTH_FRAMES={7:8,8:16,9:24};
 const extentOf=type=>type===46||type===47?96:type===32||type===33?64:
@@ -67,7 +68,7 @@ export function standInBoss(x=0,y=112){
 }
 
 /** Lab field. `step()` runs one frame in TouhouGame order after the caller's
- * script update: enemies, player movement, bullets, lasers. */
+ * script update: tasks, enemies, player movement, bullets, lasers. */
 export function createDanmakuLab({seed=73,x=0,y=400,capacity=4000,difficulty=1}={}){
   const bank=createStandInBank();
   const player={x,y,collisionCircle:()=>0,collisionRectangle:()=>0,addGraze(){}};
@@ -77,10 +78,11 @@ export function createDanmakuLab({seed=73,x=0,y=400,capacity=4000,difficulty=1}=
   const emit=bullets.emit.bind(bullets),spawn=lasers.spawn.bind(lasers);
   bullets.emit=(parameters,options)=>{const out=emit(parameters,options);lab.emitted+=out.length;return out;};
   lasers.spawn=(kind,parameters)=>{const out=spawn(kind,parameters);if(out)lab.lasersSpawned++;return out;};
-  lab.game={player,difficulty,rng:new TouhouRNG(seed),bullets,lasers,enemies:[],banks:{effect:null},
+  lab.game={player,difficulty,rng:new TouhouRNG(seed),bullets,lasers,tasks:new TaskRunner(),context:{},enemies:[],banks:{effect:null},
     items:{spawnEnemyDrops(){},spawnBossDrops(){}},spawnEnemy:options=>standInEnemy(lab,options)};
   bullets.player=player;
   lab.step=(move)=>{
+    lab.game.tasks.update(lab.game.context);
     for(const actor of lab.game.enemies)updateEnemy(actor);
     lab.game.enemies=lab.game.enemies.filter(actor=>actor.alive);
     if(move){player.x=Math.max(-184,Math.min(184,move.x));player.y=Math.max(16,Math.min(440,move.y));}

@@ -4,7 +4,7 @@
 import {touhouBulletCommand,TouhouRNG} from '@ts-stg/thlib/touhou';
 import type {TouhouGame, TouhouEnemy, TouhouBullet, TouhouBulletCommand, TouhouBulletParameters} from '@ts-stg/thlib/touhou';
 
-export type AttackGame = Pick<TouhouGame, 'bullets' | 'lasers' | 'player' | 'rng' | 'context'>;
+export type AttackGame = Pick<TouhouGame, 'bullets' | 'lasers' | 'player' | 'rng' | 'context' | 'tasks'>;
 export interface AttackState {
   authorRng?: TouhouRNG;
   move?: {x0:number;y0:number;x:number;y:number;age:number;frames:number} | null;

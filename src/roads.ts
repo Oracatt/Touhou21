@@ -12,7 +12,7 @@ export interface RoadWaveSpec {at:number;formation:string;attack:string;count:nu
 export interface RoadWave extends RoadWaveSpec {id:string;sectionId:string;fireUntil:number;}
 export interface RoadSection {id:string;title:string;start:number;end:number;waves:RoadWaveSpec[];}
 export interface RoadScript {stageId:number;theme:string;sections:RoadSection[];}
-export interface RoadAttackEvent {attack:string;mechanism:string;enemyId:number;stageId:number;age:number;count:number;lasers:number;}
+export interface RoadAttackEvent {attack:string;mechanism:string;enemyId:number;stageId:number;age:number;count:number;lasers:number;source?:'bullet';}
 export type RoadGame = AttackGame & Pick<TouhouGame,'spawnEnemy'|'banks'|'items'>;
 type RoadState = AttackState & {echoAt?:number;mirror?:{at:number;x:number;y:number}|null;soundAt?:number};
 type Point = {x:number;y:number};
@@ -21,9 +21,11 @@ interface RoadRole {script:number;hp:number;life:number;power:number;points:numb
 interface RoadEnemyOptions {game:AttackGame;enemy:TouhouEnemy;frame:number;difficulty?:number;stageId?:number;attack:string;state?:RoadState;index?:number;count?:number;gap?:number;side?:number;
   formation?:string;heading?:number;center?:Point|null;rng?:TouhouRNG|null;onAttack?:(event:RoadAttackEvent)=>void;}
 interface RoadFormationOptions {game:RoadGame;wave:RoadWave;stageId:number;difficulty?:number;rng:TouhouRNG;isActive?:()=>boolean;canFire?:()=>boolean;onAttack?:(event:RoadAttackEvent)=>void;}
-interface FairyContext {stageId:number;side:number;index:number;count:number;gap:number;formation:string;heading:number;center:Point|null;state:RoadState;}
+interface FairyContext {stageId:number;side:number;index:number;count:number;gap:number;formation:string;heading:number;center:Point|null;state:RoadState;split:RoadSplit;}
 import {kit,T,C,C8,DOWN,TAU,clamp,lerp,wrap} from './danmaku.js';
 import {polygon,inGap,burstShape} from './attacks/shapes.js';
+import {scheduleRoadSplit} from './road-bullet-splits.js';
+type RoadSplit=(delay:number,parents:Parameters<typeof scheduleRoadSplit>[2],spawn:Parameters<typeof scheduleRoadSplit>[3])=>void;
 
 const BASE_FRAMES=[3900,4500,4800,5100,5400,3900,5100];
 export const ROAD_MIDBOSS_FRAMES=Object.freeze([1680,1980,2160,2280,2400,1680,2280]);
@@ -165,7 +167,7 @@ const PALETTES=[
 ];
 
 /** The guard's signature attack quotes its stage Boss's motif. */
-function signature(k:AttackKit,stageId:number,p:typeof PALETTES[number],age:number,state:AttackState){
+function signature(k:AttackKit,stageId:number,p:typeof PALETTES[number],age:number,state:AttackState,split:RoadSplit){
   const s=stageId,period=k.pick(64,52,44,38);
   if(s===7&&state.echo?.at===age){const e=state.echo;k.ring(e.x,e.y,24,1.9,e.a+Math.PI/24,T.SCALE,C.ROSE);state.echo=null;}
   if(age<56||(age-56)%period)return;
@@ -173,7 +175,7 @@ function signature(k:AttackKit,stageId:number,p:typeof PALETTES[number],age:numb
   if(s===1){const door=k.aim(),half=k.pick(.36,.29,.25,.22);
     burstShape(k,k.ox,k.oy,polygon(4,k.pick(7,9,11,13)),1.5,wave*.37,T.AMULET,wave%2?C.RED:C.ORANGE,null,{skip:(q,a)=>inGap(a,door,half)});}
   else if(s===2){const letters=k.aimed(k.ox,k.oy,3,2.8,.34,T.AMULET,C.WHITE,[k.hold(40),k.wait(18),k.vanish()]);
-    k.later(54,letters,b=>k.ring(b.x,b.y,k.pick(6,8,10,12),1.5,k.unit()*TAU,T.BALL,C.AZURE,null,{silent:true}));
+    split(54,letters,(b,k)=>k.ring(b.x,b.y,k.pick(6,8,10,12),1.5,k.unit()*TAU,T.BALL,C.AZURE,null,{silent:true}));
     k.fan(k.ox,k.oy,k.pick(5,7,9,11),2.2,DOWN,.2,T.NEEDLE,C.SKY);}
   else if(s===3)k.ring(k.ox,k.oy,k.pick(14,18,24,28),2.9,wave*.21,T.OVAL,wave%2?C8.CYAN:C8.GREEN,[k.stopTurn(48,Math.PI,1.5)]);
   else if(s===4){if(wave%3===0)for(let j=0;j<4;j++)k.beam(k.ox,k.oy,wave*.4+j*Math.PI/2+Math.PI/4,{width:8,delay:60,sustain:50,color:C.MAGENTA,sound:j?-1:18});
@@ -233,7 +235,7 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       if(age===state.echoAt)k.fan(k.ox,k.oy,k.pick(3,3,3,3,5),2.5,state.echoAim??DOWN,.16,p.type,p.alt,null,{safe:4096});break;
     case 'lantern':if(age===36||(k.rank>=1&&age===110)||(k.rank>=2&&age===184)){
       const orb=k.shot(k.ox,k.oy,DOWN+(k.unit()-.5)*.6,1.3,T.ORB,p.orb,[k.speedTo(.35,36),k.wait(16),k.vanish()],{safe:4096});
-      k.later(48,orb,b=>k.ring(b.x,b.y,k.pick(4,5,6,8),1.5,k.unit()*TAU,p.type,p.main,null,{silent:true}));}break;
+      o.split(48,orb,(b,k)=>k.ring(b.x,b.y,k.pick(4,5,6,8),1.5,k.unit()*TAU,p.type,p.main,null,{silent:true}));}break;
     case 'fan':case 'ring':{const fan=attack==='fan';
       if(fan?age===40||age===100||(k.rank>=2&&age===160):age===48||(k.rank>=1&&age===120)||(k.rank>=3&&age===180)){
         if(fan)fanVolley(k,p,stageId,k.ox,k.oy,p.alt);else ringVolley(k,p,stageId,side,k.ox,k.oy,p.accent);
@@ -245,7 +247,7 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
     case 'spray':if(age>=10&&age%k.pick(14,10,8,6)===0)k.shot(k.ox,k.oy,DOWN+(k.unit()-.5)*1.1,lerp(1.8,2.6,k.unit()),p.type,p.main,null,{safe:4096,silent:hush(state,age,28)});break;
     case 'drizzle':if(age>=12&&age%k.pick(32,22,18,15)===0)k.shot(k.ox+(k.unit()-.5)*16,k.oy+6,DOWN,lerp(2.4,3,k.unit()),p.type,p.accent,null,{safe:4096,rows:k.pick(1,1,2,2),speedStep:2.1,silent:hush(state,age,44)});break;
     case 'letter':{const r=relay(age,40,o);if(r.phase===0&&r.round<k.pick(1,2,2,3,9)){const letter=k.aimed(k.ox,k.oy,1,3,0,p.needle,C.WHITE,[k.wait(28),k.hold(24),k.wait(12),k.vanish()],{safe:4096});
-      k.later(58,letter,b=>k.ring(b.x,b.y,k.pick(4,5,6,7),1.5,k.unit()*TAU,p.type,p.alt,null,{silent:true}));}break;}
+      o.split(58,letter,(b,k)=>k.ring(b.x,b.y,k.pick(4,5,6,7),1.5,k.unit()*TAU,p.type,p.alt,null,{silent:true}));}break;}
     case 'side':if(age>=20&&age%k.pick(26,20,17,15)===0){
       // Stage 4 wefts hang vertical warp threads; boats elsewhere fire broadside.
       if(stageId===4)k.fan(k.ox,k.oy,1,2.2,DOWN,0,p.needle,p.main,null,{safe:4096,rows:k.pick(1,2,3,4),speedStep:1.5});
@@ -277,7 +279,7 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       else if(stageId===4)k.ring(k.ox,k.oy,n>>1,1.8,w*.31,p.needle,c,null,{rows:2,speedStep:1.3});
       else k.ring(k.ox,k.oy,n,1.8,w*.31,p.type,c,accent(k,stageId,side,30));
       if(k.rank>=1)k.aimed(k.ox,k.oy,3,2.7,.2,p.needle,p.accent,null,{safe:4096});}break;}
-    case 'motif':signature(k,stageId,p,age,state);break;
+    case 'motif':signature(k,stageId,p,age,state,o.split);break;
     default:throw new RangeError(`Undefined road attack ${attack}`);
   }
 }
@@ -288,7 +290,9 @@ export function updateRoadEnemy({game,enemy,frame,difficulty=1,stageId=1,attack,
   if(!ROAD_ATTACKS.includes(attack))throw new RangeError(`Undefined road attack ${attack}`);
   const before=game.bullets.nextId??0,lasers=game.lasers?.nextId??0;
   const k=kit.bind({game,frame,difficulty,state,rng,origin:{x:enemy.x,y:enemy.y}});
-  k.runLater();fairyAttack(k,attack,{stageId,side,index,count,gap,formation,heading,center,state});
+  const split:RoadSplit=(delay,parents,spawn)=>scheduleRoadSplit(k,delay,parents,spawn,onAttack?
+    count=>onAttack({attack,mechanism:attack,enemyId:enemy.id,stageId,age:frame+delay,count,lasers:0,source:'bullet'}):undefined);
+  fairyAttack(k,attack,{stageId,side,index,count,gap,formation,heading,center,state,split});
   const emitted=(game.bullets.nextId??0)-before,beams=(game.lasers?.nextId??0)-lasers;
   if((emitted||beams)&&onAttack)onAttack({attack,mechanism:attack,enemyId:enemy.id,stageId,age:frame,count:emitted,lasers:beams});
   return emitted;
