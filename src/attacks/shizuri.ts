@@ -53,14 +53,16 @@ function foldedCorners(k: AttackKit){
   if(k.every(160,120))k.wander(42);
 }
 
-/** Nonspell 3: greetings scatter as fountains of letters that fall back
+/** Nonspell 2: greetings scatter as fountains of letters that fall back
  * under gravity; the second fountain fills the first one's gaps. */
 function scatteredGreetings(k: AttackKit){
-  const period=k.pick(54,40,34,30),n=k.pick(12,18,22,26);
+  const period=k.pick(70,52,44,40),n=k.pick(12,18,22,26);
   if(k.every(period)){
     const turn=(k.t/period|0)*.7;
-    k.ring(k.ox,k.oy,n,2.3,turn,T.AMULET,C.WHITE,[k.accel(.034,180,DOWN)]);
-    if(k.rank>=2)k.ring(k.ox,k.oy,n,1.7,turn+Math.PI/n,T.AMULET,C.PALE,[k.accel(.03,180,DOWN)]);
+    // Whatever their launch angle, letters reach the player's row at sqrt(v*v+2*g*h),
+    // so launch speed and gravity are both low; gravity lasts until the highest letters land.
+    k.ring(k.ox,k.oy,n,1.9,turn,T.AMULET,C.WHITE,[k.accel(.02,300,DOWN)]);
+    if(k.rank>=2)k.ring(k.ox,k.oy,n,1.4,turn+Math.PI/n,T.AMULET,C.PALE,[k.accel(.017,300,DOWN)]);
   }
   if(k.every(120,60))k.aimed(k.ox,k.oy,3,2.8,.18,T.NEEDLE,C.SKY,null,{rows:k.pick(1,2,3,3),speedStep:2});
   if(k.every(180,150))k.wander(42);
