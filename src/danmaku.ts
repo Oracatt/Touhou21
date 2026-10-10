@@ -13,7 +13,7 @@ export interface AttackState {
   echoes?: Array<{at:number;fire:Attack}>;
   spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;segment?:number;
   threads?:number[];second?:{at:number;rotation:number}|null;
-  echo?:{at:number;x:number;y:number;a:number}|null;echoAim?:number;
+  echo?:{at:number;x:number;y:number;a:number}|null;echoAim?:number;volleyAt?:number;hushAt?:number;
 }
 export interface AttackOptions {
   game:AttackGame;boss?:TouhouEnemy|null;frame?:number;difficulty?:number;state?:AttackState;
@@ -103,12 +103,27 @@ export class AttackKit {
   /** Glide to an absolute point; the launch speed is restored on arrival. */
   goTo(x: number,y: number,frames: number,easing=4){return touhouBulletCommand(17,{floats:[x,y],ints:[frames,easing&255]});}
 
+  /** A volley this big is always heard, even one authored as a silent companion (a delayed burst, an echo), unless a big
+   * volley already sounded within the last few frames. Single bullets and thin streams keep their authored silence. */
+  private audible(p: AuthoredBullet){
+    if(!p.silent)return true;
+    if(((p.count??1)*(p.rows??1))<LOUD_VOLLEY)return false;
+    const last=this.state.volleyAt;if(last!==undefined&&this.t>=last&&this.t-last<LOUD_GAP)return false;
+    this.state.volleyAt=this.t;return true;
+  }
+
+  /** True when this attack made a sound fewer than gap frames ago, so a thin stream sounds once per gap. */
+  hush(gap: number){
+    const last=this.state.hushAt;if(last!==undefined&&this.t>=last&&this.t-last<gap)return true;
+    this.state.hushAt=this.t;return false;
+  }
+
   emit(p: AuthoredBullet){
-    const out=this.game.bullets.emit({x:p.x,y:p.y,angle:p.angle??0,speed:(p.speed??1)*this.sp,
+    const loud=this.audible(p),out=this.game.bullets.emit({x:p.x,y:p.y,angle:p.angle??0,speed:(p.speed??1)*this.sp,
       speedStep:(p.speedStep??p.speed??1)*this.sp,type:p.type??T.BALL,color:p.color??C.RED,pattern:p.pattern??1,
       count:p.count??1,rows:p.rows??1,angleStep:p.angleStep??0,commands:p.cmds?[BIRTH[p.birth??0],...p.cmds]:[BIRTH[p.birth??0]],
-      shotSound:p.silent||this.sounded?-1:21,commandSound:p.commandSound??-1,minimumPlayerDistanceSquared:p.safe??1024});
-    if(!p.silent)this.sounded=true;return out;
+      shotSound:!loud||this.sounded?-1:21,commandSound:p.commandSound??-1,minimumPlayerDistanceSquared:p.safe??1024});
+    if(loud)this.sounded=true;return out;
   }
   shot(x: number,y: number,angle: number,speed: number,type: number,color: number,cmds?: TouhouBulletCommand[] | null,extra?: BulletExtras){return this.emit({x,y,angle,speed,type,color,cmds,...extra});}
   /** Pattern 3: `count` bullets around the circle starting at `angle`. */
@@ -153,6 +168,9 @@ export class AttackKit {
     if(m.age>=m.frames)this.state.move=null;
   }
 }
+
+/** Smallest volley (bullets) that always makes a sound, and the least frames between two such forced sounds. */
+const LOUD_VOLLEY=8,LOUD_GAP=10;
 
 export const kit=new AttackKit();
 

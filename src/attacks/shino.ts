@@ -86,7 +86,7 @@ function acquaintanceWarpWeft(k: AttackKit){
     const edges=[-192,...threads,192];
     for(let i=0;i+1<edges.length;i++){
       const a=edges[i]+12,b=edges[i+1]-12;if(b-a<16)continue;
-      for(let n=k.pick(1,1,1,2);n>0;n--)k.shot(lerp(a,b,k.unit()),-4,DOWN,lerp(1.8,2.4,k.unit()),T.BALL,i%2?C.PINK:C.PALE,null,{silent:true,safe:2304});
+      for(let n=k.pick(1,1,1,2);n>0;n--)k.shot(lerp(a,b,k.unit()),-4,DOWN,lerp(1.8,2.4,k.unit()),T.BALL,i%2?C.PINK:C.PALE,null,{silent:k.hush(36),safe:2304});
     }
   }
   if(k.rank>=2&&c>=56&&c<cycle-40&&c%40===0)k.ringGap(k.ox,k.oy,k.pick(16,16,20,24),1.7,T.NEEDLE,C.WHITE);

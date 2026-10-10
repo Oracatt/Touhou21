@@ -33,7 +33,7 @@ function sealedUntilRainStops(k: AttackKit){
       envelopes.push(...k.shot(k.ox,k.oy,first+i*spread,3.1,T.AMULET,wave%2?C.PALE:C.WHITE,
         [k.hold(40),k.wait(30+turn*k.pick(9,8,6,5)),k.aimNow(k.pick(1.6,1.9,2.1,2.3))],{silent:i>0}));
     }
-    k.later(70,envelopes,b=>k.fan(b.x,b.y,k.pick(2,3,4,5),1.8,DOWN,k.pick(.4,.3,.24,.2),T.NEEDLE,C.SKY,null,{silent:true}));
+    k.later(70,envelopes,b=>k.fan(b.x,b.y,k.pick(2,3,4,5),1.8,DOWN,k.pick(.4,.3,.24,.2),T.NEEDLE,C.SKY));
   }
 }
 
