@@ -187,7 +187,7 @@ export class CampaignDirector{
   _finishMidboss(game:TouhouGame,source:unknown=null,{timeout=false}={}){
     if(!['midboss-combat','midboss-phase-wait'].includes(this.state))return;this.state='midboss-exit';this.phaseFrame=0;this.pendingEscape=null;this.midbossExitFrames=70;
     const boss=this.boss!;this._clear(game);boss.invulnerable=true;
-    game.items.spawnBossDrops(boss,{counts:{[TouhouItemType.LARGE_POWER]:2,[TouhouItemType.POINT]:5},centerType:TouhouItemType.BOMB_FRAGMENT,
+    game.items.spawnBossDrops(boss,{counts:{[TouhouItemType.POWER]:10,[TouhouItemType.POINT]:5},centerType:TouhouItemType.BOMB_FRAGMENT,
       timedOut:timeout,mode:game.session.mode});
     game.stopBossCombat();
     if(this.midbossExit==='escape'||timeout){
@@ -337,7 +337,7 @@ export class CampaignDirector{
       this.events.push({event:'midboss-escaped',stage:this.stageId,frame:this.totalClock});this.boss=null;
     }else if(name==='bossburst'&&(data as {enemy:TouhouEnemy}).enemy===this.boss&&this.state==='boss-defeat'){
       game.stopBossCombat();game.setBossEffects({aura:false,distortion:false});
-      game.items.spawnBossDrops((data as {enemy:TouhouEnemy}).enemy,{counts:{[TouhouItemType.LARGE_POWER]:3,[TouhouItemType.POINT]:12},
+      game.items.spawnBossDrops((data as {enemy:TouhouEnemy}).enemy,{counts:{[TouhouItemType.POWER]:16,[TouhouItemType.POINT]:12},
         centerType:TouhouItemType.LIFE_FRAGMENT,mode:game.session.mode,timedOut:!!this.finalResult?.timeout,
         survival:!!this.finalResult?.survival});
       this.events.push({event:'boss-burst',stage:this.stageId,frame:this.totalClock});
