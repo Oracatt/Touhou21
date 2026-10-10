@@ -92,21 +92,28 @@ returningFerry.home={x:0,y:104};
 /** 渡符「两岸无应之芦苇洲」: reeds fall in swaying columns; paper boats
  * cross between them and leave a wake that slowly sinks. */
 function silentReedBanks(k: AttackKit){
-  const spacing=k.pick(64,56,50,46),columns=Math.floor(352/spacing)+1;
-  if(k.every(k.pick(12,9,7,6))){
-    const lane=(k.t/k.pick(12,9,7,6)|0)%2;
+  const spacing=k.pick(72,58,50,46),columns=Math.floor(352/spacing)+1,reedEvery=k.pick(14,10,7,6);
+  if(k.every(reedEvery)){
+    const lane=(k.t/reedEvery|0)%2;
     for(let i=0;i<columns;i++){
       const x=-176+i*spacing+lane*4,w=(i%2?1:-1)*.013;
       k.shot(x,-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,[k.curve(w,28),k.curve(-w,56),k.curve(w,56),k.curve(-w,56),k.curve(w,56)],{silent:i>0,safe:2304});
     }
   }
-  const boatPeriod=k.pick(160,124,104,90);
+  // Boats cross from one bank each time; a second boat comes from the other bank on Lunatic, and every boat leaves a longer wake.
+  const boatPeriod=k.pick(180,140,112,90),wakeLength=k.pick(16,22,24,28),wakeCount=2;
   if(k.every(boatPeriod,30)){
-    const side=(k.t/boatPeriod|0)%2?1:-1,y=lerp(170,300,k.unit());
-    const boat=k.shot(side*190,y,side<0?0:Math.PI,1.3,T.OVAL,C8.WHITE,null,{safe:3600});
-    for(let step=1;step<=26;step++)k.later(step*11,boat,b=>k.fan(b.x,b.y,2,.9,side<0?Math.PI*.75:Math.PI*.25,1.6,T.BALL,C.SKY,[k.accel(.01,90,DOWN)],{silent:true}));
+    const first=(k.t/boatPeriod|0)%2?1:-1;
+    for(const side of k.rank>=3?[first,-first]:[first]){
+      const y=lerp(170,300,k.unit());
+      const boat=k.shot(side*190,y,side<0?0:Math.PI,1.3,T.OVAL,C8.WHITE,null,{safe:3600});
+      for(let step=1;step<=wakeLength;step++)k.later(step*11,boat,b=>k.fan(b.x,b.y,wakeCount,.9,side<0?Math.PI*.75:Math.PI*.25,1.6,T.BALL,C.SKY,[k.accel(.01,90,DOWN)],{silent:true}));
+    }
   }
-  if(k.rank>=1&&k.every(110,55))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.7,.2,T.AMULET,C.WHITE,null,{rows:2,speedStep:2});
+  if(k.rank>=1&&k.every(k.pick(999,120,92,72),55))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.7,.2,T.AMULET,C.WHITE,null,{rows:k.pick(1,2,2,3),speedStep:2});
+  // A ring with a gap rolls down from the Boss on Hard and Lunatic: the
+  // channel narrows before the next reeds arrive.
+  if(k.rank>=2&&k.every(k.pick(999,999,230,170),95))k.ringGap(k.ox,k.oy,k.pick(18,18,20,22),1.7,T.BALL,C.SKY,[k.accel(.02,160,DOWN)]);
 }
 silentReedBanks.home={x:0,y:96};
 
