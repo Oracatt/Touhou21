@@ -89,16 +89,18 @@ function returningFerry(k: AttackKit){
 }
 returningFerry.home={x:0,y:104};
 
-/** 渡符「两岸无应之芦苇洲」: reeds fall in swaying columns; paper boats
- * cross between them and leave a wake that slowly sinks. */
+/** 渡符「两岸无应之芦苇洲」: reeds fall straight down in columns while the
+ * wind sways where they start, so every column is a wave that slides down the
+ * screen. Neighbouring columns sway against each other: the channel between
+ * them narrows and widens the same way at the top and at the bottom. Paper
+ * boats cross the river and leave a short wake. */
 function silentReedBanks(k: AttackKit){
-  const spacing=k.pick(72,58,50,46),columns=Math.floor(352/spacing)+1,reedEvery=k.pick(14,10,7,6);
+  const spacing=k.pick(72,58,50,46),sway=k.pick(10,14,18,20),reedEvery=k.pick(14,10,7,6);
+  const columns=Math.round(384/spacing),left=-(columns-1)*spacing/2;
   if(k.every(reedEvery)){
-    const lane=(k.t/reedEvery|0)%2;
-    for(let i=0;i<columns;i++){
-      const x=-176+i*spacing+lane*4,w=(i%2?1:-1)*.013;
-      k.shot(x,-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,[k.curve(w,28),k.curve(-w,56),k.curve(w,56),k.curve(-w,56),k.curve(w,56)],{silent:i>0});
-    }
+    const wind=Math.sin(k.t*TAU/150)*sway;
+    for(let i=0;i<columns;i++)
+      k.shot(left+i*spacing+(i%2?wind:-wind),-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,null,{silent:i>0,safe:0});
   }
   // Boats cross from one bank each time; a second boat comes from the other bank on Lunatic, and every boat leaves a longer wake that fades after a short while.
   const boatPeriod=k.pick(180,140,112,90),wakeLength=k.pick(16,22,24,28),wakeCount=2;
@@ -110,7 +112,6 @@ function silentReedBanks(k: AttackKit){
       for(let step=1;step<=wakeLength;step++)k.later(step*11,boat,b=>k.fan(b.x,b.y,wakeCount,.9,side<0?Math.PI*.75:Math.PI*.25,1.6,T.BALL,C.SKY,[k.accel(.01,90,DOWN),k.vanish()],{silent:true}));
     }
   }
-  // The Boss always aims at the player, so the top of the field is not a safe spot.
   if(k.every(k.pick(150,120,92,72),55))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.7,.2,T.AMULET,C.WHITE,null,{rows:k.pick(1,2,2,3),speedStep:2});
 }
 silentReedBanks.home={x:0,y:96};
