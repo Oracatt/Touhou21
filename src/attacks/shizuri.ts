@@ -37,17 +37,19 @@ function sealedUntilRainStops(k: AttackKit){
   }
 }
 
-/** Nonspell 1: chevrons of letters with folded corners fly at the player;
- * a passing shower falls between them. */
+/** Nonspell 1: chevrons of letters with folded corners fly at the player in
+ * short phrases; a passing shower falls between them. Each chevron is a tight
+ * stack that crosses the player's row quickly, and every phrase ends with a
+ * rest, so a player streaming one way can always turn back. */
 function foldedCorners(k: AttackKit){
-  const period=k.pick(56,42,34,28);
-  if(k.every(period)){
-    const aim=k.aim(),length=k.pick(5,7,8,9),odd=(k.t/period)&1;
-    for(const wing of k.rank>=1?[.26,.62]:[.3])for(const side of[-1,1])
-      k.fan(k.ox,k.oy,1,3.3,aim+side*wing,0,T.AMULET,odd?C.SKY:C.AZURE,null,{rows:length,speedStep:1.5});
-    if(k.rank>=2)k.aimed(k.ox,k.oy,1,2.9,0,T.NEEDLE,C.WHITE,null,{rows:length-2,speedStep:1.6});
+  const gap=k.pick(44,36,30,26),burst=k.pick(3,3,4,4),cycle=gap*(burst-1)+k.pick(84,80,76,72),beat=k.t%cycle;
+  if(beat%gap===0&&beat<gap*burst){
+    const aim=k.aim(),length=k.pick(4,5,6,7),odd=(beat/gap)&1;
+    for(const wing of k.rank>=1?[.3,.62]:[.3])for(const side of[-1,1])
+      k.fan(k.ox,k.oy,1,3.3,aim+side*wing,0,T.AMULET,odd?C.SKY:C.AZURE,null,{rows:length,speedStep:2.4});
+    if(k.rank>=2)k.aimed(k.ox,k.oy,1,3,0,T.NEEDLE,C.WHITE,null,{rows:4,speedStep:2.4});
   }
-  if(k.every(k.pick(9,6,5,4)))drizzle(k,1,{lean:.08});
+  if(k.every(k.pick(9,6,6,5)))drizzle(k,1,{lean:.08});
   if(k.every(160,120))k.wander(42);
 }
 
