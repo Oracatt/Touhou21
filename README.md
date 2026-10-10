@@ -6,28 +6,34 @@
 
 ## 运行
 
-Windows 下双击 `Play.cmd`，使用带 JIT 的 V8 后端；`Play-QuickJS.cmd` 使用 QuickJS。游戏以固定 60 帧模拟，画面为 960 × 720，采用纵向游戏区与右侧状态栏。已经还原本地依赖时，运行游戏不需要 Node.js。
+Windows 下双击 `Play.cmd`，使用带 JIT 的 V8 后端；`Play-QuickJS.cmd` 使用 QuickJS。开发启动脚本先编译 TypeScript，再运行 `dist/main.js`。游戏以固定 60 帧模拟，画面为 960 × 720，采用纵向游戏区与右侧状态栏。直接运行已经编译的游戏不需要 Node.js；编译与开发启动脚本需要 Node.js 24+。
+
+macOS 下双击 `Play.command`（或在终端执行 `./Play.command`）。首次启动时 `npm run build:macos` 从锁定的引擎提交取出原生源码，逐个核对 `engine.lock.json` 记录的 SHA-256，再与 `tools/macos/` 中基于 CoreText 的系统文字实现一起编译出 `build/macos/ts-stg`；锁文件和这些源码不变时直接启动。编译需要 Xcode 命令行工具、CMake 3.24+、Git 以及 TS-STG 仓库的读取权限，源引擎目录只读。Windows 字体名按同风格映射到系统字体（微软雅黑 → 苹方，楷体 → 楷体-简，メイリオ / ＭＳ ゴシック的中文 → 苹方），位图文字保留原 Windows 字体的 GDI 字号度量，对白排版与 Windows 一致。`Play.command` 使用带 JIT 的 V8 后端，与 Windows 版同为 V8 12.3.219.9：编译时下载 rusty_v8 v0.89.0 中对应本机架构（Intel 或 Apple 芯片）的静态库，以及引擎锁定修订的 V8 头文件，下载文件都核对固定的 SHA-256。终端执行 `./Play.command --backend quickjs` 改用 QuickJS，QuickJS 录制的回放也需这样播放。弹幕密集时脚本耗时约 7–12 ms（QuickJS 为 30–50 ms），在集成显卡上剩余的处理落来自 GPU。`npm run verify:macos` 在 V8 与 QuickJS 下分别运行引擎的矢量文字、位图文字、媒体与绘制合约测试并要求两者快照一致，另运行 V8 后端合约测试。macOS 需要已还原的 `packages/thlib`；`restore:engine` 目前仍要求 Windows 运行时，可从已安装的 Windows 环境复制该目录。
 
 源码克隆不包含私有引擎、thlib 或其导入素材。安装需要 Node.js 24 或更新版本；使用锁文件对应的本地 TS-STG 检出及已构建程序还原依赖：
 
 ```powershell
 pwsh -NoProfile -File tools/setup-local.ps1 -EngineSource D:\AIWorkspace\TS-STG
+npm ci
+npm run build
 pwsh -NoProfile -File tools/setup-local.ps1 -VerifyOnly
 ```
 
-安装器只把锁定的文件复制到本游戏内的 `runtime/` 与 `packages/thlib/`，并建立本地依赖连接。它校验引擎提交、文件大小和 SHA-256；若已有文件不符合锁定内容，会停止并保留文件。源引擎目录始终只读。详见 [发行与依赖说明](docs/RELEASE.md)。
+安装器先准备固定版本的 TypeScript 编译器，再从锁定的引擎提交构建 thlib，恢复本游戏的 `runtime/` 与 `packages/thlib/`。它分别校验源码、编译器和编译产物的文件大小与 SHA-256，不需要预先生成的 thlib `dist/`；原生运行时仍需要对应构建和 SDK 的文件。安装过程只读源引擎目录。详见 [发行与依赖说明](docs/RELEASE.md)。
 
 已有运行时、更新代码后只需恢复 thlib 时，使用以下命令。它直接读取锁定提交的 Git 对象，不依赖源目录的换行格式、当前 HEAD 或原机器的编译产物；源仓库需要包含该提交，路径可以不同：
 
 ```powershell
 git pull --ff-only
 npm run restore:engine -- --source D:\AIWorkspace\TS-STG --apply
+npm ci
+npm run build
 npm run verify:engine -- --source D:\AIWorkspace\TS-STG
 ```
 
-省略 `--apply` 只检查并显示计划。恢复前保留旧副本；仅允许补回缺失文件或修正文本换行差异，遇到额外文件、实际内容改动或链接会停止。该命令不改运行时、锁文件或存档；缺少运行时的新安装仍使用上面的安装器。新安装若缺少 Node 依赖连接，可运行 `npm install --ignore-scripts`。
+省略 `--apply` 只检查并显示计划。恢复前保留旧副本；仅允许补回缺失文件或修正文本换行差异，遇到额外文件、实际内容改动或链接会停止。该命令不改运行时、锁文件或存档；缺少运行时的新安装仍使用上面的安装器。
 
-锁中的 `thlibContent: "git-blob"` 表示 thlib 哈希对应 Git 原始内容。`sourceModified` 与 `sourceState` 是生成锁时的工作区记录；已列明的独立编辑器启动脚本例外不属于 thlib。它们不表示库中混入了未提交代码。
+依赖锁采用 v2 格式，分别记录 Git 中的 TS 源码和资源输入、固定编译器及生成的 JS / 类型声明 / source map。`sourceModified` 固定为 `false`，依赖只来自已提交代码；与依赖无关的编辑器启动偏好单独记在 `sourceState.excludedChanges` 中。旧版 JS 快照与锁格式不再作为兼容分支保留。
 
 ## 操作
 
@@ -50,7 +56,7 @@ npm run verify:engine -- --source D:\AIWorkspace\TS-STG
 - 七个道中场景使用绘制的地面纹理与透明建筑、植被面片构景：鸟居山路、雨竹溪流、渡口拱桥、织架庭院、书库、云端名柱与倒铃回廊。七位 Boss 的符卡各使用一张独立流墨底图和一张抽象纹样，共十四张图片：朱红花结、雨墨流纹、碧青涡波、梅紫织锦、墨绿印纹、靛紫云莲与镜羽回声；底图、主纹样与加减色弱纹样分别运动，反转、漂移和轻微波动各不相同；参考原作 60 帧进入，24 帧淡出，暂停冻结。公共法阵与背景扭曲继续由 thlib 合成。详见 [背景说明](docs/BACKGROUNDS.md)。
 - 道具得分飘字由 thlib 默认绘制，使用原作数字图集；满额蓝点显示黄色得分，普通点显示白色，火力跨档显示 POWER UP。上浮、近自机半透明及逐位退场采用原作规则，显示不重复加分。
 - v2.0.0 重做了全部弹幕与关卡流程。道中每面 26～31 个编队，按开场、铺垫、中 Boss、后半、高潮与留白推进；大妖精在中 Boss 前后各放一次本面 Boss 母题的“招牌攻击”。二至六面中 Boss 在非符后使用一张符卡再飞离。详见 [道中设计](docs/ROADS.md)与 [Boss 战斗流程](docs/BOSS-FLOW.md)。
-- 每段非符与每张符卡都是独立编写的攻击：扩散后朝自机开门的方形门框、停顿后拆封爆开的信封、调头回航的船环、丝线走廊、留空书页通道、只开一座的庭门、带回声的镜像环等。攻击共享 [`src/danmaku.js`](src/danmaku.js) 编写工具，运动与判定全部交给公共 thlib。详见 [非符设计](docs/NONSPELLS.md)与[符卡设计](docs/SPELLS.md)。
+- 每段非符与每张符卡都是独立编写的攻击：扩散后朝自机开门的方形门框、停顿后拆封爆开的信封、调头回航的船环、丝线走廊、留空书页通道、只开一座的庭门、带回声的镜像环等。攻击共享 [`src/danmaku.ts`](src/danmaku.ts) 编写工具，运动与判定全部交给公共 thlib。详见 [非符设计](docs/NONSPELLS.md)与[符卡设计](docs/SPELLS.md)。
 - 非符采用参考锦上京共享血环阈值的独立 HP 配置，主 Boss 与道中 Boss 都显示实际倒计时。同角色道中 Boss 击破后飞离；每次准备只有一次带音效的聚能，普通破卡转段音与成功收取奖励音分别处理。详见 [Boss 战斗流程](docs/BOSS-FLOW.md)。
 - 原创中文主菜单、九人立绘、七套 Boss 动画图集、剧情与结局、18 首原创 BGM（15 首为真实乐器采样渲染的无缝循环曲，含满身疮痍画面的 Player's Score），以及附带创作评语的音乐室。
 - 标题画面使用缓慢推拉的月夜湖面、上浮的空白名札与金色铃光，配楷体书法标题、朱印和中英双语菜单；难度选择为分色卡片，自机选择配浮动立绘与性能条。
@@ -63,9 +69,12 @@ npm run verify:engine -- --source D:\AIWorkspace\TS-STG
 
 ## 开发与验证
 
-需要 Node.js 24 或更新版本；公共库依赖由本地安装器建立，不需要联网安装。新作源码位于 `src/`，关卡 / 剧情 / 符卡目录在 `src/content.js`，弹幕在 `src/attacks/`（每位 Boss 一个模块）与 `src/roads.js`，攻击目录与导演入口在 `src/patterns.js`。这些业务代码和素材属于本项目，未写入 TS-STG 或 thlib。
+需要 Node.js 24 或更新版本与锁定的 TypeScript 5.9.3。新作唯一业务源码是 `main.ts` 和 `src/**/*.ts`，关卡 / 剧情 / 符卡目录在 `src/content.ts`，弹幕在 `src/attacks/`（每位 Boss 一个模块）与 `src/roads.ts`，攻击目录与导演入口在 `src/patterns.ts`。这些业务代码和素材属于本项目，未写入 TS-STG 或 thlib。`npm run build` 严格检查后输出到忽略的 `dist/`，不再维护手写 JS 副本或旧入口转发。测试及开发验证脚本独立于游戏源码。
 
 ```powershell
+npm ci
+npm run typecheck
+npm run build
 npm test
 npm run verify:engine
 npm run audit

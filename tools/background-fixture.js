@@ -1,8 +1,8 @@
 import {DrawList} from '@ts-stg/thlib';
-import {GameArt} from '../src/art.js';
-import {StageBackground} from '../src/background.js';
-import {spellBackgroundStyle} from '../src/background-art.js';
-import {SPELL_BACKGROUND_TIMING,spellLayerOpacity} from '../src/spell-background.js';
+import {GameArt} from '../dist/src/art.js';
+import {StageBackground} from '../dist/src/background.js';
+import {spellBackgroundStyle} from '../dist/src/background-art.js';
+import {SPELL_BACKGROUND_TIMING,spellLayerOpacity} from '../dist/src/spell-background.js';
 
 /** Native-only observation of the production renderer. No replacement layers,
  * authored image edits, shader changes or gameplay clock are introduced here. */

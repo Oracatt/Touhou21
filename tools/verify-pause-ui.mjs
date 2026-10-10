@@ -19,7 +19,7 @@ const root=path.resolve(import.meta.dirname,'..'),label='pause-layer-order',out=
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(build,{recursive:true});
 const sha=file=>createHash('sha256').update(fs.readFileSync(path.resolve(root,file))).digest('hex');
 const tree=(directory,extension=null)=>Object.fromEntries(fs.readdirSync(path.join(root,directory),{recursive:true}).filter(name=>fs.statSync(path.join(root,directory,name)).isFile()&&(!extension||name.endsWith(extension))).map(name=>`${directory}/${name.replaceAll('\\','/')}`).sort().map(file=>[file,sha(file)]));
-const identity=()=>({gameSourceHashes:{'main.js':sha('main.js'),...tree('src','.js')},publicSourceHashes:tree('packages/thlib/src'),
+const identity=()=>({gameSourceHashes:{'main.ts':sha('main.ts'),...tree('src','.ts')},publicSourceHashes:tree('packages/thlib/src'),
   engineLockSha256:sha('engine.lock.json'),binarySha256:sha('runtime/ts-stg.exe'),fixtureSha256:sha('tools/pause-ui-fixture.js'),verifierSha256:sha('tools/verify-pause-ui.mjs')});
 const before=identity(),frames=90,results=[];
 const normalise=value=>Array.isArray(value)?value.map(normalise):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([key])=>key!=='backend').map(([key,item])=>[key,normalise(item)])):value;

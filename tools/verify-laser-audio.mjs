@@ -4,7 +4,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {verifyEngineLock} from './verify-engine-lock.mjs';
-import {STAGES} from '../src/content.js';
+import {STAGES} from '../dist/src/content.js';
 
 const root=path.resolve(import.meta.dirname,'..'),args=process.argv.slice(2);
 let label='laser-audio',backends=['v8','quickjs'];

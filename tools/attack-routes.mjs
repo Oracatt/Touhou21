@@ -5,8 +5,8 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {Keys} from '@ts-stg/thlib';
 import {TouhouGame,TouhouRNG,createTouhouResources,touhouCircleCollision,getTouhouLaserCollisionSegments} from '@ts-stg/thlib/touhou';
-import {rectangleCircle,mul} from '../packages/thlib/src/touhou/math.js';
-import {updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern} from '../src/patterns.js';
+import {rectangleCircle,mul} from '../packages/thlib/dist/touhou/math.js';
+import {updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern} from '../dist/src/patterns.js';
 
 const X=-176,Y=288,WIDTH=177,HEIGHT=73,COLS=45,ROWS=19,N=COLS*ROWS,STEP=4;
 const moves=[{dx:0,dy:0,key:0},{dx:-1,dy:0,key:Keys.LEFT},{dx:1,dy:0,key:Keys.RIGHT},

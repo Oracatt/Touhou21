@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { MUSIC_TRACKS, musicTrack, musicLoopSeconds } from '../src/music-data.js';
+import { MUSIC_TRACKS, musicTrack, musicLoopSeconds } from '../dist/src/music-data.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // Tracks rendered from sampled instruments by tools/studio: intro + a seamless loop body, ~45-80 s.

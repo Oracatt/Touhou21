@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {TouhouGame,createTouhouResources,TOUHOU_BULLET_STYLES,TouhouRNG,TouhouStageTransition} from '@ts-stg/thlib/touhou';
 import {Keys} from '@ts-stg/thlib';
-import {STAGES,MIDBOSSES} from '../src/content.js';
-import {CampaignDirector} from '../src/director.js';
-import {SPELL_PATTERNS,STAGE_PATTERN_OFFSETS,updateSpellPattern} from '../src/patterns.js';
-import {CampaignScene,createSpellPortrait} from '../src/scene.js';
+import {STAGES,MIDBOSSES} from '../dist/src/content.js';
+import {CampaignDirector} from '../dist/src/director.js';
+import {SPELL_PATTERNS,STAGE_PATTERN_OFFSETS,updateSpellPattern} from '../dist/src/patterns.js';
+import {CampaignScene,createSpellPortrait} from '../dist/src/scene.js';
 import {DrawList} from '@ts-stg/thlib';
 
 function sceneFixture({character=0,difficulty=1,mode='spell-practice',spellId=STAGES[0].spells[0].id,stageId=1,

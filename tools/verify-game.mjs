@@ -7,6 +7,7 @@ import {promisify} from 'node:util';
 import {createHash} from 'node:crypto';
 import {performance} from 'node:perf_hooks';
 import {inventoryGitThlib} from './engine-git.mjs';
+import {verifyEngineLock} from './verify-engine-lock.mjs';
 
 const reportGroup=process.env.TOUHOU21_REPORT_GROUP??'';
 if(reportGroup&&!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(reportGroup))throw new Error('Native report group must be a simple directory name');
@@ -15,16 +16,17 @@ mkdirSync(build,{recursive:true});mkdirSync(reports,{recursive:true});
 const started=performance.now(),cases=[];
 const binary=resolve(root,'runtime/ts-stg.exe'),binaryHash=createHash('sha256').update(readFileSync(binary)).digest('hex');
 const hashTree=(directory,base=root)=>Object.fromEntries(readdirSync(resolve(base,directory),{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?Object.entries(hashTree(`${directory}/${entry.name}`,base)):[[`${directory}/${entry.name}`,createHash('sha256').update(readFileSync(resolve(base,directory,entry.name))).digest('hex')]]));
+verifyEngineLock();
 const libraryHashes=hashTree('packages/thlib/src');
 const engineLock=JSON.parse(readFileSync(resolve(root,'engine.lock.json'),'utf8')),referenceRoot=engineLock.source;
 const referenceWorktreeHashes=existsSync(resolve(referenceRoot,'packages/thlib/src'))?hashTree('packages/thlib/src',referenceRoot):null;
-const referenceHashes=referenceWorktreeHashes&&engineLock.thlibContent==='git-blob'
-  ?Object.fromEntries(inventoryGitThlib(referenceRoot,engineLock.commit).filter(file=>file.path.startsWith('src/')).map(file=>['packages/thlib/'+file.path,file.sha256])):referenceWorktreeHashes;
+const referenceHashes=referenceWorktreeHashes
+  ?Object.fromEntries(inventoryGitThlib(referenceRoot,engineLock.commit).filter(file=>file.path.startsWith('src/')).map(file=>['packages/thlib/'+file.path,file.sha256])):null;
 if(referenceHashes)assert.deepEqual(libraryHashes,referenceHashes,'The game dependency remains the unmodified public thlib source snapshot');
 const sourceHashes=hashTree('src'),execute=promisify(execFile),errors=[],pairs=new Map();
 // BossSpriteCatalog only submits business draw commands; it never advances
 // actors, RNG, collision, HP or inputs. Keep its revision visible separately.
-const simulationHashes=all=>Object.fromEntries(Object.entries(all).filter(([path])=>path!=='src/boss-sprites.js'));
+const simulationHashes=all=>Object.fromEntries(Object.entries(all).filter(([path])=>path!=='src/boss-sprites.ts'));
 const ruleHashes=simulationHashes(sourceHashes);
 const fixtureHashes=Object.fromEntries(['tools/verify-game.mjs','tools/integration-fixture.js'].map(path=>[path,createHash('sha256').update(readFileSync(resolve(root,path))).digest('hex')]));
 const signature={simulationSource:createHash('sha256').update(JSON.stringify(ruleHashes)).digest('hex'),library:createHash('sha256').update(JSON.stringify(libraryHashes)).digest('hex'),engine:binaryHash,fixture:createHash('sha256').update(JSON.stringify(fixtureHashes)).digest('hex')};
@@ -34,7 +36,7 @@ const previousPath=resolve(reports,reportName),previous=process.env.TOUHOU21_RES
 const canReuse=previous&&JSON.stringify(previous.verificationFixtureSha256)===JSON.stringify(fixtureHashes)&&JSON.stringify(previous.simulationSourceSha256??simulationHashes(previous.gameSourceSha256))===JSON.stringify(ruleHashes)&&JSON.stringify(previous.librarySha256)===JSON.stringify(libraryHashes)&&previous.executableSha256===binaryHash;
 const baselineName=process.env.TOUHOU21_BASELINE,baselinePath=baselineName?resolve(reports,`baseline-${baselineName}.json`):null;
 const baseline=baselinePath&&existsSync(baselinePath)?JSON.parse(readFileSync(baselinePath,'utf8')):null;
-const authoredMechanics=['src/director.js','src/patterns.js','src/danmaku.js','src/attacks/akari.js','src/attacks/shizuri.js','src/attacks/watari.js','src/attacks/shino.js','src/attacks/fusae.js','src/attacks/kotone.js','src/attacks/mio.js','src/attacks/shapes.js','src/roads.js','src/boss-health.js','src/campaign-boss-hud.js','src/content.js','src/scene.js','src/storage.js'];
+const authoredMechanics=['src/director.ts','src/patterns.ts','src/danmaku.ts','src/attacks/akari.ts','src/attacks/shizuri.ts','src/attacks/watari.ts','src/attacks/shino.ts','src/attacks/fusae.ts','src/attacks/kotone.ts','src/attacks/mio.ts','src/attacks/shapes.ts','src/roads.ts','src/boss-health.ts','src/campaign-boss-hud.ts','src/content.ts','src/scene.ts','src/storage.ts'];
 const baselineCompatible=baseline&&authoredMechanics.every(path=>baseline.gameSourceSha256[path]===sourceHashes[path])&&JSON.stringify(baseline.librarySha256)===JSON.stringify(libraryHashes)&&baseline.executableSha256===binaryHash;
 const backends=process.env.TOUHOU21_BACKENDS?.split(',')??['v8','quickjs'];
 const scenarios=[...Array.from({length:4},(_,difficulty)=>({id:`normal-reimu-${difficulty}`,kind:'campaign',options:{mode:'normal',character:0,difficulty}})),
@@ -78,7 +80,10 @@ async function worker(){
       // cases always run again; the report states each campaign's revision.
       const campaignBaseline=!sameSource&&baselineCompatible&&scenario.kind==='campaign'?baseline.results.find(value=>value.id===scenario.id&&value.backend===backend&&value.passed):null;
       const saved=sameSource??campaignBaseline;
-      if(!saved)await execute(binary,[entryPath,'--root',root,'--backend',backend,'--headless','--frames','1000','--snapshot',out],{cwd:root,encoding:'utf8',timeout:1800000,maxBuffer:4*1024*1024});
+      // Campaigns yield after each application frame; the final callback runs
+      // settlement assertions after the existing 100000-frame scenario bound.
+      const nativeFrames=scenario.kind==='campaign'?100001:1000;
+      if(!saved)await execute(binary,[entryPath,'--root',root,'--backend',backend,'--headless','--frames',String(nativeFrames),'--snapshot',out],{cwd:root,encoding:'utf8',timeout:1800000,maxBuffer:4*1024*1024});
       const report=JSON.parse(readFileSync(out,'utf8')),nativeMs=saved?saved.nativeMs:Math.round(performance.now()-begin);
       if(saved&&scenario.kind==='campaign'){report.sceneUpdateCalls??=report.frames;report.applicationUpdateCalls??=report.frames;}
       report.verification=saved?report.verification??{simulationSource:createHash('sha256').update(JSON.stringify(simulationHashes((campaignBaseline?baseline:previous).gameSourceSha256))).digest('hex'),library:signature.library,engine:signature.engine}:signature;
@@ -87,7 +92,7 @@ async function worker(){
         sceneUpdateCalls:report.sceneUpdateCalls??(scenario.kind==='campaign'?report.frames:0),
         applicationUpdateCalls:report.applicationUpdateCalls??report.frames??0,
         sourceBaseline:campaignBaseline?baselineName:sameSource?.sourceBaseline??null,
-        bossPresentationSourceSha256:saved?saved.bossPresentationSourceSha256??(campaignBaseline?baseline:previous).gameSourceSha256['src/boss-sprites.js']:sourceHashes['src/boss-sprites.js']});
+        bossPresentationSourceSha256:saved?saved.bossPresentationSourceSha256??(campaignBaseline?baseline:previous).gameSourceSha256['src/boss-sprites.ts']:sourceHashes['src/boss-sprites.ts']});
       console.log(`${report.passed?'PASS':'FAIL'}${saved?' retained':''} ${scenario.id}/${backend}: ${report.frames??'?'} application frames, ${nativeMs}ms`);
       if(!report.passed)throw new Error(`${scenario.id}/${backend}: ${report.error}`);
       const matching=pairs.get(scenario.id)??[];matching.push(report);pairs.set(scenario.id,matching);
@@ -100,7 +105,7 @@ for(const item of results)if(item.status==='rejected')errors.push(String(item.re
 for(const [id,matching]of pairs){if(matching.length===2){try{compare(normalise(matching[0]),normalise(matching[1]));for(const entry of cases.filter(value=>value.id===id))entry.backendParity=true;}catch(error){errors.push(`${id} backend parity: ${error.message}`);}}}
 function writeSummary(){const libraryStable=JSON.stringify(hashTree('packages/thlib/src'))===JSON.stringify(libraryHashes),currentSource=hashTree('src'),gameStable=JSON.stringify(currentSource)===JSON.stringify(sourceHashes),rulesStable=JSON.stringify(simulationHashes(currentSource))===JSON.stringify(ruleHashes),referenceStable=referenceWorktreeHashes?JSON.stringify(hashTree('packages/thlib/src',referenceRoot))===JSON.stringify(referenceWorktreeHashes):null;
   const report={passed:libraryStable&&rulesStable&&referenceStable!==false&&errors.length===0&&cases.length===tasks.length&&cases.every(value=>value.passed),backends,workers,executableSha256:binaryHash,
-  librarySha256:libraryHashes,libraryUnmodifiedDuringVerification:libraryStable,libraryMatchesReference:referenceHashes?Object.entries(libraryHashes).every(([name,hash])=>referenceHashes[name]===hash):null,referenceContent:engineLock.thlibContent??'legacy-working-tree',referenceSourceUnmodifiedDuringVerification:referenceStable,
+  librarySha256:libraryHashes,libraryUnmodifiedDuringVerification:libraryStable,libraryMatchesReference:referenceHashes?Object.entries(libraryHashes).every(([name,hash])=>referenceHashes[name]===hash):null,referenceContent:engineLock.thlibContent,referenceSourceUnmodifiedDuringVerification:referenceStable,
   gameSourceSha256:sourceHashes,gameSourceUnmodifiedDuringVerification:gameStable,simulationSourceSha256:ruleHashes,simulationSourceUnmodifiedDuringVerification:rulesStable,verificationFixtureSha256:fixtureHashes,errors,
   retainedCampaignBaseline:baselineCompatible?{name:baselineName,scope:'Explicit baseline retention after human review of the intervening application/presentation revisions. Automated compatibility verifies director, patterns, content, public library and engine identity; it does not certify arbitrary Scene/storage revisions. Latest Continue, replay and UI controls are rerun.',gameSourceSha256:baseline.gameSourceSha256}:null,
   elapsedMs:Math.round(performance.now()-started),cases:cases.length,simulationUpdates:cases.reduce((sum,value)=>sum+(value.sceneUpdateCalls??0),0),applicationUpdates:cases.reduce((sum,value)=>sum+(value.applicationUpdateCalls??0),0),

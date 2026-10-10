@@ -1,6 +1,6 @@
 import {Keys} from '@ts-stg/thlib';
-import {ProjectApplication} from '../src/application.js';
-import {STAGES} from '../src/content.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {STAGES} from '../dist/src/content.js';
 
 export function createBossHudFixture(scenarioPath){
   const native=globalThis.tsstg,scenario=JSON.parse(native.readText(scenarioPath)),memory=new Map();

@@ -5,6 +5,9 @@
   "type": "module",
   "description": "东方归名录：基于 TS-STG 的原创东方同人弹幕游戏",
   "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pretest": "npm run build",
     "test": "node --test tests/*.test.js",
     "verify": "node tools/verify-game.mjs",
     "compose": "node tools/compose-music.mjs",
@@ -12,6 +15,8 @@
     "verify:engine-smoke": "node tools/verify-engine-smoke.mjs",
     "sync:engine": "node tools/sync-engine.mjs",
     "restore:engine": "node tools/restore-engine.mjs",
+    "build:macos": "node tools/macos/build-host.mjs",
+    "verify:macos": "node tools/macos/build-host.mjs --verify",
     "audit": "node tools/audit-boundaries.mjs",
     "verify:visual": "node tools/verify-visual.mjs",
     "verify:background": "node tools/verify-background.mjs",
@@ -21,6 +26,13 @@
     "preview:report": "node tools/danmaku-report.mjs",
     "preview:menu": "node tools/menu-preview.mjs"
   },
-  "dependencies": { "@ts-stg/thlib": "file:packages/thlib" },
-  "engines": { "node": ">=24" }
+  "dependencies": {
+    "@ts-stg/thlib": "file:packages/thlib"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
 }

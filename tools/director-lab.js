@@ -13,26 +13,27 @@ export function createDirectorGame({seed=73,difficulty=1}={}){
   game.context={sound(){},dialogue:false,inputBlocked:false,bossSuppressed:false,enemyContactBlocked:false,boss:null,
     cancelCircle:(x,y,radius)=>{game.bullets.cancelCircle(x,y,radius);game.lasers.cancelCircle(x,y,radius);}};
   game.drops=[];game.items.spawnBossDrops=(boss,options)=>game.drops.push({x:boss.x,y:boss.y,...options});
-  game.bossPresentation={entranceReady:false,charges:[],clearCharges(){this.charges.length=0;},
+  game.bossPresentation={entranceReady:false,combatActive:false,effects:{aura:false,distortion:false},charges:[],clearCharges(){this.charges.length=0;},
     beginCharge(options){const charge={...options,alive:true,stopped:false,release:true,releaseFrame:options.releaseFrame??60};this.charges.push(charge);return charge;},
     beginDeath(){}};
   game.spell={active:false,mode:0,stage:1,survival:false,id:0,remaining:0,
     finish(captured,timeout){if(!this.active)return;this.active=false;game.onEvent?.('spellFinish',{id:this.id,captured,timeout});},
     capture(){this.finish(true,false);},timeout(){this.finish(false,true);}};
-  game.setBoss=boss=>{game.context.boss=boss;};
+  game.setBoss=boss=>{game.context.boss=boss;if(!boss){game.stopBossCombat();game.setBossEffects({aura:false,distortion:false});}};
+  game.setBossEffects=effects=>{Object.assign(game.bossPresentation.effects,effects);};
   game.registerBoss=(boss,{onDefeated})=>{game.bossRegistry.set(boss,onDefeated);
     const damage=boss.damage;boss.damage=(amount,source)=>{if(!boss.alive||boss.invulnerable)return 0;boss.hp-=amount;
       if(boss.hp<=0){boss.hp=0;onDefeated({boss,source});}return amount;};};
   const prepare=boss=>{boss.prepareSpellHealth=hp=>{boss.hp=hp;boss.spellHealth=true;return boss;};
     boss.prepareNormalHealth=hp=>{boss.hp=hp;boss.spellHealth=false;return boss;};};
   const spawn=game.spawnEnemy;game.spawnEnemy=options=>{const enemy=spawn(options);prepare(enemy);return enemy;};
-  game.enterBoss=(boss,{entrance})=>{game.context.boss=boss;game.bossPresentation.entranceReady=false;
+  game.enterBoss=(boss,{entrance,profile})=>{game.context.boss=boss;game.bossPresentation.profileName=profile;game.bossPresentation.entranceReady=false;
     after(entrance?.readyFrame??90,()=>{game.bossPresentation.entranceReady=true;});};
   game.setBossHud=state=>{Object.assign(game.bossHudState,state);};
-  game.resumeBoss=()=>{};game.startBossCombat=()=>{game.combat=true;};game.stopBossCombat=()=>{game.combat=false;};
+  game.resumeBoss=()=>{};game.startBossCombat=()=>{game.combat=true;game.bossPresentation.combatActive=true;};game.stopBossCombat=()=>{game.combat=false;game.bossPresentation.combatActive=false;};
   game.beginSpell=({id,duration,survival})=>{Object.assign(game.spell,{active:true,id,remaining:duration,survival:!!survival});};
-  game.removeBoss=enemy=>{enemy.alive=false;game.bossRegistry.delete(enemy);if(game.context.boss===enemy)game.context.boss=null;};
-  game.beginBossEscape=(boss,{duration=60})=>{game.context.boss=null;after(duration,()=>{game.onEvent?.('bossescape',{enemy:boss});game.removeBoss(boss);});};
+  game.removeBoss=enemy=>{enemy.alive=false;game.bossRegistry.delete(enemy);if(game.context.boss===enemy)game.setBoss(null);};
+  game.beginBossEscape=(boss,{duration=60})=>{game.stopBossCombat();boss.invulnerable=true;after(duration,()=>{game.removeBoss(boss);game.onEvent?.('bossescape',{enemy:boss});});};
   game.beginBossDefeat=boss=>{after(60,()=>{game.spell.finish(true,false);game.onEvent?.('bossburst',{enemy:boss});});};
   game.update=()=>{
     if(typeof game.stage==='function')game.stage(game,game.frame);

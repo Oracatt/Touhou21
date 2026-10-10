@@ -5,7 +5,7 @@
 
 The WAVs are written with a plain 44-byte header (PCM, 16 bit, stereo, 32 kHz) like every other game
 track. studio.json lists the frame-exact loop points; tools/compose-music.mjs merges it into
-src/music-data.js and no longer re-synthesises these ids."""
+src/music-data.ts and no longer re-synthesises these ids."""
 import hashlib
 import json
 import pathlib
@@ -30,9 +30,9 @@ DESCRIPTIONS = {
     'stage04': '暗处有看不见的丝线。竖琴与拨弦走得很轻，双簧管在线上走钢丝，副歌里终于见到了光。',
     'boss04': '蛛丝一圈圈收紧。大提琴不停重复十六分音符，小提琴在上面织出主旋律，定音鼓与铜锣压在副歌之前。',
     'stage05': '书的最后一页还留着空白。长笛、短笛与木琴像翻页一样轻快，副歌里整个乐队一起翻过去。',
-    'boss05': '校对者在影子里划掉一行又一行。小号用三三二的重音写下句子，长号与圆号在副歌里回应。',
+    'boss05': '校对者在影子里划掉一行又一行。小号用三三二的重音写下句子，中段乐队一次次停在半句，空白里只剩响棒数拍，长号与圆号在副歌里回应。',
     'stage06': '还没有被写下的清晨。长笛与双簧管在钢琴与竖琴上缓缓升起，小号只在副歌里放亮。',
-    'boss06': '庄重的开场白，需要足够坦然的人来说。小号与圆号立起仪式的架子，铜锣和定音鼓在副歌之前落下。',
+    'boss06': '庄重的开场白，需要足够坦然的人来说。小号与圆号立起仪式的架子，中段管钟两声一组往上敲，大提琴与通鼓踏着行进的步子走进副歌。',
     'extra': '把写完的东西再写一遍。小号的短句咬着合成器的拨奏，副歌里小提琴与合成主音一起把句子改成新的。',
     'bossExtra': '一个不肯停下的结尾。八分音符一路往前冲，B 大调的属和弦把每一段都推回开头，没有落脚的地方。',
 }

@@ -17,7 +17,9 @@ const cases=[{id:'title',options:{}},
   {id:'extra-survival',options:{autostart:true,mode:'spell-practice',stageId:7,spellId:'ex-08',difficulty:4}},
 ];
 const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const sourceHashes=()=>Object.fromEntries(fs.readdirSync(path.join(root,'src')).filter(name=>name.endsWith('.js')).map(name=>[name,hash(path.join(root,'src',name))]));
+const sourceHashes=()=>Object.fromEntries(['main.ts',...fs.readdirSync(path.join(root,'src'),{recursive:true})
+  .filter(name=>name.endsWith('.ts')).map(name=>'src/'+name.split(path.sep).join('/'))]
+  .sort().map(name=>[name,hash(path.join(root,name))]));
 const sourceBefore=sourceHashes(),binaryBefore=hash(path.join(root,'runtime/ts-stg.exe'));
 const results=[];
 for(const scenario of cases){

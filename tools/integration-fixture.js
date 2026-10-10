@@ -1,8 +1,8 @@
 import {Keys,stateHash} from '@ts-stg/thlib';
 import {TouhouGame,TouhouPlayer,TouhouBulletField,TouhouLaserField,TouhouSpell,TouhouEnemy,TouhouHealth,TouhouItems,TouhouBossPresentation,TouhouBossHud,TouhouGameOver} from '@ts-stg/thlib/touhou';
-import {ProjectApplication} from '../src/application.js';
-import {STAGES,ALL_SPELLS} from '../src/content.js';
-import {GAME_REVISION} from '../src/storage.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {STAGES,ALL_SPELLS} from '../dist/src/content.js';
+import {GAME_REVISION} from '../dist/src/storage.js';
 
 // Dedicated native headless QA entry. Player userdata is replaced by memory;
 // only dedicated userdata/integration files test the real native path adapter.
@@ -46,7 +46,10 @@ function* campaign(){
     if(d.boss&&!bodies[d.boss.bossId]){const boss=d.boss;bodies[boss.bossId]={enemy:boss instanceof TouhouEnemy,health:boss.health instanceof TouhouHealth,animationBank:boss.animation.bank===game.banks.enemy};assert(Object.values(bodies[boss.bossId]).every(Boolean),'Every business Boss body keeps public Enemy/Health/ANM ownership');}
     if(d.boss&&d.phaseFrame===61&&['combat','midboss-combat'].includes(d.state)&&!rendered.some(entry=>entry.bossId===d.boss.bossId)){const commands=application.render();assert(commands.length>0,'Actual application produces gameplay draw commands');rendered.push({bossId:d.boss.bossId,commands:commands.length,types:[...new Set(commands.map(command=>command[0]))].sort()});}
     peak.bullets=Math.max(peak.bullets,game.bullets.bullets.length);peak.lasers=Math.max(peak.lasers,game.lasers.lasers.length);peak.enemies=Math.max(peak.enemies,game.enemies.length);
-    if(frames%128===0)yield;
+    // Match the normal host boundary: one application frame per native call.
+    // Batching 128 dense frames consumed QuickJS's 5-second per-call watchdog
+    // even though individual frames completed. No simulation step is skipped.
+    yield;
   }
   assert(application.finishedResult,'Complete original-length route must reach App.finished');
   const expected=options.mode==='extra'?[7]:options.mode==='stage-practice'?[options.stageId]:[1,2,3,4,5,6];

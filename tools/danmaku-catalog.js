@@ -1,10 +1,10 @@
 /** Enumerates every authored attack as a lab entry using the production
  * director entry points, so previews and tests exercise the shipped code. */
 import {TouhouRNG} from '@ts-stg/thlib/touhou';
-import {STAGES,MIDBOSSES} from '../src/content.js';
+import {STAGES,MIDBOSSES} from '../dist/src/content.js';
 import {SPELL_PATTERNS,MIDBOSS_SPELL_PATTERNS,NONSPELL_PATTERNS,MIDBOSS_NONSPELL_PATTERNS,
-  updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern,updateMidbossNonspellPattern} from '../src/patterns.js';
-const roads=await import('../src/roads.js').catch(()=>null);
+  updateSpellPattern,updateMidbossSpellPattern,updateNonspellPattern,updateMidbossNonspellPattern} from '../dist/src/patterns.js';
+const roads=await import('../dist/src/roads.js').catch(()=>null);
 const createRoadPlan=roads?.createRoadPlan??(()=>{throw new Error('roads unavailable');}),spawnRoadFormation=roads?.spawnRoadFormation;
 
 const pad=n=>String(n).padStart(2,'0');

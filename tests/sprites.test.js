@@ -6,8 +6,8 @@ import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {DrawList} from '@ts-stg/thlib';
-import {CHARACTERS} from '../src/content.js';
-import {BOSS_SPRITE_LAYOUTS,BossSpriteCatalog,bossSpriteFrame,bossSpriteRegion} from '../src/boss-sprites.js';
+import {CHARACTERS} from '../dist/src/content.js';
+import {BOSS_SPRITE_LAYOUTS,BossSpriteCatalog,bossSpriteFrame,bossSpriteRegion} from '../dist/src/boss-sprites.js';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'docs/SPRITE-PROMPTS.json'),'utf8'));
@@ -111,4 +111,20 @@ test('BossSpriteCatalog renders only the chosen cell with public point sampling 
   assert.equal(reads,1,'the catalog shares GameArt texture ownership and caches lookup');
   assert.throws(()=>catalog.draw(new DrawList(),{},'missing',{x:0,y:0}),RangeError);
   assert.throws(()=>catalog.draw(new DrawList(),{},'akari',{x:NaN,y:0}),TypeError);
+});
+
+test('registered Boss clocks advance independently of attack age and drawing is read-only',()=>{
+  const catalog=new BossSpriteCatalog({art:{load(){return {id:42,width:1774,height:887};}}});
+  const enemy={age:103,_spriteDirection:0},copy={...enemy};catalog.attach(enemy);
+  assert.equal(catalog.frame(enemy),0,'registration starts at the first authored pose');
+  for(let frame=1;frame<=32;frame++){
+    catalog.update(enemy);
+    assert.equal(catalog.frame(enemy),bossSpriteFrame({age:frame}));
+    const before=catalog.frame(enemy);
+    for(let repeat=0;repeat<3;repeat++)assert.equal(catalog.draw(new DrawList(),enemy,'akari',{x:336,y:180}),before);
+  }
+  assert.deepEqual(enemy,copy,'presentation must not advance or add gameplay actor fields');
+  enemy._spriteDirection=-1;
+  for(let frame=1;frame<=8;frame++)catalog.update(enemy);
+  assert.equal(catalog.frame(enemy),5,'a moving held actor keeps the authored two-pose animation');
 });

@@ -5,12 +5,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {STAGES,MIDBOSSES} from '../src/content.js';
+import {STAGES,MIDBOSSES} from '../dist/src/content.js';
 import {searchAttackRoute,ATTACK_ROUTE_GRID,ATTACK_ROUTE_QA_VERSION} from './attack-routes.mjs';
 
 const root=path.resolve(import.meta.dirname,'..');
 const sha=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const inputs=['src/content.js','src/patterns.js','src/danmaku.js',...fs.readdirSync(path.join(root,'src','attacks')).sort().map(file=>`src/attacks/${file}`),'engine.lock.json','tools/attack-routes.mjs','tools/verify-attack-routes.mjs'];
+const inputs=['src/content.ts','src/patterns.ts','src/danmaku.ts',...fs.readdirSync(path.join(root,'src','attacks')).sort().map(file=>`src/attacks/${file}`),'engine.lock.json','tools/attack-routes.mjs','tools/verify-attack-routes.mjs'];
 export function attackRouteCases({kind='spell'}={}){
   assert.ok(['spell','nonspell','all'].includes(kind));const cases=[];
   for(const stage of STAGES){const difficulty=stage.id===7?4:1;

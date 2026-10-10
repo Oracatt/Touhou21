@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {Keys} from '@ts-stg/thlib';
 import {createTouhouResources,TouhouGame,TOUHOU_BULLET_STYLES} from '@ts-stg/thlib/touhou';
-import {NONSPELL_PATTERNS,MIDBOSS_NONSPELL_PATTERNS,updateNonspellPattern,updateMidbossNonspellPattern} from '../src/patterns.js';
-import {STAGES} from '../src/content.js';
+import {NONSPELL_PATTERNS,MIDBOSS_NONSPELL_PATTERNS,updateNonspellPattern,updateMidbossNonspellPattern} from '../dist/src/patterns.js';
+import {STAGES} from '../dist/src/content.js';
 
 const assets=fs.existsSync('packages/thlib/assets/touhou-common/manifest.json');
 const needsAssets=assets?{}:{skip:'requires the private touhou-common resource pack (tools/setup-local.ps1)'};

@@ -1,6 +1,6 @@
 # Boss 阶段、退场与非符计时
 
-本记录对应 **v2.0.0 / 回放修订 5**。角色、攻击时长、血量及退场选择属于本作业务；实体运动、碰撞、武器、消弹、掉落、法阵、聚能、计时动画与警告音仍使用公共 thlib。没有修改源 TS-STG 或原作还原目录。v2.0.0 重写全部攻击并改变道中 Boss 阶段，旧修订回放保留，但不按新规则播放。
+本记录对应 **v2.0.0 / 回放修订 11**。角色、攻击时长、血量及退场选择属于本作业务；实体运动、碰撞、武器、消弹、掉落、法阵、聚能、计时动画与警告音仍使用公共 thlib。修订 11 修正道中入场和换卡移动曲线、Extra 连续轨迹接续，并取消黑雾入场后的首段非符聚能。`GAME.contentRevision` 与 `GAME_REVISION` 同步，旧修订回放保留，但不按新规则播放。
 
 ## 道中 Boss 的阶段序列（v2.0.0）
 
@@ -18,9 +18,13 @@
 
 六面本篇的中 Boss 与该面最终 Boss 是同一角色。击破后停止攻击、消弹并按公共规则掉落，保留同一个可见实体，通过 `TouhouGame.beginBossEscape` 飞出；不启动死亡反色、死亡爆破或 `bossburst`。超时同样飞离，但没有普通击破奖励。飞离完成才移除实体，途中暂停会冻结位置与退场时钟。
 
-击破路线目标为 `(192,-32)`，超时目标为 `(0,-32)`，飞离均为 60 帧、插值模式 4，即二次缓出 `1-(1-t)^2`。这些坐标使用公共的原作场地坐标。击破时立即撤下 Boss HUD 和战斗效果，身体原地停顿 75 帧后开始飞离；超时没有这段停顿。停顿与飞离期间，同一个身体持续按普通实体层渲染，不能因为公共 presentation 已解除 Boss 所有权而隐藏。道中时钟在 `midboss-exit` 期间停止，击破退出共 145 帧、超时退出共 70 帧，然后恢复道路编排。
+击破路线目标为 `(192,-32)`，超时目标为 `(0,-32)`，飞离均为 60 帧、插值模式 4，即二次缓出 `1-(1-t)^2`。这些坐标使用公共的原作场地坐标。击破时立即停止战斗并撤下 Boss HUD，身体原地停顿 75 帧后开始飞离；超时没有这段停顿。同一个身体、法阵动画和背景扭曲对象在停顿与飞离期间持续更新，直到公共 `removeBoss` 实际移除实体才一并清理。道中时钟在 `midboss-exit` 期间停止，击破退出共 145 帧、超时退出共 70 帧，然后恢复道路编排。
 
-身体直绘仅接管 `midboss-exit` 中 `pendingEscape.boss` 指向的实体，以及公共 `bossEscapes` 中仍在运动的实体；正常入场仍经过公共 `drawBody` 的黑雾隐藏规则。显示修正不改变停顿、运动、掉落、伤害、回放时钟或公共框架。
+身体始终通过公共 `bossPresentation.drawBody` 渲染，不再为停顿或逃跑绕过公共显示规则。`context.boss` 保留的是表现绑定；`stopBossCombat` 和公共 hold 独立关闭战斗就绪状态，玩家武器不能再伤害它，实体不能再造成接触伤害，导演也不再调用该阶段的弹幕。暂停同时冻结飞离、法阵和扭曲，恢复后沿用相同对象与时钟。
+
+道中入场显式使用 `enterBoss(...,{profile:'midboss',entrance:{mode:'halfFog',readyFrame:100,follow:boss}})`，即本体立即可见的公共半黑雾、effect99 与半径 128 的扭曲，并立即调用 `setBossEffects({aura:true,distortion:true})`。半黑雾使用原作 153/159/161 三组动画与一次音效 54，从左上 `(-150,20)` 减速飞入 `(0,105)`，100 帧到点后再交给原有对话；中 Boss 对话只停战斗，不关闭这两个表现开关。随后主 Boss 必须重新指定 `profile:'boss'`，恢复 effect99/108 与半径 160 的扭曲；主 Boss 黑雾入场与对话期间关闭表现，在 `_beginPhase` 开始攻击时才显式开启。主 Boss 对话、结算和导演销毁明确关闭表现，不能再依赖 `stopBossCombat` 隐式清除法阵。入场音效与后续攻击准备的聚能音效分别属于两个时间点，每次聚能仍只播放一次。
+
+本作在道中 `enterBoss` 中额外指定 `distortion:{color:TOUHOU_BOSS_PROFILES.boss.color}`，使扭曲颜色与关底一致。只覆盖颜色，道中半径128、effect99及持续时间仍沿用原配置；thlib 的公共 `midboss` 默认配色保持原样。
 
 默认根据 `midbossSpec.bossId === stage.bossId` 选择 `escape`，不同身份默认选择 `defeat`；业务可显式配置 `midbossSpec.exit` 为这两种值。不同身份的真正击破仍保留公共死亡演出；不同身份超时则飞离。Extra 中 Boss 御影房枝与最终 Boss 玉继未央是不同角色，保留自己的三张符卡及最终击破。
 
@@ -34,11 +38,11 @@
 
 原作一 / 二面中 Boss 使用该面 Boss 的动画资源，四 / 五面使用独立中 Boss 动画库。还原脚本中三 / 六面没有对应的独立 `MBoss` 定义；本作三 / 六面中 Boss 是原创编排。当前版本按用户要求去掉再次登场角色的击破爆炸，采用 75 帧停顿后飞离，不复刻一 / 二面原作的 120 帧等待和小型击破反馈。它是有原作退场机制依据的业务演出选择，不能称为逐帧一致。
 
-公共参考见 `packages/thlib/src/touhou/boss-escape.js` 和 `game.js` 的 `beginBossEscape`。TS-STG 的 Rush 示例在 `games/rushboss/src/runtime.js:335` 的 `beginPracticeEscape` 中采用同一公共飞离序列；示例调用方先结算、消弹、停止聚能并隐藏战斗显示，退场完成后移除实体。本作直接使用公共 Game 的所有权接口。
+公共参考见 `packages/thlib/src/touhou/boss-escape.ts` 和 `game.ts` 的 `beginBossEscape`。TS-STG 的 Rush 示例在 `games/rushboss/src/runtime.ts` 的 `beginPracticeEscape` 中采用同一公共飞离序列；示例调用方先结算、消弹、停止聚能并隐藏战斗显示，退场完成后移除实体。本作直接使用公共 Game 的所有权接口。
 
 ## 阶段排布 `phaseLayout`
 
-不是每张符卡前面都有非符。`src/content.js` 里每个主 Boss 关卡有一条 `phaseLayout`，按战斗顺序写出各阶段：`N` 是一段非符，`S` 是下一张符卡（按 `spells` 的顺序取）。导演（`_buildPhases`）照这条字符串排出阶段；非符按出现顺序取 `nonspellNames` / `NONSPELL_PATTERNS` / `BOSS_NONSPELL_HEALTH` 里的第几组，符卡直接接在符卡后面时没有非符。
+不是每张符卡前面都有非符。`src/content.ts` 里每个主 Boss 关卡有一条 `phaseLayout`，按战斗顺序写出各阶段：`N` 是一段非符，`S` 是下一张符卡（按 `spells` 的顺序取）。导演（`_buildPhases`）照这条字符串排出阶段；非符按出现顺序取 `nonspellNames` / `NONSPELL_PATTERNS` / `BOSS_NONSPELL_HEALTH` 里的第几组，符卡直接接在符卡后面时没有非符。
 
 | 关卡 | 排布 | 非符 / 符卡 |
 | --- | --- | --- |
@@ -56,7 +60,7 @@
 
 原作 ECL 的 `ins_511(totalHP)` 与 `ins_514(slot,nextSpellHP,duration,handler)` 表示共享血环中的当前非符和下一张符卡。非符实际伤害预算为 `totalHP - nextSpellHP`，不是把整组血量再给非符。本作继续使用公共 `TouhouBossPhasePlan`，没有改用 Rush 的业务显示权重，也没有在进入符卡时重新充满整个共用血环。
 
-非符预算由 `src/boss-health.js` 集中配置，原作出处和总量 / 阈值逐项写在源码注释中：
+非符预算由 `src/boss-health.ts` 集中配置，原作出处和总量 / 阈值逐项写在源码注释中：
 
 | 关卡 | 主 Boss 各非符 HP | 道中 Boss 非符 HP | 道中 Boss 符卡 HP（显示值） |
 | --- | --- | ---: | ---: |
@@ -74,17 +78,25 @@
 
 原作 `source_reconstruction/gameplay/enemy_damage_helpers.cpp:4–10` 在符卡状态中使用额外的储存血量比例，因此不能把非符预算直接乘 7。本次使用公共现有伤害单位，没有修改自机 DPS、敌弹判定、低速速度或武器实现。真实武器回归使用 Normal 一面、灵梦 / 魔理沙 P2 / P4、普通输入和碰撞，无 Bomb、无无敌、无 Miss，检查第一段 12,000 HP 非符能实际展开至少两轮攻击。它只证明这些样本的时长与战斗接入，不能代替六面及全部难度的真人平衡评价。
 
+## 移动曲线与身体动画
+
+道中入场使用公共 `AnmInterpolation` 的100帧mode4（二次减速），参考 `st01mbs/st02mbs` 的ECL401；保持本作左上出生点与目标坐标。原作常规60帧mode4和特殊回位mode9并存，不能把所有运动改成同一种曲线。本作换卡等待仍为60帧，使用mode9缓入缓出精确回位，替代每帧乘0.035追赶目标；开始轨迹前清除旧速度，等待结束后才进入下一段攻击。
+
+原有正常游走的smoothstep保持。Extra的连续循环轨迹用公共mode9从实际位置接入，组合符卡分段结束前减速，修复了直接使用全局周期坐标造成的单帧约136单位跳变；发弹时刻、弹种、数量和随机数消耗保持，位置与瞄准随修正后的移动变化。
+
+身体精灵使用游戏侧独立表现时钟，换卡、停留、对话和飞离时继续换帧；暂停冻结，绘制不推进时钟，也不修改Boss战斗年龄、RNG或回放哈希。thlib的hold语义及默认移动预设不变。
+
 ## 普通非符倒计时
 
 原作 `source_reconstruction/gameplay/enemy_opcode_state.cpp:49–58` 用 ECL 513 重置阶段时钟、514 配置血量阈值与时限；`enemy_damage.cpp:49–54` 每帧将 `duration - timer_a8` 写入 Boss HUD。这条计时路径不要求符卡开启。`hud_system/update.cpp:50–64` 使用同一组公共计时动画：符卡初始 interrupt 2，普通非符为 3；不足 5 秒使用音效 11，不足 2 秒使用音效 12，对话及非战斗状态隐藏。
 
-本作旧 Scene 已对主 Boss 非符做计时包装，但普通中 Boss 没有传递其阶段剩余时间，且固定 1,200 帧盖过内容的 25 秒配置。本次以 `src/campaign-boss-hud.js` 的 `CampaignBossHud` 通过公共 `factories.bossHud` 接入：主非符使用 `phase.duration - phaseFrame`，普通中 Boss 使用 `midbossDuration - phaseFrame`；符卡继续接收公共 spell 已更新的剩余时间。
+本作旧 Scene 已对主 Boss 非符做计时包装，但普通中 Boss 没有传递其阶段剩余时间，且固定 1,200 帧盖过内容的 25 秒配置。本次以 `src/campaign-boss-hud.ts` 的 `CampaignBossHud` 通过公共 `factories.bossHud` 接入：主非符使用 `phase.duration - phaseFrame`，普通中 Boss 使用 `midbossDuration - phaseFrame`；符卡继续接收公共 spell 已更新的剩余时间。
 
 每个游戏 tick 只有一次公共 HUD update，计时动画、血环、秒以下数字和警告音仍由 `TouhouBossHud` 处理，没有第二套计时绘制或二次警告音。进入、对话、阶段间等待、飞离和结算明确隐藏计时，避免旧时间或 `-1` 截断成负零后显示“00”。暂停冻结阶段时钟及 HUD 更新，恢复后接续同一帧。
 
 ## 一次聚能与音效归属
 
-主 Boss 非符、主 Boss 符卡和中 Boss 阶段共用 `_charge`：`repeatCount:1`，一次准备只生成一组聚能圈，开始时音效 54 一次，第 60 帧同一聚能释放时音效 6 一次。移除了旧主阶段连续六组聚能。被取消或结束的聚能 owner 不再补发释放音，防止声音串到下一阶段。聚能仍用公共 `TouhouBossCharge`，业务调用公共 sound 回调，不向公共视觉类塞入本作音频副作用。
+道中黑雾入场后的第一段非符直接使用入场演出，不创建攻击聚能，也不再次播放54或随后补播6。之后的道中符卡、Extra开场符卡、主 Boss 非符与符卡仍共用 `_charge`：`repeatCount:1`，一次准备只生成一组聚能圈，开始时音效 54 一次，第 60 帧同一聚能释放时音效 6 一次。移除了旧主阶段连续六组聚能。被取消或结束的聚能 owner 不再补发释放音，防止声音串到下一阶段。聚能仍用公共 `TouhouBossCharge`，业务调用公共 sound 回调，不向公共视觉类塞入本作音频副作用。
 
 原作例子 `st01bs.ecl.txt:63–68` 依次为标准 ECL 307 聚能、音效 54、等待 60 帧、释放效果与音效 6；`st04bs.ecl.txt:73–77` 等处也使用这类序列。这里的标准聚能圈是 effect 64～78 / 释放 79～92，不能与入场 `EffChargePoint3` 的 151 起始脚本混用；入场黑雾保留自己的生命周期。
 

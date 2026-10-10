@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {stateHash,Keys} from '@ts-stg/thlib';
 import {TouhouGame,TouhouEnemy,TouhouMotion,TouhouRNG,createTouhouResources,TOUHOU_BULLET_STYLES,TOUHOU_ENEMY_PRESETS} from '@ts-stg/thlib/touhou';
-import {ROAD_SCRIPTS,ROAD_ROLES,ROAD_FORMATIONS,ROAD_ATTACKS,ROAD_MIDBOSS_FRAMES,createRoadPlan,spawnRoadFormation,roadPath,updateRoadEnemy} from '../src/roads.js';
-import {CampaignDirector} from '../src/director.js';
-import {STAGES,MIDBOSSES} from '../src/content.js';
+import {ROAD_SCRIPTS,ROAD_ROLES,ROAD_FORMATIONS,ROAD_ATTACKS,ROAD_MIDBOSS_FRAMES,createRoadPlan,spawnRoadFormation,roadPath,updateRoadEnemy} from '../dist/src/roads.js';
+import {CampaignDirector} from '../dist/src/director.js';
+import {STAGES,MIDBOSSES} from '../dist/src/content.js';
 import {createDanmakuLab} from '../tools/danmaku-lab.js';
 
 const assets=fs.existsSync('packages/thlib/assets/touhou-common/manifest.json');
@@ -20,7 +20,7 @@ function trace(stageId,difficulty,seed=73){
   for(;clock<plan.roadFrames;clock++){
     while(cursor<plan.waves.length&&plan.waves[cursor].at===clock){const wave=plan.waves[cursor++];
       spawned+=spawnRoadFormation({game:lab.game,wave,stageId,difficulty,rng,canFire:()=>clock<wave.fireUntil,
-        onAttack:p=>{attacks.push({frame:clock,...p});const e=lab.game.enemies.find(a=>a.id===p.enemyId);if(e&&(e.y<10||e.y>290))outsideFire++;}}).length;}
+        onAttack:p=>{attacks.push({frame:clock,wave:wave.id,...p});const e=lab.game.enemies.find(a=>a.id===p.enemyId);if(e&&(e.y<10||e.y>290))outsideFire++;}}).length;}
     lab.step(null);
     if(clock%24===0)for(const e of lab.game.enemies)movement.push([clock,e.roadWaveId,Math.round(e.x*10),Math.round(e.y*10)]);
   }
@@ -75,6 +75,23 @@ test('road difficulty raises density on every stage and seeds change real routes
     const difficulty=id===7?4:1,a=trace(id,difficulty,73),b=trace(id,difficulty,73),other=trace(id,difficulty,74);
     assert.equal(a.pathHash,b.pathHash);assert.equal(a.geometryHash,b.geometryHash);assert.equal(a.rng,b.rng);
     assert.notEqual(a.pathHash,other.pathHash,'seed changes formation jitter');
+  }
+});
+
+test('aimed fire relays through each formation and every stage enters on its own routes',()=>{
+  const owners=new Map();
+  for(let stageId=1;stageId<=6;stageId++)for(const wave of createRoadPlan(stageId).waves)if(wave.role!=='guard'&&wave.formation!=='drop'){
+    const owner=owners.get(wave.formation)??stageId;owners.set(wave.formation,owner);
+    assert.equal(owner,stageId,`stage ${stageId} reuses stage ${owner}'s ${wave.formation} route`);
+  }
+  const aimed=new Set(['aim','stream','echo','letter','seal']);
+  for(let stageId=1;stageId<=7;stageId++)for(const difficulty of stageId===7?[4]:[1,3]){
+    const waves=new Map();
+    for(const a of trace(stageId,difficulty).attacks)if(aimed.has(a.attack)){const list=waves.get(a.wave)??[];list.push(a);waves.set(a.wave,list);}
+    for(const [wave,list] of waves)for(const a of list){
+      const shooters=new Set(list.filter(b=>b.frame>=a.frame&&b.frame<a.frame+10).map(b=>b.enemyId));
+      assert.ok(shooters.size<=2,`${wave} on ${difficulty}: ${shooters.size} fairies open aimed fire within 10 frames`);
+    }
   }
 });
 

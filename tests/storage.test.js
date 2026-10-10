@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {GameStorage} from '../src/storage.js';
+import {GameStorage} from '../dist/src/storage.js';
 function host(){const files=new Map();return{files,readText:path=>files.get(path.replace(/^userdata\//,''))??'',writeText:(path,value)=>files.set(path,value)};}
 test('Easy no-continue clear unlocks Extra permanently across subsequent continued clears',()=>{const adapter=host(),storage=new GameStorage(adapter);storage.recordClear({character:0,difficulty:0,mode:'normal',continues:0,score:100});assert.equal(storage.extraUnlocked,true);storage.recordClear({character:0,difficulty:0,mode:'normal',continues:2,score:200});assert.equal(storage.extraUnlocked,true);const restored=new GameStorage(adapter);assert.equal(restored.extraUnlocked,true);assert.equal(restored.progress.clears['0:0'].score,200);assert.equal(restored.progress.clears['0:0'].continues,0);});
 test('practice and replay-shaped summaries cannot unlock the main story',()=>{const storage=new GameStorage(host());for(const mode of ['stage-practice','spell-practice'])storage.recordClear({character:0,difficulty:1,mode,continues:0,score:100});assert.equal(storage.extraUnlocked,false);});

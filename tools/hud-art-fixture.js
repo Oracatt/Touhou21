@@ -1,8 +1,8 @@
 import {Keys,ReplayPlayer} from '@ts-stg/thlib';
 import {TouhouHud,TouhouPause,TouhouGameOver} from '@ts-stg/thlib/touhou';
-import {ProjectApplication} from '../src/application.js';
-import {GAME,STAGES} from '../src/content.js';
-import {GAME_REVISION} from '../src/storage.js';
+import {ProjectApplication} from '../dist/src/application.js';
+import {GAME,STAGES} from '../dist/src/content.js';
+import {GAME_REVISION} from '../dist/src/storage.js';
 
 /** Actual App/public HUD display checks. User data stays in memory. The last
  * scenario first records and plays real input, then explicitly presets values

@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {DrawList} from '@ts-stg/thlib';
-import {BACKGROUND_VIEWPORT,StageBackground,cameraForStage,lookAt3d,multiply3d,perspective3d,project3d,transform3d,viewport3d} from '../src/background.js';
-import {SCENERY_ATLASES,SPELL_BACKGROUND_STYLES,sceneryRegion} from '../src/background-art.js';
-import {DynamicSpellBackground,SPELL_BACKGROUND_TIMING,spellLayerOpacity} from '../src/spell-background.js';
+import {BACKGROUND_VIEWPORT,StageBackground,cameraForStage,lookAt3d,multiply3d,perspective3d,project3d,transform3d,viewport3d} from '../dist/src/background.js';
+import {SCENERY_ATLASES,SPELL_BACKGROUND_STYLES,sceneryRegion} from '../dist/src/background-art.js';
+import {DynamicSpellBackground,SPELL_BACKGROUND_TIMING,spellLayerOpacity} from '../dist/src/spell-background.js';
 
 const close=(a,b,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`${a} != ${b}`);
 function artFixture({width=1024,height=1024,baseSize=[width,height],patternSize=[width,height]}={}){

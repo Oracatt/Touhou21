@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {STAGES,MIDBOSSES,ALL_SPELLS} from '../src/content.js';
-import {CampaignDirector} from '../src/director.js';
+import {STAGES,MIDBOSSES,ALL_SPELLS} from '../dist/src/content.js';
+import {CampaignDirector} from '../dist/src/director.js';
 import {runDirectorRoute} from '../tools/director-lab.js';
 
 /** Asset-free director contract: the real CampaignDirector drives the real

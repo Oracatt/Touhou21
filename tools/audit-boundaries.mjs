@@ -5,38 +5,52 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {GAME,PLAYERS,CHARACTERS,STAGES,ALL_SPELLS,MIDBOSS_SPELLS} from '../src/content.js';
-import {MUSIC_TRACKS} from '../src/music-data.js';
+import ts from 'typescript';
+import {GAME,PLAYERS,CHARACTERS,STAGES,ALL_SPELLS,MIDBOSS_SPELLS} from '../dist/src/content.js';
+import {MUSIC_TRACKS} from '../dist/src/music-data.js';
 import {PROJECT_ROOT,inside,readEngineLock,shaFile,verifyEngineLock} from './verify-engine-lock.mjs';
 
 const PUBLIC_ENTRIES=new Set(['@ts-stg/thlib','@ts-stg/thlib/touhou']);
 const COMMON_OWNERS=['TouhouApplication','TouhouGame','TouhouPlayer','TouhouBulletField','TouhouLaserField','TouhouSpell','TouhouItems','TouhouEnemy','TouhouHealth','TouhouBossPresentation','TouhouBossHud','TouhouGameOver'];
-const PRIVATE_PREFIXES=['packages/','runtime/','node_modules/','userdata/','reports/','build/'];
-const imports=source=>[...source.matchAll(/\b(?:import|export)\s+(?:[^;]*?\s+from\s+)?['"]([^'"\r\n]+)['"]/g)].map(match=>match[1]);
+const PRIVATE_PREFIXES=['packages/','runtime/','node_modules/','userdata/','reports/','build/','dist/'];
+function imports(source,file){
+  const tree=ts.createSourceFile(file,source,ts.ScriptTarget.ES2022,true,ts.ScriptKind.TS),entries=[];
+  function visit(node){
+    if((ts.isImportDeclaration(node)||ts.isExportDeclaration(node))&&node.moduleSpecifier&&ts.isStringLiteral(node.moduleSpecifier))entries.push(node.moduleSpecifier.text);
+    if(ts.isImportTypeNode(node)){
+      if(ts.isLiteralTypeNode(node.argument)&&ts.isStringLiteral(node.argument.literal))entries.push(node.argument.literal.text);
+      return;
+    }
+    const dynamic=ts.isCallExpression(node)&&(node.expression.kind===ts.SyntaxKind.ImportKeyword||ts.isIdentifier(node.expression)&&['require','eval'].includes(node.expression.text));
+    const functionConstructor=ts.isNewExpression(node)&&ts.isIdentifier(node.expression)&&node.expression.text==='Function';
+    assert.ok(!dynamic&&!functionConstructor,`${file}: runtime dynamic code or module loading is not part of this game's boundary`);
+    ts.forEachChild(node,visit);
+  }
+  visit(tree);return entries;
+}
 
-export function auditSourceText(source,file='src/fixture.js',root=PROJECT_ROOT){
+export function auditSourceText(source,file='src/fixture.ts',root=PROJECT_ROOT){
   assert.equal(typeof source,'string');
-  const entries=imports(source);
+  const entries=imports(source,file);
   for(const entry of entries){
     if(PUBLIC_ENTRIES.has(entry))continue;
     assert.ok(entry.startsWith('./')||entry.startsWith('../'),`${file}: import must use a public thlib entry or this game's relative source`);
-    const target=path.resolve(root,path.dirname(file),entry);
-    const allowed=target===path.join(root,'main.js')||target.startsWith(path.join(root,'src')+path.sep);
+    const target=path.resolve(root,path.dirname(file),entry.replace(/\.js$/,'.ts'));
+    const allowed=target===path.join(root,'main.ts')||target.startsWith(path.join(root,'src')+path.sep);
     assert.ok(allowed,`${file}: import escapes game source`);
     assert.ok(fs.existsSync(target)&&fs.statSync(target).isFile(),`${file}: relative source import is missing`);
   }
-  assert.ok(!/\b(?:require\s*\(|import\s*\(|eval\s*\(|new\s+Function\s*\()/.test(source),`${file}: runtime dynamic code or module loading is not part of this game's boundary`);
   assert.ok(!/\b(?:Touhou20Reconstruction|TouhouRushBoss|TouhouRushBoss-main)\b|[A-Za-z]:[\\/]|(?:\.\.\/)+(?:TS-STG|packages|runtime)\b/.test(source),`${file}: game source refers to an external implementation path`);
   assert.ok(!/\b(?:host|this\.host)\.(?:loadTexture|loadMusic|loadSound|readText)\s*\(\s*['"](?:packages|runtime|\.\.)[\\/]/.test(source),`${file}: resource access bypasses public dependency ownership`);
   for(const owner of COMMON_OWNERS)assert.ok(!new RegExp(`\\bclass\\s+${owner}\\b`).test(source),`${file}: copied public implementation owner ${owner}`);
   return entries;
 }
 function sourceFiles(root){
-  assert.ok(fs.lstatSync(path.join(root,'main.js')).isFile(),'Game entry must be a regular, owned file');
-  const result=['main.js'];
+  assert.ok(fs.lstatSync(path.join(root,'main.ts')).isFile(),'Game entry must be a regular, owned TypeScript file');
+  const result=['main.ts'];
   const visit=directory=>{for(const entry of fs.readdirSync(directory,{withFileTypes:true})){
     const full=path.join(directory,entry.name);assert.ok(!entry.isSymbolicLink(),'Game source may not traverse links');
-    if(entry.isDirectory())visit(full);else if(entry.isFile()&&entry.name.endsWith('.js'))result.push(path.relative(root,full).split(path.sep).join('/'));
+    if(entry.isDirectory())visit(full);else if(entry.isFile()&&entry.name.endsWith('.ts'))result.push(path.relative(root,full).split(path.sep).join('/'));
   }};visit(path.join(root,'src'));return result.sort();
 }
 function mediaFiles(root,relative){
@@ -69,7 +83,7 @@ export function auditBoundaries({root=PROJECT_ROOT,verifyDependencies=true}={}){
   for(const track of MUSIC_TRACKS){assert.equal(track.file,`assets/music/${track.id}.wav`);assert.equal(shaFile(inside(root,track.file)),track.sha256,`Original music hash changed: ${track.id}`);}
   const lockedNames=new Set(lock.thlibFiles.map(file=>file.path));
   assert.ok(lockedNames.has('LICENSE')&&lockedNames.has('assets/touhou-common/NOTICE.md'),'Private library notices must be retained');
-  assert.ok(lock.thlibFiles.every(file=>file.path==='LICENSE'||file.path==='package.json'||file.path.startsWith('src/')||file.path.startsWith('assets/touhou-common/')),'Private library includes an unapproved resource scope');
+  assert.ok(lock.thlibFiles.every(file=>['LICENSE','README.md','package.json','tsconfig.json','tsconfig.base.json'].includes(file.path)||file.path.startsWith('src/')||file.path.startsWith('dist/')||file.path.startsWith('assets/')),'Private library includes an unapproved resource scope');
   assert.ok(!lock.thlibFiles.some(file=>/\.(?:wav|ogg|mp3)$/i.test(file.path)&&/\/(?:bgm|music)\//i.test(file.path)),'Game BGM may not be taken from the private library');
   const ignore=fs.readFileSync(inside(root,'.gitignore'),'utf8').split(/\r?\n/).filter(Boolean);
   for(const prefix of PRIVATE_PREFIXES)assert.ok(ignore.includes('/'+prefix),`Git must ignore ${prefix}`);

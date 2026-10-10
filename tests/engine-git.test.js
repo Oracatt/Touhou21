@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {inventoryGitThlib,readGitThlib,readGitThlibFile} from '../tools/engine-git.mjs';
+import {inventoryGitThlib,readGitThlib,readGitThlibFile,buildGitThlib,inventoryBuffers} from '../tools/engine-git.mjs';
 
 const ROOT=path.resolve(import.meta.dirname,'..');
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -18,9 +18,11 @@ function fixture({omit=null,format='sha1',indexText='export const before = 1;\n'
   write('.gitattributes','* text=auto eol=lf\n');
   const files=new Map([
     ['LICENSE',Buffer.from('fixture license\n')],
-    ['package.json',Buffer.from('{"type":"module"}\n')],
-    ['src/index.js',Buffer.from(indexText)],
-    ['src/含 空格.js',Buffer.from('export const label = "名字";\n')],
+    ['package.json',Buffer.from("{\"name\":\"@ts-stg/thlib\",\"type\":\"module\",\"devDependencies\":{\"typescript\":\"5.9.3\"}}\n")],
+    ['tsconfig.base.json',Buffer.from("{\"compilerOptions\":{\"target\":\"ES2022\",\"module\":\"NodeNext\",\"moduleResolution\":\"NodeNext\",\"strict\":true,\"noEmitOnError\":true,\"declaration\":true,\"sourceMap\":true,\"declarationMap\":true,\"types\":[],\"lib\":[\"ES2022\"]}}\n")],
+    ['tsconfig.json',Buffer.from("{\"extends\":\"./tsconfig.base.json\",\"compilerOptions\":{\"rootDir\":\"src\",\"outDir\":\"dist\"},\"include\":[\"src/**/*.ts\"]}\n")],
+    ['src/index.ts',Buffer.from(indexText)],
+    ['src/含 空格.ts',Buffer.from('export const label = "名字";\n')],
     ['assets/touhou-common/manifest.json',Buffer.from('{"fixture":true}\n')],
     ['assets/touhou-common/纹理图.bin',Buffer.from([0,255,13,10,10,0,128,1,2,3,10])],
   ]);
@@ -46,19 +48,19 @@ test('inventory is the complete commit allowlist with exact binary/UTF-8 bytes a
 
 test('commit reads ignore later HEAD, changed index, missing checkout, and CRLF/mixed working bytes',()=>{
   const {source,run,write,commit,first,files}=fixture();
-  write('packages/thlib/src/index.js','export const later = 2;\n');run(['add','.']);commit('Later HEAD');
-  const staged=write('packages/thlib/src/index.js','export const staged = 3;\n');run(['add',staged]);
-  write('packages/thlib/src/index.js','uncommitted\r\nworking\nbytes\r\n');
+  write('packages/thlib/src/index.ts','export const later = 2;\n');run(['add','.']);commit('Later HEAD');
+  const staged=write('packages/thlib/src/index.ts','export const staged = 3;\n');run(['add',staged]);
+  write('packages/thlib/src/index.ts','uncommitted\r\nworking\nbytes\r\n');
   write('packages/thlib/LICENSE','fixture license\r\n');
   fs.unlinkSync(path.join(source,'packages/thlib/assets/touhou-common/manifest.json'));
-  write('packages/thlib/src/untracked.js','untracked must not be inventoried\n');
+  write('packages/thlib/src/untracked.ts','untracked must not be inventoried\n');
   const before={head:run(['rev-parse','HEAD']),index:fs.readFileSync(path.join(source,'.git/index')),
     working:fs.readFileSync(staged),status:run(['status','--porcelain'])};
   const map=readGitThlib(source,first);
-  assert.deepEqual(map.get('src/index.js'),files.get('src/index.js'));
+  assert.deepEqual(map.get('src/index.ts'),files.get('src/index.ts'));
   assert.deepEqual(map.get('LICENSE'),Buffer.from('fixture license\n'));
   assert.deepEqual(map.get('assets/touhou-common/manifest.json'),files.get('assets/touhou-common/manifest.json'));
-  assert.equal(map.has('src/untracked.js'),false);
+  assert.equal(map.has('src/untracked.ts'),false);
   assert.equal(run(['rev-parse','HEAD']),before.head);
   assert.deepEqual(fs.readFileSync(path.join(source,'.git/index')),before.index,'reader must not refresh or rewrite the index');
   assert.deepEqual(fs.readFileSync(staged),before.working,'reader must not normalize source EOL');
@@ -74,20 +76,20 @@ test('only a complete 40-hex actual commit object is accepted',()=>{
   assert.throws(()=>readGitThlib(source,run(['rev-parse','fixture-tag'])),/must be a commit/);
 });
 
-test('all four required public groups must exist at the selected commit',()=>{
-  for(const group of ['LICENSE','package.json','src','assets/touhou-common']){
+test('all six required public groups must exist at the selected commit',()=>{
+  for(const group of ['LICENSE','package.json','tsconfig.json','tsconfig.base.json','src','assets/touhou-common']){
     const {source,first}=fixture({omit:group});
     assert.throws(()=>readGitThlib(source,first),/missing required group/,'missing '+group+' cannot produce a partial library');
   }
 });
 
 test('regular executable Git blobs are allowed; symlink and gitlink entries are rejected without following checkout bytes',()=>{
-  const executable=fixture(),entry='packages/thlib/src/index.js';
+  const executable=fixture(),entry='packages/thlib/src/index.ts';
   executable.run(['update-index','--chmod=+x',entry]);const regular=executable.commit('Executable regular blob');
-  assert.deepEqual(readGitThlibFile(executable.source,regular,'src/index.js'),executable.files.get('src/index.js'));
+  assert.deepEqual(readGitThlibFile(executable.source,regular,'src/index.ts'),executable.files.get('src/index.ts'));
   for(const mode of ['120000','160000']){
-    const {source,run,write,commit,first}=fixture(),name='packages/thlib/src/nonregular.js';
-    const file=write(name,'index.js\n'),oid=mode==='160000'?first:run(['hash-object','-w',file]);
+    const {source,run,write,commit,first}=fixture(),name='packages/thlib/src/nonregular.ts';
+    const file=write(name,'index.ts\n'),oid=mode==='160000'?first:run(['hash-object','-w',file]);
     run(['update-index','--add','--cacheinfo',mode,oid,name]);const revision=commit('Nonregular '+mode);
     assert.equal(fs.lstatSync(file).isFile(),true,'fixture models Windows regular checkout bytes for an unsafe Git mode');
     assert.throws(()=>readGitThlib(source,revision),/nonregular Git entry/);
@@ -96,15 +98,15 @@ test('regular executable Git blobs are allowed; symlink and gitlink entries are 
 
 test('unsafe or out-of-allowlist file names are refused instead of becoming revision expressions or output paths',()=>{
   const {source,first}=fixture();
-  for(const name of ['../LICENSE','/src/index.js','C:/src/index.js','src\\index.js','src/../index.js','src//index.js','src/.git/config',
-    'src/CON.js','src/trailing.','src/tab\t.js','src/nul\0.js','src/a:b','src/*.js','assets/private-demo/excluded.png','README.md']){
+  for(const name of ['../LICENSE','/src/index.ts','C:/src/index.ts','src\\index.ts','src/../index.ts','src//index.ts','src/.git/config',
+    'src/CON.ts','src/trailing.','src/tab\t.ts','src/nul\0.ts','src/a:b','src/*.ts','assets/private-demo/excluded.png','README.md']){
     assert.throws(()=>readGitThlibFile(source,first,name),/Unsafe public thlib path|public thlib allowlist/,'unsafe name '+JSON.stringify(name));
   }
-  assert.throws(()=>readGitThlibFile(source,first,'src/absent.js'),/absent from the requested Git commit/);
-  // Construct the unsafe tree as Git objects: Windows cannot create CON.js in
+  assert.throws(()=>readGitThlibFile(source,first,'src/absent.ts'),/absent from the requested Git commit/);
+  // Construct the unsafe tree as Git objects: Windows cannot create CON.ts in
   // a real checkout, but a downloaded commit can still contain that path.
-  const {source:bad,run,first:base}=fixture(),blob=run(['rev-parse',base+':packages/thlib/src/index.js']);
-  const src=run(['mktree'],`100644 blob ${blob}\tCON.js\n`);
+  const {source:bad,run,first:base}=fixture(),blob=run(['rev-parse',base+':packages/thlib/src/index.ts']);
+  const src=run(['mktree'],`100644 blob ${blob}\tCON.ts\n`);
   const license=run(['rev-parse',base+':packages/thlib/LICENSE']),pkg=run(['rev-parse',base+':packages/thlib/package.json']);
   const assets=run(['rev-parse',base+':packages/thlib/assets']);
   const library=run(['mktree'],`100644 blob ${license}\tLICENSE\n100644 blob ${pkg}\tpackage.json\n040000 tree ${src}\tsrc\n040000 tree ${assets}\tassets\n`);
@@ -115,12 +117,12 @@ test('unsafe or out-of-allowlist file names are refused instead of becoming revi
 
 test('replacement refs cannot redirect the pinned commit or replace its blob bytes',()=>{
   const {source,run,write,commit,first,files}=fixture();
-  const original=run(['rev-parse',first+':packages/thlib/src/index.js']);
-  write('packages/thlib/src/index.js','replacement content\n');run(['add','.']);const second=commit('Different commit');
-  const replacement=run(['rev-parse',second+':packages/thlib/src/index.js']);
+  const original=run(['rev-parse',first+':packages/thlib/src/index.ts']);
+  write('packages/thlib/src/index.ts','replacement content\n');run(['add','.']);const second=commit('Different commit');
+  const replacement=run(['rev-parse',second+':packages/thlib/src/index.ts']);
   run(['replace',original,replacement]);run(['replace',first,second]);
-  assert.deepEqual(readGitThlibFile(source,first,'src/index.js'),files.get('src/index.js'));
-  assert.deepEqual(readGitThlib(source,first).get('src/index.js'),files.get('src/index.js'));
+  assert.deepEqual(readGitThlibFile(source,first,'src/index.ts'),files.get('src/index.ts'));
+  assert.deepEqual(readGitThlib(source,first).get('src/index.ts'),files.get('src/index.ts'));
 });
 
 test('inherited Git repository overrides cannot redirect the explicit source repository',()=>{
@@ -129,11 +131,48 @@ test('inherited Git repository overrides cannot redirect the explicit source rep
   try{
     process.env.GIT_DIR=path.join(other.source,'.git');process.env.GIT_WORK_TREE=other.source;
     process.env.GIT_OBJECT_DIRECTORY=path.join(other.source,'.git/objects');
-    assert.deepEqual(readGitThlibFile(original.source,original.first,'src/index.js'),original.files.get('src/index.js'));
+    assert.deepEqual(readGitThlibFile(original.source,original.first,'src/index.ts'),original.files.get('src/index.ts'));
   }finally{for(let i=0;i<names.length;i++)if(previous[i]===undefined)delete process.env[names[i]];else process.env[names[i]]=previous[i];}
 });
 
 test('SHA-256 repositories are explicitly outside the full-40-hex lock contract',()=>{
   const {source}=fixture({format:'sha256'});
   assert.throws(()=>readGitThlib(source,'0'.repeat(40)),/Only SHA-1 Git repositories/);
+});
+
+test('committed TypeScript compiles reproducibly across checkout locations and dirty working files',()=>{
+  const original=fixture({indexText:'export interface Value { count: number }\nexport const value: Value = {count: 3};\n'});
+  const relocated=fixture({indexText:'export interface Value { count: number }\nexport const value: Value = {count: 3};\n'});
+  const first=buildGitThlib(original.source,original.first,{compilerRoot:ROOT}),second=buildGitThlib(relocated.source,relocated.first,{compilerRoot:ROOT});
+  assert.deepEqual(first.build,second.build);
+  assert.deepEqual(inventoryBuffers(first.files),inventoryBuffers(second.files));
+  assert.ok(first.files.has('src/index.ts'));
+  for(const output of ['dist/index.js','dist/index.js.map','dist/index.d.ts','dist/index.d.ts.map'])assert.ok(first.files.has(output),output);
+  assert.equal(first.files.has('src/index.js'),false);
+  assert.match(first.files.get('dist/index.d.ts').toString(),/interface Value/);
+  assert.doesNotMatch(first.files.get('dist/index.js').toString(),/interface Value/);
+  original.write('packages/thlib/src/index.ts','export const invalid: number = "dirty";\n');
+  assert.deepEqual(buildGitThlib(original.source,original.first,{compilerRoot:ROOT}).build,first.build,'working files cannot replace committed compiler inputs');
+  assert.equal(fs.existsSync(path.join(original.source,'packages/thlib/dist')),false,'immutable build does not write generated files into the producer');
+});
+
+test('strict TypeScript errors prevent any publishable build',()=>{
+  for(const source of ['export const count: number = "invalid";\n','export function identity(value) { return value; }\n']){
+    const f=fixture({indexText:source});
+    assert.throws(()=>buildGitThlib(f.source,f.first,{compilerRoot:ROOT}),/TS2322|TS7006/);
+    assert.equal(fs.existsSync(path.join(f.source,'packages/thlib/dist')),false);
+  }
+});
+
+test('an explicit compiler root cannot inherit a compiler from the source repository ancestors',()=>{
+  const f=fixture();
+  assert.throws(()=>buildGitThlib(f.source,f.first,{compilerRoot:f.source}),/Pinned TypeScript compiler is missing/);
+  assert.equal(fs.existsSync(path.join(f.source,'node_modules')),false);
+});
+
+test('committed JavaScript source and committed generated dist files are rejected',()=>{
+  for(const[name,message]of [['src/legacy.js',/source must be TypeScript/],['dist/index.js',/dist must not be committed/]]){
+    const f=fixture();f.write('packages/thlib/'+name,'export const stale = true;\n');f.run(['add','.']);
+    assert.throws(()=>buildGitThlib(f.source,f.commit('Forbidden generated or legacy source'),{compilerRoot:ROOT}),message);
+  }
 });

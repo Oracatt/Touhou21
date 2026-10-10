@@ -31,7 +31,7 @@ assert.ok(!fs.existsSync(path.join(out,'report.json')),'Do not overwrite an exis
 const sha=file=>createHash('sha256').update(fs.readFileSync(path.resolve(root,file))).digest('hex');
 const tree=directory=>Object.fromEntries(fs.readdirSync(path.join(root,directory),{recursive:true}).filter(name=>fs.statSync(path.join(root,directory,name)).isFile())
   .map(name=>`${directory}/${name.replaceAll('\\','/')}`).sort().map(file=>[file,sha(file)]));
-const identity=()=>({gameSourceHashes:{'main.js':sha('main.js'),...tree('src')},publicSourceHashes:tree('packages/thlib/src'),
+const identity=()=>({gameSourceHashes:{'main.ts':sha('main.ts'),...tree('src')},publicSourceHashes:tree('packages/thlib/src'),
   engineLockSha256:sha('engine.lock.json'),binarySha256:sha('runtime/ts-stg.exe'),
   fixtureSha256:sha('tools/dialogue-intro-fixture.js'),verifierSha256:sha('tools/verify-dialogue-intro.mjs')});
 const before=identity(),frames=90,results=[],started=new Date().toISOString();
