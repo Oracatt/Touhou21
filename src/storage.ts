@@ -3,7 +3,7 @@ import type {NativeHost} from '@ts-stg/thlib';
 import type {Progress,RunResult,RunSummary,RunReplayData} from './shared-types.js';
 
 import {SaveStore} from '@ts-stg/thlib';
-export const GAME_REVISION=17;
+export const GAME_REVISION=18;
 export const DEFAULT_SETTINGS=Object.freeze({musicVolume:72,soundVolume:70,startingLives:2,autoSaveReplay:true});
 export interface Settings{musicVolume:number;soundVolume:number;startingLives:number;autoSaveReplay:boolean;}
 export interface ReplayEntry{date:number;revision:number;summary:RunSummary;replay:RunReplayData;}
