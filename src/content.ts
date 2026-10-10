@@ -198,7 +198,7 @@ export const STAGES: StageDefinition[] = [
     phaseLayout: 'NSNS',
     midbossSpells: [],
     spells: [
-      spell('s01-01', '灯符「无主门灯」', 'lantern', 'lantern_gate', '方形门框一圈圈扩散并缓缓旋转，每个门框都在自机方向留出一扇门；两侧灯笼的中玉成列瞄准自机。高难度在门框内再套一层错位的小门框。', 35),
+      spell('s01-01', '灯符「无主门灯」', 'lantern', 'lantern_gate', '方形门框扩散并缓缓旋转，门朝自机而开；门旁两盏门灯随即朝自机放出灯火，在门口交叉，须偏开中线穿门。两侧灯笼的中玉成列瞄准自机。高难度内套错位小门框。', 35),
       spell('s01-02', '迎火「百户无字灯笼坂」', 'lantern', 'lantern_street', '坂道两侧的灯笼自上而下依次点亮，每盏灯放出缺口朝向自机、缓慢回旋的灯环，交织成一条街；点亮过的灯笼稍后落下。', 40),
     ],
     dialogues: {

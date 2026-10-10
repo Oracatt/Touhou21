@@ -43,13 +43,20 @@ function lanternRows(k: AttackKit){
   if(c===112)k.wander(46);
 }
 
+/** Radius of the unit square outline (vertex at angle 0) in direction `a`. */
+const squareRadius=(a:number)=>{const q=(a%(Math.PI/2)+Math.PI/2)%(Math.PI/2);return Math.SQRT1_2/Math.cos(q-Math.PI/4);};
+
 /** 灯符「无主门灯」: expanding square door frames of door plates.
- * Each frame leaves its door facing where the player stood at that moment. */
+ * Each frame leaves its door facing where the player stood at that moment,
+ * with a lamp hung on either side of it. The lamps flare at the player soon
+ * after, crossing in the doorway, so the door has to be taken off-centre. */
 function unclaimedDoorLamp(k: AttackKit){
   const period=k.pick(62,47,40,34),edge=k.pick(10,13,16,19);
   if(k.every(period)){
     const wave=k.t/period|0,rotation=(k.state.rotation=(k.state.rotation??.4)+.37),door=k.aim(),half=k.pick(.33,.26,.22,.19);
-    burstShape(k,k.ox,k.oy,polygon(4,edge),1.6,rotation,T.AMULET,wave%2?C.RED:C.ORANGE,null,{skip:(p,a)=>inGap(a,door,half)});
+    burstShape(k,k.ox,k.oy,polygon(4,edge),1.6,rotation,T.AMULET,wave%2?C.RED:C.ORANGE,null,{skip:(p,a)=>inGap(a,door,half+.07)});
+    const lamps=[-1,1].flatMap(side=>{const a=door+side*(half+.035);return k.shot(k.ox,k.oy,a,1.6*squareRadius(a-rotation),T.ORB,C8.YELLOW,null,{silent:true});});
+    k.later(k.pick(60,56,52,48),lamps,b=>k.aimed(b.x,b.y,1,2.6,0,T.BALL,C.YELLOW,null,{rows:k.pick(1,1,2,3),speedStep:2,silent:b!==lamps[0]}));
     if(k.rank>=2&&wave%2)burstShape(k,k.ox,k.oy,polygon(4,edge-4),1.05,rotation+Math.PI/4,T.AMULET,C.YELLOW,null,{skip:(p,a)=>inGap(a,door,half+.06)});
   }
   if(k.every(180,90))for(const side of[-1,1])
