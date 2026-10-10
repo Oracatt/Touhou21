@@ -86,18 +86,18 @@ blankAddresseeDrizzle.home={x:0,y:100};
 /** 墨雨「洗去首句问候」: ink drops are lobbed high and fall under
  * gravity; where each lands it splashes into a ring. Light rain continues. */
 function washedGreeting(k: AttackKit){
-  if(k.every(k.pick(11,8,6,5)))drizzle(k,1,{type:T.RICE,lean:.04,speed:[2.1,2.7],color:C.SKY});
-  const period=k.pick(52,40,33,28);
+  if(k.every(k.pick(13,10,7,6)))drizzle(k,1,{type:T.RICE,lean:.04,speed:[1.7,2.3],color:C.SKY});
+  const period=k.pick(58,46,37,32);
   if(k.every(period)){
     const drops=k.pick(1,1,2,2);
     for(let i=0;i<drops;i++){
-      const angle=-DOWN+(k.unit()-.5)*1.9,speed=lerp(2.2,3,k.unit()),g=.045;
+      const angle=-DOWN+(k.unit()-.5)*1.9,speed=lerp(1.9,2.6,k.unit()),g=.045;
       const splashY=lerp(210,290,k.unit()),vy=Math.sin(angle)*speed*k.sp,ga=g*k.sp;
       const time=Math.round((-vy+Math.sqrt(vy*vy+2*ga*(splashY-k.oy)))/ga);
       const drop=k.shot(k.ox,k.oy,angle,speed,T.ORB,C8.BLUE,[k.accel(g,time+12,DOWN),k.vanish()]);
       k.later(time+8,drop,b=>{
-        k.ring(b.x,b.y,k.pick(10,14,18,20),1.45,k.unit()*TAU,T.BALL,C.BLUE,null,{silent:true,...(k.rank===3?{rows:2,speedStep:1}:null)});
-        if(k.rank>=1)k.fan(b.x,b.y,3,2.2,-DOWN,.5,T.RICE,C.GRAY,[k.accel(.04,120,DOWN)],{silent:true});
+        k.ring(b.x,b.y,k.pick(10,14,18,20),1.2,k.unit()*TAU,T.BALL,C.BLUE,null,{silent:true,...(k.rank===3?{rows:2,speedStep:1}:null)});
+        if(k.rank>=1)k.fan(b.x,b.y,3,1.8,-DOWN,.5,T.RICE,C.GRAY,[k.accel(.04,120,DOWN)],{silent:true});
       });
     }
   }
