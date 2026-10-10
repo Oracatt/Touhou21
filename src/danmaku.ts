@@ -13,7 +13,7 @@ export interface AttackState {
   echoes?: Array<{at:number;fire:Attack}>;
   spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;segment?:number;
   threads?:number[];second?:{at:number;rotation:number}|null;
-  echo?:{at:number;x:number;y:number;a:number}|null;echoAim?:number;volleyAt?:number;hushAt?:number;
+  echo?:{at:number;x:number;y:number;a:number}|null;echoAim?:number;hushAt?:number;
 }
 export interface AttackOptions {
   game:AttackGame;boss?:TouhouEnemy|null;frame?:number;difficulty?:number;state?:AttackState;
@@ -103,13 +103,11 @@ export class AttackKit {
   /** Glide to an absolute point; the launch speed is restored on arrival. */
   goTo(x: number,y: number,frames: number,easing=4){return touhouBulletCommand(17,{floats:[x,y],ints:[frames,easing&255]});}
 
-  /** A volley this big is always heard, even one authored as a silent companion (a delayed burst, an echo), unless a big
-   * volley already sounded within the last few frames. Single bullets and thin streams keep their authored silence. */
+  /** A volley this big is always heard, even one authored as a silent companion (a delayed burst, an echo);
+   * one sound per frame at most. Single bullets and thin streams keep their authored silence. */
   private audible(p: AuthoredBullet){
     if(!p.silent)return true;
-    if(((p.count??1)*(p.rows??1))<LOUD_VOLLEY)return false;
-    const last=this.state.volleyAt;if(last!==undefined&&this.t>=last&&this.t-last<LOUD_GAP)return false;
-    this.state.volleyAt=this.t;return true;
+    return (p.count??1)*(p.rows??1)>=LOUD_VOLLEY;
   }
 
   /** True when this attack made a sound fewer than gap frames ago, so a thin stream sounds once per gap. */
@@ -169,8 +167,8 @@ export class AttackKit {
   }
 }
 
-/** Smallest volley (bullets) that always makes a sound, and the least frames between two such forced sounds. */
-const LOUD_VOLLEY=8,LOUD_GAP=10;
+/** Smallest volley (bullets) that always makes a sound. */
+const LOUD_VOLLEY=8;
 
 export const kit=new AttackKit();
 
