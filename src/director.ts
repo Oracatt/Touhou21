@@ -23,6 +23,9 @@ const clamp=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
 const MIDBOSS_DEFEAT_PAUSE=75;
 // st01mbs/st02mbs ECL401: 100-frame outQuad arrival, not a linear hard stop.
 const MIDBOSS_ENTRY_FRAMES=100;
+// st01mbs/st02mbs start EffChargePoint3 after40: its first60-frame
+// particle arc then reaches the center as the actor finishes arriving.
+const MIDBOSS_FOG_FRAME=40;
 // TH20's Boss WAVs contain about 0.7 s of near-silence before their first note.
 // Our authored tracks start immediately, so this game's cue supplies that lead-in.
 const BOSS_MUSIC_SILENCE_FRAMES=42;
@@ -116,7 +119,7 @@ export class CampaignDirector{
     game.registerBoss(boss,{onDefeated:event=>this._onBossDefeated(event)});
     boss.kind='midboss';boss.bossId=this.midbossSpec?.bossId??this.stage.bossId;boss.maximumHp=hp;boss.invulnerable=true;this.boss=boss;
     this.transitionMove=new AnmInterpolation([boss.x,boss.y],[0,105],MIDBOSS_ENTRY_FRAMES,4);
-    game.enterBoss(boss,{profile:'midboss',distortion:{color:TOUHOU_BOSS_PROFILES.boss.color},entrance:{mode:'halfFog',readyFrame:MIDBOSS_ENTRY_FRAMES,follow:boss}});
+    game.enterBoss(boss,{profile:'midboss',distortion:{color:TOUHOU_BOSS_PROFILES.boss.color},entrance:{mode:'flyIn',readyFrame:MIDBOSS_ENTRY_FRAMES,follow:boss}});
     game.setBossEffects({aura:true,distortion:true});
     game.setBossHud({name:this.stage.midbossName??this.stage.bossId,remainingSpells:this.midbossPhases.filter(p=>p.spell).length,dialogue:true,
       healthBars:[{current:hp,maximum:hp,phaseHealth:hp,markers:[]}]});
@@ -378,6 +381,8 @@ export class CampaignDirector{
       if(t>=roadFrames){this._beginPrelude(game);return;}this.stageFrame++;
     }else if(this.state==='midboss-enter'){
       this.phaseFrame++;const [x,y]=this.transitionMove!.sample();actorPosition(this.boss!,x,y);
+      if(this.phaseFrame===MIDBOSS_FOG_FRAME)game.bossPresentation!.beginEntrance({mode:'halfFog',
+        readyFrame:MIDBOSS_ENTRY_FRAMES-MIDBOSS_FOG_FRAME,follow:this.boss!});
       if(this.phaseFrame>=MIDBOSS_ENTRY_FRAMES&&game.bossPresentation!.entranceReady){this.transitionMove=null;const route=this.character?'marisa':'reimu';
         this._dialogue(game,'midboss',()=>this._beginMidbossPhase(game,0),this.midbossSpec?.dialogues?.[route]??[]);}
     }else if(this.state==='midboss-combat'){

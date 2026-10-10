@@ -5,6 +5,7 @@ import {DrawList,Keys,stateHash} from '@ts-stg/thlib';
 import {createTouhouResources,TouhouRNG} from '@ts-stg/thlib/touhou';
 import {CampaignScene} from '../dist/src/scene.js';
 import {STAGES} from '../dist/src/content.js';
+import {BOSS_SPRITE_LAYOUTS} from '../dist/src/boss-sprites.js';
 
 function fixture({character=0,stageId=1,lines,view,playbackSource=null}={}){
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11,createTexture:()=>12,unloadTexture(){}}),writes=[],portraits=[],music=[];
@@ -12,7 +13,10 @@ function fixture({character=0,stageId=1,lines,view,playbackSource=null}={}){
   resources.writeAnimationText=(vm,text)=>{writes.push(text);return vm;};
   const storage={settings:{startingLives:2,autoSaveReplay:false},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},writes:0,
     saveProgress(){this.writes++;},saveReplay(){this.writes++;},recordClear(){this.writes++;}};
-  const art={host:{createTexture:()=>89,unloadTexture(){}},load:()=>({id:81,width:512,height:512,bounds:{x:0,y:0,width:265,height:512}}),
+  const art={host:{createTexture:()=>89,unloadTexture(){}},load:path=>{
+    const layout=Object.values(BOSS_SPRITE_LAYOUTS).find(layout=>layout.file===path);
+    return{id:path.startsWith('assets/boss-names/')?82:81,width:layout?.width??512,height:layout?.height??512,bounds:{x:0,y:0,width:265,height:512}};
+  },
     portrait:(_draw,id,_x,_y,_height,options)=>portraits.push({id,...options}),background(){}};
   const rng=new TouhouRNG(73),visualRng=new TouhouRNG(73^0x6d2b79f5);
   for(const bank of Object.values(resources.banks)){bank.rng=visualRng;bank.environment={...bank.environment,rng:visualRng};}
@@ -56,11 +60,76 @@ test('all seven authored preludes separate the field actor, portrait and music c
       assert.deepEqual(steps[first].entrance,{portraitFrame:0,speakerFrame:0,textFrame:60,inputFrame:94});
       assert.deepEqual(steps[first].events.find(event=>event.name==='appear'),{type:'cue',name:'appear',entranceStage:'portraits'});
       assert.ok(steps[first+1].portraits.left.present&&steps[first+1].portraits.right.present);
+      assert.deepEqual(steps.flatMap((step,index)=>step.events.filter(event=>event.type==='boss-name').map(()=>index)),[first+1],
+        'MSG20 introduces a single name card together with the portrait, never with the actor-only response');
       assert.equal(steps[first+1].boxMode,undefined,'Portrait dialogue resumes the public speaker-based bubble');
       const musicIndex=steps.findIndex(step=>step.events.some(event=>event.name==='music'));
       assert.ok(musicIndex>first,'Actor entrance retains the stage BGM');
     }finally{f.dispose();}
   }
+});
+
+test('the Boss name waits for the portrait, freezes during pause and fades on dialogue exit',()=>{
+  const f=fixture();
+  try{
+    const game=f.game,owner=firstBossLine(game);
+    assert.equal(game.bossNameCard,null);tick(game,94);assert.equal(game.bossNameCard,null);
+    nextLine(game);const card=game.bossNameCard;
+    assert.equal(card.bossId,'akari');assert.equal(card.age,0);tick(game,60);assert.equal(card.age,60);
+    const before=card.snapshot();game.update(Keys.PAUSE);tick(game,20);assert.equal(game.paused,true);
+    assert.deepEqual(card.snapshot(),before);game.pauseVisual.resume();
+    for(let frame=0;game.paused&&frame<30;frame++)game.update();
+    assert.equal(game.paused,false);assert.deepEqual(card.snapshot(),before);
+    game.update();assert.equal(card.age,61);owner.finish();tick(game,10);
+    assert.equal(card.exitAge,10);assert.equal(card.alive,true);tick(game,10);
+    assert.equal(card.alive,false);assert.equal(game.bossNameCard,null);
+  }finally{f.dispose();}
+});
+
+test('long-held dialogue names retire once and postbattle or midboss dialogue never introduces them',()=>{
+  const f=fixture();
+  try{
+    const game=f.game;firstBossLine(game);nextLine(game);const card=game.bossNameCard;
+    tick(game,380);assert.equal(card.alive,false);assert.equal(game.bossNameCard,null);
+    nextLine(game);assert.equal(game.bossNameCard,null,'subsequent portrait lines do not restart the name animation');
+    for(const kind of ['after','midboss']){
+      game.openDialogue([{speaker:'boss',text:'Later.'}],{bossId:'akari',kind,onComplete(){}});
+      tick(game,40);assert.equal(game.bossNameCard,null);
+      assert.ok(game.dialogue.steps.every(step=>step.events.every(event=>event.type!=='boss-name')));
+    }
+  }finally{f.dispose();}
+});
+
+test('the actual dialogue render queue places Boss names on source layer37 below dialogue text',()=>{
+  const f=fixture();
+  try{
+    const game=f.game,owner=firstBossLine(game);nextLine(game);tick(game,60);
+    let entries;const flush=owner.queue.flush.bind(owner.queue);
+    owner.queue.flush=(target,options)=>{entries=owner.queue.entries.slice();return flush(target,options);};
+    const draw=new DrawList();owner.draw(draw,{x:0,y:0,scale:1,screenScale:1.5});
+    const name=entries.find(entry=>entry.commands?.some(command=>command[0]==='spriteRegion'&&command[1]===82));
+    assert.equal(name.layer,37);assert.equal(name.priority,owner.queue.layerPriority(37));
+    assert.ok(entries.some(entry=>entry.layer===35&&entry.priority<name.priority),'portrait geometry is behind the name');
+    assert.ok(entries.some(entry=>entry.layer===36&&entry.priority<name.priority),'source balloons are behind the name');
+    assert.ok(entries.some(entry=>entry!==name&&entry.layer===37&&entry.order>name.order),'same-layer dialogue text stays in front of the name');
+    assert.equal(draw.commands.filter(command=>command[0]==='spriteRegion'&&command[1]===82).length,1);
+  }finally{f.dispose();}
+});
+
+test('paused scene composition keeps portraits, text and Boss names behind the pause menu',()=>{
+  const f=fixture();
+  try{
+    const game=f.game;firstBossLine(game);nextLine(game);tick(game,60);game.update(Keys.PAUSE);
+    assert.equal(game.paused,true);const before=game.bossNameCard.snapshot(),marker=0x21436587;
+    const drawPause=game.pauseVisual.draw.bind(game.pauseVisual);
+    game.pauseVisual.draw=draw=>{drawPause(draw);draw.rect(1,2,3,4,marker);};
+    const commands=game.render(),nameIndex=commands.findIndex(command=>command[0]==='spriteRegion'&&command[1]===82);
+    const pauseIndex=commands.findIndex(command=>command[0]==='rect'&&command.at(-1)===marker);
+    assert.ok(nameIndex>=0);assert.ok(pauseIndex>nameIndex,'the common pause owner is drawn after the full business dialogue');
+    let scissor=null;for(const command of commands.slice(0,nameIndex)){if(command[0]==='scissor')scissor=command;else if(command[0]==='scissorEnd')scissor=null;}
+    assert.equal(scissor,null,'full-screen dialogue does not inherit the gameplay viewport clip');
+    assert.deepEqual(game.bossNameCard.snapshot(),before,'composition cannot tick the frozen name');
+  }finally{f.dispose();}
 });
 
 test('a middle dialogue step retires the player portrait before the actor bubble and later recreates both portraits',()=>{

@@ -1,0 +1,121 @@
+{
+  "tool": "built-in image_gen",
+  "created": "2026-10-10",
+  "operation": "generate",
+  "pixelProcessing": "None. Generated PNGs copied byte-for-byte; alpha bounds are read-only metadata.",
+  "sourceReference": "Original name introduction artwork inspected at st01enm/face/enemy1/ename01, original scripts17–20 and MSG20. Generated words/character identities belong to this game.",
+  "assets": [
+    {
+      "id": "akari",
+      "path": "assets/boss-names/akari.png",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-f8722ada-0010-423b-8686-298919aec4ed.png",
+      "promptId": "akari",
+      "promptSet": "BOSS-NAME-PROMPTS.json",
+      "width": 1760,
+      "height": 893,
+      "bounds": {
+        "x": 254,
+        "y": 92,
+        "width": 1262,
+        "height": 721
+      },
+      "sha256": "134f906bc7f1d5d37f27804a512859fae2cf7c0f07493f56083f5e14557641ff"
+    },
+    {
+      "id": "shizuri",
+      "path": "assets/boss-names/shizuri.png",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-ca6dbdf5-f546-4e7c-af88-8780f4e9f20c.png",
+      "promptId": "shizuri",
+      "promptSet": "BOSS-NAME-PROMPTS.json",
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 198,
+        "y": 125,
+        "width": 1373,
+        "height": 623
+      },
+      "sha256": "5b74a4a2086c940ac8863ddd0e4866dcba283019f6bb55418e4f537e9ab72622"
+    },
+    {
+      "id": "watari",
+      "path": "assets/boss-names/watari.png",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-46129856-3ea5-4084-bc74-ed1c78c3575d.png",
+      "promptId": "watari",
+      "promptSet": "BOSS-NAME-PROMPTS.json",
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 221,
+        "y": 137,
+        "width": 1369,
+        "height": 657
+      },
+      "sha256": "c3b5a5665ca9e7dbe890261216d32e3bd1944143a6b020210fc676866cdd84b9"
+    },
+    {
+      "id": "shino",
+      "path": "assets/boss-names/shino.png",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-ebab94e0-f3f0-4eb9-82e2-73a64a306344.png",
+      "promptId": "shino",
+      "promptSet": "BOSS-NAME-PROMPTS.json",
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 239,
+        "y": 125,
+        "width": 1319,
+        "height": 651
+      },
+      "sha256": "76bbf3701504225fde7f9b59f4e5fd6095411793017eb4683673f7c9a443699b"
+    },
+    {
+      "id": "fusae",
+      "path": "assets/boss-names/fusae.png",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-b47c3b28-c02f-40ff-912c-3ffc00ffd597.png",
+      "promptId": "fusae",
+      "promptSet": "BOSS-NAME-PROMPTS.json",
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 239,
+        "y": 138,
+        "width": 1321,
+        "height": 655
+      },
+      "sha256": "10327d8af35d3cdaacab0f0e5c0ac01e268f9c8098890a00c5ea192f75677b35"
+    },
+    {
+      "id": "kotone",
+      "path": "assets/boss-names/kotone.png",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-13c9db47-be66-4461-95e8-a937243f269c.png",
+      "promptId": "kotone",
+      "promptSet": "BOSS-NAME-PROMPTS.json",
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 261,
+        "y": 137,
+        "width": 1297,
+        "height": 638
+      },
+      "sha256": "85d82ab8463a66ec3a244039d10167a09eecd3b97c7b3163e48a1dc028323c8f"
+    },
+    {
+      "id": "mio",
+      "path": "assets/boss-names/mio.png",
+      "source": "C:\\Users\\oracat\\.codex\\generated_images\\01a1082d-9cf7-7bc1-b6bc-619d17147918\\exec-d3e8a384-3f17-4388-9753-93a13656d7b8.png",
+      "promptId": "mio",
+      "promptSet": "BOSS-NAME-PROMPTS.json",
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 176,
+        "y": 125,
+        "width": 1431,
+        "height": 678
+      },
+      "sha256": "35ba595e2f7bc4c0304613f6e7b7b0826fdbfcb6da092858511044b25bb8ec65"
+    }
+  ]
+}

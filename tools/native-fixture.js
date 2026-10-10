@@ -1,5 +1,6 @@
 import {ProjectApplication} from '../dist/src/application.js';
 import {EndingPage} from '../dist/src/pages.js';
+import {Keys} from '@ts-stg/thlib';
 const native=globalThis.tsstg,scenario=JSON.parse(native.readText('build/scenario.json'));
 const memory=new Map(),host=Object.fromEntries(Object.getOwnPropertyNames(native).map(key=>[key,native[key]]));
 host.readText=path=>path.startsWith('userdata/')?(memory.get(path)??''):native.readText(path);
@@ -18,12 +19,54 @@ const advance=(mask=0)=>{
   }
   application.update(input);count++;
 };
-let preRoll=scenario.preRoll??0,phaseRoll=scenario.phaseRoll??0,untilFrames=0,conditionReached=!scenario.until,ready=false,nativeFrames=0;
+let preRoll=scenario.preRoll??0,phaseRoll=scenario.phaseRoll??0,untilFrames=0,conditionReached=!scenario.until,ready=false,nativeFrames=0,awaitingPauseRender=false;
+const nameProbe={phase:'seek',startedIndex:null,startedAt:null,pausedAge:null,pausedTicks:0};
+function prepareName(){
+  const game=application.core.game,card=game?.bossNameCard,probe=scenario.nameProbe;
+  if(nameProbe.phase==='seek'){
+    if(!card){advance(count%2?Keys.SHOOT:0);return false;}
+    if(!game.dialogue?.portraitState('right'))throw new Error('Boss name appeared before its portrait');
+    nameProbe.startedIndex=game.dialogue.index;nameProbe.startedAt=count;nameProbe.phase='age';
+  }
+  if(!card?.alive)throw new Error('QA Boss name retired before the requested frame');
+  if(nameProbe.phase==='age'){
+    if(card.age<probe.age){advance();return false;}
+    if(probe.exitAge!==undefined)nameProbe.phase='exit';
+    else if(probe.pauseFrames){
+      // Pause samples the real backbuffer. Yield one native frame with the
+      // actual dialogue drawn before sending the next physical input edge.
+      nameProbe.pausedAge=card.age;nameProbe.phase='pause-capture';awaitingPauseRender=true;return false;
+    }
+    else return true;
+  }
+  if(nameProbe.phase==='pause-capture'){advance(Keys.PAUSE);nameProbe.phase='paused';return false;}
+  if(nameProbe.phase==='exit'){
+    if(game.dialogue?.exiting){if(card.exitAge>=probe.exitAge)return true;advance();}
+    else advance(count%2?Keys.SHOOT:0);
+    return false;
+  }
+  if(nameProbe.phase==='paused'){
+    if(!game.paused||card.age!==nameProbe.pausedAge)throw new Error('QA paused Boss name advanced');
+    if(nameProbe.pausedTicks++<probe.pauseFrames){advance();return false;}
+    if(!probe.resume)return true;
+    advance(Keys.PAUSE);nameProbe.phase='resuming';return false;
+  }
+  if(nameProbe.phase==='resuming'){
+    if(game.paused){advance();return false;}
+    if(card.age!==nameProbe.pausedAge)throw new Error('QA resume handoff advanced the name');
+    advance();nameProbe.phase='resumed';return true;
+  }
+  return false;
+}
 const matches=()=>{const director=application.core.game?.director;return director&&Object.entries(scenario.until).every(([key,value])=>key==='spellId'?director.phase?.spec?.id===value:director[key]===value);};
 function prepare(){
   // Bound each native invocation: both backends intentionally reject a single
   // JS call lasting over five seconds. QA prerolls must obey the same ABI.
   for(let i=0;i<64&&!ready;i++){
+    if(scenario.nameProbe){
+      if(++untilFrames>(scenario.maxPreRoll??12000))throw new Error('QA Boss name input path was never reached');
+      ready=prepareName();if(awaitingPauseRender)return;continue;
+    }
     if(preRoll>0){advance();preRoll--;continue;}
     if(!conditionReached){
       if(matches())conditionReached=true;
@@ -36,11 +79,18 @@ function prepare(){
   }
 }
 globalThis.__tsstg_game={
-  update(){nativeFrames++;if(!ready)prepare();else if(scenario.live)advance();},
-  render:()=>ready&&(!scenario.captureFrame||nativeFrames===scenario.captureFrame)?application.render():[],
+  update(){nativeFrames++;awaitingPauseRender=false;if(!ready)prepare();else if(scenario.live)advance();},
+  render:()=>awaitingPauseRender||ready&&(!scenario.captureFrame||nativeFrames===scenario.captureFrame)?application.render():[],
   snapshot(){if(!ready)throw new Error('QA frame budget exhausted');
     const state=application.snapshot();
-    if(scenario.id?.startsWith('midboss-'))state.bossPresentation=application.core.game.bossPresentation.snapshot();
+    if(scenario.id?.startsWith('midboss-')){
+      const game=application.core.game,entrance=game.bossPresentation.entrance;
+      state.bossPresentation=game.bossPresentation.snapshot();
+      state.midbossFog={boss:game.director.boss?{x:game.director.boss.x,y:game.director.boss.y}:null,
+        anchors:entrance?.roots.map(root=>({script:root.scriptId,root:{x:root.x,y:root.y},
+          center:root.attachedEffect?.center??null,near:root.attachedEffect?.nearCenter??null,far:root.attachedEffect?.farCenter??null}))??[]};
+    }
+    if(scenario.nameProbe){state.bossNameCard=application.core.game.bossNameCard?.snapshot()??null;state.nameProbe={...nameProbe};}
     return state;
   },
 };

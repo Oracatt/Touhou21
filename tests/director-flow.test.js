@@ -2,12 +2,24 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {STAGES,MIDBOSSES,ALL_SPELLS} from '../dist/src/content.js';
 import {CampaignDirector} from '../dist/src/director.js';
-import {runDirectorRoute} from '../tools/director-lab.js';
+import {createDirectorGame,runDirectorRoute} from '../tools/director-lab.js';
 
 /** Asset-free director contract: the real CampaignDirector drives the real
  * thlib bullet/laser fields through a minimal Boss lifecycle stand-in. */
 const route=options=>runDirectorRoute(CampaignDirector,{stages:STAGES,midbosses:MIDBOSSES,...options});
 const count=(events,name)=>events.filter(e=>e.event===name).length;
+
+test('asset-free entrance replacement waits for its own gate and ignores the replaced timer',()=>{
+  const game=createDirectorGame(),boss=game.spawnEnemy({x:0,y:105,hp:100});
+  const presentation=game.enterBoss(boss,{profile:'midboss',entrance:{mode:'flyIn',readyFrame:10}});
+  for(let frame=0;frame<4;frame++)game.update();
+  const entrance=presentation.beginEntrance({mode:'halfFog',readyFrame:20});
+  for(let frame=0;frame<19;frame++)game.update();
+  assert.equal(presentation.entrance,entrance);assert.equal(presentation.entranceReady,false);assert.equal(entrance.ready,false);
+  game.update();assert.equal(presentation.entranceReady,true);assert.equal(entrance.ready,true);
+  game.enterBoss(boss,{entrance:{mode:'blackFog'}});assert.equal(presentation.entrance.readyFrame,101);
+  game.setBoss(null);assert.equal(presentation.entrance,null);assert.equal(presentation.entranceReady,true);
+});
 
 test('each stage runs its whole road, a midboss of the right shape, the Boss and its clear',()=>{
   for(const stage of STAGES){

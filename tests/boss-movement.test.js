@@ -8,7 +8,9 @@ import {CampaignDirector} from '../dist/src/director.js';
 
 function fixture({midboss=false}={}){
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11});
-  const game=new TouhouGame({banks:resources.banks,font:resources.font,sht:resources.shots[0],styles:resources.styles,seed:73});
+  const sounds=[];
+  const game=new TouhouGame({banks:resources.banks,font:resources.font,sht:resources.shots[0],styles:resources.styles,seed:73,
+    onSound:(id,x)=>sounds.push({id,x})});
   game.player.invulnerability.set(999999);
   let dialogue;
   // Give the first midboss an existing authored dialogue so reaching its
@@ -19,7 +21,7 @@ function fixture({midboss=false}={}){
   director.midbossDone=!midboss;
   director.stageFrame=midboss?midbosses[0].atFrame:STAGES[0].roadFrames;
   game.update(0);
-  return{game,director,get dialogue(){return dialogue;},dispose(){director.destroy();game.destroy();resources.dispose();}};
+  return{game,director,sounds,get dialogue(){return dialogue;},dispose(){director.destroy();game.destroy();resources.dispose();}};
 }
 
 const position=boss=>({x:boss.x,y:boss.y});
@@ -37,8 +39,18 @@ test('midboss flies in for100 frames with original mode4 deceleration, visible a
   const f=fixture({midboss:true}),{game,director}=f,boss=director.boss,presentation=game.bossPresentation;
   try{
     assert.equal(director.state,'midboss-enter');assert.deepEqual(position(boss),{x:-150,y:20});
-    assert.equal(presentation.entrance.mode,'halfFog');assert.equal(presentation.entrance.readyFrame,100);
+    assert.equal(presentation.entrance.mode,'flyIn');assert.equal(presentation.entrance.readyFrame,100);
+    assert.equal(f.sounds.filter(sound=>sound.id===54).length,0);
     assert.equal(presentation.bossVisible,true);const aura=presentation.aura[0],distortion=presentation.distortion;
+    const converged=new Set();
+    const checkConvergence=()=>{
+      for(const root of presentation.entrance.roots)for(const particle of root.attachedEffect.particles){
+        if(particle.stage!==2||converged.has(particle))continue;
+        const [x,y]=particle.vm.interpolations.get('position').value.end;
+        assert.ok(Math.hypot(x,y-105)<=20.001,'the convergence target is around the settled Boss, not an earlier point on its flight');
+        converged.add(particle);
+      }
+    };
     assert.ok(aura);let previous=position(boss),previousSpeed=Infinity;
     for(let frame=1;frame<=100;frame++){
       game.update(0);
@@ -49,6 +61,16 @@ test('midboss flies in for100 frames with original mode4 deceleration, visible a
       assert.strictEqual(presentation.aura[0],aura);assert.strictEqual(presentation.distortion,distortion);
       assert.equal(aura.x,boss.x);assert.equal(aura.y,boss.y);
       assert.equal(presentation.combatActive,false);assert.equal(game.isBossCombatReady(boss),false);
+      if(frame<40){
+        assert.equal(presentation.entrance.mode,'flyIn');assert.equal(presentation.entrance.particles.length,0);
+        assert.equal(f.sounds.filter(sound=>sound.id===54).length,0);
+      }else{
+        assert.equal(presentation.entrance.mode,'halfFog');assert.equal(presentation.entrance.readyFrame,60);
+        assert.equal(presentation.entrance.age,frame-39,'fog has its own source clock starting at entry frame40');
+        assert.equal(f.sounds.filter(sound=>sound.id===54).length,1);
+        for(const root of presentation.entrance.roots)assert.deepEqual({x:root.x,y:root.y},position(boss),'fog roots follow the arriving actor');
+      }
+      checkConvergence();
       if(frame<100){assert.equal(director.state,'midboss-enter');assert.equal(f.dialogue,undefined);}
       if(frame===50){
         assert.deepEqual(position(boss),{x:-37.5,y:83.75});
@@ -62,7 +84,8 @@ test('midboss flies in for100 frames with original mode4 deceleration, visible a
       }
     }
     assert.deepEqual(position(boss),{x:0,y:105});assert.equal(director.state,'dialogue');assert.ok(f.dialogue);
-    for(let frame=0;frame<10;frame++){game.update(0);assert.deepEqual(position(boss),{x:0,y:105});}
+    for(let frame=0;frame<60;frame++){game.update(0);assert.deepEqual(position(boss),{x:0,y:105});checkConvergence();}
+    assert.equal(converged.size,600,'all source particles reached their second Hermite arc around the final position');
     assert.equal(presentation.combatActive,false,'arrival does not bypass authored dialogue');
     f.dialogue.onComplete();assert.equal(director.state,'midboss-combat');assert.equal(presentation.combatActive,true);
   }finally{f.dispose();}
