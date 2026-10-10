@@ -123,7 +123,10 @@ livingAndOldNames.home={x:0,y:92};
 function gardenBeyondForgetting(k: AttackKit){
   const gateTime=k.pick(250,220,196,176),half=k.pick(.25,.21,.19,.17);
   const step=k.t/gateTime|0,order=[0,1,2,3,4,5,4,3,2,1],gate=order[step%order.length];
-  const center=DOWN+(gate-2.5)*.36;
+  // Paper already in flight keeps the old opening at the player's height for about two
+  // seconds after the new posts turn solid, so neighbouring gates must overlap widely;
+  // this spacing also keeps the outer gates on screen at the player's height.
+  const center=DOWN+(gate-2.5)*.2;
   if(k.t%gateTime===0)for(const side of[-1,1])
     k.beam(k.ox,k.oy,center+side*half,{width:10,delay:50,grow:10,sustain:gateTime-62,shrink:12,color:C.PALE,sound:side>0?-1:18});
   if(k.every(k.pick(12,10,8,7))){
