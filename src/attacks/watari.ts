@@ -89,23 +89,26 @@ function returningFerry(k: AttackKit){
 }
 returningFerry.home={x:0,y:104};
 
-/** 渡符「两岸无应之芦苇洲」: reeds start along the top edge, bow left and
- * right in turn and cross into a woven lattice; reeds that reach a bank are
- * turned back, so the weave fills the river down to the bottom. Paper boats
- * cross at any height and leave a V-shaped wake that spreads up and down
- * through the reeds. */
+/** 渡符「两岸无应之芦苇洲」: reeds start along the top edge and keep swaying
+ * left and right as they fall; neighbouring reeds sway against each other and
+ * twist into a woven bed. Paper boats cross at any height; their wake rests on
+ * the water for a moment, then slowly spreads up and down in a V. */
 function silentReedBanks(k: AttackKit){
-  const sources=k.pick(6,6,8,8),reedEvery=k.pick(13,10,8,6),spacing=384/sources;
+  const sources=k.pick(6,6,8,8),reedEvery=k.pick(13,10,8,6),turn=.012,bend=56;
+  // Each reed starts at one edge of its swing; its swing is centred on an evenly spaced lane.
+  const swing=2*k.sp*(1-Math.cos(turn*bend))/turn,lane=(384-2*swing-8)/(sources-1);
   if(k.every(reedEvery))for(let i=0;i<sources;i++){
-    const lean=i%2?-.013:.013;
-    k.shot(-192+spacing*(i+.5),-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,[k.curve(lean,56),k.bounce(2)],{silent:i>0,safe:0});
+    // Consecutive turns must be separated by wait(0), or the later turn replaces the earlier one at once.
+    const w=i%2?-turn:turn,centre=-192+4+swing+lane*i;
+    const sway=[k.curve(w,bend),k.wait(0),k.curve(-w,bend*2),k.wait(0),k.curve(w,bend*2),k.wait(0),k.curve(-w,bend*2)];
+    k.shot(centre+(i%2?swing:-swing),-4,DOWN,2,T.RICE,i%2?C.GREEN:C.LIME,sway,{silent:i>0,safe:0});
   }
-  const boatPeriod=k.pick(210,170,140,115),wakeEvery=k.pick(16,14,12,10);
+  const boatPeriod=k.pick(210,170,140,115),wakeEvery=k.pick(20,18,15,13);
   if(k.every(boatPeriod,30)){
     const side=(k.t/boatPeriod|0)%2?1:-1,y=lerp(70,330,k.unit());
     const boat=k.shot(side*190,y,side<0?0:Math.PI,1.3,T.OVAL,C8.WHITE,null,{safe:3600});
     for(let step=1;step<=Math.ceil(300/wakeEvery);step++)k.later(step*wakeEvery,boat,b=>{
-      for(const up of[-1,1])k.shot(b.x,b.y,up*DOWN,.8,T.PELLET,C.SKY,null,{silent:true});
+      for(const up of[-1,1])k.shot(b.x,b.y,up*DOWN,0,T.BALL,C.SKY,[k.wait(24),k.speedTo(.8,60)],{silent:true});
     });
   }
   if(k.every(k.pick(150,120,92,72),55))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.7,.2,T.AMULET,C.WHITE,null,{rows:k.pick(1,2,2,3),speedStep:2});
