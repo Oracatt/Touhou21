@@ -140,8 +140,8 @@ export const MUSIC_TRACKS = Object.freeze([
     "loopEndFrame": 1685853,
     "duration": 52.682906,
     "bpm": 164,
-    "description": "校对者在影子里划掉一行又一行。小号用三三二的重音写下句子，中段乐队一次次停在半句，空白里只剩响棒数拍，长号与圆号在副歌里回应。",
-    "sha256": "669dc0e02fdb2db9e1b9a9868d9a9f5ca118cfdaecdaf80970a59b39b2932375"
+    "description": "校对者在影子里逐行读校样。圆号与单簧管先用带附点的长短句念出第一行，木琴般的马林巴像打字机一样在底下敲，中段乐队一次次停在半句，空白里只剩响棒数拍；副歌放慢成宽阔的圣歌，小提琴与双簧管把句子读完。",
+    "sha256": "22a3b1fec9771fa1a343917c36e13cebdbcba4d6fa0479f5624bf7a4aab2e154"
   },
   {
     "id": "stage06",
