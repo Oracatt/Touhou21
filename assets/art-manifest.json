@@ -518,6 +518,83 @@
         "height": 1254
       },
       "sha256": "13b2dc3429a6baa636b6aa559d4c630325db2e70ae3fda5edee47cebad3d9d17"
+    },
+    "assets/boss-names/akari.png": {
+      "width": 1760,
+      "height": 893,
+      "bounds": {
+        "x": 254,
+        "y": 92,
+        "width": 1262,
+        "height": 721
+      },
+      "sha256": "134f906bc7f1d5d37f27804a512859fae2cf7c0f07493f56083f5e14557641ff"
+    },
+    "assets/boss-names/fusae.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 239,
+        "y": 138,
+        "width": 1321,
+        "height": 655
+      },
+      "sha256": "10327d8af35d3cdaacab0f0e5c0ac01e268f9c8098890a00c5ea192f75677b35"
+    },
+    "assets/boss-names/kotone.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 261,
+        "y": 137,
+        "width": 1297,
+        "height": 638
+      },
+      "sha256": "85d82ab8463a66ec3a244039d10167a09eecd3b97c7b3163e48a1dc028323c8f"
+    },
+    "assets/boss-names/mio.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 176,
+        "y": 125,
+        "width": 1431,
+        "height": 678
+      },
+      "sha256": "35ba595e2f7bc4c0304613f6e7b7b0826fdbfcb6da092858511044b25bb8ec65"
+    },
+    "assets/boss-names/shino.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 239,
+        "y": 125,
+        "width": 1319,
+        "height": 651
+      },
+      "sha256": "76bbf3701504225fde7f9b59f4e5fd6095411793017eb4683673f7c9a443699b"
+    },
+    "assets/boss-names/shizuri.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 198,
+        "y": 125,
+        "width": 1373,
+        "height": 623
+      },
+      "sha256": "5b74a4a2086c940ac8863ddd0e4866dcba283019f6bb55418e4f537e9ab72622"
+    },
+    "assets/boss-names/watari.png": {
+      "width": 1774,
+      "height": 887,
+      "bounds": {
+        "x": 221,
+        "y": 137,
+        "width": 1369,
+        "height": 657
+      },
+      "sha256": "c3b5a5665ca9e7dbe890261216d32e3bd1944143a6b020210fc676866cdd84b9"
     }
   }
 }

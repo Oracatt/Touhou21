@@ -1,5 +1,22 @@
 # 验收方法与覆盖范围
 
+## 2026-10-10 道中半黑雾时序与关底名字介绍
+
+游戏先快进到 `4b8c0a6`，保留远端道路、背景、BGM 和 macOS 启动改动；TS-STG 已是最新 `c030f92`。本轮只改游戏和验证工具，公共依赖锁不变，回放修订为 13。
+
+原作一、二面中 Boss 在 100 帧 mode4 移动的第 40 帧开启半黑雾。公共粒子第一段持续 60 帧，第二段才锁定 Boss 附近的目标；出生时就开启会锁到移动中途的位置。本作改为先 `flyIn`，第 40 帧用公共 `beginEntrance` 接续半黑雾，原有光圈和扭曲对象保留。回归逐帧检查第 40 帧前无雾、音效 54 仅一次、100 帧到点、600 个粒子的第二段终点均位于最终 Boss 周围 20 单位内；首段非符仍不重复聚能。
+
+七套透明名字图片由内置 imagegen 分别生成并原样保存，称号 / 姓名 / 英文读法全部目视核对。原作 MSG20 及 st01enm scripts17–20 作为触发、位置与时长依据；名字随首次关底立绘出现，60 帧散字收拢、260 帧清晰显示、60 帧散开，提前退出对话则 20 帧淡出。新文字的 GPU 分片布局属于游戏美术适配，不宣称原图逐像素一致。54 张游戏图片的清单和哈希完整，原有 47 张图片及其元数据不变。
+
+截图验收发现旧业务对话在暂停菜单后追加绘制。本次将整段对话放入公共游戏队列，名字在内部 layer37、order -1，正文随后绘制；公共暂停捕获与菜单保持最前。暂停验证器在按键前实际提交上一帧，避免空 backbuffer 造成假黑底。
+
+- 严格构建、边界审计、738 个 thlib / 150 个运行时文件的依赖锁校验通过。Node 按完整套和相关文件复跑覆盖当前 **222 项**：对话及名字 **13/13**、导演流程 **7/7**、其余 **202 项**均通过。初轮完整套日志 `build/boss-introduction-tests.log` 中旧导演支架缺少新入口方法的五项失败已修复；支架新增入口替换定时回归，相关七项重新通过，未改公共引擎。
+- 最终源码下真实三面练习和输入回放 × V8 / QuickJS **4/4 通过**，全部本轮执行，累计 **25,410 次场景更新**，两后端状态一致。报告 `reports/integration/boss-introduction-final/summary.json`、日志 `build/boss-introduction-native-final.log`。
+- 道中入场 25/40/90/130 帧、击破停留、飞离、移除 **7 类 × 两后端**通过，状态和 PNG 一致；40/90/130 帧已目视核查。证据保存在 `reports/visual/boss-introduction/selected-report.json`。随后只调整业务对话的暂停绘制层序，未改这些无对话场景的绘制或模拟。
+- 最终源码下七位 Boss 名牌及聚拢、散开、提前结束、暂停和恢复共 **12 类 × 两后端**通过，24 张 PNG 逐对完全一致并逐张目视检查，透明边缘、三行文字、对白与暂停菜单层序正常。报告 `reports/visual/boss-introduction-final/selected-report.json`。
+
+未启动持久游戏窗口或改写用户存档；引擎既有编辑器启动文件保持原哈希。名字图的提示词和来源见 `BOSS-NAME-PROMPTS.json`、`BOSS-NAME-SOURCES.json`，图片位于 `assets/boss-names/`。
+
 ## 2026-10-10 macOS V8 后端
 
 macOS 宿主加入带 JIT 的 V8 后端，版本与 Windows 相同（V8 12.3.219.9，rusty_v8 v0.89.0），`Play.command` 改用 `--backend v8`。`build-host.mjs` 按本机架构下载 rusty_v8 的 macOS 静态库（x86_64 与 arm64 各固定压缩包与解压后的 SHA-256），V8 头文件与 rusty_v8 许可证沿用引擎 Windows 脚本固定的修订和 SHA-256；`tools/macos/CMakeLists.txt` 照引擎的 Windows 配置加入 `v8_backend.cpp`、`TSSTG_HAS_V8` 与 `V8_PROMISE_INTERNAL_FIELD_COUNT=1`。库内的 V8 使用 Chromium 自带的 libc++（`std::Cr`），与宿主的系统 libc++ 互不冲突；引擎只经两个 C 接口函数创建平台。这两个函数所在的 rusty_v8 绑定对象另引用 19 个由 Rust 实现的序列化与 inspector 回调，宿主从不创建对应对象，`rusty_v8_callbacks.cpp` 以调用即中止的定义满足链接（Windows 版是从绑定对象中剥离）。源引擎目录未改动。

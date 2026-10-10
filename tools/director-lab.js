@@ -13,13 +13,22 @@ export function createDirectorGame({seed=73,difficulty=1}={}){
   game.context={sound(){},dialogue:false,inputBlocked:false,bossSuppressed:false,enemyContactBlocked:false,boss:null,
     cancelCircle:(x,y,radius)=>{game.bullets.cancelCircle(x,y,radius);game.lasers.cancelCircle(x,y,radius);}};
   game.drops=[];game.items.spawnBossDrops=(boss,options)=>game.drops.push({x:boss.x,y:boss.y,...options});
-  game.bossPresentation={entranceReady:false,combatActive:false,effects:{aura:false,distortion:false},charges:[],clearCharges(){this.charges.length=0;},
+  game.bossPresentation={entrance:null,entranceReady:true,combatActive:false,effects:{aura:false,distortion:false},charges:[],clearCharges(){this.charges.length=0;},
+    beginEntrance({mode='blackFog',readyFrame=mode==='blackFog'?101:0}={}){
+      const entrance={mode,readyFrame,ready:readyFrame===0};this.entrance=entrance;this.entranceReady=entrance.ready;
+      if(!entrance.ready)after(readyFrame,()=>{
+        if(this.entrance!==entrance)return;
+        entrance.ready=true;this.entranceReady=true;
+      });
+      return entrance;
+    },
     beginCharge(options){const charge={...options,alive:true,stopped:false,release:true,releaseFrame:options.releaseFrame??60};this.charges.push(charge);return charge;},
     beginDeath(){}};
   game.spell={active:false,mode:0,stage:1,survival:false,id:0,remaining:0,
     finish(captured,timeout){if(!this.active)return;this.active=false;game.onEvent?.('spellFinish',{id:this.id,captured,timeout});},
     capture(){this.finish(true,false);},timeout(){this.finish(false,true);}};
-  game.setBoss=boss=>{game.context.boss=boss;if(!boss){game.stopBossCombat();game.setBossEffects({aura:false,distortion:false});}};
+  game.setBoss=boss=>{game.context.boss=boss;if(!boss){game.bossPresentation.entrance=null;game.bossPresentation.entranceReady=true;
+    game.stopBossCombat();game.setBossEffects({aura:false,distortion:false});}};
   game.setBossEffects=effects=>{Object.assign(game.bossPresentation.effects,effects);};
   game.registerBoss=(boss,{onDefeated})=>{game.bossRegistry.set(boss,onDefeated);
     const damage=boss.damage;boss.damage=(amount,source)=>{if(!boss.alive||boss.invulnerable)return 0;boss.hp-=amount;
@@ -27,8 +36,12 @@ export function createDirectorGame({seed=73,difficulty=1}={}){
   const prepare=boss=>{boss.prepareSpellHealth=hp=>{boss.hp=hp;boss.spellHealth=true;return boss;};
     boss.prepareNormalHealth=hp=>{boss.hp=hp;boss.spellHealth=false;return boss;};};
   const spawn=game.spawnEnemy;game.spawnEnemy=options=>{const enemy=spawn(options);prepare(enemy);return enemy;};
-  game.enterBoss=(boss,{entrance,profile})=>{game.context.boss=boss;game.bossPresentation.profileName=profile;game.bossPresentation.entranceReady=false;
-    after(entrance?.readyFrame??90,()=>{game.bossPresentation.entranceReady=true;});};
+  game.enterBoss=(boss,{entrance,profile}={})=>{
+    if(game.context.boss!==boss){game.bossPresentation.entrance=null;game.bossPresentation.entranceReady=true;}
+    game.context.boss=boss;game.bossPresentation.profileName=profile;
+    if(entrance)game.bossPresentation.beginEntrance(entrance);
+    return game.bossPresentation;
+  };
   game.setBossHud=state=>{Object.assign(game.bossHudState,state);};
   game.resumeBoss=()=>{};game.startBossCombat=()=>{game.combat=true;game.bossPresentation.combatActive=true;};game.stopBossCombat=()=>{game.combat=false;game.bossPresentation.combatActive=false;};
   game.beginSpell=({id,duration,survival})=>{Object.assign(game.spell,{active:true,id,remaining:duration,survival:!!survival});};

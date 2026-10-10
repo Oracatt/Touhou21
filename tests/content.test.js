@@ -7,8 +7,8 @@ import {
 import { MUSIC_TRACKS } from '../dist/src/music-data.js';
 import { GAME_REVISION } from '../dist/src/storage.js';
 
-test('the Boss movement correction advances the content and replay revision together',()=>{
-  assert.equal(GAME.contentRevision,12);assert.equal(GAME_REVISION,GAME.contentRevision);
+test('the Boss entrance correction advances the content and replay revision together',()=>{
+  assert.equal(GAME.contentRevision,13);assert.equal(GAME_REVISION,GAME.contentRevision);
 });
 
 test('campaign covers six connected stages and a separately identified Extra', () => {

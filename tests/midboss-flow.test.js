@@ -83,8 +83,8 @@ test('midboss effects start during flight, survive its dialogue and switch to th
   }}),game=f.game,director=f.director,presentation=game.bossPresentation,boss=director.boss;
   try{
     assert.equal(director.state,'midboss-enter');assert.equal(presentation.profileName,'midboss');
-    assert.equal(presentation.entrance.mode,'halfFog');assert.equal(presentation.bossVisible,true);
-    assert.equal(f.sounds.filter(sound=>sound.id===54).length,1,'half-fog entry owns one separate original entrance cue');
+    assert.equal(presentation.entrance.mode,'flyIn');assert.equal(presentation.bossVisible,true);
+    assert.equal(f.sounds.filter(sound=>sound.id===54).length,0,'the actor flies in before the original frame40 fog cue');
     const aura=presentation.aura[0],distortion=presentation.distortion;
     assert.deepEqual(presentation.aura.map(vm=>vm.scriptId),[99]);assert.equal(distortion.radius,128);
     assert.equal(presentation.combatActive,false);assert.equal(game.isBossCombatReady(boss),false);
@@ -92,6 +92,8 @@ test('midboss effects start during flight, survive its dialogue and switch to th
     assert.deepEqual({x:boss.x,y:boss.y},{x:-150,y:20},'right-side fog accompanies an upper-left Boss entrance');
     for(let i=0;i<50;i++)game.update(0);
     assert.deepEqual({x:boss.x,y:boss.y},{x:-37.5,y:83.75});
+    assert.equal(presentation.entrance.mode,'halfFog');
+    assert.equal(f.sounds.filter(sound=>sound.id===54).length,1,'the delayed half-fog entrance requests its cue only once');
     assert.equal(director.state,'midboss-enter');assert.equal(presentation.combatActive,false);
     assert.equal(aura.x,boss.x);assert.equal(aura.y,boss.y,'the existing effect follows the corrected route');
     for(let i=0;i<90&&!midbossDialogue;i++)game.update(0);
@@ -167,11 +169,13 @@ test('different midboss outcomes remain authorable, with escape opt-in and final
 });
 
 test('entry fog replaces the first midboss nonspell charge while main Boss phases retain one charge each',()=>{
-  const f=fixture({enterCombat:false}),entranceSounds=f.sounds.filter(sound=>sound.id===54).length;
+  const f=fixture({enterCombat:false});
+  assert.equal(f.sounds.filter(sound=>sound.id===54).length,0);
   for(let i=0;i<160&&f.director.state!=='midboss-combat';i++)f.game.update(0);
   assert.equal(f.director.state,'midboss-combat');
   assert.equal(f.game.bossPresentation.charges.length,0);
-  assert.equal(f.sounds.filter(sound=>sound.id===54).length,entranceSounds);
+  const entranceSounds=f.sounds.filter(sound=>sound.id===54).length;
+  assert.equal(entranceSounds,1,'only the frame40 entrance owns a preparation cue');
   for(let i=0;i<65;i++)f.game.update(0);
   assert.equal(f.game.bossPresentation.charges.length,0);
   assert.equal(f.sounds.filter(sound=>sound.id===54).length,entranceSounds,'the first nonspell does not repeat the fog cue');

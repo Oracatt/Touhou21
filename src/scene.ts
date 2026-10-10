@@ -5,6 +5,7 @@ import {CampaignDirector} from './director.js';
 import type {DialogueContext} from './director.js';
 import {StageBackground} from './background.js';
 import {BossSpriteCatalog} from './boss-sprites.js';
+import {BossNameCard} from './boss-name.js';
 import {GameFrameSkin} from './frame-skin.js';
 import {CampaignBossHud} from './campaign-boss-hud.js';
 import {GAME_REVISION} from './storage.js';
@@ -74,6 +75,7 @@ export class CampaignScene extends TouhouGame {
   declare music:MusicController;declare storage:GameStorage;declare config:RunConfig;declare options:RunOptions;
   declare background:StageBackground;declare frameSkin:GameFrameSkin;declare bossSprites:BossSpriteCatalog;
   declare director:CampaignDirector;declare dialogue:TouhouDialogue|null;declare stageClear:TouhouStageClear|null;
+  declare bossNameCard:BossNameCard|null;
   declare stageTransition:TouhouStageTransition|null;declare stageCaptionAge:number;declare currentStage:StageDefinition|null;
   declare bgmCaption:{title:string;age:number}|null;declare outerDraw:DrawList;declare savedRun:boolean;declare replayDone:boolean;
   declare finishedResult:RunResult|null;declare pendingCompletion:RunResult|null|undefined;declare replaySaved:boolean|undefined;
@@ -97,14 +99,19 @@ export class CampaignScene extends TouhouGame {
         palette:{...settings.systemOptions?.hud?.palette,...HUD_NUMBER_PALETTE},replay:!!playbackSource}},
       factories:{...settings.factories,bossHud:(hudOptions,game)=>new CampaignBossHud(hudOptions,game as CampaignScene)},
       rng:settings.rng??new TouhouRNG(config.seed),visualRng:settings.visualRng??new TouhouRNG(config.seed^0x6d2b79f5),
-      renderBackground:(draw,game)=>{background.draw(draw,game as CampaignScene);(game as CampaignScene).stageTransition?.draw(draw,{x:48,y:24,width:576,height:672});},
+      renderBackground:(draw,game)=>{
+        background.draw(draw,game as CampaignScene);(game as CampaignScene).stageTransition?.draw(draw,{x:48,y:24,width:576,height:672});
+        // The compositor invokes this before flushing its public queue. Keep
+        // dialogue in the common UI pass, before the pause capture and menu.
+        game.renderQueue.enqueue(35,target=>(game as CampaignScene).dialogue?.draw(target,{x:0,y:0,scale:1,screenScale:DIALOGUE_SCREEN_SCALE}));
+      },
       spellContext:{...settings.spellContext,...((host as TextHostCapabilities)?.rasterizeBitmapText&&(host as TextHostCapabilities)?.encodeText?{
         createNameAnimation:(name,options)=>resources.createNameAnimation(name,{...options,codePage:936},settings.banks.text)}:{})},
       spellOptions:{...settings.spellOptions,records,fallbackRecords:{},viewIndex:0,playback:!!playbackSource,mode:config.mode==='spell-practice'?2:0},
       gameOverOptions:{...settings.gameOverOptions,music:'playersScore',musicPlayer:music}});
     Object.assign(this,{resources,host,art,text,music,storage,config,options,background,frameSkin,onComplete,onReplayDone,onSpellPracticeEnd});
     this.bossSprites=new BossSpriteCatalog({art});
-    this.dialogue=null;this.stageClear=null;this.stageTransition=null;this.stageCaptionAge=0;this.currentStage=null;this.bgmCaption=null;
+    this.dialogue=null;this.bossNameCard=null;this.stageClear=null;this.stageTransition=null;this.stageCaptionAge=0;this.currentStage=null;this.bgmCaption=null;
     this.outerDraw=new DrawList();this.savedRun=false;this.replayDone=false;this.finishedResult=null;
     this.player.lives=storage.settings.startingLives;
     const initialHighScore=playbackSource?.config?.initialHighScore??Math.max(0,...storage.progress.scores.filter(result=>result.character===config.character&&result.difficulty===config.difficulty&&result.mode===config.mode).map(result=>result.score));
@@ -170,10 +177,12 @@ export class CampaignScene extends TouhouGame {
   }
   openDialogue(lines:DialogueLine[],{bossId,kind,cues=null,cue=null,onComplete}:DialogueContext){
     this.dialogue?.dispose();this.context.dialogue=true;
+    this.bossNameCard?.destroy();this.bossNameCard=null;
     const playerId=PLAYERS[this.character??this.config.character].id;
     const steps=lines.map((line,index):TouhouDialogueStep=>{const events:TouhouDialogueEvent[]=[],actorLine=cues?.appear===index;
       if(actorLine)events.push({type:'cue',name:'appear',entranceStage:'portraits'});
       if(cues?.music===index)events.push({type:'cue',name:'music'});
+      if(kind==='before'&&index===(cues?cues.portrait:0))events.push({type:'boss-name',entranceStage:'portraits'});
       // The first response belongs to the actor on the road. The following
       // line introduces its portrait independently of the entrance and BGM.
       const portraitReady=!cues||Number.isInteger(cues.portrait)&&index>=cues.portrait!;
@@ -182,6 +191,7 @@ export class CampaignScene extends TouhouGame {
         portraits:{left:{present:!cues||index<cues.appear||portraitReady},right:{present:portraitReady}}};});
     this.dialogue=new TouhouDialogue({resources:this.dialogueResources,steps,character:this.config.character,codePage:936,maxLineBytes:32,
       startDelayFrames:kind==='before'?12:0,onEvent:(event,step)=>{
+        if(event.type==='boss-name'){this.bossNameCard=new BossNameCard(this.art,bossId);return;}
         if(event.type!=='cue')return;cue?.(event.name as string);
         if(event.name==='appear'&&step.boxMode===2&&this.director.boss){
           const boss=this.director.boss,view=this.view;
@@ -201,6 +211,9 @@ export class CampaignScene extends TouhouGame {
         if(right){const asset=this.art.load(`assets/portraits/${bossId}.png`),boxWidth=right.width*1.5,boxHeight=right.height*1.5;
           const height=Math.min(boxHeight,boxWidth*asset.bounds.height/asset.bounds.width),width=height*asset.bounds.width/asset.bounds.height;
           this.art.portrait(draw,bossId,right.x*1.5+boxWidth-width,right.y*1.5+boxHeight-height,height,{alpha:right.alpha/255,tint:rgba(right.color)});}
+        // enqueue captures immediately. Names and text share source layer37;
+        // an earlier order keeps every dialogue glyph above this name card.
+        if(this.bossNameCard)owner.queue.enqueue(37,target=>this.bossNameCard?.draw(target,DIALOGUE_SCREEN_SCALE),{order:-1});
       },
       onComplete:()=>{this.context.dialogue=false;onComplete();}});
   }
@@ -259,7 +272,13 @@ export class CampaignScene extends TouhouGame {
     }
     if(!wasPaused&&!this.paused){
       this.stageCaptionAge++;if(this.bgmCaption&&++this.bgmCaption.age>=BGM_CAPTION_FRAMES)this.bgmCaption=null;
+      const nameCard=this.bossNameCard;
       if(this.dialogue?.active){this.dialogue.update(this.options.autoDialogue?Keys.FOCUS:mask);}
+      if(this.bossNameCard){
+        if(!this.dialogue?.active||this.dialogue.exiting)this.bossNameCard.finish();
+        if(this.bossNameCard===nameCard)this.bossNameCard.update();
+        if(!this.bossNameCard.alive)this.bossNameCard=null;
+      }
       if(this.dialogue?.complete){this.dialogue.dispose();this.dialogue=null;}
       if(this.stageClear?.alive)this.stageClear.update(this.options.autoStageClear?Keys.SHOOT:mask);
       this.stageTransition?.update();if(this.stageTransition&&!this.stageTransition.alive){this.stageTransition.destroy();this.stageTransition=null;}
@@ -275,9 +294,9 @@ export class CampaignScene extends TouhouGame {
       this.text.draw(draw,this.currentStage!.subtitle,58,213,{size:16,width:555,height:45,align:'center',alpha});}
     if(this.bgmCaption){const {age,title}=this.bgmCaption;const alpha=Math.min(1,age/20,(BGM_CAPTION_FRAMES-age)/45);
       this.text.draw(draw,`♪ ${title}`,324,664,{size:16,width:296,height:28,align:'right',color:0xf8e8caff,alpha});}
-    this.stageClear?.draw(draw);this.dialogue?.draw(draw,{x:0,y:0,scale:1,screenScale:DIALOGUE_SCREEN_SCALE});
+    this.stageClear?.draw(draw);
     return draw.commands;
   }
   snapshot(){return {...super.snapshot(),statistics:{score:this.player.score,highScore:this.player.highScore,graze:this.player.graze,pointValue:this.player.pointValue,pointItems:this.player.pointItems,lifeFragments:this.player.lifeFragments,bombFragments:this.player.bombFragments},director:this.director?.snapshot(),dialogue:this.dialogue?.snapshot()??null,stageClear:this.stageClear?.snapshot()??null,stageTransition:this.stageTransition?.snapshot()??null,stageCaptionAge:this.stageCaptionAge};}
-  destroy(){if(this.destroyed)return;this.saveRun();this.dialogue?.dispose();this.stageClear?.destroy();this.stageTransition?.destroy();this.director?.destroy();this.background.destroy?.();super.destroy();}
+  destroy(){if(this.destroyed)return;this.saveRun();this.dialogue?.dispose();this.bossNameCard?.destroy();this.stageClear?.destroy();this.stageTransition?.destroy();this.director?.destroy();this.background.destroy?.();super.destroy();}
 }

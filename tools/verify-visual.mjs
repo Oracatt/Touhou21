@@ -23,8 +23,10 @@ const cases=[
   {id:'scene-cover',preRoll:18,actions:[{frame:0,type:'play'}]},
   {id:'scene-reveal',preRoll:60,actions:[{frame:0,type:'play'}]},
   {id:'road',options:base,preRoll:480},
-  {id:'midboss-entrance',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:25},
-  {id:'midboss-arrival',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:90},
+  {id:'midboss-entrance',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:24},
+  {id:'midboss-fog-start',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:39},
+  {id:'midboss-arrival',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},phaseRoll:89},
+  {id:'midboss-fog-gather',options:{...base,mode:'stage-practice',stageId:2},until:{state:'midboss-enter'},expectedState:'midboss-combat',phaseRoll:129},
   {id:'boss-reposition',options:{...base,skipRoad:true,autoDialogue:true,autoCapture:true},until:{state:'phase-wait'},phaseRoll:30},
   ...[{id:'midboss-defeated',phaseRoll:30},{id:'midboss-escaping',phaseRoll:95},{id:'midboss-removed',phaseRoll:140}].map(test=>({
     ...test,options:{...base,mode:'stage-practice',stageId:2,autoDialogue:true,autoCapture:true},until:{state:'midboss-exit'}})),
@@ -33,6 +35,10 @@ const cases=[
   {id:'prelude-monologue',options:{...base,skipRoad:true},until:{state:'dialogue'},phaseRoll:80},
   {id:'prelude-boss-appears',options:{...base,skipRoad:true},preRoll:112,input:{40:Keys.SHOOT,70:Keys.SHOOT}},
   {id:'prelude-boss-dialogue',options:{...base,skipRoad:true},preRoll:210,input:{40:Keys.SHOOT,70:Keys.SHOOT,150:Keys.SHOOT}},
+  ...STAGES.map(stage=>({id:`boss-name-${stage.bossId}`,options:{...base,skipRoad:true,mode:'stage-practice',stageId:stage.id,difficulty:stage.id===7?4:1},nameProbe:{age:90}})),
+  ...[{id:'gather',age:30},{id:'disperse',age:350},{id:'exit',age:90,exitAge:10},
+    {id:'paused',age:90,pauseFrames:30},{id:'resumed',age:90,pauseFrames:30,resume:true}].map(probe=>({
+    id:`boss-name-akari-${probe.id}`,options:{...base,skipRoad:true,mode:'stage-practice',stageId:1},nameProbe:probe})),
     {id:'dialogue-marisa',options:{...base,character:1,skipRoad:true,stageId:6,mode:'stage-practice'},until:{state:'dialogue'},phaseRoll:80},
   {id:'nonspell',options:{...base,skipRoad:true,autoDialogue:true},until:{state:'combat',phaseIndex:0},phaseRoll:310},
   ...STAGES.map(stage=>({id:`nonspell-${stage.id}`,options:{...base,skipRoad:true,autoDialogue:true,mode:'stage-practice',stageId:stage.id,difficulty:stage.id===7?4:1},until:{state:'combat',phaseIndex:0},phaseRoll:310})),
@@ -75,14 +81,34 @@ for(const scenario of cases.filter(value=>!filter||filter.includes(value.id))){
     if(scenario.id.startsWith('ending-flow-')){assert.equal(state.mode,'title');assert.equal(state.page,null,'Ending, staff and result return to the real title owner');}
     if(scenario.id==='stage-transition')assert.ok(state.scene.stageTransition,'Native stage cover is active');
     if(scenario.id.startsWith('midboss-')){
-      const effects=state.bossPresentation,removed=scenario.id==='midboss-removed';
-      assert.equal(effects.combatActive,false,'No attack activation during entry or escape');
+      const effects=state.bossPresentation,removed=scenario.id==='midboss-removed',combat=scenario.id==='midboss-fog-gather';
+      assert.equal(effects.combatActive,combat,'Combat starts only after the authored arrival');
       assert.deepEqual(effects.auraScripts,removed?[]:[99],'Midboss aura lasts until entity removal');
       assert.equal(effects.distortion?.ready??false,!removed,'Warp remains through defeated hold and flight');
-      assert.equal(effects.hud.timerVisible,false,'Retained effects do not retain a combat countdown');
+      assert.equal(effects.hud.timerVisible,combat,'Retained effects only retain a countdown during combat');
+      if(['midboss-entrance','midboss-fog-start','midboss-arrival','midboss-fog-gather'].includes(scenario.id)){
+        const frame={'midboss-entrance':25,'midboss-fog-start':40,'midboss-arrival':90,'midboss-fog-gather':130}[scenario.id];
+        assert.equal(effects.entrance.mode,frame<40?'flyIn':'halfFog');
+        assert.deepEqual(effects.entrance.roots.map(root=>root.scriptId),frame<40?[]:[153,159,161]);
+        assert.equal(effects.charges.length,0,'The first midboss nonspell does not repeat entry charge');
+        const progress=Math.min(frame,100)/100,ease=1-(1-progress)**2,boss=state.midbossFog.boss;
+        assert.ok(Math.abs(boss.x-(-150+150*ease))<.011&&Math.abs(boss.y-(20+85*ease))<.011,'Boss follows the authored deceleration');
+        for(const anchor of state.midbossFog.anchors){
+          assert.ok(Math.hypot(anchor.root.x-boss.x,anchor.root.y-boss.y)<.011,'Fog roots track the current actor');
+          if(anchor.center)assert.ok(Math.hypot(anchor.center.x-boss.x,anchor.center.y-boss.y)<.011,'Converging particles use the current actor center');
+        }
+      }
+    }
+    if(scenario.nameProbe){
+      const card=state.bossNameCard,stage=STAGES.find(stage=>stage.id===scenario.options.stageId),probe=scenario.nameProbe;
+      assert.equal(card.bossId,stage.bossId);assert.equal(card.alive,true);assert.ok(state.nameProbe.startedIndex>0);
+      assert.equal(state.scene.director.state,'dialogue');
+      if(probe.exitAge!==undefined){assert.equal(card.exitAge,probe.exitAge);assert.ok(state.scene.dialogue.exit,'The real dialogue owner has begun its authored exit');}
+      else assert.equal(card.age,probe.age+(probe.resume?1:0));
+      assert.equal(state.scene.paused,!!probe.pauseFrames&&!probe.resume);
     }
     if(scenario.until){const director=state.scene.director;assert.ok(director,scenario.id);for(const [key,value] of Object.entries(scenario.until))if(key!=='spellId'){
-      if(scenario.id!=='stage-transition')assert.equal(director[key],value,`${scenario.id}: ${key}`);
+      if(scenario.id!=='stage-transition')assert.equal(director[key],key==='state'?(scenario.expectedState??value):value,`${scenario.id}: ${key}`);
     }}
     runs.push({backend,state,pngSha256:sha(prefix+'.png')});
   }
