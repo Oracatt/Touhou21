@@ -15,7 +15,7 @@ function fixture({install=true}={}){
   fs.symlinkSync(path.join(PROJECT_ROOT,'node_modules/typescript'),path.join(root,'node_modules/typescript'),process.platform==='win32'?'junction':'dir');
   const git=args=>execFileSync('git',['-C',source,...args],{encoding:'utf8',windowsHide:true}).trim();
   const write=(base,name,content)=>{const output=path.join(base,...name.split('/'));fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,content);return output;};
-  git(['init','--quiet']);git(['config','core.autocrlf','false']);git(['config','user.name','Fixture']);git(['config','user.email','fixture@example.invalid']);
+  git(['init','--quiet']);git(['config','core.autocrlf','false']);git(['config','core.fsmonitor','false']);git(['config','core.untrackedCache','false']);git(['config','user.name','Fixture']);git(['config','user.email','fixture@example.invalid']);
   write(source,'.gitignore','ignored/\npackages/thlib/src/ignored.ts\n');
   write(source,'packages/thlib/LICENSE','fixture license\n');
   write(source,'packages/thlib/package.json',"{\"name\":\"@ts-stg/thlib\",\"type\":\"module\",\"devDependencies\":{\"typescript\":\"5.9.3\"}}\n");

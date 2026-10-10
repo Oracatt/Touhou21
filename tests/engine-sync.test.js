@@ -17,7 +17,7 @@ function inventoryFixture(){
   const directory=fs.mkdtempSync(path.join(build,'engine-inventory-verification-')),source=path.join(directory,'source');fs.mkdirSync(source);
   const run=args=>execFileSync('git',['-C',source,...args],{encoding:'utf8',windowsHide:true}).trim();
   const write=(name,content)=>{const target=path.join(source,...name.split('/'));fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,content);return target;};
-  run(['init','--quiet']);run(['config','core.autocrlf','false']);
+  run(['init','--quiet']);run(['config','core.autocrlf','false']);run(['config','core.fsmonitor','false']);run(['config','core.untrackedCache','false']);
   for(const[name,content]of Object.entries({
     'packages/thlib/LICENSE':'fixture license\n','packages/thlib/package.json':"{\"name\":\"@ts-stg/thlib\",\"type\":\"module\",\"devDependencies\":{\"typescript\":\"5.9.3\"}}\n",
     'packages/thlib/tsconfig.base.json':"{\"compilerOptions\":{\"target\":\"ES2022\",\"module\":\"NodeNext\",\"moduleResolution\":\"NodeNext\",\"strict\":true,\"noEmitOnError\":true,\"declaration\":true,\"sourceMap\":true,\"declarationMap\":true,\"types\":[],\"lib\":[\"ES2022\"]}}\n",
@@ -130,7 +130,8 @@ test('a source exception is limited to the recorded unstaged editor launcher',()
   const build=path.join(PROJECT_ROOT,'build');fs.mkdirSync(build,{recursive:true});
   const fixture=fs.mkdtempSync(path.join(build,'source-state-verification-'));
   const run=args=>execFileSync('git',['-C',fixture,...args],{encoding:'utf8',windowsHide:true});
-  run(['init','--quiet']);fs.writeFileSync(path.join(fixture,'start-spellcard-editor.cmd'),'original launcher\n');
+  run(['init','--quiet']);run(['config','core.fsmonitor','false']);run(['config','core.untrackedCache','false']);
+  fs.writeFileSync(path.join(fixture,'start-spellcard-editor.cmd'),'original launcher\n');
   fs.writeFileSync(path.join(fixture,'native-input.cpp'),'original input\n');run(['add','.']);
   run(['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','--quiet','-m','Fixture baseline']);
   const launcher=path.join(fixture,'start-spellcard-editor.cmd');fs.writeFileSync(launcher,'local editor launch settings\n');

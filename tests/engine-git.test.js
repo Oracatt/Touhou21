@@ -15,6 +15,8 @@ function fixture({omit=null,format='sha1',indexText='export const before = 1;\n'
   const write=(name,bytes)=>{const file=path.join(source,...name.split('/'));fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes);return file;};
   const commit=message=>{run(['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','--quiet','-m',message]);return run(['rev-parse','HEAD']);};
   run(['init','--quiet','--object-format='+format]);run(['config','core.autocrlf','false']);
+  // Inherited fsmonitor/untracked-cache settings make `git status` rewrite the index and leave a daemon per fixture.
+  run(['config','core.fsmonitor','false']);run(['config','core.untrackedCache','false']);
   write('.gitattributes','* text=auto eol=lf\n');
   const files=new Map([
     ['LICENSE',Buffer.from('fixture license\n')],
