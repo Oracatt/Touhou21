@@ -25,7 +25,7 @@ assert.ok(!label||/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(label),'Background rep
 const binary=path.resolve(root,binaryPath),out=path.join(root,'reports/backgrounds',label),scratch=path.join(root,'build/background-fixtures',label);
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(scratch,{recursive:true});
 const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex'),results=[];
-const sourceFiles=['src/background.ts','src/background-art.ts','src/stage-atmosphere.ts','src/spell-background.ts','src/art.ts','tools/background-fixture.js','tools/verify-background.mjs'];
+const sourceFiles=['src/background.ts','src/background-art.ts','src/stage-camera.ts','src/stage-atmosphere.ts','src/spell-background.ts','src/art.ts','tools/background-fixture.js','tools/verify-background.mjs'];
 const sourceIdentity=()=>Object.fromEntries(sourceFiles.map(file=>[file,hash(path.join(root,file))]));
 const sourceBefore=sourceIdentity(),textureIdentity={},binaryBefore=hash(binary),roadTextureIdentity={};
 if(modes.includes('road'))for(const file of [

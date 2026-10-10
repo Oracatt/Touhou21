@@ -8,43 +8,29 @@ import type {BackgroundGame,StageIdentity,MeshVertex3D,PanelOptions} from './ui-
 import {SCENERY_ATLASES,sceneryRegion} from './background-art.js';
 import {DynamicSpellBackground} from './spell-background.js';
 import {StageAtmosphere} from './stage-atmosphere.js';
-export const BACKGROUND_VIEWPORT=Object.freeze({x:48,y:24,width:576,height:672,canvasWidth:960,canvasHeight:720});
-const TILE=48,NEAR=2,FAR=220;
+import {cameraForStage,lookAt3d,multiply3d,perspective3d,viewport3d} from './stage-camera.js';
+export {BACKGROUND_VIEWPORT,cameraForStage,lookAt3d,multiply3d,perspective3d,project3d,transform3d,viewport3d} from './stage-camera.js';
+const TILE=48;
 const clamp=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
 const dot=(a:number[],b:number[])=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
-const cross=(a:number[],b:number[])=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 const sub=(a:number[],b:number[])=>a.map((v,i)=>v-b[i]);
 const unit=(v:number[])=>{const n=Math.hypot(...v);if(!(n>1e-8))throw new RangeError('Degenerate camera vector');return v.map(c=>c/n);};
 const rgba=(r:number,g:number,b:number,a=255)=>((Math.round(clamp(r,0,255))<<24)|(Math.round(clamp(g,0,255))<<16)|(Math.round(clamp(b,0,255))<<8)|Math.round(clamp(a,0,255)))>>>0;
-const identity=()=>[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
-const translation=(x:number,y:number,z:number)=>{const m=identity();m[12]=x;m[13]=y;m[14]=z;return m;};
-/** Column-major product: b acts first, then a. Clip W reaches the GPU intact. */
-export function multiply3d(a:number[],b:number[]){const m=Array(16).fill(0);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)m[c*4+r]+=a[k*4+r]*b[c*4+k];return m;}
-export function perspective3d(fov=Math.PI*.30,aspect=576/672,near=NEAR,far=FAR){
-  if(!(fov>0&&fov<Math.PI&&aspect>0&&near>0&&far>near))throw new RangeError('Invalid perspective');
-  const f=1/Math.tan(fov/2);return[f/aspect,0,0,0,0,f,0,0,0,0,(far+near)/(far-near),1,0,0,-2*near*far/(far-near),0];
-}
-export function lookAt3d(eye:number[],target:number[],up=[0,1,0]){
-  const forward=unit(sub(target,eye)),right=unit(cross(up,forward)),vertical=cross(forward,right);
-  return[right[0],vertical[0],forward[0],0,right[1],vertical[1],forward[1],0,right[2],vertical[2],forward[2],0,-dot(right,eye),-dot(vertical,eye),-dot(forward,eye),1];
-}
-export function viewport3d(viewport=BACKGROUND_VIEWPORT){const {x,y,width,height,canvasWidth,canvasHeight}=viewport,m=identity();m[0]=width/canvasWidth;m[5]=height/canvasHeight;m[12]=(x*2+width)/canvasWidth-1;m[13]=1-(y*2+height)/canvasHeight;return m;}
-export function transform3d(m:number[],point:number[]){const[x,y,z,w=1]=point;return[0,1,2,3].map(r=>m[r]*x+m[4+r]*y+m[8+r]*z+m[12+r]*w);}
-export function project3d(m:number[],point:number[],viewport=BACKGROUND_VIEWPORT){const[x,y,z,w]=transform3d(m,point);if(!(w>0))return null;return{x:(x/w+1)*viewport.canvasWidth/2,y:(1-y/w)*viewport.canvasHeight/2,depth:z/w,w};}
+const translation=(x:number,y:number,z:number)=>[1,0,0,0,0,1,0,0,0,0,1,0,x,y,z,1];
 const THEMES=[
-  {fog:0x15232fff,height:15,speed:.095,tint:[255,240,223]},
-  {fog:0x162e38ff,height:14,speed:.085,tint:[219,243,250]},
-  {fog:0x162d3cff,height:17,speed:.082,tint:[224,247,241]},
-  {fog:0x27253aff,height:15,speed:.089,tint:[250,231,253]},
-  {fog:0x172b27ff,height:12,speed:.081,tint:[224,243,225]},
-  {fog:0x2e4c48ff,height:18,speed:.079,tint:[233,249,239]},
-  {fog:0x19283fff,height:15,speed:.092,tint:[228,236,255]},
+  {fog:0x15232fff,tint:[255,240,223]},
+  {fog:0x162e38ff,tint:[219,243,250]},
+  {fog:0x162d3cff,tint:[224,247,241]},
+  {fog:0x27253aff,tint:[250,231,253]},
+  {fog:0x172b27ff,tint:[224,243,225]},
+  {fog:0x2e4c48ff,tint:[233,249,239]},
+  {fog:0x19283fff,tint:[228,236,255]},
 ];
 /** One painted atlas with many independent world planes. Alpha mattes and
  * ground are sorted together; static vertices and bounded fog caches persist. */
 class SceneryBatch{
   declare stage: number;
-  declare theme: { fog: number; height: number; speed: number; tint: number[]; };
+  declare theme: { fog: number; tint: number[]; };
   declare label: string;
 
  declare vertices:MeshVertex3D[];declare faces:{center:number[];indices:number[];region:string;tag:string;layer:number}[];declare features:Set<string>;declare fogCache:Map<number,MeshVertex3D[]>;
@@ -131,11 +117,6 @@ function roadGeometry(stage:number,variant:number){
     for(let i=0;i<3;i++)g.panel('edge',-5+i*5,10,5+i*19,6,16,{yaw:(i-1)*.13,alpha:160,tag:'red-white-ribbons',light:.81});
   }
   return g;
-}
-export function cameraForStage(stage:number|StageIdentity,clock=0){
-  const id=typeof stage==='number'?stage:stage?.id;if(!Number.isInteger(id)||id<1||id>7||!Number.isFinite(clock))throw new RangeError('Invalid stage camera');const t=THEMES[id-1];
-  const travel=clock*t.speed,sway=Math.sin(clock*.0011+id*.73),lift=Math.sin(clock*.00081+id)*.65,turn=Math.sin(clock*.00053+id)*.9,roll=id===7?Math.sin(clock*.00074)*.019:0;
-  return{eye:[sway*(id===5?.65:2.3),t.height+lift,travel].map(Math.fround),target:[sway*.55+turn,id===6?3.5:2.7,travel+46].map(Math.fround),up:[Math.sin(roll),Math.cos(roll),0],fov:Math.fround(Math.PI*.30)};
 }
 export class StageBackground{
  declare stats:{stage:number;spell:boolean;roadVisible:boolean;meshCalls:number;vertices:number;camera:ReturnType<typeof cameraForStage>;texture:string;features:string[];dynamic:ReturnType<DynamicSpellBackground['snapshot']>;atmosphere:ReturnType<StageAtmosphere['draw']>|null}|null;
