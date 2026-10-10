@@ -70,16 +70,15 @@ function scatteredGreetings(k: AttackKit){
  * aimed at the player stop, then burst open into rings of blank addresses. */
 function blankAddresseeDrizzle(k: AttackKit){
   const sway=.16*Math.sin(k.t*.004);
-  // Lunatic rain, envelopes and the opened rings are slower so the dense
-  // field stays readable; the other difficulties keep their original speed.
-  const rain=k.rank===3?[1.6,2.2]:[2.3,3.2];
-  // Slower needles linger longer, so lunatic also spawns them a little less
-  // often to keep the on-screen density below the old value.
-  if(k.every(k.pick(4,3,2,4)))drizzle(k,k.pick(1,1,1,2),{lean:sway,speed:rain});
+  // Slower rain, envelopes and rings on every difficulty. Slower needles
+  // linger longer, so they are also spawned less often to keep the on-screen
+  // density at or below the old value.
+  const rain=[[1.5,2.1],[1.75,2.45],[1.7,2.35],[1.6,2.2]][k.extra?3:k.rank];
+  if(k.every(k.pick(6,4,3,4)))drizzle(k,k.pick(1,1,1,2),{lean:sway,speed:rain});
   const period=k.pick(82,64,54,46);
   if(k.every(period)){
-    const envelopes=k.aimed(k.ox,k.oy,k.pick(1,3,3,5),k.pick(3.1,3.1,3.1,2.3),k.pick(0,.34,.3,.26),T.AMULET,C.WHITE,[k.hold(48),k.wait(22),k.vanish()]);
-    k.later(62,envelopes,b=>k.ring(b.x,b.y,k.pick(8,10,12,14),k.pick(1.55,1.55,1.55,1.15),k.unit()*TAU,T.BALL,C.AZURE,null,{silent:true}));
+    const envelopes=k.aimed(k.ox,k.oy,k.pick(1,3,3,5),k.pick(2.5,2.8,2.6,2.3),k.pick(0,.34,.3,.26),T.AMULET,C.WHITE,[k.hold(48),k.wait(22),k.vanish()]);
+    k.later(62,envelopes,b=>k.ring(b.x,b.y,k.pick(8,10,12,14),k.pick(1.3,1.4,1.3,1.15),k.unit()*TAU,T.BALL,C.AZURE,null,{silent:true}));
   }
 }
 blankAddresseeDrizzle.home={x:0,y:100};
