@@ -5,10 +5,10 @@ import {T,C,C8,DOWN,TAU,clamp,lerp} from '../danmaku.js';
 import {polygon,burstShape} from './shapes.js';
 
 /** Needles from the top edge; `lean` tilts the rain away from vertical. */
-function drizzle(k: AttackKit,count:number,{lean=0,speed=[2.4,3.2],color=C.SKY,type=T.NEEDLE,span=[-186,186]}:{lean?:number;speed?:number[];color?:number;type?:number;span?:number[]}={}){
+function drizzle(k: AttackKit,count:number,{lean=0,speed=[2.4,3.2],color=C.SKY,type=T.NEEDLE,span=[-186,186],silent=true}:{lean?:number;speed?:number[];color?:number;type?:number;span?:number[];silent?:boolean}={}){
   for(let i=0;i<count;i++){
     const x=lerp(span[0],span[1],k.unit()),v=lerp(speed[0],speed[1],k.unit());
-    k.shot(x,-6,DOWN+lean+(k.unit()-.5)*.06,v,type,color,null,{safe:2304,silent:true});
+    k.shot(x,-6,DOWN+lean+(k.unit()-.5)*.06,v,type,color,null,{safe:2304,silent});
   }
 }
 
@@ -86,18 +86,21 @@ blankAddresseeDrizzle.home={x:0,y:100};
 /** 墨雨「洗去首句问候」: ink drops are lobbed high and fall under
  * gravity; where each lands it splashes into a ring. Light rain continues. */
 function washedGreeting(k: AttackKit){
-  if(k.every(k.pick(13,10,7,6)))drizzle(k,1,{type:T.RICE,lean:.04,speed:[1.7,2.3],color:C.SKY});
-  // Waves: several ink drops are thrown at once, fan out sideways, and burst
-  // one after another from one side to the other (the direction alternates).
-  // Then the rain gets a short breather before the next wave.
-  const period=k.pick(190,165,145,130),count=k.pick(3,4,5,5),gap=k.pick(14,12,10,10),first=100;
-  if(k.every(period,30)){
-    const wave=(k.t-30)/period|0,g=.045,lift=2.1,reach=1.1,petals=k.pick(10,14,18,20);
-    for(let i=0;i<count;i++){
-      const vx=(i-(count-1)/2)*(2*reach/(count-1)),time=first+(wave%2?count-1-i:i)*gap;
-      const drop=k.shot(k.ox,k.oy,Math.atan2(-lift,vx),Math.hypot(lift,vx),T.ORB,C8.BLUE,[k.accel(g,time+4,DOWN),k.vanish()],{safe:2304,silent:true});
-      k.later(time,drop,b=>{
-        k.ring(b.x,b.y,petals,1.2,i*.3+wave*.5,T.BALL,C.BLUE,null,{silent:true,...(k.rank===3?{rows:2,speedStep:1}:null)});
+  if(k.every(k.pick(13,10,7,6)))drizzle(k,1,{type:T.RICE,lean:.04,speed:[1.7,2.3],color:C.SKY,silent:k.hush(44)});
+  // Ink is lobbed in bursts: for a while one or two random drops are thrown
+  // every few frames, then the throwing stops and only the light rain
+  // continues before the next burst.
+  const cycle=k.pick(250,225,205,190),active=k.pick(90,100,110,120),interval=k.pick(42,34,28,24);
+  const phase=k.t-30;
+  if(phase>=0&&phase%cycle<active&&phase%interval===0){
+    const drops=1+(k.unit()<k.pick(0,.35,.5,.6)?1:0);
+    for(let i=0;i<drops;i++){
+      const angle=-DOWN+(k.unit()-.5)*1.9,speed=lerp(1.9,2.6,k.unit()),g=.045;
+      const splashY=lerp(180,260,k.unit()),vy=Math.sin(angle)*speed*k.sp,ga=g*k.sp;
+      const time=Math.round((-vy+Math.sqrt(vy*vy+2*ga*(splashY-k.oy)))/ga);
+      const drop=k.shot(k.ox,k.oy,angle,speed,T.ORB,C8.BLUE,[k.accel(g,time+12,DOWN),k.vanish()]);
+      k.later(time+8,drop,b=>{
+        k.ring(b.x,b.y,k.pick(10,14,18,20),1.2,k.unit()*TAU,T.BALL,C.BLUE,null,{silent:true,...(k.rank===3?{rows:2,speedStep:1}:null)});
         if(k.rank>=1)k.fan(b.x,b.y,3,1.8,-DOWN,.5,T.RICE,C.GRAY,[k.accel(.04,120,DOWN)],{silent:true});
       });
     }
