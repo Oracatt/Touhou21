@@ -194,7 +194,7 @@ thlib 已含 ID18 `se_lazer00.wav`、ID19 `se_lazer01.wav` 和 ID20 `se_lazer02.
 
 ## 2026-10-09 符卡底图与纹样独立
 
-用户指出前一版只有同一图片叠两层。复查锦上京 st01–st07 ANM 与对应 PNG：一至五面和 Extra 均为两张不同图片，六面资源包有三张，具体入口使用 A+B 或 C+B。例如 `st01enm.anm.txt:1067` 的入口13创建底图14、加色纹样16、减色纹样15；`st03enm.anm.txt:1008` 的入口10创建底图11和使用另一图的两个反向旋转层12/13。所有检查到的入口均在60帧内淡入。此前单图重复不能代替这种结构。
+用户指出前一版只有同一图片叠两层。复查原作 st01–st07 ANM 与对应 PNG：一至五面和 Extra 均为两张不同图片，六面资源包有三张，具体入口使用 A+B 或 C+B。例如 `st01enm.anm.txt:1067` 的入口13创建底图14、加色纹样16、减色纹样15；`st03enm.anm.txt:1008` 的入口10创建底图11和使用另一图的两个反向旋转层12/13。所有检查到的入口均在60帧内淡入。此前单图重复不能代替这种结构。
 
 本作新增七张独立低频流墨底图，保留原七张细节纹样。每个 Boss 明确配置 base / pattern 两个文件，依次绘制底图、主纹样和加色或减色弱纹样三层，分别控制尺寸、运动、颜色及透明度。底图完全进入后才省略道中几何；淡入改为60帧，淡出24帧仍是本作的选择。配色及混合强度为本作设计，不宣称复制原作全部参数。公共 thlib 合成器及依赖锁保持 `c804fc9`，游戏和回放修订7不变。
 
@@ -289,7 +289,7 @@ thlib 已含 ID18 `se_lazer00.wav`、ID19 `se_lazer01.wav` 和 ID20 `se_lazer02.
 
 ```powershell
 # cwd: D:\AIWorkspace\TS-STG
-node --test tests/touhou-dialogue-actor-bubble.test.js tests/touhou-dialogue-entrance.test.js tests/touhou-dialogue-exit.test.js tests/rushboss-dialogue.test.js
+node --test tests/touhou-dialogue-actor-bubble.test.js tests/touhou-dialogue-entrance.test.js tests/touhou-dialogue-exit.test.js
 $env:TSSTG_BACKEND='v8'; node tools/verify-integration.mjs
 $env:TSSTG_BACKEND='quickjs'; node tools/verify-integration.mjs
 ```

@@ -48,7 +48,7 @@
 
 原作一 / 二面中 Boss 使用该面 Boss 的动画资源，四 / 五面使用独立中 Boss 动画库。还原脚本中三 / 六面没有对应的独立 `MBoss` 定义；本作三 / 六面中 Boss 是原创编排。当前版本按用户要求去掉再次登场角色的击破爆炸，采用 75 帧停顿后飞离，不复刻一 / 二面原作的 120 帧等待和小型击破反馈。它是有原作退场机制依据的业务演出选择，不能称为逐帧一致。
 
-公共参考见 `packages/thlib/src/touhou/boss-escape.ts` 和 `game.ts` 的 `beginBossEscape`。TS-STG 的 Rush 示例在 `games/rushboss/src/runtime.ts` 的 `beginPracticeEscape` 中采用同一公共飞离序列；示例调用方先结算、消弹、停止聚能并隐藏战斗显示，退场完成后移除实体。本作直接使用公共 Game 的所有权接口。
+公共参考见 `packages/thlib/src/touhou/boss-escape.ts` 和 `game.ts` 的 `beginBossEscape`。调用方应先结算、消弹、停止聚能并隐藏战斗显示，退场完成后移除实体；本作直接使用公共 Game 的所有权接口。
 
 ## 阶段排布 `phaseLayout`
 

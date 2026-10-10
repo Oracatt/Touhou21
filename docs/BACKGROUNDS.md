@@ -6,7 +6,7 @@
 
 只读参考为 Touhou20Reconstruction 的 scripts/recovered/std/st01.std.txt、st05.std.txt，scripts/recovered/anm/st01wl.anm.txt，以及 source_reconstruction/stage_background 下的相机、雾、投影与脚本模块。STD 的 ENTRY/QUAD 把带不同尺寸、坐标和动画的面片组合为对象，再在场景中放置多个 INSTANCE；相机位置、方向、视场角与雾随时间更新。st01 的地面与分层植被、st05 的重复面组及镜头插值提供了设计依据。
 
-本作借鉴这种“绘制素材组成空间、镜头穿行其中”的方法，未复制锦上京的背景素材、STD 时间表或 ANM。新图集均由内置 image_gen 生成，复制时保持文件字节和透明通道原样。没有使用 Python 绘画、抠图、缩放或重绘；离线读取 alpha 只用于记录 UV 范围。全部七张图的最终尺寸为 1254×1254，尽管生成提示要求 1024×1024，程序按实际尺寸采样。
+本作借鉴这种“绘制素材组成空间、镜头穿行其中”的方法，未复制原作的背景素材、STD 时间表或 ANM。新图集均由内置 image_gen 生成，复制时保持文件字节和透明通道原样。没有使用 Python 绘画、抠图、缩放或重绘；离线读取 alpha 只用于记录 UV 范围。全部七张图的最终尺寸为 1254×1254，尽管生成提示要求 1024×1024，程序按实际尺寸采样。
 
 ## 素材与透视
 
@@ -32,7 +32,7 @@ assets/art/stage01.png 至 stage07.png 仍以低亮度提供远处天空、山�
 
 ## 动态符卡背景
 
-[src/spell-background.ts](../src/spell-background.ts) 只负责本作的视觉内容。只读参考是 TS-STG 的 games/rushboss/src/stage-artwork.ts：默认竖屏 Demo 在 priority 11 调用 drawSpell，各张卡独立保存 age、scroll、alpha 与 leaving，底纹和另一层流纹按不同方向采样，结束后继续移动并淡出。这里借鉴其分层与生命周期设计，不复制 Rush 的图像、私有代码、魔法阵或扭曲效果。
+[src/spell-background.ts](../src/spell-background.ts) 只负责本作的视觉内容。符卡底纹在 priority 11 调用 drawSpell，各张卡独立保存 age、scroll、alpha 与 leaving，底纹和另一层流纹按不同方向采样，结束后继续移动并淡出。这里采用这种分层与生命周期设计，不复制任何参考工程的图像、私有代码、魔法阵或扭曲效果。
 
 原作抽象纹样的只读依据还包括 Touhou20Reconstruction 的 scripts/recovered/anm/st01enm.anm.txt:1068–1137 和 st03enm.anm.txt:1008–1085：底图与独立大尺度 pattern 分层，使用不同的 UV 位移、相反旋转以及减色/加色控制亮度。七面原作入口使用 60 帧淡入；例如一面是底图、加色纹样、减色纹样，三面是底图和以不同角速度反转的两层纹样。本作采用两张独立图和三层合成，按自己的主题调节透明度及加减色，不使用原作纹理，也不宣称逐参数复现其 ANM。
 
@@ -50,7 +50,7 @@ assets/art/stage01.png 至 stage07.png 仍以低亮度提供远处天空、山�
 | 白识言音 | 云莲、曼荼罗缓慢逆转、伸缩与轻微波动 | 双倍速度顺转、另一伸缩与波动周期、低强度加色 |
 | 玉继未央 | 镜羽逆转、轻摆与波动 | 水平镜像后顺转、反向漂移与错相波动、低强度加色 |
 
-Extra 的中 Boss 是房枝，两张图按实际 bossId 选择 fusae-base.png 与 fusae.png，不能按第七面误用未央的两张图。所有纹理借用 GameArt 的缓存，背景 owner 不创建额外纹理或渲染目标；同卡两层纹样共享自己的 pattern 句柄，底图使用另一句柄，不加载锦上京、Rush 的符卡专属资源。
+Extra 的中 Boss 是房枝，两张图按实际 bossId 选择 fusae-base.png 与 fusae.png，不能按第七面误用未央的两张图。所有纹理借用 GameArt 的缓存，背景 owner 不创建额外纹理或渲染目标；同卡两层纹样共享自己的 pattern 句柄，底图使用另一句柄，不加载原作或其他参考工程的符卡专属资源。
 
 三层均只采完整 UV [0,0]–[1,1]，使用 bilinear/clamp；水平镜像只交换完整图的 U 方向。每层按自己的实际尺寸、场地对角线、位移上界和波动上界预留足够尺寸，因此两张图即使宽高不同，旋转、偏移和缩放期间仍覆盖 x=48..624、y=24..696。没有小图块重复、棋盘接缝或图集邻格。雨墨、水纹、织锦、云莲、镜羽的两层 pattern 采用各 6×6 格、49 个共享顶点的轻微面片弯动；底图保持 4 个顶点。它们仅扭动绘制好的图案，不生成程序纹样或三维景物，相邻格不会张开裂缝。
 
