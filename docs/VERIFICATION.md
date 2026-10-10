@@ -1,5 +1,16 @@
 # 验收方法与覆盖范围
 
+## 2026-10-11 Windows 发行包仅保留 V8
+
+新版取代上一版双后端发行包，游戏版本与回放修订保持 `2.0.0 / 19`。原生程序在隔离的 `build/native-v8-only-release/` 编译，以引擎锁的 `92ce893` 源码为基础，仅修改 CMake、后端工厂声明、Host 创建器和命令行入口四处。未编译 `quickjs_backend.cpp`，未生成 QJS 目标或链接 QJS 库；实际编译列表和链接 map 已检查。17项基线哈希、实际构建输入和4份补丁全文保存在发行凭据中，未将修改后源码声称为与原锁完全一致。
+
+- 原生 EXE：22,420,992 字节，SHA-256 `5a7376853b0f8893630a387f49f2e35581862da92f8dd258de2005ff26b6b60a`。静态 CRT、raylib 和 V8，仅依赖10个 Windows 系统 DLL。真实入口 V8 / auto 各5帧、两者状态一致、QuickJS 正常 exit 1、帮助仅列 V8，共4项检查通过。
+- 最终包452文件：移除 `Play-QuickJS.cmd` 与 QuickJS 专属许可；原生 EXE 也移除其实现。保留52份原生声明、完整游戏与公共资源。清单与凭据的 backend 均为 `['v8']`。独立逐文件哈希、PE、补丁、许可与源输入关联核验通过；22项静态检查包含拒绝旧双后端包与 QJS 文件。
+- 全新中文空格目录、包外工作目录、没有 Node.js 的 PATH 下，12项原生发行包检查通过：V8 启动、七关背景、符卡、UI 输入、V8录制/重放哈希一致、实际 EXE 拒绝 QuickJS 参数。ZIP 单独解压后的452个文件与暂存包一致，查看最终符卡截图无资源缺失。
+- 发行包 SHA-256：`7a656e13a3245be1261750595af25a9ffcae5f893da0d1282ee8e1734a682c50`。报告：`build/releases/2026-10-10T19-51-58-850Z-8f096899/verification/run-ZJeRjX/summary.json`。
+
+本次只改变 Windows 发行配置与工具，没有修改游戏模拟、开发依赖锁、旧 `runtime/` 或 TS-STG 仓库。之前记录的开发目录旧运行时校验失败保持原状，未算作通过。源码开发环境仍可比较两后端；仅 V8 的发行版不能播放 QuickJS 录制的旧回放。
+
 ## 2026-10-11 Windows x64 Release 包
 
 游戏源提交 `3b6e51d`，版本 `2.0.0`、回放修订 19。使用锁定 TS-STG `92ce893` 源码的既有本地 Release 编译版，实际 EXE SHA-256 为 `f543f7f9e9b74aa54f71bb4fcc0edccf718a7ce22f7e0d8d7b4b71a7e62fa4fa`。17 个原生源文件与锁和 Git 对象完全一致，仅导入 Windows 系统 DLL；无需 Node.js、VC 运行库或额外 V8 文件。该 EXE 不是缺失的生产者锁定 EXE，发行 manifest 与 native receipt 均明确记录 `exactLockedBinary: false` 和两个哈希，未改开发依赖锁或旧 `runtime/`。

@@ -17,7 +17,7 @@ const isWithin=(root,target)=>{const rel=path.relative(root,target);return rel==
 const requiredNotices=[
   'LICENSE','CREDITS.txt','packages/thlib/LICENSE',
   'packages/thlib/assets/touhou-common/NOTICE.md','packages/thlib/assets/spell-common/NOTICE.md',
-  'runtime/LICENSE.TS-STG','runtime/THIRD_PARTY.md','runtime/licenses/raylib-LICENSE','runtime/licenses/quickjs-LICENSE',
+  'runtime/LICENSE.TS-STG','runtime/THIRD_PARTY.md','runtime/licenses/raylib-LICENSE',
   'runtime/licenses/raylib-external/glfw/LICENSE.md','runtime/licenses/v8/V8-LICENSE','runtime/licenses/v8/rusty_v8-LICENSE',
 ];
 function inventoryDigest(files){
@@ -43,6 +43,7 @@ function relativeName(name){
 }
 function permitted(name,isDirectory=false){
   const parts=name.toLowerCase().split('/'),base=parts.at(-1);
+  assert.ok(name.toLowerCase()!=='play-quickjs.cmd'&&!(parts[0]==='runtime'&&parts.some(part=>/quickjs|qjs/.test(part))),`QuickJS payload is forbidden in the V8-only release: ${name}`);
   for(let i=0;i<parts.length;i++){
     const part=parts[i];
     assert.ok(!['node_modules','userdata','.git','.hg','.svn','test','tests','tools','build','reports','.qa'].includes(part),`Development or personal path in release: ${name}`);
@@ -80,7 +81,7 @@ export function inspectWindowsRelease(packageRoot){
   assert.match(manifest.engine?.commit??'',/^[0-9a-f]{40}$/i,'Invalid engine commit');
   assert.match(manifest.engine?.executableSha256??'',/^[0-9a-f]{64}$/i,'Invalid executable hash');
   assert.match(manifest.engine?.lockedExecutableSha256??'',/^[0-9a-f]{64}$/i,'Invalid locked executable hash');
-  assert.deepEqual(manifest.engine?.backends,['v8','quickjs'],'Release must describe both native backends');
+  assert.deepEqual(manifest.engine?.backends,['v8'],'Windows release must contain only the V8 native backend');
   assert.equal(typeof manifest.engine.exactLockedBinary,'boolean');assert.ok(Array.isArray(manifest.files),'Missing release inventory');
   const folded=new Set(),expected=manifest.files.map(entry=>{
     const name=relativeName(entry.path);assert.notEqual(name.toLowerCase(),manifestName.toLowerCase(),'Manifest must not inventory itself');
@@ -94,7 +95,7 @@ export function inspectWindowsRelease(packageRoot){
   assert.match(manifest.inventorySha256??'',/^[0-9a-f]{64}$/i,'Invalid release inventory digest');
   assert.equal(inventoryDigest(actualPayload),manifest.inventorySha256.toLowerCase(),'Release inventory digest does not match the actual sorted files');
   const names=new Set(expected.map(entry=>entry.path));
-  for(const name of ['Play.cmd','Play-QuickJS.cmd','dist/main.js','packages/thlib/dist/index.js','runtime/ts-stg.exe','runtime/NATIVE-BUILD.json'])assert.ok(names.has(name),`Missing required release file: ${name}`);
+  for(const name of ['Play.cmd','dist/main.js','packages/thlib/dist/index.js','runtime/ts-stg.exe','runtime/NATIVE-BUILD.json'])assert.ok(names.has(name),`Missing required release file: ${name}`);
   const byName=new Map(actualPayload.map(entry=>[entry.path,entry]));
   for(const name of requiredNotices)assert.ok(byName.get(name)?.bytes>0,`Missing or empty required attribution: ${name}`);
   const binaryFile=path.join(root,'runtime/ts-stg.exe'),binary=fs.readFileSync(binaryFile);
@@ -154,20 +155,6 @@ function execute(file,args,options){
   })));
 }
 const resourceFailure=/TS-STG error:|File not found:|Missing or empty resource:|Cannot (?:decode|load) (?:texture|sound|music)|Cannot resolve @ts-stg\/thlib|Unsupported module import:|WARNING:.*(?:Failed to load|Could not open|not found)/i;
-function normalize(value){
-  if(Array.isArray(value))return value.map(normalize);
-  if(!value||typeof value!=='object')return value;
-  return Object.fromEntries(Object.entries(value).filter(([key])=>!['backend','elapsedMs','checkedFinalHash','replayFinalHash','rendered'].includes(key)).map(([key,item])=>[key,normalize(item)]));
-}
-function compare(a,b,location='$'){
-  if(typeof a==='number'&&typeof b==='number'){
-    const tolerance=Number.isInteger(a)&&Number.isInteger(b)?0:1e-7*Math.max(1,Math.abs(a),Math.abs(b));
-    assert.ok(Math.abs(a-b)<=tolerance,`Backend mismatch at ${location}: ${a} / ${b}`);
-  }else if(a&&b&&typeof a==='object'&&typeof b==='object'){
-    assert.deepEqual(Object.keys(a).sort(),Object.keys(b).sort(),`Backend keys differ at ${location}`);
-    for(const key of Object.keys(a))compare(a[key],b[key],location+'.'+key);
-  }else assert.equal(a,b,`Backend mismatch at ${location}`);
-}
 
 export async function verifyWindowsRelease({packageRoot,reportDirectory=path.join(projectRoot,'reports/windows-release')}={}){
   assert.ok(packageRoot,'packageRoot is required');assert.equal(process.platform,'win32','Native release verification requires Windows');
@@ -178,7 +165,7 @@ export async function verifyWindowsRelease({packageRoot,reportDirectory=path.joi
   const caseDirectory=path.join(runDirectory,'cases');fs.mkdirSync(caseDirectory,{recursive:true});
   const report={format:'touhou21-windows-release-verification-v1',passed:false,sourceRoot,sandboxRoot,runDirectory,
     environment:{nodeOnPath:false,workingDirectoryOutsidePackage:true,gpuConcurrency:1},cases:[],errors:[],
-    scope:'Exact package manifest; isolated Chinese/space path; both player launchers; native rendered seven-stage backgrounds, both characters and one spell; actual replay and UI input fixtures. Screenshots require separate human visual review; no full campaign or listening-quality claim.'};
+    scope:'Exact V8-only package manifest; isolated Chinese/space path; player launcher; native rendered seven-stage backgrounds, both characters and one spell; actual V8 replay and UI input fixtures; native QuickJS selection must fail explicitly. Screenshots require separate human visual review; no full campaign or listening-quality claim.'};
   let inspected;
   const writeReport=()=>{report.elapsedMs=Math.round(performance.now()-started);json(path.join(runDirectory,'summary.json'),report);};
   try{
@@ -188,11 +175,11 @@ export async function verifyWindowsRelease({packageRoot,reportDirectory=path.joi
     inspectWindowsRelease(sandboxRoot);
     report.freshPackage={noUserdata:!fs.existsSync(path.join(sandboxRoot,'userdata')),noNodeModules:!fs.existsSync(path.join(sandboxRoot,'node_modules'))};
     const {env,cmd}=playerEnvironment(),binary=path.join(sandboxRoot,'runtime/ts-stg.exe');report.environment.PATH=env.PATH;
-    const states=new Map();
-    async function runCase({id,backend,launcher=false,entry,frames=90,graphical=true,check}){
+    async function runCase({id,launcher=false,entry,frames=90,graphical=true,check}){
+      const backend='v8';
       const caseId=id+'-'+backend,prefix=path.join(caseDirectory,caseId),snapshot=prefix+'.json',screenshot=graphical?prefix+'.png':null;
       const nativeArgs=['--frames',String(frames),'--benchmark','--snapshot',snapshot,...(graphical?['--screenshot',screenshot]:['--headless'])];
-      const file=launcher?cmd:binary,args=launcher?['/d','/s','/c','"'+[path.join(sandboxRoot,backend==='v8'?'Play.cmd':'Play-QuickJS.cmd'),...nativeArgs].map(shellQuote).join(' ')+'"']:[entry,'--root',sandboxRoot,'--backend',backend,...nativeArgs];
+      const file=launcher?cmd:binary,args=launcher?['/d','/s','/c','"'+[path.join(sandboxRoot,'Play.cmd'),...nativeArgs].map(shellQuote).join(' ')+'"']:[entry,'--root',sandboxRoot,'--backend',backend,...nativeArgs];
       const begin=performance.now(),result=await execute(file,args,{cwd:runDirectory,env,...(launcher?{windowsVerbatimArguments:true}:{})});
       fs.writeFileSync(prefix+'.stdout.log',result.stdout);fs.writeFileSync(prefix+'.stderr.log',result.stderr);
       const record={id,backend,passed:false,graphical,launcher,exitCode:result.exitCode,signal:result.signal,elapsedMs:Math.round(performance.now()-begin),
@@ -201,13 +188,14 @@ export async function verifyWindowsRelease({packageRoot,reportDirectory=path.joi
         assert.equal(result.exitCode,0,result.error??result.stderr);assert.ok(!resourceFailure.test(result.stdout+'\n'+result.stderr),'Native log reports a missing or invalid resource');
         const state=JSON.parse(fs.readFileSync(snapshot,'utf8'));check?.(state);
         if(graphical)record.image=screenshotInfo(screenshot);
-        states.set(caseId,state);record.passed=true;
+        if(id==='replay-input')record.singleV8ReplayValidated=true;
+        record.passed=true;
       }catch(error){record.error=error.message;report.errors.push(caseId+': '+error.message);}
       report.cases.push(record);writeReport();console.log(`${record.passed?'PASS':'FAIL'} release ${caseId}`);
       return record;
     }
-    for(const backend of ['v8','quickjs'])await runCase({id:'launcher-title',backend,launcher:true,check:state=>{
-      assert.equal(state.backend,backend);assert.equal(state.mode,'title');assert.equal(state.revision,inspected.manifest.game.revision);assert.ok(state.frame>=90);
+    await runCase({id:'launcher-title',launcher:true,check:state=>{
+      assert.equal(state.backend,'v8');assert.equal(state.mode,'title');assert.equal(state.revision,inspected.manifest.game.revision);assert.ok(state.frame>=90);
     }});
     // QA fixtures are copied only after validating and launching the pristine player package.
     const qa=path.join(sandboxRoot,'.qa'),build=path.join(sandboxRoot,'build');fs.mkdirSync(qa);fs.mkdirSync(build);
@@ -219,8 +207,8 @@ export async function verifyWindowsRelease({packageRoot,reportDirectory=path.joi
       {id:'spell-practice',until:{state:'combat'},phaseRoll:420,options:{autostart:true,invincible:true,mode:'spell-practice',stageId:1,spellId:STAGES[0].spells[0].id,character:1,difficulty:1}}];
     for(const scenario of visuals){
       json(path.join(build,'scenario.json'),{...scenario,captureFrame:220});
-      for(const backend of ['v8','quickjs'])await runCase({id:scenario.id,backend,entry:'.qa/native-fixture.js',frames:220,check:state=>{
-        assert.equal(state.backend,backend);assert.equal(state.mode,'game');assert.equal(state.scene.director.stageId,scenario.options.stageId);
+      await runCase({id:scenario.id,entry:'.qa/native-fixture.js',frames:220,check:state=>{
+        assert.equal(state.backend,'v8');assert.equal(state.mode,'game');assert.equal(state.scene.director.stageId,scenario.options.stageId);
         assert.equal(state.scene.player.character,scenario.options.character);
         if(scenario.until)assert.equal(state.scene.director.state,scenario.until.state);
         else assert.ok(state.frame>=1200);
@@ -229,19 +217,39 @@ export async function verifyWindowsRelease({packageRoot,reportDirectory=path.joi
     for(const scenario of [{id:'replay-input',kind:'replay'},{id:'ui-input',kind:'ui'}]){
       const scenarioPath='build/'+scenario.id+'.json',entry='.qa/'+scenario.id+'.js';json(path.join(sandboxRoot,scenarioPath),scenario);
       fs.writeFileSync(path.join(sandboxRoot,entry),`import {createIntegrationFixture} from './integration-fixture.js';\nglobalThis.__tsstg_game=createIntegrationFixture('${scenarioPath}');\n`);
-      for(const backend of ['v8','quickjs'])await runCase({id:scenario.id,backend,entry,frames:1000,graphical:false,check:state=>{
+      await runCase({id:scenario.id,entry,frames:1000,graphical:false,check:state=>{
         assert.equal(state.passed,true,state.error);assert.equal(state.kind,scenario.kind);assert.equal(state.nativeUserDataRoundTrip,true);
+        if(scenario.kind==='replay'){
+          assert.equal(state.config?.backend,'v8','Replay must have been recorded by V8');
+          assert.ok(state.checkedFinalHash!==undefined&&state.checkedFinalHash!==null,'Missing recorded replay state hash');
+          assert.equal(state.checkedFinalHash,state.replayFinalHash,'Recorded and replayed V8 simulation hashes differ');
+        }
       }});
-      const a=states.get(scenario.id+'-v8'),b=states.get(scenario.id+'-quickjs');
-      if(a&&b){try{compare(normalize(a),normalize(b));for(const record of report.cases.filter(value=>value.id===scenario.id))record.backendParity=true;}
-        catch(error){report.errors.push(scenario.id+': '+error.message);}}
     }
+    // This must exercise the native selector, not a launcher or a JS fixture.
+    // Resource failures or timeouts cannot stand in for an unavailable backend.
+    const rejectionPrefix=path.join(caseDirectory,'quickjs-rejected'),rejectionStart=performance.now();
+    const rejection=await execute(binary,['dist/main.js','--root',sandboxRoot,'--backend','quickjs','--headless','--frames','1'],{cwd:runDirectory,env,timeout:10000});
+    fs.writeFileSync(rejectionPrefix+'.stdout.log',rejection.stdout);fs.writeFileSync(rejectionPrefix+'.stderr.log',rejection.stderr);
+    const rejectionRecord={id:'quickjs-rejected',backend:'quickjs',expectedFailure:true,graphical:false,launcher:false,passed:false,
+      exitCode:rejection.exitCode,signal:rejection.signal,elapsedMs:Math.round(performance.now()-rejectionStart),
+      stdout:rejectionPrefix+'.stdout.log',stderr:rejectionPrefix+'.stderr.log',snapshot:null,screenshot:null};
+    try{
+      assert.ok(Number.isInteger(rejection.exitCode)&&rejection.exitCode!==0&&!rejection.killed&&!rejection.signal,'QuickJS selection must exit with an ordinary nonzero error');
+      const diagnostic=(rejection.stdout+'\n'+rejection.stderr).split(/\r?\n/).find(line=>
+        /quickjs|backend|only\s+v8|v8.only/i.test(line)&&
+        /unsupported|unknown|unavailable|not\s+(?:available|compiled|built|enabled|supported)|disabled|requires.*v8|supports?\s+only\s+v8/i.test(line)&&
+        !/module import|resource|texture|sound|music|file not found|missing or empty/i.test(line));
+      assert.ok(diagnostic,'Native selector did not explicitly reject the unavailable QuickJS backend');
+      rejectionRecord.diagnostic=diagnostic;rejectionRecord.passed=true;report.quickjsBackendRejected=true;
+    }catch(error){rejectionRecord.error=error.message;report.errors.push('quickjs-rejected: '+error.message);}
+    report.cases.push(rejectionRecord);writeReport();console.log(`${rejectionRecord.passed?'PASS':'FAIL'} release quickjs-rejected`);
     for(const entry of inspected.files){const target=path.join(sandboxRoot,...entry.path.split('/'));plainPath(target);assert.equal(hash(target),entry.sha256,'Verification modified a shipped file: '+entry.path);}
     report.packagedFilesUnchanged=true;
   }catch(error){report.errors.push(error.stack??String(error));}
   try{if(inspected){assert.deepEqual(inspectWindowsRelease(sourceRoot).files,inspected.files,'The actual staged package changed during verification');report.sourcePackageUnchanged=true;}}
   catch(error){report.errors.push(error.message);}
-  report.passed=report.errors.length===0&&report.cases.length===22&&report.cases.every(value=>value.passed);
+  report.passed=report.errors.length===0&&report.cases.length===12&&report.cases.every(value=>value.passed);
   writeReport();return report;
 }
 
