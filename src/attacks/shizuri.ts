@@ -105,7 +105,7 @@ function washedGreeting(k: AttackKit){
 washedGreeting.home={x:0,y:118};
 
 /** 送雨「千万封未达之信」: square bundles of letters spread, stop, and
- * are all re-addressed toward the player at once. Rain fills the margins. */
+ * are all re-addressed toward the player at once. Blooming seeds fill the margins. */
 function undeliveredLetters(k: AttackKit){
   const period=k.pick(110,86,72,62),edge=k.pick(7,9,10,12),speed=k.pick(2.2,2.6,2.8,3);
   const bundle=(rotation:number,color:number,delay:number)=>burstShape(k,k.ox,k.oy,polygon(4,edge),3.6,rotation,T.AMULET,color,
@@ -116,7 +116,18 @@ function undeliveredLetters(k: AttackKit){
     if(k.rank>=2)k.state.second={at:k.t+10,rotation:rotation+Math.PI/4};
   }
   if(k.state.second?.at===k.t){bundle(k.state.second.rotation,C.SKY,k.pick(24,20,22,20));k.state.second=null;}
-  if(k.every(k.pick(8,5,4,3),30))drizzle(k,1,{lean:k.rank>=2?-.3:.05,speed:[2.2,2.9]});
+  // Blooms instead of random rain: seeds fall from a fixed lattice that shifts
+  // half a step every wave (symmetric about the centre), then open into rings at a set height. The gaps are
+  // readable, so surviving no longer depends on where random needles landed.
+  const bloomEvery=k.pick(96,78,66,60),seeds=k.pick(3,3,4,4),bloomAt=k.pick(64,62,60,58),petals=k.pick(8,10,12,14);
+  if(k.every(bloomEvery,24)){
+    const wave=(k.t-24)/bloomEvery|0,step=360/seeds;
+    const odd=wave%2===1;
+    for(let i=0;i<(odd?seeds-1:seeds);i++){
+      const x=-180+step*(i+(odd?1:.5)),seed=k.shot(x,-6,DOWN,2.1,T.ORB,C.PALE,[k.wait(bloomAt+6),k.vanish()],{safe:2304,silent:true});
+      k.later(bloomAt,seed,b=>k.ring(b.x,b.y,petals,1.3,wave%2?Math.PI/petals:0,T.BALL,wave%2?C.SKY:C.AZURE,null,{silent:true}));
+    }
+  }
   if(k.every(period*2,period))k.wander(46,{y:[90,120]});
 }
 undeliveredLetters.home={x:0,y:104};
