@@ -16,7 +16,7 @@ function sceneFixture({character=0,difficulty=1,mode='spell-practice',spellId=ST
   resources.writeAnimationText=vm=>vm;
   storage??={settings:{startingLives:2,autoSaveReplay:true},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},
     saved:0,replays:[],saveProgress(){this.saved++;},saveReplay(replay,summary){this.replays.push({replay,summary});},recordClear(){this.saved++;}};
-  const art={host:{createTexture:()=>89,unloadTexture(){}},load:()=>({id:81,width:512,height:512,bounds:{x:0,y:0,width:265,height:512}}),portrait:()=>{},background:()=>{}};
+  const art={host:{readText:file=>fs.readFileSync(file,'utf8'),createTexture:()=>89,unloadTexture(){}},load:()=>({id:81,width:512,height:512,bounds:{x:0,y:0,width:265,height:512}}),portrait:()=>{},background:()=>{}};
   const text={draw:()=>{}},host={backend:'v8'},music={play(){},pause(){},resume(){},fadeOut(){}};
   const rng=new TouhouRNG(73),visualRng=new TouhouRNG(73^0x6d2b79f5);
   for(const bank of Object.values(resources.banks)){bank.rng=visualRng;bank.environment={...bank.environment,rng:visualRng};}

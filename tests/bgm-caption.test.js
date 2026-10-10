@@ -11,7 +11,7 @@ function fixture(){
   resources.encodeText=text=>new Uint8Array(Array.from(text).flatMap(char=>char.charCodeAt(0)>127?[65,65]:[65]));
   resources.writeAnimationText=vm=>vm;
   const storage={settings:{startingLives:2,autoSaveReplay:false},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},saveProgress(){},saveReplay(){},recordClear(){}};
-  const art={host:{createTexture:()=>89,unloadTexture(){}},load:()=>({id:81,width:512,height:512,bounds:{x:0,y:0,width:265,height:512}}),portrait(){},background(){}};
+  const art={host:{readText:file=>fs.readFileSync(file,'utf8'),createTexture:()=>89,unloadTexture(){}},load:()=>({id:81,width:512,height:512,bounds:{x:0,y:0,width:265,height:512}}),portrait(){},background(){}};
   const rng=new TouhouRNG(73),visualRng=new TouhouRNG(73^0x6d2b79f5),played=[],drawn=[];
   for(const bank of Object.values(resources.banks)){bank.rng=visualRng;bank.environment={...bank.environment,rng:visualRng};}
   const game=new CampaignScene({banks:resources.banks,font:resources.font,sht:resources.shots[0],styles:resources.styles,rng,visualRng,power:400,

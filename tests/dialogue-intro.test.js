@@ -13,7 +13,7 @@ function fixture({character=0,stageId=1,lines,view,playbackSource=null}={}){
   resources.writeAnimationText=(vm,text)=>{writes.push(text);return vm;};
   const storage={settings:{startingLives:2,autoSaveReplay:false},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},writes:0,
     saveProgress(){this.writes++;},saveReplay(){this.writes++;},recordClear(){this.writes++;}};
-  const art={host:{createTexture:()=>89,unloadTexture(){}},load:path=>{
+  const art={host:{readText:file=>fs.readFileSync(file,'utf8'),createTexture:()=>89,unloadTexture(){}},load:path=>{
     const layout=Object.values(BOSS_SPRITE_LAYOUTS).find(layout=>layout.file===path);
     return{id:path.startsWith('assets/boss-names/')?82:81,width:layout?.width??512,height:layout?.height??512,bounds:{x:0,y:0,width:265,height:512}};
   },
