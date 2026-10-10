@@ -86,7 +86,7 @@ blankAddresseeDrizzle.home={x:0,y:100};
 /** 墨雨「洗去首句问候」: ink drops are lobbed high and fall under
  * gravity; where each lands it splashes into a ring. Light rain continues. */
 function washedGreeting(k: AttackKit){
-  if(k.every(k.pick(13,10,7,6)))drizzle(k,1,{type:T.RICE,lean:.04,speed:[1.7,2.3],color:C.SKY,silent:k.hush(44)});
+  if(k.every(k.pick(13,10,7,6)))drizzle(k,1,{type:T.RICE,lean:.04,speed:[1.7,2.3],color:C.SKY,});
   // Ink is lobbed in bursts: for a while one or two random drops are thrown
   // every few frames, then the throwing stops and only the light rain
   // continues before the next burst.

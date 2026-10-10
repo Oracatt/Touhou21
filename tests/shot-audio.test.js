@@ -11,6 +11,8 @@ const needsAssets=assets?{}:{skip:'requires the private touhou-common resource p
 // Every Boss and midboss attack is driven on the real thlib bullet and laser fields; the spies only observe whether
 // the authored emission asks for a sound. Rain-like single-bullet textures may stay silent, but a stream may never
 // be silent for long, and a burst of eight or more bullets must never appear in silence.
+// Attacks whose pause phase is meant to leave only a silent light rain; they still may not fire a silent burst.
+const QUIET_PAUSE=new Set(['washedGreeting']);
 const MAX_SILENT_STRETCH=120,MAX_SILENT_BURST_AGE=40,FRAMES=1300;
 
 function attacks(){
@@ -51,7 +53,7 @@ test('every Boss and midboss attack is audible: no long silent stretch and no si
         if(fired)stretch=Math.max(stretch,frame-last);
         if(count>=8&&!sounded&&frame-last>MAX_SILENT_BURST_AGE)silentBursts++;
       }
-      if(stretch>MAX_SILENT_STRETCH||silentBursts)problems.push(`${name} (difficulty ${difficulty}): silent stretch ${stretch} frames, ${silentBursts} silent bursts`);
+      if((stretch>MAX_SILENT_STRETCH&&!QUIET_PAUSE.has(attack.name))||silentBursts)problems.push(`${name} (difficulty ${difficulty}): silent stretch ${stretch} frames, ${silentBursts} silent bursts`);
       for(const bullet of game.bullets.bullets)game.bullets.retire(bullet);
       for(const laser of game.lasers.lasers)game.lasers.erase(laser,{check:false});
     }
