@@ -117,27 +117,42 @@ function livingAndOldNames(k: AttackKit){
 }
 livingAndOldNames.home={x:0,y:92};
 
-/** 神名「忘却亦不可及之庭」: of six gates across the lower garden, one
- * stands open between two warned beams; the rest is filled with paper. The
- * open gate walks from gate to gate. */
+/** Directions from (ox, oy) to points around the playfield edge. Amulets fired along
+ * them stay at most 8 px apart until they leave the screen, and the hitbox needs
+ * more than 8.2 px to pass between two of them. */
+function fenceAngles(ox: number,oy: number){
+  const out: number[]=[],toward=(x: number,y: number)=>out.push(Math.atan2(y-oy,x-ox));
+  for(let y=-2;y<442;y+=8)toward(186,y);
+  for(let x=186;x>-186;x-=8)toward(x,442);
+  for(let y=442;y>-2;y-=8)toward(-186,y);
+  for(let x=-186;x<186;x+=8)toward(x,-2);
+  return out;
+}
+
+/** 神名「忘却亦不可及之庭」 (survival): fences of white paper spread from the
+ * Boss one after another. Of six gates in the lower garden one stands open between
+ * two golden posts; the other five are sealed with gold stars that break into
+ * sparks halfway out. From fence to fence the open gate stays or moves to a
+ * neighbour. As the card goes on the fences come closer together, the gates
+ * narrow, the open gate rests less often and the seals throw more sparks. */
 function gardenBeyondForgetting(k: AttackKit){
-  const gateTime=k.pick(250,220,196,176),half=k.pick(.25,.21,.19,.17);
-  const step=k.t/gateTime|0,order=[0,1,2,3,4,5,4,3,2,1],gate=order[step%order.length];
-  // Paper already in flight keeps the old opening at the player's height for about two
-  // seconds after the new posts turn solid, so neighbouring gates must overlap widely;
-  // this spacing also keeps the outer gates on screen at the player's height.
-  const center=DOWN+(gate-2.5)*.2;
-  if(k.t%gateTime===0)for(const side of[-1,1])
-    k.beam(k.ox,k.oy,center+side*half,{width:10,delay:50,grow:10,sustain:gateTime-62,shrink:12,color:C.PALE,sound:side>0?-1:18});
-  if(k.every(k.pick(12,10,8,7))){
-    const spread=k.pick(.115,.098,.084,.076),base=(k.t*.37)%spread;
-    let first=true;
-    for(let a=DOWN-1.32+base;a<=DOWN+1.32;a+=spread){
-      if(inGap(a,center,half+.03))continue;
-      k.shot(k.ox,k.oy,a,2.15,T.AMULET,C.WHITE,null,{silent:!first});first=false;
-    }
+  if(k.t<(k.state.nextAt??0))return;
+  // Fences fired after about 55 seconds no longer reach the player before time runs out.
+  const ramp=(a: number,b: number)=>lerp(a,b,Math.min(1,k.t/3300));
+  k.state.nextAt=k.t+Math.round(ramp(k.pick(100,84,72,64),k.pick(72,58,48,42)));
+  const door=k.state.door,half=ramp(k.pick(.23,.2,.18,.16),k.pick(.19,.16,.14,.12)),gate=(g: number)=>DOWN+(g-2.5)*.2;
+  const stay=k.unit()<ramp(k.pick(.5,.4,.3,.2),k.pick(.3,.2,.1,0));
+  k.state.door=door===undefined?(k.unit()<.5?2:3):stay?door:door===0?1:door===5?4:door+(k.unit()<.5?-1:1);
+  const open=gate(k.state.door),seals=[0,1,2,3,4,5].filter(g=>g!==k.state.door).map(gate);
+  let first=true;
+  for(const a of fenceAngles(k.ox,k.oy)){
+    if(inGap(a,open,half))continue;
+    k.shot(k.ox,k.oy,a,2,T.AMULET,C.WHITE,null,{silent:!first});first=false;
   }
-  if(k.rank>=2&&k.every(60,30))k.aimed(k.ox,k.oy,1,2.6,0,T.RICE,C.YELLOW,null,{rows:3,speedStep:1.9});
+  const sealed=seals.flatMap(a=>k.shot(k.ox,k.oy,a,2,T.BIGSTAR,C8.YELLOW,null,{silent:true}));
+  const sparks=Math.round(ramp(k.pick(2,3,4,4),k.pick(4,5,6,8)));
+  k.later(Math.round(80/k.sp),sealed,b=>k.ring(b.x,b.y,sparks,1.3,k.unit()*TAU,T.RICE,C.YELLOW));
+  for(const side of[-1,1])k.laser(k.ox,k.oy,open+side*half,2,30,{width:8,color:C.YELLOW,sound:side>0?-1:18});
 }
 gardenBeyondForgetting.home={x:0,y:84};
 

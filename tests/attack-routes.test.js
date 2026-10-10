@@ -48,6 +48,15 @@ test('occupancy keeps protected bullets and DP checks intermediate frames rather
   assert.equal(findAttackRoute(frames,{referenceMasks:new Uint16Array(4).fill(Keys.FOCUS),prefixFrames:4}).passed,false);
 });
 
+test('the stage 6 survival garden keeps a focused zero-hit route through its open gates to the end',()=>{
+  for(const difficulty of[1,3]){
+    const spec={kind:'spell',stageId:6,spellIndex:3,difficulty,frames:3600};
+    const result=searchAttackRoute(spec,{iterations:8});assert.equal(result.passed,true,`difficulty ${difficulty}`);
+    const replay=replayAttackRoute(spec,result.route);
+    assert.equal(replay.hits,0);assert.equal(replay.misses,0);assert.equal(replay.gameplayFrames,3600);
+  }
+});
+
 test('safe-prefix refinement produces a collision-enabled zero-hit replay for the aimed lantern experiment',()=>{
   const spec={kind:'spell',stageId:1,spellIndex:0,difficulty:1,frames:1200};
   const result=searchAttackRoute(spec,{iterations:20});assert.equal(result.passed,true);

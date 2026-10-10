@@ -31,7 +31,7 @@ const authored=[
   {name:'Shino second nonspell',attack:SHINO.nonspells[1],frames:[0,150],beams:2,requests:2},
   {name:'Shino first spell',attack:SHINO.spells[0],frames:[0,200],beams:4,requests:1},
   {name:'Shino third spell',attack:SHINO.spells[2],frames:[0,300],beams:8,requests:1},
-  {name:'Kotone fourth spell',attack:KOTONE.spells[3],frames:[0,220],beams:2,requests:1},
+  {name:'Kotone fourth spell',attack:KOTONE.spells[3],frames:[0,220],beams:2,requests:1,laserState:2},
   {name:'stage-four road guard',frames:[56,212],beams:4,requests:1,
     attack:k=>updateRoadEnemy({game:k.game,enemy:{id:1,x:0,y:112},frame:k.frame,state:k.state,difficulty:1,stageId:4,attack:'motif'})},
 ];
@@ -42,7 +42,7 @@ for(const scenario of authored)test(`${scenario.name} uses one common laser soun
       const first=f.game.lasers.nextId;f.requested.length=0;f.played.length=0;
       scenario.attack(f.bind(frame,state));
       const beams=f.game.lasers.lasers.filter(l=>l.id>first);
-      assert.equal(beams.length,scenario.beams);assert.ok(beams.every(l=>l.state===3&&l.age.current===0));
+      assert.equal(beams.length,scenario.beams);assert.ok(beams.every(l=>l.state===(scenario.laserState??3)&&l.age.current===0));
       assert.ok(beams.every(l=>l.p.sound===18||l.p.sound===-1));
       assert.equal(f.requested.filter(id=>id===18).length,scenario.requests);assert.ok(!f.requested.includes(26));
       f.audio.flush();assert.equal(laserPlays(f).length,1,'thlib coalesces all same-frame requests for ID18');

@@ -11,7 +11,7 @@ export interface AttackState {
   pathEntry?: {id:string;lastFrame:number;age:number;x:number;y:number};
   later?: Array<{at:number;bullets:TouhouBullet[];spawn:(bullet:TouhouBullet)=>unknown}>;
   echoes?: Array<{at:number;fire:Attack}>;
-  spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;segment?:number;
+  spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;segment?:number;nextAt?:number;
   threads?:number[];second?:{at:number;rotation:number}|null;
   echo?:{at:number;x:number;y:number;a:number}|null;echoAim?:number;hushAt?:number;
   reeds?:Array<{from:number;until:number;turn:number;shift:number}>;

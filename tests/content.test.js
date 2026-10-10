@@ -7,7 +7,7 @@ import {
 import { MUSIC_TRACKS } from '../dist/src/music-data.js';
 import { GAME_REVISION } from '../dist/src/storage.js';
 
-test('the overlapping stage 6 garden gates advance content and replay revisions together',()=>{
+test('the stage 6 survival garden advances content and replay revisions together',()=>{
   assert.equal(GAME.contentRevision,19);assert.equal(GAME_REVISION,GAME.contentRevision);
 });
 
@@ -52,9 +52,7 @@ test('all 39 spell cards have distinct IDs, names, patterns and persistent recor
     assert.equal(SPELL_BY_ID.get(card.id), card);
   }
   const survival = ALL_SPELLS.filter((card) => card.survival);
-  assert.equal(survival.length, 1);
-  assert.equal(survival[0].id, 'ex-08');
-  assert.equal(survival[0].seconds, 65);
+  assert.deepEqual(survival.map((card) => [card.id, card.seconds]), [['s06-04', 60], ['ex-08', 65]]);
 });
 
 test('every stage has a complete, distinct conversation for each playable character', () => {

@@ -58,9 +58,16 @@ test('higher difficulties emit more pressure for every main-campaign attack',()=
   }
 });
 
+// Each fence of the stage 6 garden must be met at its open gate, which means moving there
+// before the pilot's 16-frame look-ahead sees the fence; attack-routes.test.js plans a focused
+// route through it instead.
+const PLANNED=new Set(['s6-spell04-garden-beyond-forgetting']);
+
 test('a heuristic dodging pilot clears every Normal attack, and Extra with at most one slip per card',t=>{
   let extraSlips=0;
+  for(const key of PLANNED)assert.ok(scripted.some(entry=>entry.key===key),`${key} is still in the catalogue`);
   for(const entry of scripted){
+    if(PLANNED.has(entry.key))continue;
     const difficulty=entry.stageId===7?4:1;
     const result=runAttack({update:entry.create({difficulty,seed:73,boss:standIn()}),frames:entry.frames,difficulty});
     if(difficulty===4){assert.ok(result.hits<=1,`${entry.key}: Extra pilot hits ${result.hits} at ${result.hitTimes}`);extraSlips+=result.hits;}
