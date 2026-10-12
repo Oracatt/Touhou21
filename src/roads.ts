@@ -121,6 +121,10 @@ const FIRE_FLOOR:Readonly<Record<string,number>>=Object.freeze({upstream:220});
 /** Share of the route a formation fires through. Large fairies hold fire once
  * they turn to leave, so a falling curtain is never dragged across the field. */
 const FIRE_ROUTE:Readonly<Record<string,number>>=Object.freeze({anchor:.7});
+/** Share of each small-fairy formation that fires, per stage, on Easy and
+ * Normal. Easy leaves most fairies silent; both arm more as the game goes on. */
+const ARMED=[[1/3,1/3,1/2,1/2,2/3,2/3,1],[1/2,1/2,2/3,2/3,1,1,1]];
+const armed=(rank:number,stageId:number,index:number)=>{const f=ARMED[rank]?.[stageId-1]??1;return Math.floor((index+1)*f+.5)>Math.floor(index*f+.5);};
 
 export function createRoadPlan(stageId:number,roadFrames=BASE_FRAMES[stageId-1]){
   const score=ROAD_SCRIPTS[stageId-1];if(!score)throw new RangeError(`Undefined road ${stageId}`);
@@ -171,7 +175,7 @@ const PALETTES=[
 
 /** The guard's signature attack quotes its stage Boss's motif. */
 function signature(k:AttackKit,stageId:number,p:typeof PALETTES[number],age:number,state:AttackState,split:RoadSplit){
-  const s=stageId,period=k.pick(64,52,44,38);
+  const s=stageId,period=k.pick(84,60,44,38);
   if(s===7&&state.echo?.at===age){const e=state.echo;k.ring(e.x,e.y,24,1.9,e.a+Math.PI/24,T.SCALE,C.ROSE);state.echo=null;}
   if(age<56||(age-56)%period)return;
   const wave=(age-56)/period|0;
@@ -267,16 +271,16 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
     case 'chime':{const r=relay(age,40,o);if(r.phase===0&&r.round<k.pick(1,1,2,3,4)){const n=k.pick(6,7,8,9),a=k.unit()*TAU;
       k.ring(k.ox,k.oy,n,1.9,a,p.type,p.main,null,{safe:4096});if(k.rank>=1)k.ring(k.ox,k.oy,n,1.45,a+Math.PI/n,p.type,p.accent,null,{safe:4096,silent:true});}break;}
     case 'toll':if(age>=50&&(age-50)%k.pick(32,26,22,16)===0){const c=o.center,a=c?Math.atan2(k.oy-c.y,k.ox-c.x):o.heading;
-      k.fan(k.ox,k.oy,1,2.1,a,0,p.type,p.main,null,{safe:4096,rows:k.pick(1,2,2,3),speedStep:1.6,silent:o.index>0&&hush(state,age,90)});
+      k.fan(k.ox,k.oy,1,2.1,a,0,p.type,p.main,null,{safe:4096,rows:k.pick(1,1,2,3),speedStep:1.6,silent:o.index>0&&hush(state,age,90)});
       if(k.rank>=3)k.fan(k.ox,k.oy,1,1.4,a+Math.PI,0,p.needle,p.accent,null,{safe:4096,silent:true});}break;
-    case 'flower':{const step=k.pick(7,6,5,4);if(age<60||age%step)break;const arms=k.pick(3,4,4,5),a=age*.055*(side||1);
+    case 'flower':{const step=k.pick(10,7,5,4);if(age<60||age%step)break;const arms=k.pick(3,4,4,5),a=age*.055*(side||1);
       if(stageId===6&&(age/step|0)%4===3)break;
       const cmds=stageId===2?[k.stopTo(28,DOWN,2.1)]:stageId===3?[k.curve((side||1)*.012,80)]:null;
       for(let j=0;j<arms;j++){const base=j*TAU/arms,spin=a+base,angle=j%2&&stageId===4?base-a:j%2&&stageId===7?Math.PI-spin:spin;
         // Stage 5 folds the spiral into a square page: diagonals fly fastest.
         const speed=stageId===5?2.2*Math.SQRT1_2/Math.max(Math.abs(Math.cos(angle)),Math.abs(Math.sin(angle))):1.9;
         k.shot(k.ox,k.oy,angle,speed,p.type,j%2?p.main:p.accent,cmds,{silent:j>0||hush(state,age,12)});}break;}
-    case 'rings':{const period=k.pick(40,32,28,25);if(age>=56&&(age-56)%period===0){const w=(age-56)/period|0,n=k.pick(12,16,18,22),c=w%2?p.main:p.alt;
+    case 'rings':{const period=k.pick(56,40,28,25);if(age>=56&&(age-56)%period===0){const w=(age-56)/period|0,n=k.pick(10,14,18,22),c=w%2?p.main:p.alt;
       if(stageId===5){const door=k.aim();burstShape(k,k.ox,k.oy,polygon(4,Math.max(3,n>>2)),1.8,w*.31,p.type,c,null,{skip:(q,a)=>inGap(a,door,.26)});}
       else if(stageId===6)k.ringGap(k.ox,k.oy,k.pick(6,8,10,12),1.8,p.type,c,null,{rows:2,speedStep:1.4});
       else if(stageId===4)k.ring(k.ox,k.oy,n>>1,1.8,w*.31,p.needle,c,null,{rows:2,speedStep:1.3});
@@ -310,7 +314,7 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
   const gap=spec.gap??GAPS[spec.formation]??0,floor=FIRE_FLOOR[spec.formation]??290;
   for(let index=0;index<count;index++){
     const state:RoadState & {age:number;heading:number}={age:0,heading:-DOWN},life=spec.life??role.life,jitter=(rng.unit()-.5)*12,delay=index*gap;
-    const fireUntil=life*(FIRE_ROUTE[spec.formation]??1);
+    const fireUntil=life*(FIRE_ROUTE[spec.formation]??1),silent=spec.role!=='guard'&&!armed(rank,stageId,index);
     const pathOptions={index,count,side:spec.side,life,jitter,rank},initial=roadPath(spec.formation,pathOptions,0);
     const enemy=game.spawnEnemy({x:initial.x,y:initial.y,hp:Math.round(role.hp*(.85+rank*.1)),script:role.script,directional:role.directional??true,
       deathBank:game.banks.effect,drop:[],damageInvulnerability:0,
@@ -321,7 +325,7 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
         const dx=position.x-actor.x,dy=position.y-actor.y;
         actor.motion.flags=0;actor.motion.speed=Math.fround(Math.hypot(dx,dy));actor.motion.angle=Math.fround(Math.atan2(dy,dx));
         if(dx||dy)state.heading=Math.atan2(dy,dx);
-        if(canFire()&&age>=delay&&route<fireUntil&&actor.y>=10&&actor.y<=floor&&Math.abs(actor.x)<=184)
+        if(!silent&&canFire()&&age>=delay&&route<fireUntil&&actor.y>=10&&actor.y<=floor&&Math.abs(actor.x)<=184)
           updateRoadEnemy({game,enemy:actor,frame:age-delay,difficulty,stageId,attack:spec.attack,state,index,count,gap,side:spec.side,formation:spec.formation,
             heading:state.heading,center:spec.formation==='round'?roundCenter(spec.side,life,route):null,rng,onAttack});
         if(age>=life+delay){actor.alive=false;actor.animation.destroy();}
