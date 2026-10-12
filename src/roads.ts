@@ -9,7 +9,7 @@ import type {AttackGame,AttackKit,AttackState} from './danmaku.js';
 import type {CampaignEnemy} from './shared-types.js';
 
 export interface RoadWaveSpec {at:number;formation:string;attack:string;count:number;side:number;role:string;life?:number;gap?:number;}
-/** `beat` numbers the entrances of each kind of small-fairy wave in order; waves of a kind entering together share one. */
+/** `beat` numbers the small-fairy entrances in order; a mirrored pair shares one. */
 export interface RoadWave extends RoadWaveSpec {id:string;sectionId:string;fireUntil:number;beat?:number;}
 export interface RoadSection {id:string;title:string;start:number;end:number;waves:RoadWaveSpec[];}
 export interface RoadScript {stageId:number;theme:string;sections:RoadSection[];}
@@ -126,19 +126,23 @@ const FIRE_ROUTE:Readonly<Record<string,number>>=Object.freeze({anchor:.7});
  * fires or holds as a whole; Easy leaves most waves silent and both arm more
  * as the game goes on. */
 const ARMED=[[1/3,1/3,1/2,1/2,2/3,2/3,1],[1/2,1/2,2/3,2/3,1,1,1]];
-/** Each entrance of a kind of wave gets a fixed golden-ratio score, so the first
- * entrance always fires and every wave Easy arms is armed on Normal too. */
+/** Each entrance gets a fixed golden-ratio score, which spreads the armed waves
+ * evenly through the stage and arms on Normal every wave Easy arms. */
 const armed=(rank:number,stageId:number,beat:number|undefined)=>
-  beat===undefined||(.1+beat*(Math.sqrt(5)-1)/2)%1<(ARMED[rank]?.[stageId-1]??1);
+  beat===undefined||(.6+beat*(Math.sqrt(5)-1)/2)%1<(ARMED[rank]?.[stageId-1]??1);
+/** Sections whose small fairies never fire on Easy: the first walk of the game. */
+const EASY_QUIET=new Set(['1:first-lights']);
 
 export function createRoadPlan(stageId:number,roadFrames=BASE_FRAMES[stageId-1]){
   const score=ROAD_SCRIPTS[stageId-1];if(!score)throw new RangeError(`Undefined road ${stageId}`);
   const scale=roadFrames/BASE_FRAMES[stageId-1],sections=score.sections.map(s=>({...s,start:Math.round(s.start*scale),end:Math.round(s.end*scale)}));
   const waves:RoadWave[]=sections.flatMap(s=>s.waves.map((w,index)=>({...w,id:`${stageId}:${s.id}:${index}`,sectionId:s.id,fireUntil:s.end,at:Math.round(w.at*scale)}))).sort((a,b)=>a.at-b.at);
-  const beats=new Map<string,{beat:number;at:number}>();
+  let beat=-1,prev:RoadWave|undefined;
   for(const w of waves)if(w.role!=='guard'){
-    const kind=`${w.formation}/${w.attack}`,b=beats.get(kind);
-    w.beat=!b?0:b.at===w.at?b.beat:b.beat+1;beats.set(kind,{beat:w.beat,at:w.at});
+    // A wave answering the one before it from the other side is its mirror and shares its beat.
+    const mirror=prev&&prev.sectionId===w.sectionId&&prev.formation===w.formation&&prev.attack===w.attack&&prev.side===-w.side;
+    if(!EASY_QUIET.has(`${stageId}:${w.sectionId}`))w.beat=mirror?prev!.beat:++beat;
+    prev=w;
   }
   return{stageId,theme:score.theme,sections,waves,roadFrames,midbossAt:Math.round(ROAD_MIDBOSS_FRAMES[stageId-1]*scale)};
 }
@@ -323,7 +327,7 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
   if(!ROAD_ROLES[spec.role]||!ROAD_FORMATIONS.includes(spec.formation)||!ROAD_ATTACKS.includes(spec.attack))throw new TypeError('Road wave requires an authored role, formation and attack');
   const rank=Math.min(3,difficulty),role=ROAD_ROLES[spec.role];
   const count=Math.max(1,spec.count+(rank===0&&spec.count>3?-1:rank>=2&&spec.count>2?1:0)),actors=[];
-  const gap=spec.gap??GAPS[spec.formation]??0,floor=FIRE_FLOOR[spec.formation]??290,silent=spec.role!=='guard'&&!armed(rank,stageId,spec.beat);
+  const gap=spec.gap??GAPS[spec.formation]??0,floor=FIRE_FLOOR[spec.formation]??290,silent=spec.role!=='guard'&&(!armed(rank,stageId,spec.beat)||rank===0&&EASY_QUIET.has(`${stageId}:${spec.sectionId}`));
   for(let index=0;index<count;index++){
     const state:RoadState & {age:number;heading:number}={age:0,heading:-DOWN},life=spec.life??role.life,jitter=(rng.unit()-.5)*12,delay=index*gap;
     const fireUntil=life*(FIRE_ROUTE[spec.formation]??1);
