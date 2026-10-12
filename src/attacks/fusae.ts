@@ -5,8 +5,8 @@ import {T,C,C8,DOWN,TAU,clamp,lerp} from '../danmaku.js';
 import {polygon,star,burstShape} from './shapes.js';
 
 /** A falling row of paper with a blank stretch around `blank` (cells). */
-function pageRow(k: AttackKit,{spacing,blank,width=1,speed,color,y=-4,type=T.AMULET,angle=DOWN}:{spacing:number;blank:number;width?:number;speed:number;color:number;y?:number;type?:number;angle?:number}){
-  const cells=Math.floor(368/spacing)+1,start=-184+(368-(cells-1)*spacing)/2;
+function pageRow(k: AttackKit,{spacing,blank,width=1,speed,color,y=-4,type=T.AMULET,angle=DOWN,shift=0}:{spacing:number;blank:number;width?:number;speed:number;color:number;y?:number;type?:number;angle?:number;shift?:number}){
+  const cells=Math.floor(368/spacing)+1,start=-184+(368-(cells-1)*spacing)/2+shift;
   for(let i=0;i<cells;i++){if(Math.abs(i-blank)<=width)continue;
     k.shot(start+i*spacing,y,angle,speed,type,color,null,{silent:i>0,safe:2304});}
   return cells;
@@ -80,15 +80,18 @@ function closedStacks(k: AttackKit){
 }
 
 /** 札符「不收原件之书库」: rows of blank pages fall with a winding
- * empty cell; vermilion seals are stamped down that aisle. */
+ * empty cell; vermilion seals are stamped down that aisle. Each row sits a
+ * third of a cell off the one before, so the shelves slant and only the
+ * aisle stays open. */
 function archiveRefusesOriginals(k: AttackKit){
-  const period=k.pick(28,23,20,18),spacing=k.pick(32,28,26,24),cells=Math.floor(368/spacing)+1;
+  const period=k.pick(28,23,20,18),spacing=k.pick(30,26,24,22),cells=Math.floor(368/spacing)+1;
   if(k.every(period)){
+    const row=k.t/period|0,shift=(row%3-1)*spacing/3;
     let blank=k.state.blank??Math.floor(cells/2);
     blank=clamp(blank+(k.unit()<.5?-1:1),2,cells-3);k.state.blank=blank;
-    pageRow(k,{spacing,blank,width:k.pick(2,1,1,1),speed:1.7,color:(k.t/period)&1?C.WHITE:C.PALE});
-    if(k.rank>=1&&(k.t/period|0)%k.pick(5,5,4,4)===2)
-      k.shot(-184+(368-(cells-1)*spacing)/2+blank*spacing,-4,DOWN,1.7,T.BIG,C8.RED,null,{silent:true,safe:2304});
+    pageRow(k,{spacing,blank,width:k.pick(2,1,1,1),speed:1.7,color:row&1?C.WHITE:C.PALE,shift});
+    if(k.rank>=1&&row%k.pick(5,5,4,4)===2)
+      k.shot(-184+(368-(cells-1)*spacing)/2+shift+blank*spacing,-4,DOWN,1.7,T.BIG,C8.RED,null,{silent:true,safe:2304});
   }
 }
 archiveRefusesOriginals.home={x:0,y:84};
