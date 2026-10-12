@@ -95,9 +95,12 @@ def balance(stems, returns, module, region):
     return out
 
 
-def section_levels(stems, returns, module, clock):
+def section_levels(stems, returns, module, clock, master=()):
+    """Loudness per section after the master chain, because the ride is applied after it."""
     meter = pyloudnorm.Meter(SR)
     mix = sum(stems.values()) + sum(returns.values())
+    for fx in master:
+        mix = fx(mix)
     out = {}
     for name, b0, b1 in module.SECTIONS:
         a, b = int(clock.seconds(b0 * 4) * SR), int(clock.seconds(b1 * 4) * SR)
@@ -173,7 +176,7 @@ def main():
             break
         for pn, (_, corr) in levels.items():
             tweak.setdefault(pn, {})['gain_add'] = tweak.get(pn, {}).get('gain_add', 0.0) + float(np.clip(corr * 0.9, -9, 9))
-    levels_sec = section_levels(stems, returns, module, song.clock)
+    levels_sec = section_levels(stems, returns, module, song.clock, song.master)
     ride, shifts = make_ride(module, levels_sec)
     print('section levels (LUFS): ' + ', '.join(f'{k} {v:.1f}' for k, v in levels_sec.items()) + ' -> ride ' + ', '.join(f'{k} {v:+.1f}' for k, v in shifts.items()))
     song = build_song(parts, module.BPM, module.INTRO_BARS, module.LOOP_BARS, seed=module.SEED, hall_rt=getattr(module, 'HALL', 2.1),
