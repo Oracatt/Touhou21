@@ -7,8 +7,8 @@ import {
 import { MUSIC_TRACKS } from '../dist/src/music-data.js';
 import { GAME_REVISION } from '../dist/src/storage.js';
 
-test('the stage 6 survival garden advances content and replay revisions together',()=>{
-  assert.equal(GAME.contentRevision,19);assert.equal(GAME_REVISION,GAME.contentRevision);
+test('armed Normal roads and the stage 3, 4 and 6 attack fixes advance content and replay revisions together',()=>{
+  assert.equal(GAME.contentRevision,20);assert.equal(GAME_REVISION,GAME.contentRevision);
 });
 
 test('campaign covers six connected stages and a separately identified Extra', () => {

@@ -43,7 +43,7 @@ thlib 包含可复用的应用流程、自机、武器、Bomb、弹幕、道具�
 
 默认 Git 排除 `packages/`、`runtime/`、`node_modules/`、`userdata/`、`reports/`、`build/`、`dist/`、日志与环境文件。公开源码包不得绕过这些规则把私有公共原作资源或用户存档混入。若未来制作可执行发行包，应使用具有明确发行权限的依赖资源，并保留运行时第三方许可；本地可运行不代表获得商业素材授权。此任务没有上传或发布发行包。
 
-当前游戏版本为 `2.0.0`，回放内容修订以 `src/storage.ts` 的 `GAME_REVISION` 和 `src/content.ts` 的 `GAME.contentRevision` 为准（当前为 19）。两者必须相同，打包器会检查。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm run typecheck`、`npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。历史修订与验收结果见 [VERIFICATION.md](VERIFICATION.md)、[ROADS.md](ROADS.md) 和 [BOSS-FLOW.md](BOSS-FLOW.md)。
+当前游戏版本为 `2.0.0`，回放内容修订以 `src/storage.ts` 的 `GAME_REVISION` 和 `src/content.ts` 的 `GAME.contentRevision` 为准（当前为 20）。两者必须相同，打包器会检查。旧回放保留在存档中，当前版本会提示其版本不兼容。会改变确定性模拟的版本更新应递增修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm run typecheck`、`npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。历史修订与验收结果见 [VERIFICATION.md](VERIFICATION.md)、[ROADS.md](ROADS.md) 和 [BOSS-FLOW.md](BOSS-FLOW.md)。
 
 ## Windows 可执行包
 
