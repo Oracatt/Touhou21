@@ -258,7 +258,7 @@ function* replayTermination(){
       assert(playing.playback.frame===i+1,`Recorded ${action} consumes each saved input exactly once`);if(i%128===127)yield;
     }
     assert(playing.playback.finished&&playing.playback.desync===null,`Recorded ${action} reaches the end of its full verified input stream`);
-    app.update(0);assert(app.page?.title==='回放结束'&&app.page.rows[0].label.includes('校验通过'),'Production playback displays the normal successful replay completion page');
+    app.update(0);assert(app.page?.title==='回放结束'&&app.page.rows[0].label==='返回标题'&&app.page.detail(app.page.row,app.page)==='回放播放完毕。','Production playback displays completion and the return action without internal verification details');
     const stopped=playing.playback.frame;tick(app,12);assert(playing.playback.frame===stopped&&app.core.game===playing,'Completion page freezes the finished replay');
     assert(writes===beforeWrites&&app.storage.progress.plays===beforePlays&&app.storage.replays.length===beforeReplays&&JSON.stringify(app.storage.progress)===progress,'Playback termination creates no play, replay or progress writes');
     ended.push({action,frames:recorded.frames,playedFrames:playing.playback.frame,checkpoints:recorded.checkpoints,plays:beforePlays,replayCount:beforeReplays,writesDuringPlayback:writes-beforeWrites,completion:app.page.title,snapshot:playing.snapshot()});
