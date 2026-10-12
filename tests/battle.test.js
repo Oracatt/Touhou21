@@ -325,6 +325,41 @@ test('scene isolates public spell records by character and difficulty, and recor
   b.dispose();a.dispose();
 });
 
+test('stage practice starts at the public life cap while other modes keep the configured stock',()=>{
+  for(const mode of ['stage-practice','normal','extra','spell-practice'])for(const character of [0,1]){
+    const f=sceneFixture({mode,character,stageId:mode==='extra'?7:1,options:{testing:true}});
+    try{
+      const expected=mode==='stage-practice'?f.scene.player.maxLives:2;
+      assert.equal(f.scene.player.lives,expected);
+      assert.equal(f.scene.hud.lifeStock.full,expected,'HUD is correct before the first update');
+      assert.equal(f.scene.recorder.config.startingLives,expected,'Replay records actual initial stock');
+      assert.equal(f.storage.settings.startingLives,2,'Practice must not overwrite the player preference');
+    }finally{f.dispose();}
+  }
+});
+
+test('stage practice replays preserve both new full stock and previously recorded low stock through checkpoints',()=>{
+  for(const legacyStock of [null,0,2]){
+    const recording=sceneFixture({mode:'stage-practice',options:{testing:true,invincible:true}});
+    // Reproduce the old initialization to record a same-revision low-stock run.
+    if(legacyStock!==null){recording.scene.player.lives=legacyStock;recording.scene.recorder.config.startingLives=legacyStock;}
+    const initialStock=recording.scene.player.lives;
+    for(let i=0;i<660;i++)recording.scene.update(0);
+    const replay=recording.scene.recorder.toJSON(),expected=recording.scene.snapshot();
+    assert.ok(replay.checkpoints.length>0);recording.dispose();
+    recording.storage.settings.startingLives=5;
+    const playing=sceneFixture({mode:'stage-practice',storage:recording.storage,playbackSource:replay,options:{testing:true,invincible:true}});
+    try{
+      assert.equal(playing.scene.player.lives,initialStock);
+      assert.equal(playing.scene.hud.lifeStock.full,initialStock);
+      for(let i=0;i<660;i++)playing.scene.update(0);
+      assert.equal(playing.scene.playback.desync,null);
+      assert.deepEqual(playing.scene.snapshot(),expected);
+      assert.equal(playing.storage.saved,0);
+    }finally{playing.dispose();}
+  }
+});
+
 test('scene replay keeps recorded stock, HUD counters and state checkpoints while persistent progress remains unchanged',()=>{
   const recording=sceneFixture();for(let i=0;i<660;i++)recording.scene.update(0);
   const replay=recording.scene.recorder.toJSON();recording.dispose();

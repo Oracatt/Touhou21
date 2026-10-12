@@ -115,13 +115,16 @@ export class CampaignScene extends TouhouGame {
     this.bossSprites=new BossSpriteCatalog({art});
     this.dialogue=null;this.bossNameCard=null;this.stageClear=null;this.stageTransition=null;this.stageCaptionAge=0;this.currentStage=null;this.bgmCaption=null;
     this.outerDraw=new DrawList();this.savedRun=false;this.replayDone=false;this.finishedResult=null;this.pendingReplay=null;
-    this.player.lives=storage.settings.startingLives;
+    const startingLives=playbackSource
+      ? playbackSource.config.startingLives??storage.settings.startingLives
+      : config.mode==='stage-practice'?this.player.maxLives:storage.settings.startingLives;
+    this.player.lives=startingLives;
+    this.hud.setLives(startingLives,this.player.lifeFragments);
     const initialHighScore=playbackSource?.config?.initialHighScore??Math.max(0,...storage.progress.scores.filter(result=>result.character===config.character&&result.difficulty===config.difficulty&&result.mode===config.mode).map(result=>result.score));
     this.player.highScore=initialHighScore;
     this.playback=playbackSource?new ReplayPlayer(playbackSource) as RunPlayback:null;
     this.recorder=this.playback?null:new ReplayRecorder({...config,game:GAME.id,revision:GAME_REVISION,backend:host.backend,
-      startingLives:storage.settings.startingLives,initialSpellRecords,initialHighScore,spellTimes:[]}) as RunRecorder;
-    if(this.playback)this.player.lives=playbackSource!.config.startingLives??storage.settings.startingLives;
+      startingLives,initialSpellRecords,initialHighScore,spellTimes:[]}) as RunRecorder;
     this.dialogueResources={...resources,createBank:name=>{const bank=resources.createBank(name);
       bank.rng=this.visualRng;bank.environment={...bank.environment,rng:this.visualRng};return bank;}};
     this.context.writeSpellTime=(stage,captureIndex,encoded)=>{
