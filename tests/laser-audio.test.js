@@ -32,7 +32,7 @@ const authored=[
   {name:'Shino first spell',attack:SHINO.spells[0],frames:[0,200],beams:4,requests:1},
   {name:'Shino third spell',attack:SHINO.spells[2],frames:[0,300],beams:8,requests:1},
   {name:'Kotone fourth spell',attack:KOTONE.spells[3],frames:[0,220],beams:2,requests:1,laserState:2},
-  {name:'stage-four road guard',frames:[56,236],beams:4,requests:1,
+  {name:'stage-four road guard',frames:[56,212],beams:4,requests:1,
     attack:k=>updateRoadEnemy({game:k.game,enemy:{id:1,x:0,y:112},frame:k.frame,state:k.state,difficulty:1,stageId:4,attack:'motif'})},
 ];
 for(const scenario of authored)test(`${scenario.name} uses one common laser sound per volley, including later volleys`,()=>{
