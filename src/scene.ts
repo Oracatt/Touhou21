@@ -12,7 +12,7 @@ import {GAME_REVISION} from './storage.js';
 import {clearRoadSplits} from './road-bullet-splits.js';
 import {musicTrack} from './music-data.js';
 import type {NativeHost} from '@ts-stg/thlib';
-import type {AnmData,AnmInstruction,AnmInstance,AnmView,AnmDrawList,TouhouResources,TouhouGameOptions,TouhouGameContext,TouhouSpellResult,TouhouDialogueStep,TouhouDialogueEvent,TouhouPlayer} from '@ts-stg/thlib/touhou';
+import type {AnmData,AnmInstruction,AnmInstance,AnmView,AnmDrawList,TouhouResources,TouhouGameOptions,TouhouGameContext,TouhouDialogueStep,TouhouDialogueEvent,TouhouPlayer} from '@ts-stg/thlib/touhou';
 import type {GameArt} from './art.js';
 import type {TextPainter} from './text.js';
 import type {MusicController} from './music.js';
@@ -132,12 +132,6 @@ export class CampaignScene extends TouhouGame {
       const entry=this.playback?.data.config.spellTimes?.find(time=>time.stage===stage&&time.captureIndex===captureIndex);
       if(!entry)throw new Error(`Replay has no encoded spell time for stage ${stage}, card ${captureIndex}`);return entry.encoded;
     };
-    const onEvent=this.onEvent;
-    this.onEvent=(name,data)=>{
-      if(this.playback&&name==='spellFinish'&&(data as TouhouSpellResult).captured){const record=this.spell.records[(data as TouhouSpellResult).id];
-        if(record){const mode=this.spell.mode===2?1:0;record.captures[mode]=Math.min(99999,record.captures[mode]+1);}}
-      onEvent?.(name,data);
-    };
     this.bossHud!.drawName=(queue,name,style)=>{const label=names.get(this.context.boss?.bossId as string)??name;
       const screenScale=this.bossHud!.font?.screenScale??1.5,scale=(style.scaleY??.65)/.65;
       // Follow the public name/star anchor; compensate for this vector font's top leading.
@@ -174,10 +168,8 @@ export class CampaignScene extends TouhouGame {
       return this.bossPresentation!.drawBody(queue,renderBody,{view,layer:7,order:0});
     };
   }
-  spellStart(spec:SpellDefinition,{bossId,code}:{bossId:string;code:number}){
+  spellStart(spec:SpellDefinition,{bossId}:{bossId:string;code:number}){
     if(spec&&!this.playback&&!this.options.testing){if(!this.storage.progress.seenSpells.includes(spec.id))this.storage.progress.seenSpells.push(spec.id);this.storage.saveProgress();}
-    if(this.playback){const record=this.spell.records[code]??={name:spec.name,captures:[0,0],attempts:[0,0]},mode=this.spell.mode===2?1:0;
-      record.name=spec.name;record.attempts[mode]=Math.min(99999,record.attempts[mode]+1);}
     return{portrait:createSpellPortrait({art:this.art,bossId,visualRng:this.visualRng}),keepStageBackground:true};
   }
   openDialogue(lines:DialogueLine[],{bossId,kind,cues=null,cue=null,onComplete}:DialogueContext){

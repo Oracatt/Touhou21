@@ -2,14 +2,14 @@
   "format": "touhou21-engine-lock-v2",
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
-  "source": "D:/github/TS-STG",
-  "commit": "3e698c5c5618b23bdde38fdb6cec9ee51cc33909",
+  "source": "D:/AIWorkspace/Touhou21/build/engine-ctrl-replay",
+  "commit": "52cfc7d2687fb1b26054aea28d3355e774979e41",
   "backend": "v8",
   "supportedBackends": [
     "v8",
     "quickjs"
   ],
-  "executableSha256": "98deb8c21fdfe3d526cc19fc0c79e4c92a560591a1acb1572754df84b8654c56",
+  "executableSha256": "201d6b1a44e9ef04a553af9465c9e2c38f9f2e8eb8521ba79a025c905cd2e7af",
   "sourceModified": false,
   "sourceState": {
     "gitClean": true,
@@ -17,7 +17,7 @@
     "excludedChanges": [],
     "policy": "All dependency/build inputs come from the pinned commit. Unstaged editor-launcher preferences are unrelated and never copied."
   },
-  "dependencies": "Committed public TypeScript source and common presets, rebuilt with the exact pinned compiler. Native artifacts retain their build provenance and original notices.",
+  "dependencies": "Immutable committed TypeScript source and common presets rebuilt with the pinned compiler; fresh Ctrl-enabled native runtime retains actual compiler/linker provenance. The prior runtime mismatch is preserved in the migration backup.",
   "thlibContent": "git-typescript-build",
   "thlibBuild": {
     "compiler": {
@@ -1155,8 +1155,8 @@
       },
       {
         "path": "src/input.ts",
-        "bytes": 942,
-        "sha256": "eaf3bab54ced8e5b6f2e74b533dcb3c0fe36a23d860c310adfdbb787295b684c"
+        "bytes": 1071,
+        "sha256": "6f23a6e3d69094660e67914293c1376a1691f1809cb3011472b53449dc469583"
       },
       {
         "path": "src/items.ts",
@@ -1225,8 +1225,8 @@
       },
       {
         "path": "src/replay.ts",
-        "bytes": 5065,
-        "sha256": "77fcd8c7e1da9030ae34128efaaa7749c39e0bb94d3806dded000ad4d9821f3e"
+        "bytes": 7427,
+        "sha256": "5ad7323411e394c04e4ad64cb31b3d39026392066830bb62bb5bfb50aad2d4ac"
       },
       {
         "path": "src/resources.ts",
@@ -1365,8 +1365,8 @@
       },
       {
         "path": "src/touhou/bullets.ts",
-        "bytes": 33897,
-        "sha256": "f0234f84c508be80104b163db6e81208c4f552b1a184b930ced88d6b87dfaf6c"
+        "bytes": 34361,
+        "sha256": "886d5fb373ddf798c3f32013b298c4bc327a2d9b08700d153d390efb51065310"
       },
       {
         "path": "src/touhou/converging-particles.ts",
@@ -1435,8 +1435,8 @@
       },
       {
         "path": "src/touhou/items.ts",
-        "bytes": 25764,
-        "sha256": "3195e762369318705b5a3688a16a9b14e9c60c0c7eadfaaee3e61e4875e2b732"
+        "bytes": 26076,
+        "sha256": "9c05da850cea6f56f65dfc8fc7502b6311204e5a9a8317287ba211a91aecfa6f"
       },
       {
         "path": "src/touhou/laser-cancellation.ts",
@@ -1450,8 +1450,8 @@
       },
       {
         "path": "src/touhou/lasers.ts",
-        "bytes": 30937,
-        "sha256": "be87c6de4cac087978b5fe9ac511e69b2b5b6f1e4744dda0d77626e6c225246e"
+        "bytes": 31426,
+        "sha256": "ba3f8a755f53503a1c753f5a9af63d05b3eb7b1b0022ad5130cb28733fe021ae"
       },
       {
         "path": "src/touhou/math.ts",
@@ -1570,8 +1570,8 @@
       },
       {
         "path": "src/touhou/spell.ts",
-        "bytes": 18505,
-        "sha256": "82a1e246f96b33bd0573d3cf9d1a95de84a28df995515c728596ae60df28a391"
+        "bytes": 18938,
+        "sha256": "78500dddaca1ba569cbad4eced7c51901248ff5e1029fd5203376f5fc6b8f8d3"
       },
       {
         "path": "src/touhou/stage-clear.ts",
@@ -1619,7 +1619,7 @@
         "sha256": "bf6dbafbd67e762ac716826a68e6ecc17894b0e110ad177446857a77a1fadbe3"
       }
     ],
-    "sourceSha256": "0d610974ccb1ea07bb27d109d31c56fbeb28f9890df6428f84d15f4266484c60",
+    "sourceSha256": "5cdbde110c13323959298ea74d6087f2203882ee7db79d3f55c6203eb4fd1e81",
     "outputFiles": [
       {
         "path": "dist/animation.d.ts",
@@ -1903,23 +1903,23 @@
       },
       {
         "path": "dist/input.d.ts",
-        "bytes": 541,
-        "sha256": "caa120d45ff2cf08f091cce87a5a4d17103b7c32a79129df926e5e64da757d09"
+        "bytes": 565,
+        "sha256": "080245e195a9001ca39ba9a82ffd551dcacff3e91a5aa435c1def958bccbc73a"
       },
       {
         "path": "dist/input.d.ts.map",
-        "bytes": 747,
-        "sha256": "cc4bab83c764ee64dabcccec16a55196904e8b25da6608e11befc6779e27aba0"
+        "bytes": 772,
+        "sha256": "5385a8460a7fe6fb3098532a9c5a94230933f42c195beb0e8455cb8008dd60ff"
       },
       {
         "path": "dist/input.js",
-        "bytes": 707,
-        "sha256": "59c5033f98e63ace25b0644422bc2a62e8ca6d3f241ee839f6aa3e5d81a7a659"
+        "bytes": 820,
+        "sha256": "39d6163cf3f8261f8389e970f17ac4b59ab393c5b3ef1f2861a734fc922b28a0"
       },
       {
         "path": "dist/input.js.map",
-        "bytes": 1202,
-        "sha256": "672a83e6b28691c44d1ffc68e83d761713309a38bb0c2b7f63933febb58a0454"
+        "bytes": 1236,
+        "sha256": "decafc3e149c59b5dc427e256d16deec65597e032417757bf1f35cab5d5efaa5"
       },
       {
         "path": "dist/items.d.ts",
@@ -2183,23 +2183,23 @@
       },
       {
         "path": "dist/replay.d.ts",
-        "bytes": 1419,
-        "sha256": "e562c53646f9a37a529dfe463a5606882c827a788ff7bc346b699d9dd839eba8"
+        "bytes": 2778,
+        "sha256": "5f5a690149024fbedf3282470c08b9224be07951ca6895004462f962e87bea92"
       },
       {
         "path": "dist/replay.d.ts.map",
-        "bytes": 1465,
-        "sha256": "3792cb064a13bd4db3d6d2f0a63adcef8fc04b1f227da350a029a4135f4171a8"
+        "bytes": 1942,
+        "sha256": "1fb208b5e10d16c7530025e0af9a3c03fdad3ba6cf284fba9405831921ef2e9d"
       },
       {
         "path": "dist/replay.js",
-        "bytes": 4705,
-        "sha256": "dbd4dee6268993b2f192e50b3ff810567518a88df0ad862450710b580576c2b6"
+        "bytes": 6334,
+        "sha256": "e95d8304594becf152ab906d9a4cf2942bbcc0e3e2be75924420f819b0ba61db"
       },
       {
         "path": "dist/replay.js.map",
-        "bytes": 5924,
-        "sha256": "832a63b9efdb1729a6ff0a49a281aa60271d06c417bd5f031d16e5cdee13e1ba"
+        "bytes": 6979,
+        "sha256": "8ab997a6a044a66fb84f8379d0397ec4b6f9d93a88284a1f983467e444e637ab"
       },
       {
         "path": "dist/resources.d.ts",
@@ -2743,23 +2743,23 @@
       },
       {
         "path": "dist/touhou/bullets.d.ts",
-        "bytes": 8174,
-        "sha256": "3d8419255ebad7340d2ead46380147e6a3d8420bd9ac0623f2a70a29746b2a58"
+        "bytes": 8452,
+        "sha256": "1dd9e3b715e1dd67731b9cb62948749726dcd69ee62322a43dc367d11df37806"
       },
       {
         "path": "dist/touhou/bullets.d.ts.map",
-        "bytes": 8420,
-        "sha256": "dbb61f61bde357d3c048cc7566bea96edbb6f39b2e497d83a74e2f0bf5008201"
+        "bytes": 8457,
+        "sha256": "7bd2a85adf66d05d6284db33269ac87af9cadbd5af50a0306786a3f9ba18fd70"
       },
       {
         "path": "dist/touhou/bullets.js",
-        "bytes": 36730,
-        "sha256": "6b80003a76b1806e98627ae1dfc43f33cdd00216b06712ce7c472d2e6fa9d1d3"
+        "bytes": 37140,
+        "sha256": "23c0496134f2408fe6cc927d31a14bcd21d25b5c0612a0186908b2ebda992f4d"
       },
       {
         "path": "dist/touhou/bullets.js.map",
-        "bytes": 47446,
-        "sha256": "f1002eee1e905c70c6861fb859e35a6914af7e579b9917c47f4d841bd6a25099"
+        "bytes": 47715,
+        "sha256": "62aae8e769b78ebdaac562c4c6825d10a8c5f4e1e89a8f8c7b1194ba8db44141"
       },
       {
         "path": "dist/touhou/converging-particles.d.ts",
@@ -3023,23 +3023,23 @@
       },
       {
         "path": "dist/touhou/items.d.ts",
-        "bytes": 7552,
-        "sha256": "1ab6ac3e6fbd4f6c7e5ea92b323e1e64c7b3fc7a38788c3c24369b996c9b3621"
+        "bytes": 7747,
+        "sha256": "05671a72237e16e934baccfda5524bff3ffac6f1b0f224a63b40a582ecb08256"
       },
       {
         "path": "dist/touhou/items.d.ts.map",
-        "bytes": 6107,
-        "sha256": "8dbfae213885aa1ba60d717f8690b5996d122bd5c94b453636b9480a1696149c"
+        "bytes": 6142,
+        "sha256": "ffeb51d8ad417af79b42ecf1fc20705b2aa5744060ad362ad7e396ffcff52f74"
       },
       {
         "path": "dist/touhou/items.js",
-        "bytes": 25284,
-        "sha256": "d109dc6f3ef5934770245da745349d701e46e3f8ff85d913ae1ec24e13537ca6"
+        "bytes": 25624,
+        "sha256": "44a24cf4fb5098fa6cd207332ef8f03213eb4229809cce88ee2d464f99bae278"
       },
       {
         "path": "dist/touhou/items.js.map",
-        "bytes": 29837,
-        "sha256": "7d37a689332844acf596689907535769ae0cbbca38471143be6e75721792a955"
+        "bytes": 30152,
+        "sha256": "cfa2ff79faffbfec1450b9792bce2f0b3d7666a6c152217f5c17b47b176eafab"
       },
       {
         "path": "dist/touhou/laser-cancellation.d.ts",
@@ -3083,23 +3083,23 @@
       },
       {
         "path": "dist/touhou/lasers.d.ts",
-        "bytes": 8513,
-        "sha256": "bf6fcca7945187818b9fd4a9ea7df97a407333c9ec7031f977af0e744cb0083f"
+        "bytes": 8704,
+        "sha256": "ac5129986647f64f6071c3da3f60ea523511ce427d58c1b368d961eb816e994d"
       },
       {
         "path": "dist/touhou/lasers.d.ts.map",
-        "bytes": 7732,
-        "sha256": "fe6fe155d3f493ab856b6655f9b3725ff721c0f42f722a6dc4a3cd8dfcf1d023"
+        "bytes": 7768,
+        "sha256": "9fb4ccb7197b237653c59d4b9d91fc093bcd06892f0b2661f8f03c70c340695a"
       },
       {
         "path": "dist/touhou/lasers.js",
-        "bytes": 35546,
-        "sha256": "1b612bb35510930e508b58ee85cc332fa17e2e2d9b0de0688de220fca41e74be"
+        "bytes": 36030,
+        "sha256": "855db34dd3fba458f8f533d1301c359af8f0401e5aab7bf75901e047a1550e0d"
       },
       {
         "path": "dist/touhou/lasers.js.map",
-        "bytes": 46820,
-        "sha256": "a3abdf6dfef6bf7dfbdb87461e52ea03cbe60bd6a19a182ec73864ba770af7c7"
+        "bytes": 47245,
+        "sha256": "13263e0cc2fa0a4e268badb91610755a353e85d730be847fb0bbfe20e76fa7dc"
       },
       {
         "path": "dist/touhou/math.d.ts",
@@ -3563,23 +3563,23 @@
       },
       {
         "path": "dist/touhou/spell.d.ts",
-        "bytes": 6256,
-        "sha256": "a248455f2ef185fff5ea1070ea732c982816e739dbacfe38e422c1ae73332d1c"
+        "bytes": 6397,
+        "sha256": "0fc1afca1145998377f7222dffc9ed8936303820bf8dd108e79fa0bb062c777e"
       },
       {
         "path": "dist/touhou/spell.d.ts.map",
-        "bytes": 6017,
-        "sha256": "a785beda546cdab3228adabb762a629dfc38c9e6b774e30ca8a05fe1054c5209"
+        "bytes": 6032,
+        "sha256": "1d2312b8b2cdd947ff83ee102466e6160841e2dde26eeb640107d5c49332256b"
       },
       {
         "path": "dist/touhou/spell.js",
-        "bytes": 16040,
-        "sha256": "6d471867f3ee636a84462f39700046a0af8441ddc31cb26722351dcd5d92a4ad"
+        "bytes": 16221,
+        "sha256": "e3fb2214f1e986aa7cbc29a9f516ab69e0648bd4d61bf8e816c13d6f846c25a8"
       },
       {
         "path": "dist/touhou/spell.js.map",
-        "bytes": 18834,
-        "sha256": "a45ffac386684054d79674c26f041700353dcc88d8e98881c6f1695df82b1067"
+        "bytes": 19211,
+        "sha256": "aee87df9bb33482520a3b24e4a13bba071aa494d843b64af7e236752f6c76f48"
       },
       {
         "path": "dist/touhou/stage-clear.d.ts",
@@ -3722,10 +3722,10 @@
         "sha256": "b703b3ba74beb0892d0bed9d6694352bc5b09b7fe44ff4b56ed020fc061e971b"
       }
     ],
-    "outputSha256": "59a0c12a423957c96ff58f52f7997c3fa471492e7092a059ec494cf2bb061d34"
+    "outputSha256": "8abcbff5f721c58dac74a86a81287b451f091d6c4cabbf55083f689fe9d9c66e"
   },
-  "thlibSha256": "3410ade544dd84dd9c3ed4e78a1b5cc8d65ed1635005c31b5564407dda0222a0",
-  "runtimeSha256": "4bd849c41f06467a53ae31dcf29bd5de66313c4dcd1154248c84718b049cdd6d",
+  "thlibSha256": "e10654de92d798fbb4c05b9b5863311f0974e54657c78fd2031c70fc313ca3bf",
+  "runtimeSha256": "34467a1dc271c4526b77b84a3ef98580b71eaaab1dd16f42d57f053e37d088f7",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -5059,23 +5059,23 @@
     },
     {
       "path": "dist/input.d.ts",
-      "bytes": 541,
-      "sha256": "caa120d45ff2cf08f091cce87a5a4d17103b7c32a79129df926e5e64da757d09"
+      "bytes": 565,
+      "sha256": "080245e195a9001ca39ba9a82ffd551dcacff3e91a5aa435c1def958bccbc73a"
     },
     {
       "path": "dist/input.d.ts.map",
-      "bytes": 747,
-      "sha256": "cc4bab83c764ee64dabcccec16a55196904e8b25da6608e11befc6779e27aba0"
+      "bytes": 772,
+      "sha256": "5385a8460a7fe6fb3098532a9c5a94230933f42c195beb0e8455cb8008dd60ff"
     },
     {
       "path": "dist/input.js",
-      "bytes": 707,
-      "sha256": "59c5033f98e63ace25b0644422bc2a62e8ca6d3f241ee839f6aa3e5d81a7a659"
+      "bytes": 820,
+      "sha256": "39d6163cf3f8261f8389e970f17ac4b59ab393c5b3ef1f2861a734fc922b28a0"
     },
     {
       "path": "dist/input.js.map",
-      "bytes": 1202,
-      "sha256": "672a83e6b28691c44d1ffc68e83d761713309a38bb0c2b7f63933febb58a0454"
+      "bytes": 1236,
+      "sha256": "decafc3e149c59b5dc427e256d16deec65597e032417757bf1f35cab5d5efaa5"
     },
     {
       "path": "dist/items.d.ts",
@@ -5339,23 +5339,23 @@
     },
     {
       "path": "dist/replay.d.ts",
-      "bytes": 1419,
-      "sha256": "e562c53646f9a37a529dfe463a5606882c827a788ff7bc346b699d9dd839eba8"
+      "bytes": 2778,
+      "sha256": "5f5a690149024fbedf3282470c08b9224be07951ca6895004462f962e87bea92"
     },
     {
       "path": "dist/replay.d.ts.map",
-      "bytes": 1465,
-      "sha256": "3792cb064a13bd4db3d6d2f0a63adcef8fc04b1f227da350a029a4135f4171a8"
+      "bytes": 1942,
+      "sha256": "1fb208b5e10d16c7530025e0af9a3c03fdad3ba6cf284fba9405831921ef2e9d"
     },
     {
       "path": "dist/replay.js",
-      "bytes": 4705,
-      "sha256": "dbd4dee6268993b2f192e50b3ff810567518a88df0ad862450710b580576c2b6"
+      "bytes": 6334,
+      "sha256": "e95d8304594becf152ab906d9a4cf2942bbcc0e3e2be75924420f819b0ba61db"
     },
     {
       "path": "dist/replay.js.map",
-      "bytes": 5924,
-      "sha256": "832a63b9efdb1729a6ff0a49a281aa60271d06c417bd5f031d16e5cdee13e1ba"
+      "bytes": 6979,
+      "sha256": "8ab997a6a044a66fb84f8379d0397ec4b6f9d93a88284a1f983467e444e637ab"
     },
     {
       "path": "dist/resources.d.ts",
@@ -5899,23 +5899,23 @@
     },
     {
       "path": "dist/touhou/bullets.d.ts",
-      "bytes": 8174,
-      "sha256": "3d8419255ebad7340d2ead46380147e6a3d8420bd9ac0623f2a70a29746b2a58"
+      "bytes": 8452,
+      "sha256": "1dd9e3b715e1dd67731b9cb62948749726dcd69ee62322a43dc367d11df37806"
     },
     {
       "path": "dist/touhou/bullets.d.ts.map",
-      "bytes": 8420,
-      "sha256": "dbb61f61bde357d3c048cc7566bea96edbb6f39b2e497d83a74e2f0bf5008201"
+      "bytes": 8457,
+      "sha256": "7bd2a85adf66d05d6284db33269ac87af9cadbd5af50a0306786a3f9ba18fd70"
     },
     {
       "path": "dist/touhou/bullets.js",
-      "bytes": 36730,
-      "sha256": "6b80003a76b1806e98627ae1dfc43f33cdd00216b06712ce7c472d2e6fa9d1d3"
+      "bytes": 37140,
+      "sha256": "23c0496134f2408fe6cc927d31a14bcd21d25b5c0612a0186908b2ebda992f4d"
     },
     {
       "path": "dist/touhou/bullets.js.map",
-      "bytes": 47446,
-      "sha256": "f1002eee1e905c70c6861fb859e35a6914af7e579b9917c47f4d841bd6a25099"
+      "bytes": 47715,
+      "sha256": "62aae8e769b78ebdaac562c4c6825d10a8c5f4e1e89a8f8c7b1194ba8db44141"
     },
     {
       "path": "dist/touhou/converging-particles.d.ts",
@@ -6179,23 +6179,23 @@
     },
     {
       "path": "dist/touhou/items.d.ts",
-      "bytes": 7552,
-      "sha256": "1ab6ac3e6fbd4f6c7e5ea92b323e1e64c7b3fc7a38788c3c24369b996c9b3621"
+      "bytes": 7747,
+      "sha256": "05671a72237e16e934baccfda5524bff3ffac6f1b0f224a63b40a582ecb08256"
     },
     {
       "path": "dist/touhou/items.d.ts.map",
-      "bytes": 6107,
-      "sha256": "8dbfae213885aa1ba60d717f8690b5996d122bd5c94b453636b9480a1696149c"
+      "bytes": 6142,
+      "sha256": "ffeb51d8ad417af79b42ecf1fc20705b2aa5744060ad362ad7e396ffcff52f74"
     },
     {
       "path": "dist/touhou/items.js",
-      "bytes": 25284,
-      "sha256": "d109dc6f3ef5934770245da745349d701e46e3f8ff85d913ae1ec24e13537ca6"
+      "bytes": 25624,
+      "sha256": "44a24cf4fb5098fa6cd207332ef8f03213eb4229809cce88ee2d464f99bae278"
     },
     {
       "path": "dist/touhou/items.js.map",
-      "bytes": 29837,
-      "sha256": "7d37a689332844acf596689907535769ae0cbbca38471143be6e75721792a955"
+      "bytes": 30152,
+      "sha256": "cfa2ff79faffbfec1450b9792bce2f0b3d7666a6c152217f5c17b47b176eafab"
     },
     {
       "path": "dist/touhou/laser-cancellation.d.ts",
@@ -6239,23 +6239,23 @@
     },
     {
       "path": "dist/touhou/lasers.d.ts",
-      "bytes": 8513,
-      "sha256": "bf6fcca7945187818b9fd4a9ea7df97a407333c9ec7031f977af0e744cb0083f"
+      "bytes": 8704,
+      "sha256": "ac5129986647f64f6071c3da3f60ea523511ce427d58c1b368d961eb816e994d"
     },
     {
       "path": "dist/touhou/lasers.d.ts.map",
-      "bytes": 7732,
-      "sha256": "fe6fe155d3f493ab856b6655f9b3725ff721c0f42f722a6dc4a3cd8dfcf1d023"
+      "bytes": 7768,
+      "sha256": "9fb4ccb7197b237653c59d4b9d91fc093bcd06892f0b2661f8f03c70c340695a"
     },
     {
       "path": "dist/touhou/lasers.js",
-      "bytes": 35546,
-      "sha256": "1b612bb35510930e508b58ee85cc332fa17e2e2d9b0de0688de220fca41e74be"
+      "bytes": 36030,
+      "sha256": "855db34dd3fba458f8f533d1301c359af8f0401e5aab7bf75901e047a1550e0d"
     },
     {
       "path": "dist/touhou/lasers.js.map",
-      "bytes": 46820,
-      "sha256": "a3abdf6dfef6bf7dfbdb87461e52ea03cbe60bd6a19a182ec73864ba770af7c7"
+      "bytes": 47245,
+      "sha256": "13263e0cc2fa0a4e268badb91610755a353e85d730be847fb0bbfe20e76fa7dc"
     },
     {
       "path": "dist/touhou/math.d.ts",
@@ -6719,23 +6719,23 @@
     },
     {
       "path": "dist/touhou/spell.d.ts",
-      "bytes": 6256,
-      "sha256": "a248455f2ef185fff5ea1070ea732c982816e739dbacfe38e422c1ae73332d1c"
+      "bytes": 6397,
+      "sha256": "0fc1afca1145998377f7222dffc9ed8936303820bf8dd108e79fa0bb062c777e"
     },
     {
       "path": "dist/touhou/spell.d.ts.map",
-      "bytes": 6017,
-      "sha256": "a785beda546cdab3228adabb762a629dfc38c9e6b774e30ca8a05fe1054c5209"
+      "bytes": 6032,
+      "sha256": "1d2312b8b2cdd947ff83ee102466e6160841e2dde26eeb640107d5c49332256b"
     },
     {
       "path": "dist/touhou/spell.js",
-      "bytes": 16040,
-      "sha256": "6d471867f3ee636a84462f39700046a0af8441ddc31cb26722351dcd5d92a4ad"
+      "bytes": 16221,
+      "sha256": "e3fb2214f1e986aa7cbc29a9f516ab69e0648bd4d61bf8e816c13d6f846c25a8"
     },
     {
       "path": "dist/touhou/spell.js.map",
-      "bytes": 18834,
-      "sha256": "a45ffac386684054d79674c26f041700353dcc88d8e98881c6f1695df82b1067"
+      "bytes": 19211,
+      "sha256": "aee87df9bb33482520a3b24e4a13bba071aa494d843b64af7e236752f6c76f48"
     },
     {
       "path": "dist/touhou/stage-clear.d.ts",
@@ -6954,8 +6954,8 @@
     },
     {
       "path": "src/input.ts",
-      "bytes": 942,
-      "sha256": "eaf3bab54ced8e5b6f2e74b533dcb3c0fe36a23d860c310adfdbb787295b684c"
+      "bytes": 1071,
+      "sha256": "6f23a6e3d69094660e67914293c1376a1691f1809cb3011472b53449dc469583"
     },
     {
       "path": "src/items.ts",
@@ -7024,8 +7024,8 @@
     },
     {
       "path": "src/replay.ts",
-      "bytes": 5065,
-      "sha256": "77fcd8c7e1da9030ae34128efaaa7749c39e0bb94d3806dded000ad4d9821f3e"
+      "bytes": 7427,
+      "sha256": "5ad7323411e394c04e4ad64cb31b3d39026392066830bb62bb5bfb50aad2d4ac"
     },
     {
       "path": "src/resources.ts",
@@ -7164,8 +7164,8 @@
     },
     {
       "path": "src/touhou/bullets.ts",
-      "bytes": 33897,
-      "sha256": "f0234f84c508be80104b163db6e81208c4f552b1a184b930ced88d6b87dfaf6c"
+      "bytes": 34361,
+      "sha256": "886d5fb373ddf798c3f32013b298c4bc327a2d9b08700d153d390efb51065310"
     },
     {
       "path": "src/touhou/converging-particles.ts",
@@ -7234,8 +7234,8 @@
     },
     {
       "path": "src/touhou/items.ts",
-      "bytes": 25764,
-      "sha256": "3195e762369318705b5a3688a16a9b14e9c60c0c7eadfaaee3e61e4875e2b732"
+      "bytes": 26076,
+      "sha256": "9c05da850cea6f56f65dfc8fc7502b6311204e5a9a8317287ba211a91aecfa6f"
     },
     {
       "path": "src/touhou/laser-cancellation.ts",
@@ -7249,8 +7249,8 @@
     },
     {
       "path": "src/touhou/lasers.ts",
-      "bytes": 30937,
-      "sha256": "be87c6de4cac087978b5fe9ac511e69b2b5b6f1e4744dda0d77626e6c225246e"
+      "bytes": 31426,
+      "sha256": "ba3f8a755f53503a1c753f5a9af63d05b3eb7b1b0022ad5130cb28733fe021ae"
     },
     {
       "path": "src/touhou/math.ts",
@@ -7369,8 +7369,8 @@
     },
     {
       "path": "src/touhou/spell.ts",
-      "bytes": 18505,
-      "sha256": "82a1e246f96b33bd0573d3cf9d1a95de84a28df995515c728596ae60df28a391"
+      "bytes": 18938,
+      "sha256": "78500dddaca1ba569cbad4eced7c51901248ff5e1029fd5203376f5fc6b8f8d3"
     },
     {
       "path": "src/touhou/stage-clear.ts",
@@ -7423,19 +7423,19 @@
       "path": "LICENSE.TS-STG",
       "bytes": 1076,
       "sha256": "54874c726261159d48ef83f5a595ddc68c43d7993d5496fff0a936e3500be58d",
-      "source": "LICENSE"
+      "source": "dist/TS-STG/LICENSE.TS-STG"
     },
     {
       "path": "PACKAGE.json",
-      "bytes": 3960,
-      "sha256": "7355ca34efe2f9afcf9b8c40e5dcd9f6c218786c29680e5759f8fd1dcf77c544",
+      "bytes": 4192,
+      "sha256": "0318781a6799bdc75c1e2501221af530df0f62f7639a641883819b402e6a2d03",
       "source": "dist/TS-STG/PACKAGE.json"
     },
     {
       "path": "THIRD_PARTY.md",
       "bytes": 4290,
       "sha256": "fdae9726aaa1eb580e0b10660305497cf424afff035ff3ca9c9ff5892ae267b5",
-      "source": "THIRD_PARTY.md"
+      "source": "dist/TS-STG/THIRD_PARTY.md"
     },
     {
       "path": "licenses/quickjs-LICENSE",
@@ -8219,8 +8219,8 @@
     },
     {
       "path": "licenses/v8-sdk-manifest.json",
-      "bytes": 8751,
-      "sha256": "6078d9f38edb3e546a0b45d0e44dbc4d576fb4ab1a888bbd42baa9203b9fbb46",
+      "bytes": 4955,
+      "sha256": "3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac",
       "source": "dist/TS-STG/licenses/v8-sdk-manifest.json"
     },
     {
@@ -8315,22 +8315,22 @@
     },
     {
       "path": "ts-stg.exe",
-      "bytes": 23399936,
-      "sha256": "98deb8c21fdfe3d526cc19fc0c79e4c92a560591a1acb1572754df84b8654c56",
-      "source": "build/Release/ts-stg.exe"
+      "bytes": 23282688,
+      "sha256": "201d6b1a44e9ef04a553af9465c9e2c38f9f2e8eb8521ba79a025c905cd2e7af",
+      "source": "build/native-dev/Release/ts-stg.exe"
     }
   ],
   "nativeBuild": {
     "configuration": "Release",
-    "executableSource": "build/Release/ts-stg.exe",
+    "executableSource": "build/native-dev/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "7355ca34efe2f9afcf9b8c40e5dcd9f6c218786c29680e5759f8fd1dcf77c544",
-    "binarySha256": "98deb8c21fdfe3d526cc19fc0c79e4c92a560591a1acb1572754df84b8654c56",
+    "packageSha256": "0318781a6799bdc75c1e2501221af530df0f62f7639a641883819b402e6a2d03",
+    "binarySha256": "201d6b1a44e9ef04a553af9465c9e2c38f9f2e8eb8521ba79a025c905cd2e7af",
     "sourceFiles": [
       {
         "path": "CMakeLists.txt",
-        "bytes": 16515,
-        "sha256": "790e77728b3b61449daedbf7f57a7d1af321d4bd28668227017238dc9879a511"
+        "bytes": 16992,
+        "sha256": "17d2f40e44f8ef1913a21ffede20c38177dba73be2c765f4184ba9e50cd7313e"
       },
       {
         "path": "native/include/tsstg/backend.hpp",
@@ -8379,13 +8379,13 @@
       },
       {
         "path": "native/src/host.cpp",
-        "bytes": 50481,
-        "sha256": "a8d5fc006dd77849d4b0ac68a461b3b80d68a82df3950b03daba040573b69d64"
+        "bytes": 50564,
+        "sha256": "5cb7b6cd4d8b6880d6272d1f6d594fff334ade1680e6f1be118d5eb20878b406"
       },
       {
         "path": "native/src/main.cpp",
-        "bytes": 4167,
-        "sha256": "d8d3ca51db9e6824f2eca756a1092111d8895979710661eef463b5fcd5a00903"
+        "bytes": 4265,
+        "sha256": "465e1ff4e4afda71099e243be61618012e1844d24411954c101c945cd2b7455c"
       },
       {
         "path": "native/src/quickjs_backend.cpp",
@@ -8413,86 +8413,99 @@
         "sha256": "ae18e973ee276ee777cf40fa0ccf4c73e23ec0280d3abd4bca39f205145ebf9a"
       }
     ],
-    "sourceSha256": "d3226e6080195c506a99e8996f754b1b0b212b19d646cdd4798d41ea5bd303df",
+    "sourceSha256": "99b337906c865d9a54f9cb3563b46b30af5d80f9ccd5732394a0ec01f8675538",
     "dependencyLog": {
-      "source": "build/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
-      "sha256": "8abfeee51c3377a380e84b5d2742edd75f05d3b46679c78f1509f06365b30f97"
+      "source": "build/native-dev/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
+      "sha256": "2943b0e36d1e9fa7d1fa9ad6e965c29441ab17a3a7781e2670143ef5bac46f2f"
     },
     "hostObject": {
-      "source": "build/ts-stg.dir/Release/host.obj",
-      "sha256": "63f65298a085b592a274185d687c3a21247de072231ed05d287c620971877bdc"
+      "source": "build/native-dev/ts-stg.dir/Release/host.obj",
+      "sha256": "7c7593dca7a043b9d7d40579b55ad609c32fd91182d3b9d262064bfface70dfa"
     },
-    "outputUtc": "2026-10-10T09:33:08.023Z",
-    "hostObjectUtc": "2026-10-10T09:33:07.142Z",
-    "latestSourceUtc": "2026-10-10T09:32:31.546Z",
+    "outputUtc": "2026-10-12T16:58:05.748Z",
     "objects": [
       {
-        "source": "build/ts-stg.dir/Release/frame_stream.obj",
-        "sha256": "578c3db591d5d331e7d200ae674ca634e35aeb7fd8db963bf09dd6d5efeb2097",
+        "source": "build/native-dev/ts-stg.dir/Release/frame_stream.obj",
+        "sha256": "c8b5a2f942f89e95762c2ebf2d31ee9946f8674c5b6e1b63da019dc1f926ec4c",
         "sourcePath": "native/src/frame_stream.cpp",
-        "outputUtc": "2026-10-10T07:03:52.083Z"
+        "outputUtc": "2026-10-12T16:58:01.177Z"
       },
       {
-        "source": "build/ts-stg.dir/Release/geometry.obj",
-        "sha256": "676a393f9840638ba3378467f596232b79ba5580f45f51c6207b2889c73ec649",
+        "source": "build/native-dev/ts-stg.dir/Release/geometry.obj",
+        "sha256": "acd9c520f351e6d672db097b9a1a986bec970ca18dab21742dd5524a7421fd4f",
         "sourcePath": "native/src/geometry.cpp",
-        "outputUtc": "2026-10-10T07:03:53.553Z"
+        "outputUtc": "2026-10-12T16:58:03.795Z"
       },
       {
-        "source": "build/ts-stg.dir/Release/host.obj",
-        "sha256": "63f65298a085b592a274185d687c3a21247de072231ed05d287c620971877bdc",
+        "source": "build/native-dev/ts-stg.dir/Release/host.obj",
+        "sha256": "7c7593dca7a043b9d7d40579b55ad609c32fd91182d3b9d262064bfface70dfa",
         "sourcePath": "native/src/host.cpp",
-        "outputUtc": "2026-10-10T09:33:07.142Z"
+        "outputUtc": "2026-10-12T16:58:02.631Z"
       },
       {
-        "source": "build/ts-stg.dir/Release/main.obj",
-        "sha256": "a4bc07affe358fe586f6f4f9ca5b0ca63a6c8f8f95718c988d1a11dbc31de19c",
+        "source": "build/native-dev/ts-stg.dir/Release/main.obj",
+        "sha256": "cbd774587a597e9f0c18d5a394e20750603adb9de86c23af92d10ef0c6de2787",
         "sourcePath": "native/src/main.cpp",
-        "outputUtc": "2026-10-10T09:33:06.416Z"
+        "outputUtc": "2026-10-12T16:58:02.923Z"
       },
       {
-        "source": "build/ts-stg.dir/Release/quickjs_backend.obj",
-        "sha256": "15c6629af94fedc10a5aac57348d76613c93ad767d5d63133872607a0732db85",
+        "source": "build/native-dev/ts-stg.dir/Release/quickjs_backend.obj",
+        "sha256": "30315423e49aa06bf718e518afebc6140947378936b53c306838549cad900b42",
         "sourcePath": "native/src/quickjs_backend.cpp",
-        "outputUtc": "2026-10-10T07:03:51.831Z"
+        "outputUtc": "2026-10-12T16:58:00.695Z"
       },
       {
-        "source": "build/ts-stg.dir/Release/text_gdi.obj",
-        "sha256": "af78eaf9f5e063c061705c59c73b5f35c4641b90b5142b14f1cf5b4238fe3015",
+        "source": "build/native-dev/ts-stg.dir/Release/text_gdi.obj",
+        "sha256": "3c76064bef531ff7a6db7d34abc8e02419e2b24b551a735efc593b8bd6a5a2f4",
         "sourcePath": "native/src/text_gdi.cpp",
-        "outputUtc": "2026-10-10T07:03:51.928Z"
+        "outputUtc": "2026-10-12T16:58:00.862Z"
       },
       {
-        "source": "build/ts-stg.dir/Release/text_win32.obj",
-        "sha256": "0d037f54522505a2103d24c4f116e62cd6aa4f91bde7397fa85f3d5bbe97af74",
+        "source": "build/native-dev/ts-stg.dir/Release/text_win32.obj",
+        "sha256": "941654bde8f317ee39623c7c962031c1e17ade3550076e32b3d22ff48c473fa0",
         "sourcePath": "native/src/text_win32.cpp",
-        "outputUtc": "2026-10-10T07:03:52.025Z"
+        "outputUtc": "2026-10-12T16:58:01.035Z"
       },
       {
-        "source": "build/ts-stg.dir/Release/v8_backend.obj",
-        "sha256": "a1dad54f8f26d831913ef3039f64acd18c46fb4936a08453897053333a1c850c",
+        "source": "build/native-dev/ts-stg.dir/Release/v8_backend.obj",
+        "sha256": "b1575ac7c5b377567c2857cfba2dabf0a9a2452f5bb06884c9f1bfd8ce0cbac4",
         "sourcePath": "native/src/v8_backend.cpp",
-        "outputUtc": "2026-10-10T07:03:50.995Z"
+        "outputUtc": "2026-10-12T16:57:59.078Z"
       }
     ],
     "linkInputs": [
       {
-        "source": "BUILD/_DEPS/RAYLIB-BUILD/RAYLIB/RELEASE/RAYLIB.LIB",
-        "sha256": "e3b940c3f8192a7489d719e19cfab346b558e69a75fea48646be3b2739451eee"
+        "source": "BUILD/NATIVE-DEV/_DEPS/RAYLIB-BUILD/RAYLIB/RELEASE/RAYLIB.LIB",
+        "sha256": "605e503b223c0b902d47f66d3cac86a40bd58387c434342fa19a61820a36f7fc",
+        "originalSource": "D:/AIWORKSPACE/TOUHOU21/BUILD/ENGINE-CTRL-REPLAY/BUILD/NATIVE-DEV/_DEPS/RAYLIB-BUILD/RAYLIB/RELEASE/RAYLIB.LIB"
       },
       {
-        "source": "BUILD/_DEPS/QUICKJS-BUILD/RELEASE/QJS.LIB",
-        "sha256": "3bc2fe8c1c54aec00f884e06190024a348c428fc3c3f176ecf372699996e0366"
+        "source": "BUILD/NATIVE-DEV/_DEPS/QUICKJS-BUILD/RELEASE/QJS.LIB",
+        "sha256": "266b176c529bef37731a3b2e030cb376d6f3c52ca75eae7e7b9aa163bec85d01",
+        "originalSource": "D:/AIWORKSPACE/TOUHOU21/BUILD/ENGINE-CTRL-REPLAY/BUILD/NATIVE-DEV/_DEPS/QUICKJS-BUILD/RELEASE/QJS.LIB"
       },
       {
-        "source": "BUILD/V8-SDK/V8-HOST.LIB",
-        "sha256": "cbdedf94c55aa2e6a2c92acfef0131e96fc5c496cad54a3431ec69d7ca48e935"
+        "source": "build/native-evidence/4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87/v8-host.lib",
+        "sha256": "4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87",
+        "originalSource": "D:/AIWORKSPACE/TOUHOU21/BUILD/NATIVE-92CE893-LOCAL-20261010/V8-SDK/V8-HOST.LIB",
+        "copyEvidence": {
+          "method": "Byte-for-byte copy of the actual linker-read library; originalSource is the real build input, source is its retained audit copy",
+          "bytes": 208544650,
+          "originalSha256": "4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87",
+          "copiedSha256": "4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87"
+        }
       }
     ],
     "linkLog": {
-      "source": "build/ts-stg.dir/Release/ts-stg.tlog/link.read.1.tlog",
-      "sha256": "88238c4c31cdccd6f9385a6fbe7dca3c8d943de273fcf8bc1cb9bcde84187578"
+      "source": "build/native-dev/ts-stg.dir/Release/ts-stg.tlog/link.read.1.tlog",
+      "sha256": "5b715c6536457eb122ff53d942a0efd0ec12c27ddfbf30bdcbff5117cad689a6"
     },
-    "evidence": "Byte-pinned native/public-library inputs, compiler dependency and all translation-unit object checks, linker input hashes and later link time. Excluded editor-launcher preferences are recorded separately. This is local build evidence, not a reproducible-build attestation."
+    "evidence": "All 17 actual native source bytes, 8 compiled translation units, compiler dependency blocks, input/object/link timestamps and real raylib/QuickJS/V8 library hashes verified. SDK is a local cached dependency external to the isolated checkout. This is not a reproducible-build attestation. External library evidence is retained as a hash-verified copy under build/native-evidence; originalSource records the path actually named by the unchanged linker log.",
+    "hostObjectUtc": "2026-10-12T16:58:02.632Z",
+    "latestSourceUtc": "2026-10-12T16:56:50.617Z",
+    "provenance": {
+      "source": "build/native-dev/provenance.json",
+      "sha256": "70b722769329397a0e318ca6f8d3ee6fbbdf99116316f8de2ed1d681a64ccf83"
+    }
   }
 }

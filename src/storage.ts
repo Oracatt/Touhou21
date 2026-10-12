@@ -3,7 +3,7 @@ import type {NativeHost} from '@ts-stg/thlib';
 import type {Progress,RunResult,RunSummary,RunReplayData} from './shared-types.js';
 
 import {ReplayPlayer,SaveStore} from '@ts-stg/thlib';
-export const GAME_REVISION=20;
+export const GAME_REVISION=21;
 export const REPLAY_SLOT_COUNT=20;
 export const DEFAULT_SETTINGS=Object.freeze({musicVolume:72,soundVolume:70,startingLives:2});
 export interface Settings{musicVolume:number;soundVolume:number;startingLives:number;}

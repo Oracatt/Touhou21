@@ -338,6 +338,39 @@ test('scene replay keeps recorded stock, HUD counters and state checkpoints whil
   playing.dispose();assert.equal(storage.saved,0);
 });
 
+test('real scene replay displays recorded spell history and capture progress through the public bitmap font without saving it',()=>{
+  const code=STAGES[0].spells[0].code,history={name:'Earlier practice',captures:[3,2],attempts:[8,6]};
+  const progress={spellRecords:{'0:1':{[code]:history}},seenSpells:[],stageUnlock:1,scores:[]};
+  const liveStorage={settings:{startingLives:2},progress,replays:Array(20).fill(null),saveProgress(){},saveReplay(){},recordClear(){}};
+  const recording=sceneFixture({storage:liveStorage,options:{invincible:true,autoCapture:true}});
+  const drawnHistory=(scene,resources)=>{
+    const writes=[],draw=resources.font.draw.bind(resources.font);
+    resources.font.draw=(target,text,style)=>{writes.push(text);return draw(target,text,style);};
+    try{scene.spell.draw(new DrawList());}finally{resources.font.draw=draw;}
+    return writes.at(-1);
+  };
+  const expectedHistory=[];
+  let frames=0;
+  while(!recording.scene.director.completed&&frames<1200){recording.scene.update(0);frames++;
+    if(frames===80)expectedHistory.push(drawnHistory(recording.scene,recording.resources));
+  }
+  assert.equal(recording.scene.director.completed,true);assert.equal(recording.scene.director.captures[0].captured,true);
+  assert.deepEqual(expectedHistory,['02/07']);assert.deepEqual(history.captures,[3,3]);assert.deepEqual(history.attempts,[8,7]);
+  const replay=recording.scene.recorder.toJSON(),recordedSource=JSON.stringify(replay);
+  assert.deepEqual(replay.config.initialSpellRecords[code].captures,[3,2]);assert.deepEqual(replay.config.initialSpellRecords[code].attempts,[8,6]);
+  const savedProgress={spellRecords:{'0:1':{[code]:{name:'Current unrelated history',captures:[25,29],attempts:[40,45]}}},seenSpells:['unrelated'],stageUnlock:6,scores:[]};
+  let writes=0;const storage={settings:{startingLives:5},progress:savedProgress,saveProgress(){writes++;},saveReplay(){writes++;},recordClear(){writes++;}};
+  const before=JSON.stringify(savedProgress),playing=sceneFixture({storage,playbackSource:replay,options:{invincible:true,autoCapture:true}});
+  for(let frame=1;frame<=frames;frame++){
+    playing.scene.update(0);
+    if(frame===80)assert.equal(drawnHistory(playing.scene,playing.resources),expectedHistory[0]);
+  }
+  assert.deepEqual(playing.scene.spell.records[code],recording.scene.spell.records[code]);
+  assert.deepEqual(playing.scene.spell.records[code].captures,[3,3]);assert.deepEqual(playing.scene.spell.records[code].attempts,[8,7]);
+  assert.equal(playing.scene.playback.desync,null);assert.equal(JSON.stringify(savedProgress),before);assert.equal(JSON.stringify(replay),recordedSource);assert.equal(writes,0);
+  playing.dispose();recording.dispose();assert.equal(writes,0);
+});
+
 test('scene stage cover draws before the common player body, and Extra public systems use difficulty four',()=>{
   const f=sceneFixture({mode:'extra',difficulty:1,stageId:7,options:{testing:true,skipRoad:true}});
   assert.equal(f.scene.difficulty,4);assert.equal(f.scene.spell.difficulty,4);assert.equal(f.scene.items.difficulty,4);

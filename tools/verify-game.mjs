@@ -44,7 +44,7 @@ const scenarios=[...Array.from({length:4},(_,difficulty)=>({id:`normal-reimu-${d
   ...[0,1].map(character=>({id:`extra-${character}`,kind:'campaign',options:{mode:'extra',character,difficulty:4}})),
   {id:'stage-practice-3',kind:'campaign',options:{mode:'stage-practice',stageId:3,character:1,difficulty:1}},
   {id:'replay-input',kind:'replay'}, {id:'continuation-replay',kind:'continuation-replay'}, {id:'ui-input',kind:'ui'},
-  {id:'pause-external-pages',kind:'pause-external-pages'}, {id:'pause-page-replay',kind:'pause-page-replay'}, {id:'replay-controls',kind:'replay-controls'},
+  {id:'pause-external-pages',kind:'pause-external-pages'}, {id:'pause-page-replay',kind:'pause-page-replay'}, {id:'replay-controls',kind:'replay-controls'}, {id:'replay-fast-forward',kind:'replay-fast-forward'},
   {id:'gameover-external-pages',kind:'gameover-external-pages'}, {id:'manual-save',kind:'manual-save'}, {id:'replay-slots',kind:'replay-slots'}, {id:'replay-termination',kind:'replay-termination'}];
 const wanted=process.env.TOUHOU21_CASES?.split(',');
 function compare(a,b,path='$'){
@@ -80,9 +80,9 @@ async function worker(){
       // cases always run again; the report states each campaign's revision.
       const campaignBaseline=!sameSource&&baselineCompatible&&scenario.kind==='campaign'?baseline.results.find(value=>value.id===scenario.id&&value.backend===backend&&value.passed):null;
       const saved=sameSource??campaignBaseline;
-      // Campaigns yield after each application frame; the final callback runs
-      // settlement assertions after the existing 100000-frame scenario bound.
-      const nativeFrames=scenario.kind==='campaign'?100001:1000;
+      // Long routes and replay cadence probes yield after each host update;
+      // batching fast-forward calls would trip QuickJS's per-call watchdog.
+      const nativeFrames=scenario.kind==='campaign'?100001:scenario.kind==='replay-fast-forward'?32001:1000;
       if(!saved)await execute(binary,[entryPath,'--root',root,'--backend',backend,'--headless','--frames',String(nativeFrames),'--snapshot',out],{cwd:root,encoding:'utf8',timeout:1800000,maxBuffer:4*1024*1024});
       const report=JSON.parse(readFileSync(out,'utf8')),nativeMs=saved?saved.nativeMs:Math.round(performance.now()-begin);
       if(saved&&scenario.kind==='campaign'){report.sceneUpdateCalls??=report.frames;report.applicationUpdateCalls??=report.frames;}

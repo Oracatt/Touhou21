@@ -4,7 +4,7 @@ import type {NativeHost} from '@ts-stg/thlib';
 import type {AnmBank,TouhouGameOptions,TouhouResources,TouhouStartSelection} from '@ts-stg/thlib/touhou';
 import type {RunConfig,RunOptions,RunResult,RunReplayData,RunPlayback} from './shared-types.js';
 
-import {DrawList,ReplayPlayer,Keys} from '@ts-stg/thlib';
+import {DrawList,ReplayPlayer,ReplayPlaybackController,Keys} from '@ts-stg/thlib';
 import {TouhouApplication,TouhouRNG,TouhouButtons,createTouhouResources} from '@ts-stg/thlib/touhou';
 import {GAME,STAGES,PLAYERS,ALL_SPELLS,MIDBOSS_SPELLS,MUSIC_COMMENTS} from './content.js';
 import {MUSIC_TRACKS} from './music-data.js';
@@ -35,6 +35,7 @@ export class ProjectApplication {
   declare extraSelection: Partial<RunConfig>;
   declare destroyed: boolean;
   declare liveButtons: TouhouButtons;
+  readonly replayControl = new ReplayPlaybackController();
   declare resources: TouhouResources;
   declare renderTarget: number;
   declare compositeTarget: number;
@@ -133,7 +134,7 @@ export class ProjectApplication {
     this.page=new ListPage<ReplayRow>({...this.pageOptions('回放鉴赏',inGame,close),rows:this.replayRows(),
       detail:row=>row.empty?'这个栏位还没有回放。游戏结束后可选择栏位保存。':this.replayDetail(row),
       onSelect:(row,page)=>{if(row.empty)return;const entry=row.entry!;
-        try{const player=new ReplayPlayer(entry.replay) as RunPlayback;if(entry.revision!==GAME_REVISION||player.config.revision!==GAME_REVISION)throw new Error('这是旧版本的回放。');if(player.config.backend!==this.host.backend)throw new Error(`请通过 ${player.config.backend==='quickjs'?'Play-QuickJS.cmd':'Play.cmd'} 使用录制时的后端。`);
+        try{const player=new ReplayPlayer(entry.replay) as RunPlayback;if(entry.revision!==GAME_REVISION||player.config.revision!==GAME_REVISION)throw new Error('这是旧版本的回放，请使用录制时的游戏版本播放。');if(player.config.backend!==this.host.backend)throw new Error(`请通过 ${player.config.backend==='quickjs'?'Play-QuickJS.cmd':'Play.cmd'} 使用录制时的后端。`);
           this.core.game?.saveRun({aborted:true});this.playbackSource=entry.replay;this.extraSelection={};this.page=null;this.core.startTransition(player.config);
         }catch(error){page.message=(error as Error).message;}}});}
   openRecords(){const rows=this.storage.progress.scores.map((entry,index)=>({label:`${String(index+1).padStart(2,'0')}　${PLAYERS[entry.character].name}　${entry.difficulty===4||entry.mode==='extra'?'Extra':GAME.difficultyNames[entry.difficulty]}　${score(entry.score)}`,entry}));
@@ -165,18 +166,21 @@ export class ProjectApplication {
   openPlaybackPause(){
     const addedAudioPause=!this.music.paused;if(addedAudioPause)this.pauseAudio();
     const resume=()=>{this.page=null;if(addedAudioPause)this.resumeAudio();};
-    this.page=new ListPage({...this.pageOptions('回放暂停',true),rows:[{label:'继续播放'},{label:'返回标题',exit:true}],detail:()=> 'Esc 暂停 / 返回　Shift 按住以 2 倍速播放。',onClose:resume,onSelect:row=>row.exit?this.leaveGame():resume()});
+    this.page=new ListPage({...this.pageOptions('回放暂停',true),rows:[{label:'继续播放'},{label:'返回标题',exit:true}],detail:()=> 'Esc 暂停 / 返回　按住 Ctrl 快进，松开恢复。',onClose:resume,onSelect:row=>row.exit?this.leaveGame():resume()});
   }
   update(mask=0){
     if(this.destroyed)return;this.frame++;this.liveButtons.update(mask);
     if(!this.page&&this.core.game?.playback&&(this.liveButtons.pressed&Keys.PAUSE)){this.openPlaybackPause();return;}
     if(this.page){this.page.update(mask);this.music.update();this.resources.audio?.flush();return;}
-    const game=this.core.game,playing=!!game?.playback,updates=playing&&(mask&Keys.FOCUS)?2:1;
-    try{for(let i=0;i<updates;i++){
-      if(i&&(this.page||this.core.game!==game||!this.core.game?.playback))break;
+    const game=this.core.game,playing=!!game?.playback;
+    const step=()=>{
       if(this.playbackExternalClose){const close=this.playbackExternalClose;this.playbackExternalClose=null;close();}
-      this.core.update(playing?0:mask);
-    }}catch(error){
+      this.core.update(playing?0:mask&~Keys.FAST_FORWARD);
+    };
+    try{
+      if(playing)this.replayControl.update(mask,step,{shouldContinue:()=>!this.page&&this.core.game===game&&!!game?.playback&&!game.replayDone});
+      else step();
+    }catch(error){
       if(!playing||!String((error as Error).message).startsWith('Replay desync'))throw error;
       this.music.pause();this.page=new ListPage({...this.pageOptions('回放无法继续',true),rows:[{label:'返回标题'}],detail:()=>`第 ${game!.playback!.frame} 帧的回放校验未通过。\n请使用录制时的版本和后端。`,onClose:()=>this.leaveGame(),onSelect:()=>this.leaveGame()});
     }

@@ -192,19 +192,47 @@ function* replayControls(){
   const recorded=app.core.game.recorder.toJSON();app.playbackSource=recorded;app.core.start(recorded.config);const game=app.core.game;
   tick(app,100);const position=game.playback.frame;tap(app,Keys.PAUSE);
   assert(app.page&&game.playback.frame===position,'Live Esc opens a replay control page without consuming recorded inputs');
-  tick(app,20);assert(game.playback.frame===position,'Replay control page freezes the recorded stream');app.update(Keys.SHOOT);
+  tick(app,20,Keys.FAST_FORWARD);assert(game.playback.frame===position,'Held Ctrl cannot advance a paused replay');app.update(Keys.SHOOT);
   assert(app.page===null&&game.playback.frame===position,'Z resumes without consuming an extra recorded frame');
   tick(app,1);assert(game.playback.frame===position+1,'Normal replay advances exactly one input per application update');
-  const speedPosition=game.playback.frame;tick(app,10,Keys.FOCUS);assert(game.playback.frame===speedPosition+20,'Live Shift advances two recorded inputs per update');
+  const speedPosition=game.playback.frame;tick(app,10,Keys.FOCUS);assert(game.playback.frame===speedPosition+10,'Live Shift does not change replay speed');
+  const fastPosition=game.playback.frame;tick(app,10,Keys.FAST_FORWARD);assert(game.playback.frame===fastPosition+80,'Public held Ctrl advances eight complete inputs per update');
+  app.update(0);assert(game.playback.frame===fastPosition+81,'Releasing Ctrl immediately restores one input per update');
   while(!app.replayFinished){app.update(0);if(game.playback.frame%128===0)yield;}
   assert(game.playback.desync===null,'Live controls preserve actual replay checkpoints');
   app.replayFinished=false;app.playbackSource=recorded;app.core.start(recorded.config);tick(app,20);tap(app,Keys.PAUSE);tick(app,12);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
   assert(app.core.mode==='title'&&app.page===null,'Live control menu exits replay to title');
   const damaged=JSON.parse(JSON.stringify(recorded));damaged.checkpoints[0].hash='00000000';app.playbackSource=damaged;app.core.start(damaged.config);
-  for(let i=0;i<600;i++){app.update(0);if(i%128===127)yield;}
+  for(let i=0;i<75;i++){app.update(Keys.FAST_FORWARD);if(i%16===15)yield;}
   assert(app.page?.title==='回放无法继续'&&app.core.game.playback.desync?.frame===600,'A damaged checkpoint stops on a friendly replay result page');
   const stopped=app.core.game.playback.frame;tick(app,15);assert(app.core.game.playback.frame===stopped,'A stopped replay consumes no further input');tap(app,Keys.SHOOT);assert(app.core.mode==='title','Damaged replay can return to title');
   result={kind:'replay-controls',frames:recorded.frames,applicationFrames:app.frame,checkedFrames:recorded.frames,checkpoints:recorded.checkpoints,memoryWrites:writes,snapshot:app.snapshot()};
+}
+function* replayFastForward(){
+  const options={autostart:true,mode:'stage-practice',stageId:1,character:0,difficulty:1,invincible:true,autoCapture:true,autoDialogue:true,autoStageClear:true};
+  application=make(options);const app=application,source=app.core.game;let frames=0;
+  while(!app.finishedResult&&frames<15000){
+    app.update(Keys.SHOOT|(frames%240<120?Keys.LEFT:Keys.RIGHT));
+    app.render();frames++;yield;
+  }
+  assert(app.finishedResult&&frames>1200,'Sample crosses the real road, midboss and final Boss settlements');
+  const recorded=source.recorder.toJSON(),expected=source.snapshot(),records=JSON.stringify(source.spell.records),checks=recorded.checkpoints.length;
+  assert(checks>=2&&source.director.captures.length===2,'Recorded route includes periodic checks and both first-stage cards');
+  const beforeWrites=writes,progress=JSON.stringify(app.storage.progress),runs=[];
+  for(const speed of [1,8]){
+    app.finishedResult=null;app.replayFinished=false;app.playbackSource=recorded;app.core.start(recorded.config);
+    const playing=app.core.game;let calls=0;
+    while(!app.replayFinished&&calls<recorded.frames+10){
+      app.update(speed===8?Keys.FAST_FORWARD:0);app.render();calls++;
+      assert(!app.page,'Replay must not stop on a desync page');yield;
+    }
+    assert(app.replayFinished&&playing.playback.desync===null,'Both playback speeds reach EOF and pass every checkpoint');
+    assert(stateHash(playing.snapshot())===stateHash(expected),'Rendering once per host update cannot change replay state');
+    assert(JSON.stringify(playing.spell.records)===records,'Replay preserves recorded spell attempts and captures');
+    runs.push({speed,calls,frames:playing.playback.frame,checkedFinalHash:stateHash(playing.snapshot())});
+  }
+  assert(writes===beforeWrites&&JSON.stringify(app.storage.progress)===progress,'Playback does not write player progress');
+  result={kind:'replay-fast-forward',frames,checks,runs,memoryWrites:writes};
 }
 function* gameOverExternalPages(){
   memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
@@ -465,7 +493,7 @@ function* ui(){
   main(4);tick(app,12);tap(app,Keys.SHOOT);assert(app.playbackSource===sample,'Replay selection passes real recorder format into application');tick(app,100);assert(app.replayFinished,'Selected replay completes after the shared scene transition');visited.push('replay-playback');
   result={kind:'ui',visited,frames:app.frame,memoryWrites:writes,snapshot:app.snapshot()};
 }
-const runners={campaign,replay,'continuation-replay':continuationReplay,ui,'pause-external-pages':pauseExternalPages,'pause-page-replay':pausePageReplay,'replay-controls':replayControls,'gameover-external-pages':gameOverExternalPages,'manual-save':manualSave,'replay-slots':replaySlots,'replay-termination':replayTermination};
+const runners={campaign,replay,'continuation-replay':continuationReplay,ui,'pause-external-pages':pauseExternalPages,'pause-page-replay':pausePageReplay,'replay-controls':replayControls,'replay-fast-forward':replayFastForward,'gameover-external-pages':gameOverExternalPages,'manual-save':manualSave,'replay-slots':replaySlots,'replay-termination':replayTermination};
 const runner=runners[scenario.kind]?.()??null;
 let started=null;
 return{

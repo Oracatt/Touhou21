@@ -151,8 +151,16 @@ test('engine synchronization requires an explicit commit and a separate source t
   assert.throws(()=>planEngineUpgrade({commit:null}),/full intended source commit/);
   assert.throws(()=>planEngineUpgrade({source:PROJECT_ROOT,commit:readEngineLock().commit}),/separate directories/);
 });
+const liveSdkSource=readEngineLock().source;
+const canonicalSdkInputs=['build/Release/ts-stg.exe','build/v8-sdk/v8-host.lib',
+  'build/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog','build/ts-stg.dir/Release/ts-stg.tlog/link.read.1.tlog'];
+const missingCanonicalSdkInputs=canonicalSdkInputs.filter(file=>!fs.existsSync(path.join(liveSdkSource,file)));
+const liveSdkSkip=process.platform!=='win32'?'Live SDK synchronization requires Windows':
+  !fs.existsSync(liveSdkSource)?'Live SDK source checkout is unavailable':
+  missingCanonicalSdkInputs.length?'Canonical SDK build fixture unavailable: '+missingCanonicalSdkInputs.join(', '):false;
+
 test('engine synchronization preserves local edits and user data while retaining the old snapshot',
- {skip:process.platform!=='win32'||!fs.existsSync(readEngineLock().source)},()=>{
+ {skip:liveSdkSkip},()=>{
   verifyEngineLock();
   const build=path.join(PROJECT_ROOT,'build');fs.mkdirSync(build,{recursive:true});
   const fixture=fs.mkdtempSync(path.join(build,'engine-sync-verification-'));
