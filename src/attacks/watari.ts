@@ -65,14 +65,14 @@ function ripplesBeforeLanding(k: AttackKit){
 }
 
 /** 舟符「无岸单程票」: tickets launch from both banks and bend down
- * into the river. Banks alternate, so arcs cross in a woven X. From Normal
+ * into the river. Banks alternate, so arcs cross in a woven X. From Hard
  * each fan carries a slower second row that bends in tighter, so the banks
  * weave a double net. */
 function oneWayTicket(k: AttackKit){
   const period=k.pick(30,23,20,17),n=k.pick(8,11,13,15);
   if(k.every(period)){
     const wave=k.t/period|0,side=wave%2?1:-1,y=[46,96,146,96][(wave>>1)%4],inward=side<0?.32:Math.PI-.32;
-    k.fan(side*186,y,n,2.25,inward,.13,T.AMULET,side<0?C.MINT:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304,rows:k.pick(1,2,2,2),speedStep:1.65});
+    k.fan(side*186,y,n,2.25,inward,.13,T.AMULET,side<0?C.MINT:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304,rows:k.pick(1,1,2,2),speedStep:1.65});
   }
 }
 oneWayTicket.home={x:0,y:96};
