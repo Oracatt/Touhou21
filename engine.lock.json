@@ -3,7 +3,7 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/github/TS-STG",
-  "commit": "92ce893469569d1e8f318bbde18ea158bab53691",
+  "commit": "3e698c5c5618b23bdde38fdb6cec9ee51cc33909",
   "backend": "v8",
   "supportedBackends": [
     "v8",
@@ -1450,8 +1450,8 @@
       },
       {
         "path": "src/touhou/lasers.ts",
-        "bytes": 30812,
-        "sha256": "c794647c3eb9ff28d7643aa0139675f7f8edb742d392f7b1a81ef1c3ffc5f405"
+        "bytes": 30937,
+        "sha256": "be87c6de4cac087978b5fe9ac511e69b2b5b6f1e4744dda0d77626e6c225246e"
       },
       {
         "path": "src/touhou/math.ts",
@@ -1619,7 +1619,7 @@
         "sha256": "bf6dbafbd67e762ac716826a68e6ecc17894b0e110ad177446857a77a1fadbe3"
       }
     ],
-    "sourceSha256": "6820901bf54adfe850f5c30ad37f067ba71a5e3c0dfdfbd78282ff81e6a9279f",
+    "sourceSha256": "0d610974ccb1ea07bb27d109d31c56fbeb28f9890df6428f84d15f4266484c60",
     "outputFiles": [
       {
         "path": "dist/animation.d.ts",
@@ -3089,17 +3089,17 @@
       {
         "path": "dist/touhou/lasers.d.ts.map",
         "bytes": 7732,
-        "sha256": "5895df67136d0d1e4dca2effc3d2562fd0f2525dbe3f51c218463f9b5c53d702"
+        "sha256": "fe6fe155d3f493ab856b6655f9b3725ff721c0f42f722a6dc4a3cd8dfcf1d023"
       },
       {
         "path": "dist/touhou/lasers.js",
-        "bytes": 35404,
-        "sha256": "adb506f151560008b57ea1b2631d8df6836f560c06889103ab9ef91ad5c324e2"
+        "bytes": 35546,
+        "sha256": "1b612bb35510930e508b58ee85cc332fa17e2e2d9b0de0688de220fca41e74be"
       },
       {
         "path": "dist/touhou/lasers.js.map",
-        "bytes": 46927,
-        "sha256": "ebdf89098cda2e37071e276bbdd22c134478d94db8c34be2a3e259c4381ec653"
+        "bytes": 46820,
+        "sha256": "a3abdf6dfef6bf7dfbdb87461e52ea03cbe60bd6a19a182ec73864ba770af7c7"
       },
       {
         "path": "dist/touhou/math.d.ts",
@@ -3722,9 +3722,9 @@
         "sha256": "b703b3ba74beb0892d0bed9d6694352bc5b09b7fe44ff4b56ed020fc061e971b"
       }
     ],
-    "outputSha256": "aec699869c1f0a4256ce0a7d919b2658623660d546367221cde0a7c1ba6735a3"
+    "outputSha256": "59a0c12a423957c96ff58f52f7997c3fa471492e7092a059ec494cf2bb061d34"
   },
-  "thlibSha256": "ab202abb345dd92aa7aa1cdbe18a050b8d08958fd0a3f887e318426b58f3279f",
+  "thlibSha256": "3410ade544dd84dd9c3ed4e78a1b5cc8d65ed1635005c31b5564407dda0222a0",
   "runtimeSha256": "4bd849c41f06467a53ae31dcf29bd5de66313c4dcd1154248c84718b049cdd6d",
   "thlibFiles": [
     {
@@ -6245,17 +6245,17 @@
     {
       "path": "dist/touhou/lasers.d.ts.map",
       "bytes": 7732,
-      "sha256": "5895df67136d0d1e4dca2effc3d2562fd0f2525dbe3f51c218463f9b5c53d702"
+      "sha256": "fe6fe155d3f493ab856b6655f9b3725ff721c0f42f722a6dc4a3cd8dfcf1d023"
     },
     {
       "path": "dist/touhou/lasers.js",
-      "bytes": 35404,
-      "sha256": "adb506f151560008b57ea1b2631d8df6836f560c06889103ab9ef91ad5c324e2"
+      "bytes": 35546,
+      "sha256": "1b612bb35510930e508b58ee85cc332fa17e2e2d9b0de0688de220fca41e74be"
     },
     {
       "path": "dist/touhou/lasers.js.map",
-      "bytes": 46927,
-      "sha256": "ebdf89098cda2e37071e276bbdd22c134478d94db8c34be2a3e259c4381ec653"
+      "bytes": 46820,
+      "sha256": "a3abdf6dfef6bf7dfbdb87461e52ea03cbe60bd6a19a182ec73864ba770af7c7"
     },
     {
       "path": "dist/touhou/math.d.ts",
@@ -7249,8 +7249,8 @@
     },
     {
       "path": "src/touhou/lasers.ts",
-      "bytes": 30812,
-      "sha256": "c794647c3eb9ff28d7643aa0139675f7f8edb742d392f7b1a81ef1c3ffc5f405"
+      "bytes": 30937,
+      "sha256": "be87c6de4cac087978b5fe9ac511e69b2b5b6f1e4744dda0d77626e6c225246e"
     },
     {
       "path": "src/touhou/math.ts",
