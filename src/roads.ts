@@ -260,10 +260,12 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       if(stageId===4)k.fan(k.ox,k.oy,1,2.2,DOWN,0,p.needle,p.main,null,{safe:4096,rows:k.pick(1,2,3,4),speedStep:1.5});
       else k.fan(k.ox,k.oy,k.pick(1,2,2,3),2.3,DOWN-side*.45,.3,p.needle,p.main,null,{safe:4096});}break;
     case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172))k.ring(k.ox,k.oy,k.pick(6,8,10,14),2,k.unit()*TAU,p.type,p.accent,[k.stopTo(40,DOWN+side*.25,k.pick(1.1,1.3,1.4,1.5))],{safe:4096});break;
-    case 'current':if(age>=24&&age%k.pick(34,20,14,11)===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
-      k.shot(k.ox,k.oy,a,2,p.needle,s<0?p.main:p.alt,[k.curve(Math.sign(turn)*.02,Math.round(Math.abs(turn)/.02))],{safe:4096,silent:s>0||hush(state,age,44)});}break;
-    case 'stitch':{const step=k.pick(34,16,13,10);if(age>=16&&age%step===0){const warp=o.formation==='warp',a=warp?DOWN+((age/step|0)%2?.55:-.55):DOWN;
-      k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),k.set(a,k.pick(1.6,1.9,2.1,2.3))],{safe:4096,silent:hush(state,age,32)});}break;}
+    // Climbers' side shots bend back downstream; on stage 3 the current pauses and surges at the player.
+    case 'current':if(age>=24&&age%(stageId===3?k.pick(48,28,20,15):k.pick(34,20,14,11))===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
+      k.shot(k.ox,k.oy,a,2,p.needle,s<0?p.main:p.alt,[stageId===3?k.stopAim(30,k.pick(2.2,2.5,2.7,2.9)):k.curve(Math.sign(turn)*.02,Math.round(Math.abs(turn)/.02))],{safe:4096,silent:s>0||hush(state,age,44)});}break;
+    // Warp stitches fall on alternating slants; stage 4 weft stitches are pulled taut toward the player.
+    case 'stitch':{const step=k.pick(34,16,13,10);if(age>=16&&age%step===0){const warp=o.formation==='warp',a=warp?DOWN+((age/step|0)%2?.55:-.55):DOWN,speed=k.pick(1.6,1.9,2.1,2.3);
+      k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),!warp&&stageId===4?k.aimNow(speed+.3):k.set(a,speed)],{safe:4096,silent:hush(state,age,32)});}break;}
     case 'line':if(age===40||age===100||(k.rank>=2&&age===160)||(k.rank>=3&&age===220)){const n=k.pick(4,5,6,8),blank=(k.unit()*(n-1))|0;
       for(let i=0;i<n;i++)if(i!==blank&&i!==blank+1)k.shot(k.ox+(i-(n-1)/2)*18,k.oy+8,DOWN,1.7,p.needle,i%2?p.main:p.accent,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:1.35,silent:i!==(blank===0?2:0)});}break;
     case 'seal':if(relay(age,56,o).phase===0){k.aimed(k.ox,k.oy,1,1.7,0,T.BIG,p.orb,null,{safe:4096});
