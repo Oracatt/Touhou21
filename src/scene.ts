@@ -138,7 +138,10 @@ export class CampaignScene extends TouhouGame {
       onEvent?.(name,data);
     };
     this.bossHud!.drawName=(queue,name,style)=>{const label=names.get(this.context.boss?.bossId as string)??name;
-      queue.enqueuePriority!(style.drawPriority!,draw=>this.text.draw(draw,label,76,18,{size:16,width:455,height:25,color:0xf8e8caff,alpha:(style.color!>>>24)/255}));};
+      const screenScale=this.bossHud!.font?.screenScale??1.5,scale=(style.scaleY??.65)/.65;
+      // Follow the public name/star anchor; compensate for this vector font's top leading.
+      const x=style.x!*screenScale,y=style.y!*screenScale-6*scale;
+      queue.enqueuePriority!(style.drawPriority!,draw=>this.text.draw(draw,label,x,y,{size:16,width:455,height:25,scale,color:0xf8e8caff,alpha:(style.color!>>>24)/255}));};
     this.director=new CampaignDirector({stages,midbosses:MIDBOSSES,character:config.character,difficulty:config.difficulty,mode:config.mode,stageId:config.stageId,spellId:config.spellId,seed:config.seed,
       callbacks:{
         music:(id,{silenceFrames=0}={})=>{
