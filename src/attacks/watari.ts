@@ -74,9 +74,9 @@ function oneWayTicket(k: AttackKit){
     const wave=k.t/period|0,side=wave%2?1:-1,y=[46,96,146,96][(wave>>1)%4],inward=side<0?.32:Math.PI-.32;
     k.fan(side*186,y,n,2.25,inward,.13,T.AMULET,side<0?C.MINT:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304});
   }
-  const every=k.pick(180,120,120,120);
+  const every=k.pick(180,150,136,120);
   if(k.every(every,every/2)){const hoop=k.t/every|0,count=k.pick(12,16,18,20);
-    k.ring(k.ox,k.oy,count,2.2,hoop*Math.PI/count,T.SCALE,C.AZURE,[k.wait(24),k.stopAim(22,k.pick(1,1.45,1.55,1.65))]);}
+    k.ring(k.ox,k.oy,count,2.2,hoop*Math.PI/count,T.SCALE,C.AZURE,[k.wait(24),k.stopAim(22,k.pick(1,1.15,1.3,1.45))]);}
 }
 oneWayTicket.home={x:0,y:96};
 
