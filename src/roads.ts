@@ -118,6 +118,9 @@ export const ROAD_ATTACKS=Object.freeze(['aim','stream','lantern','fan','ring','
 const GAPS:Readonly<Record<string,number>>=Object.freeze({arch:12,procession:20,gate:14,'rain-line':10,cloud:28,post:16,waterway:18,upstream:18,crossing:18,loom:16,warp:12,archive:10,page:18,choir:12});
 /** Climbers from the lower walls hold fire until they are above the player's lane. */
 const FIRE_FLOOR:Readonly<Record<string,number>>=Object.freeze({upstream:220});
+/** Share of the route a formation fires through. Large fairies hold fire once
+ * they turn to leave, so a falling curtain is never dragged across the field. */
+const FIRE_ROUTE:Readonly<Record<string,number>>=Object.freeze({anchor:.7});
 
 export function createRoadPlan(stageId:number,roadFrames=BASE_FRAMES[stageId-1]){
   const score=ROAD_SCRIPTS[stageId-1];if(!score)throw new RangeError(`Undefined road ${stageId}`);
@@ -307,6 +310,7 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
   const gap=spec.gap??GAPS[spec.formation]??0,floor=FIRE_FLOOR[spec.formation]??290;
   for(let index=0;index<count;index++){
     const state:RoadState & {age:number;heading:number}={age:0,heading:-DOWN},life=spec.life??role.life,jitter=(rng.unit()-.5)*12,delay=index*gap;
+    const fireUntil=life*(FIRE_ROUTE[spec.formation]??1);
     const pathOptions={index,count,side:spec.side,life,jitter,rank},initial=roadPath(spec.formation,pathOptions,0);
     const enemy=game.spawnEnemy({x:initial.x,y:initial.y,hp:Math.round(role.hp*(.85+rank*.1)),script:role.script,directional:role.directional??true,
       deathBank:game.banks.effect,drop:[],damageInvulnerability:0,
@@ -317,7 +321,7 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
         const dx=position.x-actor.x,dy=position.y-actor.y;
         actor.motion.flags=0;actor.motion.speed=Math.fround(Math.hypot(dx,dy));actor.motion.angle=Math.fround(Math.atan2(dy,dx));
         if(dx||dy)state.heading=Math.atan2(dy,dx);
-        if(canFire()&&age>=delay&&actor.y>=10&&actor.y<=floor&&Math.abs(actor.x)<=184)
+        if(canFire()&&age>=delay&&route<fireUntil&&actor.y>=10&&actor.y<=floor&&Math.abs(actor.x)<=184)
           updateRoadEnemy({game,enemy:actor,frame:age-delay,difficulty,stageId,attack:spec.attack,state,index,count,gap,side:spec.side,formation:spec.formation,
             heading:state.heading,center:spec.formation==='round'?roundCenter(spec.side,life,route):null,rng,onAttack});
         if(age>=life+delay){actor.alive=false;actor.animation.destroy();}
