@@ -89,14 +89,13 @@ function paperGodUncalled(k: AttackKit){
 paperGodUncalled.home={x:0,y:112};
 
 /** 铃名「千户应答之金色声纹」: on every beat the god calls with a golden
- * ring; houses on both banks answer in turn, top to bottom, and the replies
- * cross in the middle of the street. */
+ * ring; houses on both banks answer in turn with aimed replies. */
 function thousandHouseholdsAnswer(k: AttackKit){
   const beat=k.pick(42,34,29,25),b=k.t/beat|0,c=k.t%beat;
   if(c===0)k.ringGap(k.ox,k.oy,k.pick(18,24,30,34),2,T.BALL,b%2?C.YELLOW:C.ORANGE,null,{offset:(b%2)*.08});
   if(c===(beat>>1)){
     const house=b%4,y=70+house*52;
-    for(const side of[-1,1])k.fan(side*182,y,k.pick(1,3,3,3),2.5,side<0?.5:Math.PI-.5,.17,T.RICE,C.WHITE,null,{rows:k.pick(1,2,3,3),speedStep:1.8,silent:side>0,safe:2304});
+    for(const side of[-1,1])k.aimed(side*182,y,k.pick(1,3,3,3),2.5,.17,T.RICE,C.WHITE,null,{rows:k.pick(1,2,3,3),speedStep:1.8,silent:side>0,safe:2304});
   }
   if(k.rank>=2&&c===(beat>>2))k.ring(k.ox,k.oy,12,1.4,b*.4,T.STAR,C.PALE);
 }
