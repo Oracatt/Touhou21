@@ -104,8 +104,8 @@ thousandHouseholdsAnswer.home={x:0,y:104};
 /** 归名「生者旧称之错列」: warm living names fall one way, cold old names
  * the other, crossing into a moving lattice; every few seconds the rows pause
  * for a breath and then swap directions. In each breath the Boss opens a
- * six-petal flower, warm and cold petals in turn; halfway through the rows a
- * ring of name slips spreads from her. */
+ * six-petal flower, warm and cold petals in turn; halfway through the rows
+ * she sends a ring of name slips with one slip pointed at the player. */
 function livingAndOldNames(k: AttackKit){
   const period=k.pick(28,23,20,17),spacing=k.pick(68,60,54,50),swap=(k.t/300|0)%2?-1:1;
   if(k.every(period)&&k.t%300<270){
@@ -118,7 +118,7 @@ function livingAndOldNames(k: AttackKit){
   if(k.every(300,272)){const petal=TAU/6;
     burstShape(k,k.ox,k.oy,rose(6,k.pick(36,48,60,72)),1.7,(k.t/300|0)*petal/2,T.RICE,C.ORANGE,null,
       {colorOf:(i,p)=>Math.round(p.angle/petal)%2?C.SKY:C.ORANGE});}
-  if(k.every(300,135))k.ring(k.ox,k.oy,k.pick(10,12,14,16),1.35,(k.t/300|0)*.3,T.AMULET,C.PALE,null,{rows:k.pick(1,2,2,3),speedStep:1.1});
+  if(k.every(300,135))k.ring(k.ox,k.oy,k.pick(10,12,14,16),1.35,k.aim(),T.AMULET,C.PALE,null,{rows:k.pick(1,2,2,3),speedStep:1.1});
 }
 livingAndOldNames.home={x:0,y:92};
 
