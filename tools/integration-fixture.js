@@ -146,7 +146,7 @@ function* continuationReplay(){
     checkedFinalHash:stateHash(expected),replayFinalHash:stateHash(playing.snapshot()),snapshot:expected,memoryWrites:writes};
 }
 function* pauseExternalPages(){
-  application=make({autostart:true,invincible:true});const app=application,game=app.core.game,visited=[];
+  application=make({autostart:true,testing:false,invincible:true});const app=application,game=app.core.game,visited=[];
   tick(app,40);
   for(const [selection,title]of [[3,'游戏说明'],[2,'保存回放']]){
     tap(app,Keys.PAUSE);tick(app,12);assert(game.paused&&game.pauseVisual.phase===6,'Public Pause opens its normal menu');
@@ -162,7 +162,7 @@ function* pauseExternalPages(){
   result={kind:'pause-external-pages',frames:app.frame,visited,memoryWrites:writes,snapshot:game.snapshot()};
 }
 function* pausePageReplay(){
-  application=make({autostart:true,invincible:true});const app=application,source=app.core.game,visited=[];
+  application=make({autostart:true,testing:false,invincible:true});const app=application,source=app.core.game,visited=[];
   tick(app,100);
   for(const [selection,title]of [[3,'游戏说明'],[2,'保存回放']]){
     tap(app,Keys.PAUSE);tick(app,12);for(let i=0;i<selection;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
@@ -176,11 +176,12 @@ function* pausePageReplay(){
     tap(app,Keys.PAUSE);tick(app,16);assert(!source.paused,'Recording returns through public Pause resume');yield;
   }
   while(source.recorder.frames<1800){app.update(0);if(source.recorder.frames%128===0)yield;}
+  source.saveRun({aborted:true});
   const recorded=source.recorder.toJSON(),expected=source.snapshot(),progress=JSON.stringify(app.storage.progress),beforeWrites=writes;
   app.playbackSource=recorded;app.core.start(recorded.config);const playing=app.core.game;
   for(let i=0;i<recorded.frames;i++){app.update(0);assert(app.page===null,'Replayed external requests cannot leave a live UI page freezing gameplay');if(i%128===127)yield;}
   assert(playing.playback.desync===null&&stateHash(playing.snapshot())===stateHash(expected),'Deferred external-close callbacks reproduce every recorded waiting/restoration frame');
-  app.update(0);assert(app.replayFinished,'Pause/page replay reaches App completion');
+  app.update(0);assert(app.page?.title==='回放结束','Pause/page replay reaches the real App completion page');
   assert(JSON.stringify(app.storage.progress)===progress&&writes===beforeWrites,'Pause/page replay does not mutate progress');
   result={kind:'pause-page-replay',frames:recorded.frames,applicationFrames:app.frame,visited,config:recorded.config,inputRuns:recorded.runs,checkpoints:recorded.checkpoints,
     checkedFinalHash:stateHash(expected),replayFinalHash:stateHash(playing.snapshot()),snapshot:expected,memoryWrites:writes};
@@ -208,7 +209,7 @@ function* replayControls(){
 function* gameOverExternalPages(){
   memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
   memory.set('userdata/guiming-progress.json',JSON.stringify({scores:[{character:0,difficulty:1,mode:'normal',score:12345678}]}));
-  application=make({autostart:true});const app=application,game=app.core.game,visited=[];
+  application=make({autostart:true,testing:false});const app=application,game=app.core.game,visited=[];
   let frames=0,stageTrack=null;while(!(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6)&&frames<3000){if(!game.paused)stageTrack=app.music.current?.id;app.update(0);frames++;if(frames%128===0)yield;}
   assert(game.paused&&game.pauseVisual instanceof TouhouGameOver,'Real road miss opens the public GameOver owner');
   assert(stageTrack===STAGES[0].bgmStage&&app.music.current?.id==='playersScore'&&!app.music.paused,'GameOver interrupts the stage BGM with Player\'s Score');
@@ -224,15 +225,150 @@ function* gameOverExternalPages(){
   assert(app.music.current?.id===stageTrack&&!app.music.paused,'Continue restores the interrupted stage BGM');
   result={kind:'gameover-external-pages',frames:app.frame,visited,music:{stage:stageTrack,gameOver:'playersScore',continued:app.music.current.id},memoryWrites:writes,snapshot:game.snapshot()};
 }
+function selectReplaySlot(app,slot){
+  assert(app.page?.title==='保存回放'&&app.page.rows.length===20,'The save page contains all twenty fixed slots');
+  tick(app,12);let moves=0;while(app.page.selection!==slot&&moves++<20)tap(app,Keys.DOWN);
+  assert(app.page.selection===slot&&app.page.row.slot===slot,'Direction inputs select the requested stable slot');
+}
+function pauseChoice(app,selection){
+  const game=app.core.game;
+  if(!game.paused){tap(app,Keys.PAUSE);tick(app,12);}
+  assert(game.pauseVisual.phase===6,'The real pause/result menu is ready for input');
+  let moves=0;while(game.pauseVisual.selection!==selection&&moves++<6)tap(app,Keys.DOWN);
+  assert(game.pauseVisual.selection===selection,'The requested public pause/result choice is selectable');tap(app,Keys.SHOOT);
+  if(!(game.pauseVisual instanceof TouhouGameOver)&&(selection===1||selection===2||selection===5)){
+    tick(app,34);assert([7,9].includes(game.pauseVisual.phase),'Pause opens the public Yes/No confirmation');tap(app,Keys.UP);tap(app,Keys.SHOOT);
+  }
+  tick(app,40);
+}
 function* manualSave(){
-  memory.set('userdata/guiming-settings.json',JSON.stringify({autoSaveReplay:false}));
   application=make({autostart:true,testing:false,invincible:true});const app=application;tick(app,40);tap(app,Keys.PAUSE);tick(app,12);
   for(let i=0;i<2;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);tick(app,34);tap(app,Keys.UP);tap(app,Keys.SHOOT);tick(app,22);
-  assert(app.page?.title==='保存回放','Public Pause Save Replay choice opens the manual save page');tick(app,12);tap(app,Keys.SHOOT);
-  assert(app.core.mode==='title'&&app.storage.replays.length===1,'Manual force save exits to title even when automatic saving is disabled');
+  assert(app.page?.title==='保存回放','Public Pause Save Replay choice opens the manual save page');selectReplaySlot(app,6);tap(app,Keys.SHOOT);
+  assert(app.core.mode==='title'&&app.storage.replayCount===1,'Confirmed manual slot save returns to title');
   assert(memory.has('userdata/guiming-replays.json'),'Production save writes only to the fixture userdata adapter');
-  const data=JSON.parse(memory.get('userdata/guiming-replays.json'));assert(data.length===1&&data[0].replay.frames>0,'Saved replay includes the actual recorder input stream');
-  result={kind:'manual-save',frames:app.frame,replayFrames:data[0].replay.frames,memoryWrites:writes,snapshot:app.snapshot()};
+  const data=JSON.parse(memory.get('userdata/guiming-replays.json'));assert(data.length===20&&data[6].replay.frames>0&&data.filter(Boolean).length===1,'Only slot 07 contains the actual recorder input stream');
+  result={kind:'manual-save',slot:7,frames:app.frame,replayFrames:data[6].replay.frames,memoryWrites:writes,snapshot:app.snapshot()};
+}
+function* replaySlots(){
+  const visited=[],syntheticCompletions=[],replayFile='userdata/guiming-replays.json';let frames=0;
+  const disk=()=>memory.get(replayFile),unchanged=(before,label)=>assert(disk()===before,label);
+  const closeApplication=()=>{frames+=application.frame;application.destroy();application=null;};
+  const seedReplay={format:'ts-stg-replay',version:1,config:{game:'guiming',revision:GAME_REVISION,backend:host.backend,character:0,difficulty:1,mode:'normal',stageId:1,spellId:null,seed:210721,startingLives:2,initialSpellRecords:{},spellTimes:[]},frames:20,runs:[[0,20]],checkpoints:[]};
+  const initial=Array(20).fill(null);
+  for(const slot of [0,6,18])initial[slot]={date:1700000000000+slot,revision:GAME_REVISION,summary:{character:0,difficulty:1,mode:'normal',score:slot+100,stageId:1},replay:seedReplay};
+  memory.set(replayFile,JSON.stringify(initial));
+  application=make({autostart:true,testing:false,invincible:true});let app=application,game=app.core.game;tick(app,40);
+  const originalDisk=disk();pauseChoice(app,2);
+  assert(app.storage.replayCount===3&&app.page?.rows.length===20,'Existing data occupies its fixed slots and all empty slots remain visible');
+  const frozenFrames=game.recorder.frames;tick(app,24);app.update(Keys.BOMB);
+  assert(app.page===null&&game.paused&&game.pauseVisual.phase===6&&game.recorder.frames===frozenFrames,'Cancel returns to the real Pause menu without recording slot-page inputs');
+  app.update(0);
+  unchanged(originalDisk,'Opening and cancelling slot selection never writes or shifts existing recordings');visited.push('pause-cancel');yield;
+
+  pauseChoice(app,2);selectReplaySlot(app,19);
+  const adapter=app.storage.store.adapter,originalWrite=adapter.writeText;let rejected=false;
+  adapter.writeText=(name,text)=>{if(name==='guiming-replays.json'&&!rejected){rejected=true;throw new Error('QA replay write rejected');}return originalWrite(name,text);};
+  const failedFrames=game.recorder.frames;tap(app,Keys.SHOOT);adapter.writeText=originalWrite;
+  assert(rejected&&app.page?.title==='保存回放'&&app.page.message.includes('QA replay write rejected'),'A native storage-adapter write failure remains on the save page with a useful message');
+  assert(!game.replaySaved&&!game.savedRun&&!game.pendingReplay,'A failed manual save cannot settle or freeze a still-playable recording');
+  unchanged(originalDisk,'Failed save preserves every original slot on disk');
+  tap(app,Keys.BOMB);assert(app.page===null&&game.paused,'Failed-save cancellation restores Pause');
+  tap(app,Keys.PAUSE);tick(app,16);assert(!game.paused,'The actual run resumes after the failed save');tick(app,70,Keys.RIGHT);
+  assert(game.recorder.frames>failedFrames+70,'Recording continues after a cancelled failed save');visited.push('write-failure-resume');yield;
+
+  pauseChoice(app,2);selectReplaySlot(app,6);tap(app,Keys.SHOOT);
+  assert(app.page?.title==='覆盖回放？'&&app.page.selection===0,'Occupied-slot confirmation defaults to Cancel');
+  tick(app,12);tap(app,Keys.SHOOT);assert(app.page?.title==='保存回放'&&app.page.selection===6,'Default Cancel restores the exact selected slot');
+  unchanged(originalDisk,'Default overwrite cancellation leaves every occupied slot intact');
+  tap(app,Keys.SHOOT);tick(app,12);tap(app,Keys.BOMB);assert(app.page?.title==='保存回放'&&app.page.selection===6,'X also cancels overwrite and preserves cursor position');
+  unchanged(originalDisk,'X overwrite cancellation does not persist');
+  tap(app,Keys.SHOOT);tick(app,12);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
+  assert(app.core.mode==='title'&&app.storage.replayCount===3,'Explicit overwrite confirmation saves and exits without creating extra entries');
+  const replaced=JSON.parse(disk());
+  for(let slot=0;slot<20;slot++)if(slot!==6)assert(JSON.stringify(replaced[slot])===JSON.stringify(initial[slot]),'Overwrite cannot move or change any other numbered slot');
+  assert(replaced[6].replay.frames>failedFrames+70&&replaced[6].replay.runs.some(([mask,count])=>mask===Keys.RIGHT&&count>=70),'Retried save includes subsequent gameplay inputs instead of the failed snapshot');
+  visited.push('overwrite-cancel','overwrite-confirm','failed-save-retry-current-inputs');closeApplication();yield;
+
+  const beforeExit=disk();application=make({autostart:true,testing:false,invincible:true});app=application;tick(app,40);pauseChoice(app,1);
+  assert(app.page?.title==='保存回放'&&app.core.mode==='game','Confirmed exit offers slots before disposing the run');
+  unchanged(beforeExit,'Reaching the exit save page never automatically writes');tick(app,12);tap(app,Keys.BOMB);
+  assert(app.core.mode==='title'&&app.page===null,'Cancel on final exit discards the pending recording and returns to title');unchanged(beforeExit,'Discarding an exited run leaves all prior replays unchanged');
+  visited.push('exit-discard');closeApplication();yield;
+
+  application=make({autostart:true,testing:false,invincible:true});app=application;tick(app,40);pauseChoice(app,1);selectReplaySlot(app,19);tap(app,Keys.SHOOT);
+  const last=JSON.parse(disk());assert(app.core.mode==='title'&&app.storage.replayCount===4&&last.length===20&&last[19]?.replay.frames>0,'Slot 20 is reachable and persists the exiting run');
+  for(let slot=0;slot<19;slot++)assert(JSON.stringify(last[slot])===JSON.stringify(replaced[slot]),'Saving slot 20 preserves all earlier slots');
+  visited.push('exit-save-slot-20');closeApplication();yield;
+
+  memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
+  application=make({autostart:true,testing:false});app=application;game=app.core.game;const beforeGameOver=disk();let elapsed=0;
+  while(!(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6)&&elapsed++<3000){app.update(0);if(elapsed%128===0)yield;}
+  assert(game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6,'Real road collision reaches the normal GameOver menu');
+  unchanged(beforeGameOver,'Normal GameOver never auto-saves a recording');pauseChoice(app,2);selectReplaySlot(app,19);tap(app,Keys.BOMB);
+  assert(app.page===null&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6,'Cancelling GameOver save restores its exact result owner');unchanged(beforeGameOver,'GameOver save cancellation does not write');
+  pauseChoice(app,0);assert(game.session.continues===1&&!game.paused&&!game.canSaveReplay,'A real Continue disables recording saves at the scene boundary');
+  let blocked=false;try{game.saveReplay(19);}catch(error){blocked=String(error.message).includes('续关');}
+  assert(blocked,'Calling the public explicit save API cannot bypass the continued-run restriction');
+  tap(app,Keys.PAUSE);tick(app,12);assert(game.pauseVisual.excluded.has(2),'Continued Pause keeps Save Replay disabled');
+  pauseChoice(app,1);assert(app.core.mode==='title'&&app.page===null,'Exiting a continued run bypasses slot selection');unchanged(beforeGameOver,'Continued exit and destruction do not write or overwrite recordings');
+  visited.push('gameover-cancel','continue-save-rejected','continued-exit');closeApplication();yield;
+
+  memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:2}));
+  application=make({autostart:true,testing:false,invincible:true,autoCapture:true,autoDialogue:true,mode:'spell-practice',stageId:1,spellId:ALL_SPELLS[0].id});app=application;game=app.core.game;const beforeClear=disk();elapsed=0;
+  while(!app.page&&elapsed++<6000){app.update(0);if(elapsed%128===0)yield;}
+  assert(app.page?.title==='练习结果'&&game.finishedResult&&game.pendingReplay?.replay.frames>0,'Actual spell completion freezes an available recording for its result page');
+  unchanged(beforeClear,'Completing a card settles progress without auto-saving a replay');
+  const resultPage=app.page;tick(app,12);tap(app,Keys.DOWN);tap(app,Keys.SHOOT);selectReplaySlot(app,19);tap(app,Keys.BOMB);
+  assert(app.page===resultPage,'Cancelling a completed-practice save restores its result page');unchanged(beforeClear,'Result-page cancellation preserves existing recordings');
+  tick(app,12);tap(app,Keys.BOMB);assert(app.page?.title==='保存回放','Leaving a completed run still offers explicit slot selection');tick(app,12);tap(app,Keys.BOMB);
+  assert(app.core.mode==='title','Completed run can be discarded without an implicit save');unchanged(beforeClear,'Discarding completed results performs no replay write');
+  visited.push('actual-clear-no-auto-save','practice-result-cancel','completed-discard');closeApplication();yield;
+
+  // These two cases inject settlement, not a completed six-stage route. They
+  // exercise only the production Ending/Staff/result/save UI with real input.
+  for(const continues of [0,1]){
+    application=make({autostart:true,testing:false,invincible:true});app=application;game=app.core.game;tick(app,40);
+    game.session.continues=continues;game.player.continues=continues;
+    const beforeEnding=disk(),completed={ending:continues?'bad':'good',character:0,difficulty:1,mode:'normal',score:game.player.score,continues,stageId:6,captures:[]};
+    game.completeCampaign(completed);game.dispatchCompletion();
+    assert(app.page?.phase==='ending'&&game.finishedResult?.stageId===6,'Synthetic settlement opens the production Ending page');
+    unchanged(beforeEnding,'Entering a completed-route Ending page never auto-saves replay data');
+    const recordedFrames=game.recorder.frames;let lines=0;
+    while(app.page?.phase==='ending'&&lines++<20){tick(app,61);tap(app,Keys.SHOOT);}
+    assert(app.page?.phase==='staff','Real confirm inputs advance each Ending line to Staff');
+    tick(app,92);tap(app,Keys.SHOOT);assert(app.page?.phase==='result','Real confirm input advances Staff to the results page');
+    unchanged(beforeEnding,'Ending and Staff transitions do not persist replay data');
+    assert(game.recorder.frames===recordedFrames,'Ending and Staff inputs never enter the finished recording');
+    tick(app,42);tap(app,Keys.SHOOT);
+    if(continues){
+      assert(app.core.mode==='title'&&app.page===null,'A continued ending returns directly to title without slot selection');
+      unchanged(beforeEnding,'A continued ending cannot persist a replay');visited.push('synthetic-continued-ending-no-save');
+    }else{
+      assert(app.page?.title==='保存回放'&&app.core.mode==='game','A no-continue result offers slots while keeping its finished recording');
+      unchanged(beforeEnding,'The result-to-slot transition never saves before confirmation');
+      assert(game.pendingReplay?.replay.frames===recordedFrames,'The slot page uses the frozen completed recording');
+      const pending=JSON.stringify(game.pendingReplay.replay);selectReplaySlot(app,15);assert(app.page.row.empty,'Synthetic ending uses a known empty slot');tap(app,Keys.SHOOT);
+      const saved=app.storage.replays[15];
+      assert(app.core.mode==='title'&&saved&&JSON.stringify(saved.replay)===pending,'Slot confirmation persists the full pending recording and returns to title');
+      assert(saved.summary.ending==='good'&&saved.summary.stageId===6&&saved.summary.mode==='normal'&&saved.summary.continues===0,'Saving from results preserves completed-route summary metadata');
+      const before=JSON.parse(beforeEnding),after=JSON.parse(disk());
+      for(let slot=0;slot<20;slot++)if(slot!==15)assert(JSON.stringify(after[slot])===JSON.stringify(before[slot]),'Ending save does not change any other slot');
+      visited.push('synthetic-ending-staff-result-slot-save');
+    }
+    syntheticCompletions.push({continues,ending:completed.ending,stageId:6,recordedFrames,endingLines:lines,applicationFrames:app.frame,savedSlot:continues?null:16});
+    closeApplication();yield;
+  }
+
+  const metadataSlots=JSON.parse(disk());metadataSlots[18]={revision:GAME_REVISION,replay:{...seedReplay,config:{...seedReplay.config,character:1,mode:'spell-practice',stageId:3}}};memory.set(replayFile,JSON.stringify(metadataSlots));
+  const beforeMetadata=disk();application=make({testing:false,page:'replays'});app=application;const entryBefore=JSON.stringify(app.storage.replays[18]);
+  tick(app,12);for(let i=0;i<18;i++)tap(app,Keys.DOWN);
+  const metadataRow=app.page.row,metadataDetail=app.page.detail(metadataRow,app.page);
+  assert(metadataRow.slot===18&&metadataRow.label.includes('魔理沙')&&metadataDetail.includes('符卡练习')&&metadataDetail.includes('关卡 3')&&metadataDetail.includes('日期未知'),'A legacy entry without summary/date uses its recorded character, mode and stage and shows an unknown date');
+  assert(JSON.stringify(app.storage.replays[18])===entryBefore,'Displaying legacy metadata never mutates its loaded recording');unchanged(beforeMetadata,'Viewing missing legacy metadata never rewrites the persisted slots');
+  visited.push('legacy-metadata-read-only');closeApplication();
+  result={kind:'replay-slots',frames,visited,slotCount:20,recordings:JSON.parse(disk()).filter(Boolean).length,failedSaveFrame:failedFrames,retrySavedFrames:replaced[6].replay.frames,
+    syntheticCompletions,syntheticCompletionScope:'Synthetic settlement tests Ending/Staff/result/slot UI only; it is not a full six-stage clear or a replay of a synthesized clear.',memoryWrites:writes};
 }
 function* replayTermination(){
   const ended=[];
@@ -242,15 +378,25 @@ function* replayTermination(){
     tap(app,Keys.PAUSE);tick(app,12);assert(source.paused&&source.pauseVisual.phase===6,'Termination is chosen through the real public Pause menu');
     for(let i=0;source.pauseVisual.selection!==choice&&i<6;i++)tap(app,Keys.DOWN);assert(source.pauseVisual.selection===choice,`Pause selects ${action}`);tap(app,Keys.SHOOT);tick(app,34);
     assert(source.pauseVisual.phase===7&&source.pauseVisual.count===2,'Public termination opens its Yes/No confirmation');tap(app,Keys.UP);tap(app,Keys.SHOOT);
-    let tail=0;while(app.core.game===source&&tail++<80)app.update(0);
+    let tail=0;while(app.core.game===source&&!app.page&&tail++<80)app.update(0);
+    assert(app.storage.replayCount===0&&!memory.has('userdata/guiming-replays.json'),'Exit and restart never write a replay automatically');
+    let recorded;
+    if(action==='exit'){
+      assert(!source.destroyed&&app.page?.title==='保存回放','Confirmed exit keeps the source run alive until slot selection');
+      selectReplaySlot(app,4);tap(app,Keys.SHOOT);recorded=app.storage.replays[4]?.replay;
+    }else{
+      recorded=source.pendingReplay?.replay??source.recorder.toJSON();
+      // This setup intentionally archives a legacy restart-terminated stream
+      // for playback compatibility; live restart itself must never save it.
+      app.storage.saveReplay(4,recorded,{character:0,difficulty:1,mode:'normal',aborted:true});
+    }
     assert(source.destroyed&&app.core.game!==source,`Recorded ${action} performs its live scene transition`);
     assert(action==='restart'?app.core.mode==='game'&&!!app.core.game.recorder:app.core.mode==='title',`Live ${action} keeps its actual application behavior`);
-    const recorded=app.storage.replays[0]?.replay;
     assert(recorded?.frames>620&&recorded.checkpoints.some(point=>point.frame===600),'Real saved replay retains Pause confirmation inputs and a prior simulation checkpoint');
     // Match the real replay selector: settle any just-created live restart
     // before measuring read-only playback, then enter the replay scene.
     app.core.game?.saveRun({aborted:true});
-    const progress=JSON.stringify(app.storage.progress),beforeWrites=writes,beforePlays=app.storage.progress.plays,beforeReplays=app.storage.replays.length;
+    const progress=JSON.stringify(app.storage.progress),beforeWrites=writes,beforePlays=app.storage.progress.plays,beforeReplays=app.storage.replayCount;
     app.page=null;app.playbackSource=recorded;app.core.start(recorded.config);const playing=app.core.game;
     assert(!playing.recorder&&playing.playback,'Actual playback has no new recorder');
     for(let i=0;i<recorded.frames;i++){
@@ -260,7 +406,7 @@ function* replayTermination(){
     assert(playing.playback.finished&&playing.playback.desync===null,`Recorded ${action} reaches the end of its full verified input stream`);
     app.update(0);assert(app.page?.title==='回放结束'&&app.page.rows[0].label==='返回标题'&&app.page.detail(app.page.row,app.page)==='回放播放完毕。','Production playback displays completion and the return action without internal verification details');
     const stopped=playing.playback.frame;tick(app,12);assert(playing.playback.frame===stopped&&app.core.game===playing,'Completion page freezes the finished replay');
-    assert(writes===beforeWrites&&app.storage.progress.plays===beforePlays&&app.storage.replays.length===beforeReplays&&JSON.stringify(app.storage.progress)===progress,'Playback termination creates no play, replay or progress writes');
+    assert(writes===beforeWrites&&app.storage.progress.plays===beforePlays&&app.storage.replayCount===beforeReplays&&JSON.stringify(app.storage.progress)===progress,'Playback termination creates no play, replay or progress writes');
     ended.push({action,frames:recorded.frames,playedFrames:playing.playback.frame,checkpoints:recorded.checkpoints,plays:beforePlays,replayCount:beforeReplays,writesDuringPlayback:writes-beforeWrites,completion:app.page.title,snapshot:playing.snapshot()});
     tick(app,12);tap(app,Keys.BOMB);assert(app.core.mode==='title'&&writes===beforeWrites,'Completed replay returns to title without saving a new run');app.destroy();application=null;yield;
   }
@@ -315,11 +461,11 @@ function* ui(){
   }
   // Populate a valid recorded fixture, then choose it through the Replay page.
   const sample={format:'ts-stg-replay',version:1,config:{game:'guiming',revision:GAME_REVISION,backend:host.backend,character:0,difficulty:1,mode:'spell-practice',stageId:1,spellId:ALL_SPELLS[0].id,seed:210721,startingLives:2,initialSpellRecords:{},spellTimes:[]},frames:20,runs:[[0,20]],checkpoints:[]};
-  app.storage.replays=[{revision:GAME_REVISION,summary:{character:0,difficulty:1,score:0},replay:sample}];
+  app.storage.replays[0]={date:1700000000000,revision:GAME_REVISION,summary:{character:0,difficulty:1,score:0},replay:sample};
   main(4);tick(app,12);tap(app,Keys.SHOOT);assert(app.playbackSource===sample,'Replay selection passes real recorder format into application');tick(app,100);assert(app.replayFinished,'Selected replay completes after the shared scene transition');visited.push('replay-playback');
   result={kind:'ui',visited,frames:app.frame,memoryWrites:writes,snapshot:app.snapshot()};
 }
-const runners={campaign,replay,'continuation-replay':continuationReplay,ui,'pause-external-pages':pauseExternalPages,'pause-page-replay':pausePageReplay,'replay-controls':replayControls,'gameover-external-pages':gameOverExternalPages,'manual-save':manualSave,'replay-termination':replayTermination};
+const runners={campaign,replay,'continuation-replay':continuationReplay,ui,'pause-external-pages':pauseExternalPages,'pause-page-replay':pausePageReplay,'replay-controls':replayControls,'gameover-external-pages':gameOverExternalPages,'manual-save':manualSave,'replay-slots':replaySlots,'replay-termination':replayTermination};
 const runner=runners[scenario.kind]?.()??null;
 let started=null;
 return{

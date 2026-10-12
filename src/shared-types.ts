@@ -45,7 +45,7 @@ export type CaptureRecord = TouhouSpellResult & {stage: number};
 export interface RunResult {
   ending: 'good' | 'bad' | 'extra'; character: number; difficulty: number;
   mode: CampaignMode; score: number; continues: number; stageId: number;
-  captures: CaptureRecord[]; replaySaved?: boolean;
+  captures: CaptureRecord[];
 }
 export type RunSummary = Partial<RunResult> & {aborted?: boolean};
 export type SpellRecords = Record<number, TouhouSpellRecord>;

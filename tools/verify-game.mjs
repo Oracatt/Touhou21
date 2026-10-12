@@ -45,7 +45,7 @@ const scenarios=[...Array.from({length:4},(_,difficulty)=>({id:`normal-reimu-${d
   {id:'stage-practice-3',kind:'campaign',options:{mode:'stage-practice',stageId:3,character:1,difficulty:1}},
   {id:'replay-input',kind:'replay'}, {id:'continuation-replay',kind:'continuation-replay'}, {id:'ui-input',kind:'ui'},
   {id:'pause-external-pages',kind:'pause-external-pages'}, {id:'pause-page-replay',kind:'pause-page-replay'}, {id:'replay-controls',kind:'replay-controls'},
-  {id:'gameover-external-pages',kind:'gameover-external-pages'}, {id:'manual-save',kind:'manual-save'}, {id:'replay-termination',kind:'replay-termination'}];
+  {id:'gameover-external-pages',kind:'gameover-external-pages'}, {id:'manual-save',kind:'manual-save'}, {id:'replay-slots',kind:'replay-slots'}, {id:'replay-termination',kind:'replay-termination'}];
 const wanted=process.env.TOUHOU21_CASES?.split(',');
 function compare(a,b,path='$'){
   if(typeof a==='number'&&typeof b==='number'){

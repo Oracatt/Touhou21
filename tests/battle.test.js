@@ -14,8 +14,8 @@ function sceneFixture({character=0,difficulty=1,mode='spell-practice',spellId=ST
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11});
   resources.encodeText=text=>new Uint8Array(Array.from(text).flatMap(char=>char.charCodeAt(0)>127?[65,65]:[65]));
   resources.writeAnimationText=vm=>vm;
-  storage??={settings:{startingLives:2,autoSaveReplay:true},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},
-    saved:0,replays:[],saveProgress(){this.saved++;},saveReplay(replay,summary){this.replays.push({replay,summary});},recordClear(){this.saved++;}};
+  storage??={settings:{startingLives:2},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},
+    saved:0,replays:Array(20).fill(null),saveProgress(){this.saved++;},saveReplay(slot,replay,summary){this.replays[slot]={replay,summary};},recordClear(){this.saved++;}};
   const art={host:{readText:file=>fs.readFileSync(file,'utf8'),createTexture:()=>89,unloadTexture(){}},load:()=>({id:81,width:512,height:512,bounds:{x:0,y:0,width:265,height:512}}),portrait:()=>{},background:()=>{}};
   const text={draw:()=>{}},host={backend:'v8'},music={play(){},pause(){},resume(){},fadeOut(){}};
   const rng=new TouhouRNG(73),visualRng=new TouhouRNG(73^0x6d2b79f5);
@@ -312,8 +312,11 @@ test('scene isolates public spell records by character and difficulty, and recor
   const a=sceneFixture();a.scene.update();assert.equal(a.scene.spell.records[1].attempts[1],1);
   assert.equal(a.storage.progress.spellRecords['0:1'][1].attempts[1],1);
   for(let i=0;i<70;i++)a.scene.update();a.scene.director.boss.damage(100000,{type:'test-strike'},a.scene.context);
-  for(let i=0;i<60;i++)a.scene.update();assert.equal(a.storage.replays.length,1);
-  const replay=a.storage.replays[0].replay;
+  for(let i=0;i<60;i++)a.scene.update();assert.ok(a.storage.replays.every(entry=>entry===null),'Natural settlement cannot automatically save or overwrite a replay');
+  assert.equal(a.scene.canSaveReplay,true);a.scene.saveReplay(7);
+  assert.ok(a.storage.replays.every((entry,index)=>index===7||entry===null),'Saving uses only the selected numbered slot');
+  assert.throws(()=>a.scene.saveReplay(8),/已经保存/,'A completed recording cannot be saved twice');
+  const replay=a.storage.replays[7].replay;
   assert.equal(replay.config.spellTimes.length,1);assert.equal(replay.config.spellTimes[0].stage,1);
   assert.equal(replay.config.initialSpellRecords[1],undefined,'recording saves the pre-attempt HUD counters');
   assert.equal(replay.config.startingLives,2);
@@ -326,7 +329,7 @@ test('scene replay keeps recorded stock, HUD counters and state checkpoints whil
   const recording=sceneFixture();for(let i=0;i<660;i++)recording.scene.update(0);
   const replay=recording.scene.recorder.toJSON();recording.dispose();
   const progress={spellRecords:{'0:1':{1:{name:'changed since recording',captures:[15,12],attempts:[80,60]}}},seenSpells:['anything'],stageUnlock:6,scores:[{character:0,difficulty:1,mode:'spell-practice',score:9999999}]};
-  const storage={settings:{startingLives:5,autoSaveReplay:true},progress,replays:[],saved:0,
+  const storage={settings:{startingLives:5},progress,replays:[],saved:0,
     saveProgress(){this.saved++;},saveReplay(){this.saved++;},recordClear(){this.saved++;}};
   const before=JSON.stringify(progress),playing=sceneFixture({storage,playbackSource:replay});
   for(let i=0;i<660;i++)playing.scene.update(0);
@@ -350,10 +353,11 @@ test('scene stage cover draws before the common player body, and Extra public sy
 test('naturally finished practice replay restores the final encoded clock before its completion checkpoint',()=>{
   const recording=sceneFixture({options:{invincible:true}});let frames=0;
   while(!recording.scene.director.completed&&frames++<2400)recording.scene.update(0);
-  assert.equal(recording.scene.director.completed,true);const replay=recording.storage.replays[0].replay;
+  assert.equal(recording.scene.director.completed,true);assert.ok(recording.storage.replays.every(entry=>entry===null));
+  recording.scene.saveReplay(19);const replay=recording.storage.replays[19].replay;
   assert.equal(replay.config.spellTimes.length,1);assert.equal(replay.frames,frames);
   const encoded=recording.scene.spell.encodedTime,expected=recording.scene.snapshot();recording.dispose();
-  let writes=0;const storage={settings:{startingLives:5,autoSaveReplay:true},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},
+  let writes=0;const storage={settings:{startingLives:5},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},
     saveProgress(){writes++;},saveReplay(){writes++;},recordClear(){writes++;}};
   const playing=sceneFixture({playbackSource:replay,storage,options:{invincible:true}});
   for(let i=0;i<replay.frames;i++)playing.scene.update(0);

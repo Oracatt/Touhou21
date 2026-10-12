@@ -80,6 +80,7 @@ export class CampaignScene extends TouhouGame {
   declare stageTransition:TouhouStageTransition|null;declare stageCaptionAge:number;declare currentStage:StageDefinition|null;
   declare bgmCaption:{title:string;age:number}|null;declare outerDraw:DrawList;declare savedRun:boolean;declare replayDone:boolean;
   declare finishedResult:RunResult|null;declare pendingCompletion:RunResult|null|undefined;declare replaySaved:boolean|undefined;
+  declare pendingReplay:{replay:RunReplayData;summary:RunSummary}|null;
   declare playback:RunPlayback|null;declare recorder:RunRecorder|null;declare dialogueResources:TouhouResources;
   declare player:TouhouPlayer & {highScore:number};declare character:number|undefined;
   declare context:TouhouGameContext & {boss?:CampaignEnemy|null};
@@ -113,7 +114,7 @@ export class CampaignScene extends TouhouGame {
     Object.assign(this,{resources,host,art,text,music,storage,config,options,background,frameSkin,onComplete,onReplayDone,onSpellPracticeEnd});
     this.bossSprites=new BossSpriteCatalog({art});
     this.dialogue=null;this.bossNameCard=null;this.stageClear=null;this.stageTransition=null;this.stageCaptionAge=0;this.currentStage=null;this.bgmCaption=null;
-    this.outerDraw=new DrawList();this.savedRun=false;this.replayDone=false;this.finishedResult=null;
+    this.outerDraw=new DrawList();this.savedRun=false;this.replayDone=false;this.finishedResult=null;this.pendingReplay=null;
     this.player.lives=storage.settings.startingLives;
     const initialHighScore=playbackSource?.config?.initialHighScore??Math.max(0,...storage.progress.scores.filter(result=>result.character===config.character&&result.difficulty===config.difficulty&&result.mode===config.mode).map(result=>result.score));
     this.player.highScore=initialHighScore;
@@ -255,8 +256,20 @@ export class CampaignScene extends TouhouGame {
     if(this.config.mode==='spell-practice'||this.config.mode==='stage-practice')this.onSpellPracticeEnd?.(result,this);
     else this.onComplete?.(result,this);
   }
-  saveRun(summary:RunSummary={},{force=false}={}){if(this.savedRun||this.playback||this.options.testing)return;this.savedRun=true;
-    this.storage.saveProgress();if((force||this.storage.settings.autoSaveReplay)&&this.recorder?.frames){this.storage.saveReplay(this.recorder.toJSON(),{character:this.config.character,difficulty:this.config.difficulty,mode:this.config.mode,score:this.player.score,stageId:this.director.stageId,...summary});this.replaySaved=true;}}
+  get canSaveReplay(){return !this.playback&&!this.options.testing&&!this.session.continues&&!this.replaySaved&&!!(this.pendingReplay?.replay.frames??this.recorder?.frames);}
+  private replayRecording(summary:RunSummary){return{replay:this.recorder!.toJSON(),summary:{character:this.config.character,difficulty:this.config.difficulty,mode:this.config.mode,score:this.player.score,stageId:this.director.stageId,continues:this.session.continues??0,...summary}};}
+  saveRun(summary:RunSummary={}){if(this.savedRun||this.playback||this.options.testing)return;
+    this.storage.saveProgress();this.savedRun=true;
+    if(!this.session.continues&&this.recorder?.frames)this.pendingReplay=this.replayRecording(summary);
+  }
+  saveReplay(slot:number,summary:RunSummary={}){
+    if(!this.canSaveReplay)throw new Error(this.session.continues?'续关后的游戏不能保存回放。':this.replaySaved?'本局回放已经保存。':'本局没有可以保存的回放。');
+    const pending=this.pendingReplay??this.replayRecording(summary);
+    if(!this.savedRun)this.storage.saveProgress();
+    this.storage.saveReplay(slot,pending.replay,pending.summary);
+    // A failed write leaves a live paused recording usable after Cancel/resume.
+    this.pendingReplay=pending;this.savedRun=true;this.replaySaved=true;
+  }
   update(mask=0){
     if(this.playback){const value=this.playback.next();if(value===null){if(!this.replayDone){this.replayDone=true;this.onReplayDone?.(this);}return;}mask=value;}
     this.recorder?.record(mask);

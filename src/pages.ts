@@ -17,7 +17,7 @@ export interface ListPageOptions<Row extends PageRow|string> extends PageOptions
 export type ReadingLine=string|{text?:string};
 export interface ReadingEntry {title?:string;lines:ReadingLine[];}
 export interface ReadingPageOptions extends PageOptions {pages:ReadingEntry[];}
-export interface EndingPageOptions {result:RunResult;onClose?:()=>void;text:TextPainter;art:GameArt;music:MusicController;sound?:(id:number)=>void;}
+export interface EndingPageOptions {result:RunResult;replayAvailable?:boolean;onClose?:()=>void;text:TextPainter;art:GameArt;music:MusicController;sound?:(id:number)=>void;}
 
 /** Shared reading panel for utility pages over the animated title scene. */
 function drawPanel(draw:DrawList,{art,text,title,age}:Pick<PageOptions,'art'|'text'|'title'>&{age:number}){
@@ -87,13 +87,13 @@ export class ReadingPage implements GamePage {
 }
 
 export class EndingPage implements GamePage {
- declare result:RunResult;declare onClose:(()=>void)|undefined;declare text:TextPainter;declare art:GameArt;declare music:MusicController;declare sound:((id:number)=>void)|undefined;declare ending:ReadingLine[];
+ declare result:RunResult;declare replayAvailable:boolean;declare onClose:(()=>void)|undefined;declare text:TextPainter;declare art:GameArt;declare music:MusicController;declare sound:((id:number)=>void)|undefined;declare ending:ReadingLine[];
   declare buttons: TouhouButtons;
   declare age: number;
   declare line: number;
   declare phase: string;
 
-  constructor({result,onClose,text,art,music,sound}:EndingPageOptions={} as EndingPageOptions){Object.assign(this,{result,onClose,text,art,music,sound});this.buttons=new TouhouButtons();this.age=0;this.line=0;this.phase='ending';this.ending=ENDINGS[PLAYERS[result.character].id][result.ending];this.music.play('ending',true);}
+  constructor({result,replayAvailable=false,onClose,text,art,music,sound}:EndingPageOptions={} as EndingPageOptions){Object.assign(this,{result,replayAvailable,onClose,text,art,music,sound});this.buttons=new TouhouButtons();this.age=0;this.line=0;this.phase='ending';this.ending=ENDINGS[PLAYERS[result.character].id][result.ending];this.music.play('ending',true);}
   update(mask:number){this.age++;this.buttons.update(mask);const next=!!(this.buttons.pressed&(Keys.SHOOT|Keys.CONFIRM));
     if(this.phase==='ending'&&this.age>=60&&(next||this.age>=420)){this.age=0;this.line++;if(this.line>=this.ending.length){this.phase='staff';this.music.play('staff',true);}}
     else if(this.phase==='staff'&&((this.age>90&&next)||this.age>=1800)){this.phase='result';this.age=0;}
@@ -112,10 +112,10 @@ export class EndingPage implements GamePage {
       for(let i=0;i<lines.length;i++)this.text.draw(draw,lines[i],0,196+i*48,{size:i?22:25,width:960,height:48,align:'center',color:i===lines.length-1?0xffe4a6ff:0xc8d5e0ff});
     }else{
       this.text.draw(draw,'归名之旅　完成',0,100,{size:48,width:960,height:85,align:'center',color:0xffe4a6ff});
-      const saved=this.result.replaySaved?'记录与回放已保存。':'记录已保存；本局未自动保存回放。';
+      const saved=this.replayAvailable?'记录已保存；回放可选择栏位保存。':this.result.continues?'记录已保存；续关后的游戏不能保存回放。':'记录已保存。';
       const stats=[`${PLAYERS[this.result.character].name}　${this.result.mode==='extra'?'Extra':GAME.difficultyNames[this.result.difficulty]}`,`Score　${String(Math.trunc(this.result.score*10)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}`,`符卡收取　${this.result.captures.filter(card=>card.captured).length} / ${this.result.captures.length}`,`续关　${this.result.continues}`,`${this.result.ending==='good'?'Extra 已开放；':''}${saved}`];
       for(let i=0;i<stats.length;i++)this.text.draw(draw,stats[i],0,252+i*57,{size:25,width:960,height:55,align:'center'});
-      this.text.draw(draw,'Z 返回标题',0,621,{size:23,width:960,height:50,align:'center',color:0xe0bc80ff});
+      this.text.draw(draw,this.replayAvailable?'Z 选择回放栏位':'Z 返回标题',0,621,{size:23,width:960,height:50,align:'center',color:0xe0bc80ff});
     }return draw;}
   snapshot(){return{page:'ending',phase:this.phase,line:this.line,ending:this.result.ending};}
 }
@@ -126,7 +126,7 @@ export function manualPages(){return [
   {title:'射击、判定与道具',lines:['灵梦：追踪火力、细致的低速移动、梦想封印。','魔理沙：直线集中火力、较快移动、魔炮。','击破敌人会掉落 Power 与点道具；上方可自动收集。','生命与 Bomb 碎片集齐后增加库存，公共效果与音效由 thlib 提供。']},
   {title:'符卡与血环',lines:['非符与后续符卡共用分段血环。到达标记处即进入符卡。','不 Miss、不使用 Bomb，并在时限内击破可取得符卡奖励。','耐久符卡不能被射击提前结束，须存活到倒计时归零。','符卡名、失败与收取提示、聚能和慢速消弹均使用公共预置体。']},
   {title:'六面本篇与 Extra',lines:['本篇从灯笼坂通往归名天台，包含六个完整关卡。','不续关通关获得自机好结局并解锁 Extra；续关则为坏结局。','Extra 是独立的固定难度：3 张中 Boss 符卡与 10 张主 Boss 符卡。','关卡练习只开放已经到达的关卡；符卡练习开放已经见过的符卡。']},
-  {title:'练习、回放与存档',lines:['关卡练习从该关道中开始；符卡练习直接进入选中的符卡。','回放保存输入、种子与校验点，最近 20 次保存在回放鉴赏。','练习、回放和测试不解锁故事通关记录。','所有设置、成绩、符卡记录与回放均保存在本目录 userdata。']},
+  {title:'练习、回放与存档',lines:['关卡练习从该关道中开始；符卡练习直接进入选中的符卡。','回放有 20 个固定栏位，保存时选择编号，覆盖已有回放前需确认。','不保存或取消不会改动已有回放；续关后的游戏不能保存回放。','所有设置、成绩、符卡记录与回放均保存在本目录 userdata。']},
   {title:'制作与资源',lines:['底层引擎与公共玩法：TS-STG / thlib。','新作剧情、对白、Boss、符卡与菜单皮肤独立设计。','立绘和场景由 imagegen 辅助制作；18 首 BGM 为原创编曲（采样来源见制作名单与 docs/MUSIC.md）。','本地公共原作资源保持既有来源标记，不作为原创素材重新授权。']},
   ...CHARACTERS.map(character=>({title:`${character.name}　${character.title}`,lines:[`种族：${character.species}`,`能力：${character.ability}`,character.personality,character.backstory]}))
 ];}
