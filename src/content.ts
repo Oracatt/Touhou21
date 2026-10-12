@@ -595,7 +595,7 @@ export const STAGES: StageDefinition[] = [
     nonspellNames: ['说到一半的声音', '两声之间', '旧名轻叩', '墙上的回响', '半句玩笑', '回廊的重叠', '重播的声线', '听不到的名字'],
     phaseLayout: 'NSNSNSNSNSNSNSNSSS',
     midbossSpells: [
-      spell('ex-mid-01', '抄札「仅限借阅之旧名目录」', 'archive', 'archive_copy', '纸札成列落下，行至半途相邻两列交换车道；红札束定时瞄准自机。', 45),
+      spell('ex-mid-01', '抄札「仅限借阅之旧名目录」', 'archive', 'archive_copy', '纸札排成断续的列落下，每一页比上一页错开半列，下方的车道像砌砖一样交错；行至半途成对的两列交换车道，交叉成一排排 X；每隔一页 Boss 放出一圈朱红还书单。', 45),
       spell('ex-mid-02', '封印「回声不可携出之页」', 'archive', 'archive_echo_seal', '方形书页展开后被拉回封印，穿过中心再向另一侧展开；朱印成扇形盖向自机。', 50),
       spell('ex-mid-03', '订正「原件归还，抄本留存」', 'archive', 'archive_errata', '红色原件环飞出后折返书库，每张原件在折返处留下一张白色抄本，停留后缓缓落下。', 55),
     ],

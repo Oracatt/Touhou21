@@ -127,18 +127,22 @@ function blankSignature(k: AttackKit){
 }
 blankSignature.home={x:0,y:108};
 
-/** Extra midboss 1 — 抄札「仅限借阅之旧名目录」: columns of copies fall;
- * halfway down, alternate columns trade lanes with their neighbours. */
+/** Extra midboss 1 — 抄札「仅限借阅之旧名目录」: dashed columns of copies
+ * fall, each page laid half a column aside from the last, so the lanes below
+ * step like brickwork. Halfway down, paired columns trade lanes and cross into
+ * rows of X; every other page the Boss rings out vermilion return slips. */
 function borrowOnlyCatalogue(k: AttackKit){
-  const period=8,spacing=46,lanes=Math.floor(352/spacing)+1;
-  if(k.every(period)){
-    const shift=(k.t/period|0)%2?3:0;
-    for(let i=0;i<lanes;i++){
-      const x=-176+i*spacing+shift,dir=i%2?1:-1,lean=Math.atan2(spacing/2,30*1.9)*dir;
-      k.shot(x,-4,DOWN,1.9,T.AMULET,i%2?C.PALE:C.GREEN,[k.wait(70),k.set(DOWN-lean,1.9),k.wait(30),k.set(DOWN,1.9)],{silent:i>0,safe:2304});
+  const spacing=48,slot=6,page=48,dash=6,swap=36,c=k.t%page,odd=(k.t/page|0)%2;
+  if(c%slot===0&&c/slot<dash){
+    const columns=odd?7:8,x0=odd?-144:-168,lean=Math.asin(spacing/(1.9*k.sp*swap));
+    for(let i=0;i<columns;i++){
+      // Even pages swap every pair; odd pages swap the outer pairs and keep the middle three straight.
+      const partner=odd?(i<2?i^1:i===5?6:i===6?5:-1):i^1,dir=partner<0?0:Math.sign(partner-i);
+      k.shot(x0+i*spacing,-4,DOWN,1.9,T.AMULET,dir>0?C.PALE:dir<0?C.GREEN:C.WHITE,
+        dir?[k.wait(70),k.set(DOWN-dir*lean,1.9),k.wait(swap),k.set(DOWN,1.9)]:null,{silent:i>0,safe:2304});
     }
   }
-  if(k.every(90,40))k.aimed(k.ox,k.oy,5,3,.12,T.AMULET,C.RED,null,{rows:3,speedStep:2.1});
+  if(k.every(page*2,page))k.ring(k.ox,k.oy,20,1.3,(k.t/(page*2)|0)*Math.PI/20,T.BALL,C.RED);
 }
 borrowOnlyCatalogue.home={x:0,y:90};
 
