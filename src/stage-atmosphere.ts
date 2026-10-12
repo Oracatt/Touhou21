@@ -9,6 +9,9 @@ const TAU=Math.PI*2;
 const DEFAULT_MATERIAL_PATH='packages/thlib/assets/spell-common';
 const FIELD=Object.freeze({left:48,top:24,right:624,bottom:696});
 const EDGE_FADE=18,TILE=48,RING=16;
+/** Stage 5 archway opening in world units (half width, lintel underside), read
+ * from the door's alpha matte with a small inset; DOOR_FADE is in pixels. */
+const DOOR_OPENING=Object.freeze({x:6.3,top:16.9}),DOOR_FADE=10;
 const clamp=(value:number,min:number,max:number)=>Math.max(min,Math.min(max,value));
 const smooth=(value:number)=>{const t=clamp(value,0,1);return t*t*(3-2*t);};
 const tint=(rgb:number,opacity:number)=>((rgb<<8)|Math.round(clamp(opacity,0,1)*255))>>>0;
@@ -285,19 +288,35 @@ export class StageAtmosphere{
         glow('add',p,radius,radius,0xf3d58f,.46*(.25+.75*shine*shine)*distance(c.t));
       }
     }else if(stage===5){
-      const door=nextPlane(38,v=>v!==1),shown=(z:number)=>z<door-.5?1:0;
+      // The archive doors are open archways: ambience behind one shows through
+      // its opening and fades out under the pillars and lintel, so walking
+      // through a door reveals nothing all at once.
+      const doors:{z:number;left:number;top:number;right:number;bottom:number}[]=[];
+      for(let tile=Math.floor((eye-38)/TILE);doors.length<2;tile++){
+        const z=tile*TILE+38;if(z<=eye+1||variantOf(tile)===1)continue;
+        const tl=at(-DOOR_OPENING.x,DOOR_OPENING.top,z),tr=at(DOOR_OPENING.x,DOOR_OPENING.top,z),bl=at(-DOOR_OPENING.x,0,z),br=at(DOOR_OPENING.x,0,z);
+        if(tl&&tr&&bl&&br)doors.push({z,left:Math.max(tl.x,bl.x),right:Math.min(tr.x,br.x),top:Math.max(tl.y,tr.y),bottom:Math.min(bl.y,br.y)});
+      }
+      const shown=(p:Point|null,z:number,size:number)=>{
+        let alpha=1;if(!p)return alpha;
+        for(const d of doors){
+          const inside=smooth((Math.min(p.x-d.left,d.right-p.x,p.y-d.top,d.bottom-p.y)-size)/DOOR_FADE);
+          alpha*=1-smooth((z-d.z+1)/2)*(1-inside);
+        }
+        return alpha;
+      };
       for(let i=0;i<44;i++){
         const c=cell(11,i,4,54),r=(lane:number)=>random(i,lane,c.turn),z=c.z+Math.sin(clock*.003+r(0)*TAU)*.6;
         const p=at(-8+r(1)*16+Math.sin(clock*(.004+r(2)*.004)+r(3)*TAU)*.7,1.5+r(4)*13+Math.sin(clock*(.005+r(5)*.004)+r(6)*TAU)*.6,z);
         const radius=p?clamp(.16*p.scale,1.5,6):0;
-        glow('add',p,radius,radius,0xeadcae,.46*(.55+.45*Math.sin(clock*(.025+r(7)*.03)+r(8)*TAU))*distance(c.t)*shown(z));
+        glow('add',p,radius,radius,0xeadcae,.46*(.55+.45*Math.sin(clock*(.025+r(7)*.03)+r(8)*TAU))*distance(c.t)*shown(p,z,radius));
       }
       for(let i=0;i<6;i++){
         const c=cell(12,i,6,50),r=(lane:number)=>random(i,lane,c.turn),fall=.012+r(0)*.007,life=cycle(17/fall,r(1)),k=(lane:number)=>random(i,lane,c.turn*977+life.turn);
         const p=at(-7+k(0)*14+Math.sin(clock*(.01+r(2)*.006)+r(3)*TAU)*1.4,17*(1-life.t),c.z);
         const flip=Math.cos(clock*(.03+r(4)*.02)+r(5)*TAU),width=p?Math.min(30,.8*p.scale):0,height=p?Math.min(40,1.05*p.scale):0;
         card('alpha',p,width*(.18+.82*Math.abs(flip)),height,r(6)*TAU+clock*(.015+r(7)*.02)*(r(8)<.5?-1:1),shade(0xc8b893,.6+.4*Math.abs(flip)),
-          .6*envelope(life,17/fall*.06,17/fall*.08)*distance(c.t)*shown(c.z));
+          .6*envelope(life,17/fall*.06,17/fall*.08)*distance(c.t)*shown(p,c.z,Math.max(width,height)/2));
       }
     }else if(stage===6){
       for(let i=0;i<36;i++){
