@@ -126,15 +126,19 @@ function fivefoldSeal(k: AttackKit){
 fivefoldSeal.home={x:0,y:120};
 
 /** 式札「守门人无字签名」: the gatekeeper signs a five-pointed star of
- * paper, upright and inverted in turn; after a breath the whole signature
- * folds to one side. Five seals are stamped at the points of a pentagon. */
+ * paper toward the player, a point and a notch in turn; after a breath the
+ * whole signature folds to one side. A smaller countersignature, inverted,
+ * leaves with it and folds the other way, so the two cross into a lattice.
+ * Five seals are stamped at the points of a pentagon, one at the player. */
 function blankSignature(k: AttackKit){
   const period=k.pick(80,62,52,46);
   if(k.every(period)){
-    const wave=k.t/period|0,fold=(wave%2?1:-1)*.75;
-    burstShape(k,k.ox,k.oy,star(5,k.pick(5,6,7,8),.4),2.3,DOWN+wave*Math.PI/5,T.AMULET,wave%2?C.RED:C.WHITE,[k.wait(44),k.stopTurn(22,fold,1.9)]);
+    const wave=k.t/period|0,fold=(wave%2?1:-1)*.75,edge=k.pick(5,6,7,8),a=k.aim()+wave*Math.PI/5;
+    burstShape(k,k.ox,k.oy,star(5,edge,.4),2.3,a,T.AMULET,wave%2?C.RED:C.WHITE,[k.wait(44),k.stopTurn(22,fold,1.9)]);
+    if(k.rank>=1)burstShape(k,k.ox,k.oy,star(5,edge-2,.4),1.55,a+Math.PI/5,T.AMULET,wave%2?C.WHITE:C.RED,[k.wait(44),k.stopTurn(22,-fold,1.6)],{extra:{silent:true}});
   }
-  if(k.every(120,60))k.ring(k.ox,k.oy,5,1.7,DOWN+((k.t-60)/120&1)*Math.PI/5,T.BIG,C8.RED);
+  const seal=k.pick(120,104,96,88);
+  if(k.every(seal,seal/2))k.ring(k.ox,k.oy,5,1.7,k.aim(),T.BIG,C8.RED);
 }
 blankSignature.home={x:0,y:108};
 
