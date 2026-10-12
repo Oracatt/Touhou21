@@ -21,7 +21,7 @@ function postmanBeforeRain(k: AttackKit){
 
 /** 封缄「雨停前请勿拆阅」: sealed envelopes rise and hang in the air; they
  * open one after another along the row, each letting a short fan of rain
- * fall before the letter itself drops after it. */
+ * fall before the letter itself is delivered toward the player. */
 function sealedUntilRainStops(k: AttackKit){
   const period=k.pick(104,84,70,60);
   if(k.every(k.pick(12,10,8,7)))drizzle(k,1,{lean:.05,speed:[1.9,2.6]});
@@ -31,7 +31,7 @@ function sealedUntilRainStops(k: AttackKit){
     for(let i=0;i<m;i++){
       const turn=wave%2?m-1-i:i;
       envelopes.push(...k.shot(k.ox,k.oy,first+i*spread,3.1,T.AMULET,wave%2?C.PALE:C.WHITE,
-        [k.hold(40),k.wait(30+turn*k.pick(9,8,6,5)),k.set(DOWN,k.pick(1.6,1.9,2.1,2.3))],{silent:i>0}));
+        [k.hold(40),k.wait(30+turn*k.pick(9,8,6,5)),k.aimNow(k.pick(1.6,1.9,2.1,2.3))],{silent:i>0}));
     }
     k.later(70,envelopes,b=>k.fan(b.x,b.y,k.pick(2,3,4,4),1.8,DOWN,k.pick(.4,.3,.24,.26),T.NEEDLE,C.SKY));
   }

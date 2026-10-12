@@ -258,7 +258,7 @@ export const STAGES: StageDefinition[] = [
     nonspellNames: ['雨信的折角', '散落的问候'],
     phaseLayout: 'NSNSS',
     midbossSpells: [
-      spell('s02-mid', '封缄「雨停前请勿拆阅」', 'rain', 'rain_sealed', '信封向上飞出后悬在空中，沿着队列依次拆封，各自洒下一小束针雨后跟着落下；细雨贯穿全程。', 35),
+      spell('s02-mid', '封缄「雨停前请勿拆阅」', 'rain', 'rain_sealed', '信封向上飞出后悬在空中，沿着队列依次拆封，各自洒下一小束针雨后投向自机；细雨贯穿全程。', 35),
     ],
     spells: [
       spell('s02-01', '雨符「无人签收之雨」', 'rain', 'rain_envelope', '摇曳的细针雨持续落下；信封成扇形飞出后停住，拆封化作一圈圈写着空白地址的小玉，一远一近交替排开。', 40),
