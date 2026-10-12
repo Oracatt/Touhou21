@@ -66,8 +66,8 @@ function ripplesBeforeLanding(k: AttackKit){
 
 /** 舟符「无岸单程票」: tickets launch from both banks and bend down
  * into the river. Banks alternate, so arcs cross in a woven X. Now and then
- * the Boss punches a hoop of tickets that opens, stops, and sinks downstream
- * whole, still round. */
+ * the Boss punches a hoop of tickets that opens, stops, and then every ticket
+ * sets off for the player from where it hung. */
 function oneWayTicket(k: AttackKit){
   const period=k.pick(30,23,20,17),n=k.pick(7,10,12,13);
   if(k.every(period)){
@@ -75,13 +75,14 @@ function oneWayTicket(k: AttackKit){
     k.fan(side*186,y,n,2.25,inward,.13,T.AMULET,side<0?C.MINT:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304});
   }
   if(k.every(120,60)){const hoop=k.t/120|0,count=k.pick(12,16,18,20);
-    k.ring(k.ox,k.oy,count,2.2,hoop*Math.PI/count,T.SCALE,C.AZURE,[k.wait(24),k.stopTo(22,DOWN,k.pick(1.3,1.45,1.55,1.65))]);}
+    k.ring(k.ox,k.oy,count,2.2,hoop*Math.PI/count,T.SCALE,C.AZURE,[k.wait(24),k.stopAim(22,k.pick(1.3,1.45,1.55,1.65))]);}
 }
 oneWayTicket.home={x:0,y:96};
 
 /** 水路「去而复返之舟」: rings of boats brake, turn around and return to
  * the place they left, crossing the next ring on its way out. Every other
- * ring leaves a slow ripple behind that the returning boats cut through. */
+ * pair of rings stirs two eddies at the banks; they spin against each other
+ * and fling curling arms of scales across the water. */
 function returningFerry(k: AttackKit){
   const period=k.pick(72,56,46,40),n=k.pick(18,24,30,36);
   k.place(Math.sin(k.t*.011)*70,104+Math.sin(k.t*.017)*10);
@@ -89,7 +90,12 @@ function returningFerry(k: AttackKit){
     const wave=k.t/period|0,spin=wave%2?.0035:-.0035;
     k.ring(k.ox,k.oy,n,3.3,wave*.21,T.OVAL,wave%2?C8.CYAN:C8.GREEN,
       k.rank>=2?[k.stopTurn(52,Math.PI,1.6),k.curve(spin,120)]:[k.stopTurn(52,Math.PI,1.6)]);
-    if(wave%2)k.ring(k.ox,k.oy,n/2,1.15,wave*.21+Math.PI/n,T.BALL,C.SKY,null,{rows:k.pick(1,1,2,2),speedStep:.9,silent:true});
+  }
+  const c=k.t%(period*2)-period/2;
+  if(c>=0&&c<24&&c%3===0){
+    const pool=k.t/(period*2)|0,step=c/3,arms=k.pick(3,3,4,4);
+    for(const side of[-1,1])
+      k.ring(side*132,84,arms,1.35,pool*.7+side*step*.24,T.SCALE,step%2?C.BLUE:C.WHITE,[k.curve(side*.016,110)],{silent:step>0||side>0});
   }
 }
 returningFerry.home={x:0,y:104};
