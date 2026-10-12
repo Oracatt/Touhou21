@@ -74,17 +74,17 @@ function beforeTheLastPage(k: AttackKit){
 }
 
 /** 名符「无人再唤之白纸神」: three paper familiars circle the god; each
- * releases rings of blank paper that bend alternately, gaps toward the player. */
+ * releases rings of blank paper, gaps toward the player, that bend
+ * alternately in wide arcs all the way down to the player's height. */
 function paperGodUncalled(k: AttackKit){
   const period=k.pick(38,29,25,21),a0=k.t*.012;
   if(k.every(period)){
     const wave=k.t/period|0;
     for(let j=0;j<3;j++){
       const a=a0+j*TAU/3,x=k.ox+Math.cos(a)*58,y=k.oy+Math.sin(a)*40,dir=(j+wave)%2?1:-1;
-      k.ringGap(x,y,k.pick(10,13,16,19),1.75,T.AMULET,j===1?C.PALE:C.WHITE,[k.curve(dir*.0058,130)],{silent:j>0});
+      k.ringGap(x,y,k.pick(10,13,16,19),1.75,T.AMULET,j===1?C.PALE:C.WHITE,[k.curve(dir*.0085,160)],{silent:j>0});
     }
   }
-  if(k.every(112,56))k.ring(k.ox,k.oy,k.pick(10,15,18,21),2.2,a0*3,T.STAR,C.YELLOW,null,{rows:k.pick(1,1,2,2),speedStep:1.6});
 }
 paperGodUncalled.home={x:0,y:112};
 
