@@ -2,7 +2,7 @@ import type {AttackKit, BossAttacks} from '../danmaku.js';
 /** 扉灯祈 — Stage 1. Lanterns mark doors: every attack teaches one readable
  * idea (a gap that faces you, rings that weave, a lit sequence to follow). */
 import {T,C,C8,DOWN} from '../danmaku.js';
-import {polygon,inGap,burstShape} from './shapes.js';
+import {polygon,rose,inGap,burstShape} from './shapes.js';
 
 /** Midboss: a lantern greeting of short ring bursts and one aimed stack. */
 function lanternGreeting(k: AttackKit){
@@ -50,7 +50,8 @@ const squareRadius=(a:number)=>{const q=(a%(Math.PI/2)+Math.PI/2)%(Math.PI/2);re
  * Each frame leaves its door facing where the player stood at that moment,
  * with a lamp hung on either side of it. The lamps soon bloom into mirrored
  * rings of lantern flowers that drift into the doorway, so the door has to
- * be taken through the gaps between the flowers. */
+ * be taken through the gaps between the flowers. Now and then lanterns float
+ * out from the Boss's sleeves, hang, light a small ring and sink. */
 function unclaimedDoorLamp(k: AttackKit){
   const period=k.pick(62,47,40,34),edge=k.pick(10,13,16,19);
   if(k.every(period)){
@@ -60,12 +61,17 @@ function unclaimedDoorLamp(k: AttackKit){
     k.later(k.pick(60,56,52,48),lamps,b=>k.ring(b.x,b.y,k.pick(6,8,9,10),1.45,b.angle+(b===lamps[0]?.2:-.2),T.BALL,C.YELLOW,null,{rows:k.pick(1,1,2,2),speedStep:1.1,silent:b!==lamps[0]}));
     if(k.rank>=2&&wave%2)burstShape(k,k.ox,k.oy,polygon(4,edge-4),1.05,rotation+Math.PI/4,T.AMULET,C.YELLOW,null,{skip:(p,a)=>inGap(a,door,half+.06)});
   }
+  if(k.every(180,90))for(const side of[-1,1])for(let i=0;i<k.pick(1,1,2,2);i++){
+    const lantern=k.shot(k.ox+side*46,k.oy+6,DOWN+side*(.62+i*.4),1.9,T.ORB,C8.YELLOW,[k.stopTo(34,DOWN,.85)],{silent:side>0||i>0});
+    k.later(34,lantern,b=>k.ring(b.x,b.y,k.pick(5,6,7,8),1.25,DOWN+Math.PI/k.pick(5,6,7,8),T.BALL,C.ORANGE,null,{silent:true}));
+  }
 }
 unclaimedDoorLamp.home={x:0,y:104};
 
 /** 迎火「百户无字灯笼坂」: lanterns on both sides of the slope light from
  * the top toward the player. Each releases a slowly swirling ring whose gap
- * faces the player, so the crossing rings form a street with readable doors. */
+ * faces the player, so the crossing rings form a street with readable doors.
+ * When the street is lit, the Boss opens a five-petal lantern flower. */
 function lanternSlope(k: AttackKit){
   const step=k.pick(24,19,16,14),cycle=step*6+60,c=k.t%cycle,round=k.t/cycle|0;
   if(c<step*6&&c%step===0){
@@ -74,6 +80,7 @@ function lanternSlope(k: AttackKit){
       k.rank===3?{rows:2,speedStep:1.1}:null);
     if(k.rank>=1)k.shot(x,y,DOWN,0,T.ORB,C8.YELLOW,[k.wait(cycle-c+10),k.set(DOWN,1.2)],{safe:2304});
   }
+  if(c===step*6+20)burstShape(k,k.ox,k.oy,rose(5,k.pick(25,35,40,45)),1.7,DOWN+round*Math.PI/5,T.RICE,round%2?C.ORANGE:C.RED);
   if(c===step*6+40)k.wander(40,{dx:[16,40],y:[84,104]});
 }
 lanternSlope.home={x:0,y:92};

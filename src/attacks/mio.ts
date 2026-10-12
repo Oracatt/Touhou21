@@ -107,10 +107,15 @@ function lateSelfIntroduction(k: AttackKit){
 }
 lateSelfIntroduction.home={x:50,y:104};
 
-/** 倒铃「自铃口归来之声」 */
+/** 倒铃「自铃口归来之声」: rings of voices leave, turn back into the bell
+ * mouth and turn out again askew. Now and then the bell tolls: a slow ring of
+ * great beads, and its echo half a step round. */
 function voiceFromBellMouth(k: AttackKit){
   if(k.every(34)){const wave=k.t/34|0;
     k.ring(k.ox,k.oy,34,3.3,wave*.23,T.SCALE,wave%2?C.ROSE:C.SKY,[k.stopTurn(36,Math.PI,2.2),k.wait(34),k.stopTurn(28,Math.PI+(wave%2?.4:-.4),2.5)]);}
+  if(k.every(136,68)){const x=k.ox,y=k.oy,a=(k.t/136|0)*.31;
+    k.ring(x,y,10,1.35,a,T.BIG,C8.WHITE);
+    echo(k,16,(k: AttackKit)=>k.ring(x,y,10,1.2,a+Math.PI/10,T.BIG,C8.BLUE,null,{silent:true}));}
 }
 voiceFromBellMouth.home={x:0,y:120};
 
@@ -135,7 +140,8 @@ function silentCorridor(k: AttackKit){
 silentCorridor.home={x:0,y:96};
 
 /** 余响「远方迟来之钟」: slow bells drift down the hall. Each one rings
- * again and again as it falls, and every ring keeps a gap toward you. */
+ * again and again as it falls, and every ring keeps a gap toward you; the
+ * Boss's own bell answers with a gapped ring and its quieter echo. */
 function farBells(k: AttackKit){
   const period=k.pick(290,250,220,200),pulse=k.pick(66,58,54,50),n=k.pick(8,10,12,12);
   if(k.every(period)){
@@ -145,12 +151,16 @@ function farBells(k: AttackKit){
       if(s%2===0)echo(k,16,(k: AttackKit)=>k.ring(bx,by,n,1.0,k.unit()*TAU,T.BALL,C.WHITE,null,{silent:true,safe:3600}));
     });
   }
+  if(k.every(110,60)){const x=k.ox,y=k.oy,count=k.pick(16,20,22,24);
+    k.ringGap(x,y,count,1.9,T.AMULET,C.WHITE);
+    echo(k,18,(k: AttackKit)=>k.ringGap(x,y,count,1.55,T.AMULET,C.SKY,null,{offset:Math.PI/count,silent:true}));}
   if(k.every(220,170))k.wander(40);
 }
 farBells.home={x:0,y:96};
 
 /** 回环「回旋呼唤」: rings curl into tight spirals as they leave, and
- * the echo ring curls the other way through the gaps of the first. */
+ * the echo ring curls the other way through the gaps of the first. Between
+ * them a four-petal call opens, and its echo opens between its petals. */
 function windingCalls(k: AttackKit){
   const period=k.pick(58,46,40,36),n=k.pick(8,10,12,14);
   if(k.every(period)){
@@ -158,6 +168,9 @@ function windingCalls(k: AttackKit){
     k.ring(x,y,n,1.15,a,T.BALL,wave%2?C.SKY:C.ROSE,[k.curve(w,110,.017)]);
     echo(k,18,(k: AttackKit)=>k.ring(x,y,n,1.0,a+Math.PI/n,T.BALL,C.WHITE,[k.curve(-w,110,.015)]));
   }
+  if(k.every(96,48)){const x=k.ox,y=k.oy,r=(k.t/96|0)*.3;
+    burstShape(k,x,y,rose(4,k.pick(32,36,40,44)),1.8,r,T.RICE,C.WHITE);
+    echo(k,18,(k: AttackKit)=>burstShape(k,x,y,rose(4,k.pick(32,36,40,44)),1.6,r+Math.PI/4,T.RICE,C.SKY,null,{extra:{silent:true}}));}
 }
 windingCalls.home={x:0,y:104};
 
@@ -186,27 +199,39 @@ function lastCallSixtyBreaths(k: AttackKit){
 }
 lastCallSixtyBreaths.home={x:0,y:108};
 
-/** 封名「旧册背面白纸花」 */
+/** 封名「旧册背面白纸花」: paper flowers open, stop and turn as they fold.
+ * Petals shed from the Boss drift down in a ring, and their echo falls on
+ * the mirrored side of the hall. */
 function whitePaperFlowerOnBack(k: AttackKit){
   if(k.every(46)){const wave=k.t/46|0,dir=wave%2?1:-1;
     burstShape(k,k.ox,k.oy,rose(5,60),2.6,wave*.41,T.AMULET,wave%2?C.WHITE:C.ROSE,[k.wait(30),k.stopTurn(24,dir*2.2,2.1)]);}
+  if(k.every(92,23)){const x=k.ox,y=k.oy,a=(k.t/92|0)*.37;
+    k.ring(x,y,12,1.5,a,T.RICE,C.PINK,[k.accel(.018,100,DOWN)]);
+    echo(k,20,(k: AttackKit)=>k.ring(-x,y,12,1.4,Math.PI-a,T.RICE,C.WHITE,[k.accel(.018,100,DOWN)],{silent:true}));}
 }
 whitePaperFlowerOnBack.home={x:0,y:112};
 
 /** 耐响「末次呼唤之六十余息」 (survival): six echoes of the journey,
  * each a little quieter than the one before. */
-/** 言灵「未出口之初名」 */
+/** 言灵「未出口之初名」: two voices circle the Boss and each rings with a
+ * gap; a thread of stars spirals out between them. Now and then a triangle
+ * of the unspoken name spreads, and its echo turned a sixth completes a
+ * six-pointed star. */
 function firstUnspokenName(k: AttackKit){
   const a1=k.t*.032,a2=a1+Math.PI-.7*Math.sin(k.t*.011);
   const p1={x:k.ox+Math.cos(a1)*70,y:k.oy+Math.sin(a1)*44},p2={x:k.ox+Math.cos(a2)*70,y:k.oy+Math.sin(a2)*44};
   if(k.every(26))k.ringGap(p1.x,p1.y,22,2.1,T.BALL,C.BLUE);
   if(k.every(26,13))k.ringGap(p2.x,p2.y,22,2.1,T.BALL,C.ROSE);
   if(k.every(6))k.shot(k.ox,k.oy,k.t*.09,1.8,T.STAR,C.WHITE,null,{silent:true});
+  if(k.every(100,50)){const x=k.ox,y=k.oy,r=DOWN+(k.t/100|0)*.29;
+    burstShape(k,x,y,polygon(3,9),2.2,r,T.SCALE,C.WHITE);
+    echo(k,14,(k: AttackKit)=>burstShape(k,x,y,polygon(3,9),2,r+Math.PI/3,T.SCALE,C.SKY,null,{extra:{silent:true}}));}
 }
 firstUnspokenName.home={x:0,y:112};
 
 /** 「愿旧名也有人轻轻应答」: six shapes and their echoes; the echo starts
- * opposed (half a turn away) and turns toward agreement as the card ends. */
+ * opposed (half a turn away) and turns toward agreement as the card ends.
+ * A ring of stars curls one way and its echo curls back the other. */
 function mayOldNamesBeAnswered(k: AttackKit){
   const shape=Math.min(5,k.t/620|0),agreement=Math.min(1,k.t/3600),offset=Math.PI*(1-agreement);k.state.chapter=shape;
   const period=[44,40,40,36,42,34][shape];
@@ -217,6 +242,9 @@ function mayOldNamesBeAnswered(k: AttackKit){
     echo(k,14,(k: AttackKit)=>burstShape(k,x,y,outline,1.7,r+offset,T.AMULET,colors[1],null,{extra:{silent:true}}));
   }
   if(k.every(5))k.shot(k.ox,k.oy,k.t*.061,1.9,T.BALL,C.BLUE,null,{silent:true});
+  if(k.every(140,70)){const x=k.ox,y=k.oy,a=k.t*.009;
+    k.ring(x,y,12,1.6,a,T.STAR,C.WHITE,[k.curve(.006,110)]);
+    echo(k,14,(k: AttackKit)=>k.ring(x,y,12,1.45,a+offset+Math.PI/12,T.STAR,C.YELLOW,[k.curve(-.006,110)],{silent:true}));}
 }
 mayOldNamesBeAnswered.home={x:0,y:110};
 

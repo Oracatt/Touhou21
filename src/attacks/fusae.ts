@@ -25,7 +25,9 @@ function shelfSorting(k: AttackKit){
 
 /** 规章「借阅证不得转借」: every burst of cards is sorted onto two slanted
  * shelves, red and green, that cross in an X; each shelf then slides toward
- * its own bank, so the crossing of the two curtains walks down to the player. */
+ * its own bank, so the crossing of the two curtains walks down to the player.
+ * Between bursts the Boss issues a card: a diamond, then a square, red and
+ * green in turn. */
 function nonTransferableCard(k: AttackKit){
   const period=k.pick(64,50,42,36),spacing=k.pick(46,38,33,29),lean=.42,slope=Math.tan(lean);
   if(k.every(period)){
@@ -36,6 +38,8 @@ function nonTransferableCard(k: AttackKit){
         k.shot(k.ox,k.oy,Math.atan2(y-k.oy,x-k.ox),.4,T.AMULET,color,[k.goTo(x,y,34),k.stopTo(14,DOWN+dir*lean,1.9)],{silent:i>0});
       }
   }
+  if(k.every(period*2,period)){const card=k.t/(period*2)|0;
+    burstShape(k,k.ox,k.oy,polygon(4,k.pick(4,5,6,7)),1.3,card%2?Math.PI/4:0,T.AMULET,card%2?C.GREEN:C.RED);}
   if(k.every(period*4,period*3))k.wander(40,{y:[92,118]});
 }
 nonTransferableCard.home={x:0,y:104};
@@ -164,13 +168,16 @@ function echoMayNotLeave(k: AttackKit){
 echoMayNotLeave.home={x:0,y:110};
 
 /** Extra midboss 3 — 订正「原件归还，抄本留存」: originals return to the
- * archive; at each turning point a copy is left hanging, then falls. */
+ * archive; at each turning point a copy is left hanging, then falls. Between
+ * returns a green five-pointed correction mark spreads, upright and inverted
+ * in turn. */
 function originalsReturned(k: AttackKit){
   const period=44;
   if(k.every(period)){
     const n=18,a=k.unit()*TAU,originals=k.ring(k.ox,k.oy,n,3.2,a,T.AMULET,C.RED,[k.stopTurn(40,Math.PI,2.4)]);
     k.later(44,originals,b=>k.shot(b.x,b.y,DOWN+(k.unit()-.5)*.4,0,T.AMULET,C.WHITE,[k.wait(40),k.accel(.025,80,DOWN)],{silent:true}));
   }
+  if(k.every(period*2,22))burstShape(k,k.ox,k.oy,star(5,5,.42),1.5,DOWN+(k.t/(period*2)|0)*TAU/10,T.RICE,C.GREEN);
 }
 originalsReturned.home={x:0,y:104};
 

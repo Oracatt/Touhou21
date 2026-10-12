@@ -2,6 +2,7 @@ import type {AttackKit, BossAttacks} from '../danmaku.js';
 ﻿/** 糸守紫乃 — Stage 4. Threads first divide space, then beads travel inside
  * it: lattices, counter-rotating chains and an eight-spoke web. */
 import {T,C,C8,DOWN,TAU,lerp,wrap} from '../danmaku.js';
+import {polygon,burstShape} from './shapes.js';
 
 /** Midboss: two shuttles orbit the Boss and spray needles along their path. */
 function spinningShuttle(k: AttackKit){
@@ -91,7 +92,8 @@ function untiedKnots(k: AttackKit){
 
 /** 糸符「相识者之经纬」: warned vertical threads divide the field into
  * corridors while beads fall inside them; each cycle the lattice loosens and
- * shifts by half a corridor. */
+ * shifts by half a corridor. Weft threads are drawn in from the banks across
+ * the warp, then the whole thread drops. */
 function acquaintanceWarpWeft(k: AttackKit){
   const cycle=k.pick(220,200,190,180),c=k.t%cycle,round=k.t/cycle|0,spacing=k.pick(104,92,82,74);
   if(c===0){
@@ -110,11 +112,20 @@ function acquaintanceWarpWeft(k: AttackKit){
     }
   }
   if(k.rank>=2&&c>=56&&c<cycle-40&&c%40===0)k.ringGap(k.ox,k.oy,k.pick(16,16,20,24),1.7,T.NEEDLE,C.WHITE);
+  // Each weft needle waits until the whole thread is drawn, so it drops as one line.
+  const draw=56,weft=k.pick(1,2,2,2);
+  for(let w=0;w<weft;w++){
+    const start=70+w*60,at=c-start;if(at<0||at>=draw||at%4)continue;
+    const side=(round+w)%2?1:-1,y=[64,112,88,136][(round*2+w)%4];
+    k.shot(side*190,y,side<0?0:Math.PI,4,T.NEEDLE,w%2?C.PALE:C.WHITE,[k.wait(draw-at+8),k.stopTo(14,DOWN,k.pick(1.2,1.35,1.45,1.55))],{silent:at>0,safe:2304});
+  }
 }
 acquaintanceWarpWeft.home={x:0,y:92};
 
 /** 结忆「昨日明日之错针」: yesterday's chain turns one way, tomorrow's
- * the other; where they cross, diamond-shaped openings appear and move. */
+ * the other; where they cross, diamond-shaped openings appear and move.
+ * Two triangles of needles leave together and twist against each other into
+ * a turning six-pointed star. */
 function crossedStitchesOfDays(k: AttackKit){
   const interval=k.pick(7,5,4,3),arms=k.pick(3,3,4,5);
   if(k.every(interval)){
@@ -124,19 +135,23 @@ function crossedStitchesOfDays(k: AttackKit){
       k.shot(k.ox,k.oy,-a+j*TAU/arms+Math.PI/arms,1.75,T.BALL,C.SKY,null,{silent:true});
     }
   }
+  if(k.every(140,70)){const r=k.t*.031,edge=k.pick(5,6,7,8);
+    burstShape(k,k.ox,k.oy,polygon(3,edge),1.5,r,T.NEEDLE,C.PINK,[k.curve(.0045,140)]);
+    burstShape(k,k.ox,k.oy,polygon(3,edge),1.5,-r+Math.PI/3,T.NEEDLE,C.SKY,[k.curve(-.0045,140)],{extra:{silent:true}});}
 }
 crossedStitchesOfDays.home={x:0,y:120};
 
 /** 蛛符「八方归路之丝庭」: eight warned spokes turn slowly; web rings
- * expand between them, so the safe sector travels around the Boss. */
+ * expand between them, so the safe sector travels around the Boss. Octagons
+ * of silk leave with their corners on the spokes, so the web itself spreads. */
 function eightfoldWebGarden(k: AttackKit){
   const cycle=300,c=k.t%cycle,round=k.t/cycle|0;
-  if(c===0){
-    const base=round*Math.PI/8,turn=(round%2?1:-1)*k.pick(.0022,.0025,.0027,.0028);
-    for(let j=0;j<8;j++)k.beam(k.ox,k.oy,base+j*Math.PI/4,{width:9,delay:62,grow:12,sustain:200,shrink:14,color:C.PALE,angular:turn,sound:j?-1:18});
-  }
+  const base=round*Math.PI/8,turn=(round%2?1:-1)*k.pick(.0022,.0025,.0027,.0028);
+  if(c===0)for(let j=0;j<8;j++)k.beam(k.ox,k.oy,base+j*Math.PI/4,{width:9,delay:62,grow:12,sustain:200,shrink:14,color:C.PALE,angular:turn,sound:j?-1:18});
   if(c>=62&&c<276&&k.every(k.pick(42,33,28,25),62))
     k.ring(k.ox,k.oy,k.pick(24,32,38,44),1.25,k.unit()*TAU,T.BALL,C.MAGENTA);
+  if(c>=90&&c<250&&(c-90)%k.pick(80,64,54,48)===0)
+    burstShape(k,k.ox,k.oy,polygon(8,k.pick(3,4,5,6)),1.1,base+turn*c,T.RICE,C.WHITE);
 }
 eightfoldWebGarden.home={x:0,y:112};
 

@@ -65,18 +65,23 @@ function ripplesBeforeLanding(k: AttackKit){
 }
 
 /** 舟符「无岸单程票」: tickets launch from both banks and bend down
- * into the river. Banks alternate, so arcs cross in a woven X. */
+ * into the river. Banks alternate, so arcs cross in a woven X. Now and then
+ * the Boss punches a hoop of tickets that opens, stops, and sinks downstream
+ * whole, still round. */
 function oneWayTicket(k: AttackKit){
   const period=k.pick(30,23,20,17),n=k.pick(7,10,12,13);
   if(k.every(period)){
     const wave=k.t/period|0,side=wave%2?1:-1,y=[46,96,146,96][(wave>>1)%4],inward=side<0?.32:Math.PI-.32;
     k.fan(side*186,y,n,2.25,inward,.13,T.AMULET,side<0?C.MINT:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304});
   }
+  if(k.every(120,60)){const hoop=k.t/120|0,count=k.pick(12,16,18,20);
+    k.ring(k.ox,k.oy,count,2.2,hoop*Math.PI/count,T.SCALE,C.AZURE,[k.wait(24),k.stopTo(22,DOWN,k.pick(1.3,1.45,1.55,1.65))]);}
 }
 oneWayTicket.home={x:0,y:96};
 
 /** 水路「去而复返之舟」: rings of boats brake, turn around and return to
- * the place they left, crossing the next ring on its way out. */
+ * the place they left, crossing the next ring on its way out. Every other
+ * ring leaves a slow ripple behind that the returning boats cut through. */
 function returningFerry(k: AttackKit){
   const period=k.pick(72,56,46,40),n=k.pick(18,24,30,36);
   k.place(Math.sin(k.t*.011)*70,104+Math.sin(k.t*.017)*10);
@@ -84,6 +89,7 @@ function returningFerry(k: AttackKit){
     const wave=k.t/period|0,spin=wave%2?.0035:-.0035;
     k.ring(k.ox,k.oy,n,3.3,wave*.21,T.OVAL,wave%2?C8.CYAN:C8.GREEN,
       k.rank>=2?[k.stopTurn(52,Math.PI,1.6),k.curve(spin,120)]:[k.stopTurn(52,Math.PI,1.6)]);
+    if(wave%2)k.ring(k.ox,k.oy,n/2,1.15,wave*.21+Math.PI/n,T.BALL,C.SKY,null,{rows:k.pick(1,1,2,2),speedStep:.9,silent:true});
   }
 }
 returningFerry.home={x:0,y:104};
@@ -93,7 +99,8 @@ returningFerry.home={x:0,y:104};
  * reeds twist into a woven bed. Each lane grows a reed for a random while,
  * then stays empty for a random while, so the bed is never complete. Paper
  * boats cross at any height; their wake rests on the water for a moment, then
- * slowly spreads up and down in a V. */
+ * slowly spreads up and down in a V. The Boss calls to both banks; the calls
+ * arc over and fall into the reeds unanswered. */
 function silentReedBanks(k: AttackKit){
   const sources=k.pick(6,6,8,8),reedEvery=k.pick(13,10,8,6),turn=.012,bend=56;
   const length=[[50,110],[60,130],[80,150],[90,170]][k.extra?3:k.rank],gap=[[70,160],[60,140],[40,110],[30,90]][k.extra?3:k.rank];
@@ -124,6 +131,8 @@ function silentReedBanks(k: AttackKit){
       for(const up of[-1,1])k.shot(b.x,b.y,up*DOWN,0,T.BALL,C.SKY,[k.wait(24),k.speedTo(.8,60)],{silent:true});
     });
   }
+  if(k.every(k.pick(150,120,92,72),55))for(const side of[-1,1])
+    k.fan(k.ox,k.oy,k.pick(3,3,5,5),2.4,side<0?Math.PI+.35:-.35,.14,T.AMULET,C.WHITE,[k.curve(side*.011,140)],{silent:side>0});
 }
 silentReedBanks.home={x:0,y:96};
 
