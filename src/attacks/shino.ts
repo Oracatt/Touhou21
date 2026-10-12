@@ -150,7 +150,7 @@ eightfoldWebGarden.home={x:0,y:112};
 /** 缝忆「无署名之团圆衣」: two sleeves swing beads up against the walls
  * and the ceiling; each bead reflects once, loses its momentum and drops as
  * part of a hem that drapes across the lower field. Square patches of beads
- * drop from both sleeves and cross beneath the Boss. */
+ * are sent toward the player. */
 function unsignedReunionRobe(k: AttackKit){
   if(k.every(k.pick(7,5,4,4)))for(const side of[-1,1]){
     const swing=.5+.5*Math.sin(k.t*.04+(side<0?0:Math.PI)),lift=lerp(.12,1.3,swing);
@@ -159,10 +159,10 @@ function unsignedReunionRobe(k: AttackKit){
       [k.bounce(1,13,drape),k.accel(.026,100,DOWN)],{silent:side>0||k.t%9!==0});
   }
   if(k.every(k.pick(130,110,96,86),50)){
-    const size=k.pick(2,3,3,4);
-    for(const side of[-1,1])for(let i=0;i<size;i++)for(let j=0;j<size;j++){
+    const aim=k.aim(),size=k.pick(2,3,3,4);
+    for(let i=0;i<size;i++)for(let j=0;j<size;j++){
       const ox=(i-(size-1)/2)*11,oy=(j-(size-1)/2)*11;
-      k.shot(k.ox+side*62+ox,k.oy+6+oy,DOWN+side*.3,2.4,T.BALL,C.MAGENTA,null,{silent:side>0||i+j>0});
+      k.shot(k.ox+ox,k.oy+oy,aim,2.4,T.BALL,C.MAGENTA,null,{silent:i+j>0});
     }
   }
   if(k.rank>=2&&k.every(90,30))k.ringGap(k.ox,k.oy,k.pick(16,20,24,28),1.5,T.NEEDLE,C.WHITE);
