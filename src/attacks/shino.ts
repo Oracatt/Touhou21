@@ -110,7 +110,6 @@ function acquaintanceWarpWeft(k: AttackKit){
     }
   }
   if(k.rank>=2&&c>=56&&c<cycle-40&&c%40===0)k.ringGap(k.ox,k.oy,k.pick(16,16,20,24),1.7,T.NEEDLE,C.WHITE);
-  if(c===cycle-24)k.aimed(k.ox,k.oy,k.pick(3,5,7,9),2.8,.14,T.NEEDLE,C.WHITE,null,{rows:2,speedStep:2});
 }
 acquaintanceWarpWeft.home={x:0,y:92};
 
@@ -125,7 +124,6 @@ function crossedStitchesOfDays(k: AttackKit){
       k.shot(k.ox,k.oy,-a+j*TAU/arms+Math.PI/arms,1.75,T.BALL,C.SKY,null,{silent:true});
     }
   }
-  if(k.rank>=1&&k.every(140,70))k.aimed(k.ox,k.oy,3,3,.12,T.NEEDLE,C.WHITE,null,{rows:k.pick(1,3,4,5),speedStep:2});
 }
 crossedStitchesOfDays.home={x:0,y:120};
 
@@ -139,14 +137,13 @@ function eightfoldWebGarden(k: AttackKit){
   }
   if(c>=62&&c<276&&k.every(k.pick(42,33,28,25),62))
     k.ring(k.ox,k.oy,k.pick(24,32,38,44),1.25,k.unit()*TAU,T.BALL,C.MAGENTA);
-  if(k.rank>=1&&c===180)k.aimed(k.ox,k.oy,k.pick(1,3,3,5),2.6,.18,T.NEEDLE,C.WHITE,null,{rows:2,speedStep:1.8});
 }
 eightfoldWebGarden.home={x:0,y:112};
 
 /** 缝忆「无署名之团圆衣」: two sleeves swing beads up against the walls
  * and the ceiling; each bead reflects once, loses its momentum and drops as
  * part of a hem that drapes across the lower field. Square patches of beads
- * are sent toward the player. */
+ * drop from both sleeves and cross beneath the Boss. */
 function unsignedReunionRobe(k: AttackKit){
   if(k.every(k.pick(7,5,4,4)))for(const side of[-1,1]){
     const swing=.5+.5*Math.sin(k.t*.04+(side<0?0:Math.PI)),lift=lerp(.12,1.3,swing);
@@ -155,10 +152,10 @@ function unsignedReunionRobe(k: AttackKit){
       [k.bounce(1,13,drape),k.accel(.026,100,DOWN)],{silent:side>0||k.t%9!==0});
   }
   if(k.every(k.pick(130,110,96,86),50)){
-    const aim=k.aim(),size=k.pick(2,3,3,4);
-    for(let i=0;i<size;i++)for(let j=0;j<size;j++){
+    const size=k.pick(2,3,3,4);
+    for(const side of[-1,1])for(let i=0;i<size;i++)for(let j=0;j<size;j++){
       const ox=(i-(size-1)/2)*11,oy=(j-(size-1)/2)*11;
-      k.shot(k.ox+ox,k.oy+oy,aim,2.4,T.BALL,C.MAGENTA,null,{silent:i+j>0});
+      k.shot(k.ox+side*62+ox,k.oy+6+oy,DOWN+side*.3,2.4,T.BALL,C.MAGENTA,null,{silent:side>0||i+j>0});
     }
   }
   if(k.rank>=2&&k.every(90,30))k.ringGap(k.ox,k.oy,k.pick(16,20,24,28),1.5,T.NEEDLE,C.WHITE);

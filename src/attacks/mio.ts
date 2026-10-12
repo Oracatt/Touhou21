@@ -100,8 +100,9 @@ function lateSelfIntroduction(k: AttackKit){
   if(k.every(beat)){const b=k.t/beat|0,a=b*.27,x=k.ox,y=k.oy;
     k.ring(x,y,32,2.2,a,T.BALL,C.BLUE);
     echo(k,15,(k: AttackKit)=>k.ring(-x,y,32,2,a+Math.PI/32,T.BALL,C.RED));}
-  if(k.every(beat*3,beat)){const aim=k.aim();k.fan(k.ox,k.oy,5,3.2,aim,.1,T.SCALE,C.WHITE,null,{rows:3,speedStep:2.3});
-    echo(k,15,(k: AttackKit)=>k.fan(k.ox,k.oy,5,3,aim,.1,T.SCALE,C.SKY,null,{rows:3,speedStep:2.1}));}
+  if(k.every(beat*3,beat)){const x=k.ox,y=k.oy,r=DOWN+(k.t/(beat*3)|0)*.4;
+    burstShape(k,x,y,star(5,3,.45),2.6,r,T.SCALE,C.WHITE);
+    echo(k,15,(k: AttackKit)=>burstShape(k,-x,y,star(5,3,.45),2.3,r+Math.PI/5,T.SCALE,C.SKY,null,{extra:{silent:true}}));}
   if(k.every(beat*4,beat*2))k.moveTo(-k.ox*.6+k.signed()*30,lerp(92,124,k.unit()),40);
 }
 lateSelfIntroduction.home={x:50,y:104};
@@ -110,13 +111,13 @@ lateSelfIntroduction.home={x:50,y:104};
 function voiceFromBellMouth(k: AttackKit){
   if(k.every(34)){const wave=k.t/34|0;
     k.ring(k.ox,k.oy,34,3.3,wave*.23,T.SCALE,wave%2?C.ROSE:C.SKY,[k.stopTurn(36,Math.PI,2.2),k.wait(34),k.stopTurn(28,Math.PI+(wave%2?.4:-.4),2.5)]);}
-  if(k.every(136,68))k.aimed(k.ox,k.oy,5,2.6,.2,T.BIG,C8.WHITE);
 }
 voiceFromBellMouth.home={x:0,y:120};
 
 /** 回廊「唯静默可通之长廊」: dotted lanes of voices cross the hall in
  * alternating directions, slightly tilted so the lanes weave. Every lane
- * keeps one silence, and the silences are staggered from lane to lane. */
+ * keeps one silence, and the silences are staggered from lane to lane.
+ * A swaying fan from the Boss answers itself from the mirrored side. */
 function silentCorridor(k: AttackKit){
   const rows=7,step=k.pick(18,16,15,14),speed=k.pick(1.5,1.65,1.8,1.9),cycle=k.pick(5,5,6,6);
   if(k.every(step)){
@@ -127,9 +128,9 @@ function silentCorridor(k: AttackKit){
       k.shot(fromLeft?-190:190,170+i*40,fromLeft?tilt:Math.PI-tilt,speed,T.RICE,i%2?C.ROSE:C.SKY,null,{silent:i>0||k.t%(step*3)!==0,safe:2304});
     }
   }
-  if(k.every(96,48)){const aim=k.aim(),x=k.ox,y=k.oy;
-    k.fan(x,y,5,2.6,aim,.14,T.SCALE,C.WHITE,null,{rows:2,speedStep:1.9});
-    echo(k,20,(k: AttackKit)=>k.fan(-x,y,5,2.4,Math.atan2(k.py-y,k.px+x),.14,T.SCALE,C.SKY,null,{rows:2,speedStep:1.8}));}
+  if(k.every(96,48)){const a=DOWN+.45*Math.sin(k.t*.017),x=k.ox,y=k.oy;
+    k.fan(x,y,5,2.6,a,.14,T.SCALE,C.WHITE,null,{rows:2,speedStep:1.9});
+    echo(k,20,(k: AttackKit)=>k.fan(-x,y,5,2.4,Math.PI-a,.14,T.SCALE,C.SKY,null,{rows:2,speedStep:1.8}));}
 }
 silentCorridor.home={x:0,y:96};
 
@@ -144,7 +145,6 @@ function farBells(k: AttackKit){
       if(s%2===0)echo(k,16,(k: AttackKit)=>k.ring(bx,by,n,1.0,k.unit()*TAU,T.BALL,C.WHITE,null,{silent:true,safe:3600}));
     });
   }
-  if(k.every(110,60))k.aimed(k.ox,k.oy,3,2.7,.2,T.AMULET,C.WHITE,null,{rows:2,speedStep:1.8});
   if(k.every(220,170))k.wander(40);
 }
 farBells.home={x:0,y:96};
@@ -158,7 +158,6 @@ function windingCalls(k: AttackKit){
     k.ring(x,y,n,1.15,a,T.BALL,wave%2?C.SKY:C.ROSE,[k.curve(w,110,.017)]);
     echo(k,18,(k: AttackKit)=>k.ring(x,y,n,1.0,a+Math.PI/n,T.BALL,C.WHITE,[k.curve(-w,110,.015)]));
   }
-  if(k.every(96,48))k.aimed(k.ox,k.oy,5,2.9,.13,T.RICE,C.WHITE,null,{rows:2,speedStep:2});
 }
 windingCalls.home={x:0,y:104};
 
@@ -191,7 +190,6 @@ lastCallSixtyBreaths.home={x:0,y:108};
 function whitePaperFlowerOnBack(k: AttackKit){
   if(k.every(46)){const wave=k.t/46|0,dir=wave%2?1:-1;
     burstShape(k,k.ox,k.oy,rose(5,60),2.6,wave*.41,T.AMULET,wave%2?C.WHITE:C.ROSE,[k.wait(30),k.stopTurn(24,dir*2.2,2.1)]);}
-  if(k.every(92,46))k.aimed(k.ox,k.oy,3,3,.12,T.NEEDLE,C.SKY,null,{rows:4,speedStep:2});
 }
 whitePaperFlowerOnBack.home={x:0,y:112};
 
@@ -204,7 +202,6 @@ function firstUnspokenName(k: AttackKit){
   if(k.every(26))k.ringGap(p1.x,p1.y,22,2.1,T.BALL,C.BLUE);
   if(k.every(26,13))k.ringGap(p2.x,p2.y,22,2.1,T.BALL,C.ROSE);
   if(k.every(6))k.shot(k.ox,k.oy,k.t*.09,1.8,T.STAR,C.WHITE,null,{silent:true});
-  if(k.every(100,50))k.aimed(k.ox,k.oy,5,3,.14,T.SCALE,C.WHITE,null,{rows:3,speedStep:2.1});
 }
 firstUnspokenName.home={x:0,y:112};
 
@@ -220,7 +217,6 @@ function mayOldNamesBeAnswered(k: AttackKit){
     echo(k,14,(k: AttackKit)=>burstShape(k,x,y,outline,1.7,r+offset,T.AMULET,colors[1],null,{extra:{silent:true}}));
   }
   if(k.every(5))k.shot(k.ox,k.oy,k.t*.061,1.9,T.BALL,C.BLUE,null,{silent:true});
-  if(k.every(140,70))k.aimed(k.ox,k.oy,5,2.9,.13,T.STAR,C.WHITE,null,{rows:3,speedStep:2});
 }
 mayOldNamesBeAnswered.home={x:0,y:110};
 

@@ -15,7 +15,7 @@ function oarStrokes(k: AttackKit){
 }
 
 /** 船费「一文钱渡口」: copper coins are tossed in arcs and fall like a
- * fountain; ticket bundles are sold to the player in between. */
+ * fountain; ticket bundles are thrown toward both banks in between. */
 function copperCoinFerry(k: AttackKit){
   if(k.every(k.pick(5,3,3,2)))for(let i=k.pick(1,1,2,2);i>0;i--){
     const angle=-DOWN+(k.unit()-.5)*2.6;
@@ -23,7 +23,8 @@ function copperCoinFerry(k: AttackKit){
   }
   if(k.every(k.pick(110,90,76,66),70))k.ringGap(k.ox,k.oy,k.pick(10,14,18,22),2.2,T.AMULET,C.ORANGE,[k.accel(.02,160,DOWN)]);
   if(k.rank>=2&&k.every(11,5))k.shot(k.ox,k.oy,-DOWN+(k.unit()-.5)*1.4,lerp(1.6,2.4,k.unit()),T.STAR,C.ORANGE,[k.accel(.032,240,DOWN)],{silent:true});
-  if(k.every(k.pick(96,80,70,60),40))k.aimed(k.ox,k.oy,k.pick(3,5,5,7),2.7,.19,T.AMULET,C.MINT,null,{rows:2,speedStep:1.9});
+  if(k.every(k.pick(96,80,70,60),40))for(const side of[-1,1])
+    k.fan(k.ox,k.oy,k.pick(3,4,5,5),2.5,DOWN+side*.62,.15,T.AMULET,C.MINT,null,{rows:2,speedStep:1.9,silent:side>0});
   if(k.every(200,160))k.wander(40,{dx:[20,50]});
 }
 copperCoinFerry.home={x:0,y:108};
@@ -71,7 +72,6 @@ function oneWayTicket(k: AttackKit){
     const wave=k.t/period|0,side=wave%2?1:-1,y=[46,96,146,96][(wave>>1)%4],inward=side<0?.32:Math.PI-.32;
     k.fan(side*186,y,n,2.25,inward,.13,T.AMULET,side<0?C.MINT:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304});
   }
-  if(k.every(120,60))k.aimed(k.ox,k.oy,k.pick(1,3,3,5),2.8,.15,T.SCALE,C.AZURE,null,{rows:k.pick(2,3,3,4),speedStep:1.9});
 }
 oneWayTicket.home={x:0,y:96};
 
@@ -85,7 +85,6 @@ function returningFerry(k: AttackKit){
     k.ring(k.ox,k.oy,n,3.3,wave*.21,T.OVAL,wave%2?C8.CYAN:C8.GREEN,
       k.rank>=2?[k.stopTurn(52,Math.PI,1.6),k.curve(spin,120)]:[k.stopTurn(52,Math.PI,1.6)]);
   }
-  if(k.rank>=1&&k.every(period*2,period))k.aimed(k.ox,k.oy,3,2.6,.25,T.SCALE,C.WHITE,null,{rows:2,speedStep:1.8});
 }
 returningFerry.home={x:0,y:104};
 
@@ -125,7 +124,6 @@ function silentReedBanks(k: AttackKit){
       for(const up of[-1,1])k.shot(b.x,b.y,up*DOWN,0,T.BALL,C.SKY,[k.wait(24),k.speedTo(.8,60)],{silent:true});
     });
   }
-  if(k.every(k.pick(150,120,92,72),55))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.7,.2,T.AMULET,C.WHITE,null,{rows:k.pick(1,2,2,3),speedStep:2});
 }
 silentReedBanks.home={x:0,y:96};
 

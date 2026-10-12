@@ -36,7 +36,6 @@ function nonTransferableCard(k: AttackKit){
         k.shot(k.ox,k.oy,Math.atan2(y-k.oy,x-k.ox),.4,T.AMULET,color,[k.goTo(x,y,34),k.stopTo(14,DOWN+dir*lean,1.9)],{silent:i>0});
       }
   }
-  if(k.rank>=2&&k.every(120,80))k.aimed(k.ox,k.oy,5,2.9,.13,T.AMULET,C.WHITE,null,{rows:2,speedStep:2});
   if(k.every(period*4,period*3))k.wander(40,{y:[92,118]});
 }
 nonTransferableCard.home={x:0,y:104};
@@ -84,8 +83,9 @@ function archiveRefusesOriginals(k: AttackKit){
     let blank=k.state.blank??Math.floor(cells/2);
     blank=clamp(blank+(k.unit()<.5?-1:1),2,cells-3);k.state.blank=blank;
     pageRow(k,{spacing,blank,width:k.pick(2,1,1,1),speed:1.7,color:(k.t/period)&1?C.WHITE:C.PALE});
+    if(k.rank>=1&&(k.t/period|0)%k.pick(5,5,4,4)===2)
+      k.shot(-184+(368-(cells-1)*spacing)/2+blank*spacing,-4,DOWN,1.7,T.BIG,C8.RED,null,{silent:true,safe:2304});
   }
-  if(k.rank>=1&&k.every(k.pick(120,110,94,82),60))k.aimed(k.ox,k.oy,1,1.6,0,T.BIG,C8.RED);
 }
 archiveRefusesOriginals.home={x:0,y:84};
 
@@ -102,7 +102,8 @@ function misfiledPages(k: AttackKit){
 misfiledPages.home={x:0,y:100};
 
 /** 印符「五重禁带出之印」: five seals orbit the Boss, each writing an arm of
- * a spiral; together they periodically stamp rings with a gap. */
+ * a spiral; together they periodically stamp rings with a gap, and now and
+ * then each stamps a vermilion seal outward along its own arm. */
 function fivefoldSeal(k: AttackKit){
   const radius=k.rank===3?70+16*Math.sin(k.t*.02):70,a0=k.t*.018;
   if(k.every(k.pick(7,5,4,3)))for(let j=0;j<5;j++){
@@ -111,19 +112,22 @@ function fivefoldSeal(k: AttackKit){
   if(k.every(k.pick(110,96,84,74),40))for(let j=0;j<5;j++){
     const a=a0+j*TAU/5;k.ringGap(k.ox+Math.cos(a)*radius,k.oy+Math.sin(a)*radius*.8,k.pick(8,10,12,14),1.6,T.BALL,C.GREEN,null,{silent:j>0});
   }
-  if(k.every(160,100))k.aimed(k.ox,k.oy,1,1.5,0,T.BIG,C8.RED);
+  if(k.every(160,100))for(let j=0;j<5;j++){
+    const a=a0+j*TAU/5;k.shot(k.ox+Math.cos(a)*radius,k.oy+Math.sin(a)*radius*.8,a,1.5,T.BIG,C8.RED,null,{silent:j>0});
+  }
 }
 fivefoldSeal.home={x:0,y:120};
 
 /** 式札「守门人无字签名」: the gatekeeper signs a five-pointed star of
- * paper; after a breath the whole signature folds to one side. */
+ * paper, upright and inverted in turn; after a breath the whole signature
+ * folds to one side. Five seals are stamped at the points of a pentagon. */
 function blankSignature(k: AttackKit){
   const period=k.pick(80,62,52,46);
   if(k.every(period)){
     const wave=k.t/period|0,fold=(wave%2?1:-1)*.75;
-    burstShape(k,k.ox,k.oy,star(5,k.pick(5,6,7,8),.4),2.3,wave*Math.PI/5+k.aim()-DOWN,T.AMULET,wave%2?C.RED:C.WHITE,[k.wait(44),k.stopTurn(22,fold,1.9)]);
+    burstShape(k,k.ox,k.oy,star(5,k.pick(5,6,7,8),.4),2.3,DOWN+wave*Math.PI/5,T.AMULET,wave%2?C.RED:C.WHITE,[k.wait(44),k.stopTurn(22,fold,1.9)]);
   }
-  if(k.every(120,60))k.aimed(k.ox,k.oy,3,1.7,.42,T.BIG,C8.RED);
+  if(k.every(120,60))k.ring(k.ox,k.oy,5,1.7,DOWN+((k.t-60)/120&1)*Math.PI/5,T.BIG,C8.RED);
 }
 blankSignature.home={x:0,y:108};
 
@@ -147,14 +151,15 @@ function borrowOnlyCatalogue(k: AttackKit){
 borrowOnlyCatalogue.home={x:0,y:90};
 
 /** Extra midboss 2 — 封印「回声不可携出之页」: square pages open, are pulled
- * back through the seal, and open again on the other side. */
+ * back through the seal, and open again on the other side; four seals are
+ * stamped from the corners of the turning page. */
 function echoMayNotLeave(k: AttackKit){
   const period=50;
   if(k.every(period)){
     const wave=k.t/period|0;
     burstShape(k,k.ox,k.oy,polygon(4,11),3.4,wave*.33,T.AMULET,wave%2?C.RED:C.PALE,[k.stopTurn(46,Math.PI,2.1)]);
   }
-  if(k.every(75,30))k.aimed(k.ox,k.oy,3,1.8,.3,T.BIG,C8.RED);
+  if(k.every(75,30))k.ring(k.ox,k.oy,4,1.8,k.t*.33/period,T.BIG,C8.RED);
 }
 echoMayNotLeave.home={x:0,y:110};
 
@@ -166,7 +171,6 @@ function originalsReturned(k: AttackKit){
     const n=18,a=k.unit()*TAU,originals=k.ring(k.ox,k.oy,n,3.2,a,T.AMULET,C.RED,[k.stopTurn(40,Math.PI,2.4)]);
     k.later(44,originals,b=>k.shot(b.x,b.y,DOWN+(k.unit()-.5)*.4,0,T.AMULET,C.WHITE,[k.wait(40),k.accel(.025,80,DOWN)],{silent:true}));
   }
-  if(k.every(110,60))k.aimed(k.ox,k.oy,7,2.8,.11,T.RICE,C.GREEN,null,{rows:2,speedStep:2});
 }
 originalsReturned.home={x:0,y:104};
 

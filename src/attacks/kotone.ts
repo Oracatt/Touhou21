@@ -84,18 +84,19 @@ function paperGodUncalled(k: AttackKit){
       k.ringGap(x,y,k.pick(10,13,16,19),1.75,T.AMULET,j===1?C.PALE:C.WHITE,[k.curve(dir*.0058,130)],{silent:j>0});
     }
   }
-  if(k.every(112,56))k.aimed(k.ox,k.oy,5,2.8,.13,T.STAR,C.YELLOW,null,{rows:k.pick(1,2,3,3),speedStep:2});
+  if(k.every(112,56))k.ring(k.ox,k.oy,k.pick(10,15,18,21),2.2,a0*3,T.STAR,C.YELLOW,null,{rows:k.pick(1,1,2,2),speedStep:1.6});
 }
 paperGodUncalled.home={x:0,y:112};
 
 /** 铃名「千户应答之金色声纹」: on every beat the god calls with a golden
- * ring; houses on both banks answer in turn with aimed replies. */
+ * ring; houses on both banks answer in turn, top to bottom, and the replies
+ * cross in the middle of the street. */
 function thousandHouseholdsAnswer(k: AttackKit){
   const beat=k.pick(42,34,29,25),b=k.t/beat|0,c=k.t%beat;
   if(c===0)k.ringGap(k.ox,k.oy,k.pick(18,24,30,34),2,T.BALL,b%2?C.YELLOW:C.ORANGE,null,{offset:(b%2)*.08});
   if(c===(beat>>1)){
     const house=b%4,y=70+house*52;
-    for(const side of[-1,1])k.aimed(side*182,y,k.pick(1,3,3,3),2.5,.17,T.RICE,C.WHITE,null,{rows:k.pick(1,2,3,3),speedStep:1.8,silent:side>0,safe:2304});
+    for(const side of[-1,1])k.fan(side*182,y,k.pick(1,3,3,3),2.5,side<0?.5:Math.PI-.5,.17,T.RICE,C.WHITE,null,{rows:k.pick(1,2,3,3),speedStep:1.8,silent:side>0,safe:2304});
   }
   if(k.rank>=2&&c===(beat>>2))k.ring(k.ox,k.oy,12,1.4,b*.4,T.STAR,C.PALE);
 }
@@ -113,7 +114,6 @@ function livingAndOldNames(k: AttackKit){
       k.shot(x+spacing/4,-4,DOWN+swap*.42,1.55,T.BALL,C.SKY,[k.wrapX(1)],{silent:true,safe:2304});
     }
   }
-  if(k.every(120,60))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.6,.2,T.AMULET,C.WHITE,null,{rows:2,speedStep:1.9});
 }
 livingAndOldNames.home={x:0,y:92};
 
@@ -168,7 +168,7 @@ function writeBackEveryName(k: AttackKit){
     burstShape(k,k.ox,k.oy,polygon(4,k.pick(9,12,14,16)),1.55,c*.011,T.AMULET,C.ORANGE,null,{skip:(p,a)=>inGap(a,door,halfDoor)});
   }else if(chapter===1){
     if(c%k.pick(6,4,3,3)===0)k.shot(lerp(-186,186,k.unit()),-6,DOWN+.1,lerp(2.3,3.1,k.unit()),T.NEEDLE,C.SKY,null,{safe:2304,silent:true});
-    if(c%k.pick(90,72,60,52)===0){const letters=k.aimed(k.ox,k.oy,3,3,.32,T.AMULET,C.WHITE,[k.hold(46),k.wait(22),k.vanish()]);
+    if(c%k.pick(90,72,60,52)===0){const letters=k.fan(k.ox,k.oy,4,2.6,DOWN,.42,T.AMULET,C.WHITE,[k.hold(46),k.wait(22),k.vanish()]);
       k.later(60,letters,b=>k.ring(b.x,b.y,k.pick(8,10,12,14),1.5,k.unit()*TAU,T.BALL,C.AZURE,null,{silent:true}));}
   }else if(chapter===2&&c%k.pick(78,60,50,44)===0){
     k.ring(k.ox,k.oy,k.pick(18,24,30,34),3.2,c*.2,T.OVAL,C8.CYAN,[k.stopTurn(50,Math.PI,1.6)]);

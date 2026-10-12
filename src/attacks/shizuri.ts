@@ -21,7 +21,7 @@ function postmanBeforeRain(k: AttackKit){
 
 /** 封缄「雨停前请勿拆阅」: sealed envelopes rise and hang in the air; they
  * open one after another along the row, each letting a short fan of rain
- * fall before the letter itself is delivered toward the player. */
+ * fall before the letter itself drops after it. */
 function sealedUntilRainStops(k: AttackKit){
   const period=k.pick(104,84,70,60);
   if(k.every(k.pick(12,10,8,7)))drizzle(k,1,{lean:.05,speed:[1.9,2.6]});
@@ -31,7 +31,7 @@ function sealedUntilRainStops(k: AttackKit){
     for(let i=0;i<m;i++){
       const turn=wave%2?m-1-i:i;
       envelopes.push(...k.shot(k.ox,k.oy,first+i*spread,3.1,T.AMULET,wave%2?C.PALE:C.WHITE,
-        [k.hold(40),k.wait(30+turn*k.pick(9,8,6,5)),k.aimNow(k.pick(1.6,1.9,2.1,2.3))],{silent:i>0}));
+        [k.hold(40),k.wait(30+turn*k.pick(9,8,6,5)),k.set(DOWN,k.pick(1.6,1.9,2.1,2.3))],{silent:i>0}));
     }
     k.later(70,envelopes,b=>k.fan(b.x,b.y,k.pick(2,3,4,4),1.8,DOWN,k.pick(.4,.3,.24,.26),T.NEEDLE,C.SKY));
   }
@@ -68,8 +68,9 @@ function scatteredGreetings(k: AttackKit){
   if(k.every(180,150))k.wander(42);
 }
 
-/** 雨符「无人签收之雨」: fine swaying rain is the texture. Envelopes
- * aimed at the player stop, then burst open into rings of blank addresses. */
+/** 雨符「无人签收之雨」: fine swaying rain is the texture. Envelopes fly
+ * out in a fan, stop, then burst open into rings of blank addresses; every
+ * other fan flies further and holds one more envelope, so the rings interleave. */
 function blankAddresseeDrizzle(k: AttackKit){
   const sway=.16*Math.sin(k.t*.004);
   // Slower rain, envelopes and rings on every difficulty. Slower needles
@@ -79,7 +80,8 @@ function blankAddresseeDrizzle(k: AttackKit){
   if(k.every(k.pick(6,4,3,4)))drizzle(k,k.pick(1,1,1,2),{lean:sway,speed:rain});
   const period=k.pick(82,64,54,46);
   if(k.every(period)){
-    const envelopes=k.aimed(k.ox,k.oy,k.pick(1,3,3,5),k.pick(2.5,2.8,2.6,2.3),k.pick(0,.34,.3,.26),T.AMULET,C.WHITE,[k.hold(48),k.wait(22),k.vanish()]);
+    const wave=k.t/period|0,far=wave%2;
+    const envelopes=k.fan(k.ox,k.oy,k.pick(3,4,5,6)+far,far?2.9:2.3,DOWN,k.pick(.5,.42,.36,.32),T.AMULET,C.WHITE,[k.hold(48),k.wait(22),k.vanish()]);
     k.later(62,envelopes,b=>k.ring(b.x,b.y,k.pick(8,10,12,14),k.pick(1.3,1.4,1.3,1.15),k.unit()*TAU,T.BALL,C.AZURE,null,{silent:true}));
   }
 }

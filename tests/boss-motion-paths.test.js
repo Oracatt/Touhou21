@@ -10,7 +10,7 @@ import {driveAttack} from '../dist/src/danmaku.js';
 const cases=[
   {attack:MIO.nonspells[6],start:60,schedule:'eaae765f2d926ed4ab616ff14d8e06a22ad6b1e2ebf9fb439edc44a01938b508',events:587,rng:73},
   {attack:MIO.spells[5],start:80,schedule:'45fda3d94913c572fe61e00f2ce5d9d41064ad8cc54e87b76c22d6a7ed1be34d',events:528,rng:73},
-  {attack:MIO.spells[7],start:80,schedule:'3a1336c7ca498b7b93060004eed245fe21e38c468541c642c141b1088de7bb60',events:530,rng:1376906378},
+  {attack:MIO.spells[7],start:80,schedule:'3631530f6d4e94c40bdce4160a52df577c5c9d23294c92940386e0683ea09406',events:519,rng:1376906378},
 ];
 
 /** Execute the production attack and public actor motion for a complete card.
