@@ -34,7 +34,7 @@ writeANameHere.home={x:0,y:96};
 function firstCalling(k: AttackKit){
   const period=k.pick(30,23,20,17);
   if(k.every(period)){
-    const beat=k.t/period|0,side=beat%2?1:-1,n=k.pick(10,13,16,19),sway=Math.sin(beat*.7)*.35;
+    const beat=k.t/period|0,side=beat%2?1:-1,n=k.pick(10,13,16,17),sway=Math.sin(beat*.7)*.35;
     k.fan(k.ox+side*54,k.oy+6,n,2.1,DOWN+sway,Math.PI/(n-1),T.BALL,side<0?C.YELLOW:C.ORANGE,null,{rows:k.rank>=2?2:1,speedStep:1.55});
   }
   if(k.every(120,60))k.aimed(k.ox,k.oy,3,2.9,.15,T.STAR,C.PALE,null,{rows:k.pick(1,2,3,3),speedStep:2.1});
