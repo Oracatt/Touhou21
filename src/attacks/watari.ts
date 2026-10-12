@@ -103,8 +103,9 @@ returningFerry.home={x:0,y:104};
  * reeds twist into a woven bed. Each lane grows a reed for a random while,
  * then stays empty for a random while, so the bed is never complete. Paper
  * boats cross at any height; their wake rests on the water for a moment, then
- * slowly spreads up and down in a V. The Boss calls to both banks; the calls
- * arc over and fall into the reeds unanswered. */
+ * slowly spreads up and down in a V. The Boss calls out in a ring of tickets
+ * with a slower echo behind it; each call turns half a step from the last and
+ * spreads through the reeds to every bank, unanswered. */
 function silentReedBanks(k: AttackKit){
   const sources=k.pick(6,6,8,8),reedEvery=k.pick(13,10,8,6),turn=.012,bend=56;
   const length=[[50,110],[60,130],[80,150],[90,170]][k.extra?3:k.rank],gap=[[70,160],[60,140],[40,110],[30,90]][k.extra?3:k.rank];
@@ -135,8 +136,9 @@ function silentReedBanks(k: AttackKit){
       for(const up of[-1,1])k.shot(b.x,b.y,up*DOWN,0,T.BALL,C.SKY,[k.wait(24),k.speedTo(.8,60)],{silent:true});
     });
   }
-  if(k.every(k.pick(150,120,92,72),55))for(const side of[-1,1])
-    k.fan(k.ox,k.oy,k.pick(3,3,5,5),2.4,side<0?Math.PI+.35:-.35,.14,T.AMULET,C.WHITE,[k.curve(side*.011,140)],{silent:side>0});
+  const call=k.pick(150,120,96,80);
+  if(k.every(call,55)){const n=k.pick(12,16,20,24);
+    k.ring(k.ox,k.oy,n,2,((k.t-55)/call|0)*Math.PI/n,T.AMULET,C.WHITE,null,{rows:2,speedStep:1.6});}
 }
 silentReedBanks.home={x:0,y:96};
 
