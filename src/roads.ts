@@ -271,9 +271,10 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       o.split(58,letter,(b,k)=>k.ring(b.x,b.y,k.pick(4,5,6,7),1.5,k.unit()*TAU,p.type,p.alt,null,{silent:true}));}break;}
     case 'side':if(age>=20&&age%k.pick(26,20,17,15)===0){
       // Stage 4 wefts hang vertical warp threads; boats elsewhere fire broadside,
-      // slanting down and inward, ahead of the boat.
+      // slanting down and inward, ahead of the boat. Stage 3 stays two-way on
+      // Lunatic: a staircase of eight three-way boats closes the whole lower field.
       if(stageId===4)k.fan(k.ox,k.oy,1,2.2,DOWN,0,p.needle,p.main,null,{safe:4096,rows:k.pick(1,2,3,4),speedStep:1.5});
-      else k.fan(k.ox,k.oy,k.pick(1,2,2,3),2.3,DOWN+side*.2,.3,p.needle,p.main,null,{safe:4096});}break;
+      else k.fan(k.ox,k.oy,stageId===3?k.pick(1,2,2,2):k.pick(1,2,2,3),2.3,DOWN+side*.2,.3,p.needle,p.main,null,{safe:4096});}break;
     case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172))k.ring(k.ox,k.oy,k.pick(6,8,10,14),2,k.unit()*TAU,p.type,p.accent,[k.stopTo(40,DOWN+side*.25,k.pick(1.1,1.3,1.4,1.5))],{safe:4096});break;
     case 'current':if(age>=24&&age%k.pick(34,20,14,11)===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
       k.shot(k.ox,k.oy,a,2,p.needle,s<0?p.main:p.alt,[k.curve(Math.sign(turn)*.02,Math.round(Math.abs(turn)/.02))],{safe:4096,silent:s>0||hush(state,age,44)});}break;
