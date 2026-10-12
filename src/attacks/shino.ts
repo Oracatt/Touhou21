@@ -65,11 +65,18 @@ function warpAndWeft(k: AttackKit){
   if(k.every(220,190))k.wander(40);
 }
 
-/** Nonspell 2: old memories behind threads — warned beams fence the aim
- * while rings pass between them; every other ring points a bead at the
- * player instead of a gap, so the player sidesteps from ring to ring. */
+/** Nonspell 2: old memories behind threads — a warned beam marks the
+ * player's line while two fence beams close in from both sides, so the player
+ * steps off the line but stays inside the fence. Rings pass between them;
+ * every other ring points a bead at the player instead of a gap, so the
+ * player sidesteps from ring to ring. */
 function memoriesBehindThreads(k: AttackKit){
-  if(k.every(150)){const aim=k.aim();for(const off of k.rank>=2?[-.5,0,.5]:[-.42,.42])k.beam(k.ox,k.oy,aim+off,{width:10,delay:54,sustain:44,color:C.MAGENTA});}
+  if(k.every(150)){
+    const aim=k.aim(),from=k.pick(.62,.56,.5,.46),to=k.pick(.34,.3,.27,.24),thread={width:10,delay:54,grow:14,sustain:44,color:C.MAGENTA};
+    k.beam(k.ox,k.oy,aim,thread);
+    for(const side of[-1,1])
+      k.beam(k.ox,k.oy,aim+side*from,{...thread,angular:-side*(from-to)/(thread.delay+thread.grow+thread.sustain),sound:-1});
+  }
   const ringEvery=k.pick(40,30,26,22),n=k.pick(16,22,28,32);
   if(k.every(ringEvery,12))k.ringGap(k.ox,k.oy,n,1.95,T.BALL,C.PALE,null,{offset:((k.t-12)/ringEvery&1)*Math.PI/n});
   if(k.every(300,250))k.wander(36);

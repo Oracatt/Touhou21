@@ -17,7 +17,7 @@ function fixture(){
 // Expected RGB comes from the colored fragment scripts in the real bullet ANM,
 // independent of the laser owner's choice of cancellation script.
 const authored=[
-  {name:'Shino second nonspell',attack:SHINO.nonspells[1],frame:0,count:2,color:C.MAGENTA,rgb:0x800880},
+  {name:'Shino second nonspell',attack:SHINO.nonspells[1],frame:0,count:3,color:C.MAGENTA,rgb:0x800880},
   {name:'Shino first spell',attack:SHINO.spells[0],frame:0,count:4,color:C.MAGENTA,rgb:0x800880},
   {name:'Shino third spell',attack:SHINO.spells[2],frame:0,count:8,color:C.PALE,rgb:0xffff08},
   {name:'Kotone fourth spell',attack:KOTONE.spells[3],frame:0,count:2,color:C.YELLOW,rgb:0xc0c008},

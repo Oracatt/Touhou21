@@ -28,7 +28,7 @@ function fixture(){
 const laserPlays=f=>f.played.filter(p=>p.file.endsWith('/audio/se_lazer00.wav'));
 
 const authored=[
-  {name:'Shino second nonspell',attack:SHINO.nonspells[1],frames:[0,150],beams:2,requests:2},
+  {name:'Shino second nonspell',attack:SHINO.nonspells[1],frames:[0,150],beams:3,requests:1},
   {name:'Shino first spell',attack:SHINO.spells[0],frames:[0,200],beams:4,requests:1},
   {name:'Shino third spell',attack:SHINO.spells[2],frames:[0,300],beams:8,requests:1},
   {name:'Kotone fourth spell',attack:KOTONE.spells[3],frames:[0,220],beams:2,requests:1,laserState:2},
