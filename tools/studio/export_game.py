@@ -33,8 +33,8 @@ DESCRIPTIONS = {
     'boss05': '校对者端正地坐在空白的书库里，把规矩一页一页折好。小提琴先念出一句话，再抬高一步答回去，钢琴像不歇的笔尖，十六分音符走得又稳又整齐；中段她认下了一个证明充分的例外，双簧管在大调里温和地唱起来；副歌里整组弦乐连成一道长弧，竖琴扫过，把整页校样读完。',
     'stage06': '还没有被写下的清晨。长笛与双簧管在钢琴与竖琴上缓缓升起，小号只在副歌里放亮。',
     'boss06': '庄重的开场白，需要足够坦然的人来说。小号与圆号立起仪式的架子，中段管钟两声一组往上敲，大提琴与通鼓踏着行进的步子走进副歌。',
-    'extra': '把写完的东西再写一遍。小号的短句咬着合成器的拨奏，副歌里小提琴与合成主音一起把句子改成新的。',
-    'bossExtra': '一个不肯停下的结尾。八分音符一路往前冲，B 大调的属和弦把每一段都推回开头，没有落脚的地方。',
+    'extra': '书库背面的长回廊。低音一个半音一个半音往下走，管风琴和独奏小提琴在上面唱，长笛把句尾学两遍；副歌把开头的三三二倒过来放慢，沿着五度一路走回门口。',
+    'bossExtra': '零点的钟。中段小号在反拍上发问，木琴躲在正拍，独奏小提琴学完最后半小节再自己接下去；副歌先由铜管、管风琴、定音鼓和管钟敲满十二下，乐队随后回来，低音一路升到升 D。',
 }
 ORDER = list(DESCRIPTIONS)
 
@@ -68,7 +68,7 @@ def main():
         'provenance': ('Original melodies, harmonies and arrangements written for this project and rendered offline from '
                        'sampled instruments by tools/studio. Every track is an intro followed by a loop body whose seam is frame exact.'),
         'samples': [
-            {'name': 'VSCO 2 Community Edition', 'license': 'CC0 1.0', 'used': 'orchestral instruments, mallets, gong, triangle'},
+            {'name': 'VSCO 2 Community Edition', 'license': 'CC0 1.0', 'used': 'orchestral instruments, organ, mallets, gong, triangle'},
             {'name': 'Salamander Grand Piano V3', 'author': 'Alexander Holm', 'license': 'CC BY 3.0', 'used': 'piano'},
             {'name': 'MuldjordKit', 'author': 'Lars Muldjord', 'license': 'CC BY 4.0', 'used': 'drum kit'},
         ],

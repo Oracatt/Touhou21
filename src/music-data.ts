@@ -179,8 +179,8 @@ export const MUSIC_TRACKS = Object.freeze([
     "loopEndFrame": 1706667,
     "duration": 53.333344,
     "bpm": 162,
-    "description": "把写完的东西再写一遍。小号的短句咬着合成器的拨奏，副歌里小提琴与合成主音一起把句子改成新的。",
-    "sha256": "86ed310d442b8d5627d19686f5d21a934be4bc2254e52afacda3f744dcfa5d84"
+    "description": "书库背面的长回廊。低音一个半音一个半音往下走，管风琴和独奏小提琴在上面唱，长笛把句尾学两遍；副歌把开头的三三二倒过来放慢，沿着五度一路走回门口。",
+    "sha256": "342e9dc8b4e7c039d393887a6be5cedbafbcade02558a76721316870f107c71f"
   },
   {
     "id": "bossExtra",
@@ -192,8 +192,8 @@ export const MUSIC_TRACKS = Object.freeze([
     "loopEndFrame": 1570909,
     "duration": 49.090906,
     "bpm": 176,
-    "description": "一个不肯停下的结尾。八分音符一路往前冲，B 大调的属和弦把每一段都推回开头，没有落脚的地方。",
-    "sha256": "087d082e4e831c3baf7e743d0d7b91f64e27d801eaf59f55f3bdc4479106268a"
+    "description": "零点的钟。中段小号在反拍上发问，木琴躲在正拍，独奏小提琴学完最后半小节再自己接下去；副歌先由铜管、管风琴、定音鼓和管钟敲满十二下，乐队随后回来，低音一路升到升 D。",
+    "sha256": "0351463c27a06dbcd4b619e2bf9becc5ec3a51621975095c3756ce233d4cb9b6"
   },
   {
     "id": "ending",
