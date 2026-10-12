@@ -53,8 +53,11 @@ function stitchTheShadow(k: AttackKit){
 stitchTheShadow.home={x:0,y:96};
 
 /** Nonspell 1: radial warp lines fall from the Boss; weft rows slide in
- * from the banks and drop down across them. */
+ * from the banks and drop down across them. The Boss holds fire while it
+ * changes place, so the warp lines never sweep sideways and every move
+ * leaves a break in them. */
 function warpAndWeft(k: AttackKit){
+  if(k.state.move)return;
   const period=k.pick(32,25,21,18);
   if(k.every(period)){
     const odd=(k.t/period)&1,n=k.pick(5,7,9,11);
