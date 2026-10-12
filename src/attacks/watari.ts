@@ -65,18 +65,15 @@ function ripplesBeforeLanding(k: AttackKit){
 }
 
 /** 舟符「无岸单程票」: tickets launch from both banks and bend down
- * into the river. Banks alternate, so arcs cross in a woven X. Now and then
- * the Boss punches a hoop of tickets that opens, stops, and then every ticket
- * sets off for the player from where it hung. */
+ * into the river. Banks alternate, so arcs cross in a woven X. From Normal
+ * each fan carries a slower second row that bends in tighter, so the banks
+ * weave a double net. */
 function oneWayTicket(k: AttackKit){
-  const period=k.pick(30,23,20,17),n=k.pick(7,10,12,13);
+  const period=k.pick(30,23,20,17),n=k.pick(8,11,13,15);
   if(k.every(period)){
     const wave=k.t/period|0,side=wave%2?1:-1,y=[46,96,146,96][(wave>>1)%4],inward=side<0?.32:Math.PI-.32;
-    k.fan(side*186,y,n,2.25,inward,.13,T.AMULET,side<0?C.MINT:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304});
+    k.fan(side*186,y,n,2.25,inward,.13,T.AMULET,side<0?C.MINT:C.WHITE,[k.curve(-side*.0058,130)],{safe:2304,rows:k.pick(1,2,2,2),speedStep:1.65});
   }
-  const every=k.pick(180,150,136,120);
-  if(k.every(every,every/2)){const hoop=k.t/every|0,count=k.pick(12,16,18,20);
-    k.ring(k.ox,k.oy,count,2.2,hoop*Math.PI/count,T.SCALE,C.AZURE,[k.wait(24),k.stopAim(22,k.pick(1,1.15,1.3,1.45))]);}
 }
 oneWayTicket.home={x:0,y:96};
 
