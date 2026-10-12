@@ -92,8 +92,7 @@ function untiedKnots(k: AttackKit){
 
 /** 糸符「相识者之经纬」: warned vertical threads divide the field into
  * corridors while beads fall inside them; each cycle the lattice loosens and
- * shifts by half a corridor. Weft threads are drawn in from the banks across
- * the warp, then the whole thread drops. */
+ * shifts by half a corridor. */
 function acquaintanceWarpWeft(k: AttackKit){
   const cycle=k.pick(220,200,190,180),c=k.t%cycle,round=k.t/cycle|0,spacing=k.pick(104,92,82,74);
   if(c===0){
@@ -112,13 +111,6 @@ function acquaintanceWarpWeft(k: AttackKit){
     }
   }
   if(k.rank>=2&&c>=56&&c<cycle-40&&c%40===0)k.ringGap(k.ox,k.oy,k.pick(16,16,20,24),1.7,T.NEEDLE,C.WHITE);
-  // Each weft needle waits until the whole thread is drawn, so it drops as one line.
-  const draw=56,weft=k.pick(1,2,2,2);
-  for(let w=0;w<weft;w++){
-    const start=70+w*60,at=c-start;if(at<0||at>=draw||at%4)continue;
-    const side=(round+w)%2?1:-1,y=[64,112,88,136][(round*2+w)%4];
-    k.shot(side*190,y,side<0?0:Math.PI,4,T.NEEDLE,w%2?C.PALE:C.WHITE,[k.wait(draw-at+8),k.stopTo(14,DOWN,k.pick(1.2,1.35,1.45,1.55))],{silent:at>0,safe:2304});
-  }
 }
 acquaintanceWarpWeft.home={x:0,y:92};
 
