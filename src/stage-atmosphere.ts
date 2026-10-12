@@ -12,6 +12,12 @@ const EDGE_FADE=18,TILE=48,RING=16;
 /** Stage 5 archway opening in world units (half width, lintel underside), read
  * from the door's alpha matte with a small inset; DOOR_FADE is in pixels. */
 const DOOR_OPENING=Object.freeze({x:6.3,top:16.9}),DOOR_FADE=10;
+/** Stage 3 arched bridge panel (world width, base, height) and its alpha
+ * matte's covered span per column, from a pier to the centre, as fractions of
+ * the panel height; fade is in those fractions too. */
+const BRIDGE=Object.freeze({width:42,y:-.05,height:14,fade:.03,
+  low:Object.freeze([.01,.01,.01,.09,.21,.26,.33,.36,.37,.39,.4,.4]),
+  high:Object.freeze([.93,.95,.85,.85,.88,.91,.93,.95,.96,.98,.98,.99])});
 const clamp=(value:number,min:number,max:number)=>Math.max(min,Math.min(max,value));
 const smooth=(value:number)=>{const t=clamp(value,0,1);return t*t*(3-2*t);};
 const tint=(rgb:number,opacity:number)=>((rgb<<8)|Math.round(clamp(opacity,0,1)*255))>>>0;
@@ -215,10 +221,6 @@ export class StageAtmosphere{
       else{corner(-width/2,-height/2,1);corner(width/2,-height/2,1);corner(width/2,height/2,1);corner(-width/2,height/2,1);}
       if(alpha)visible++;
     };
-    // Painted occluders that span the whole corridor: nothing behind them is drawn.
-    const nextPlane=(local:number,present:(variant:number)=>boolean)=>{
-      for(let tile=Math.floor((eye-local)/TILE);;tile++){const z=tile*TILE+local;if(z>eye+1&&present(variantOf(tile)))return z;}
-    };
 
     if(stage===1){
       // Bloom around each stone lantern window (x=±10, z=9/37 per tile).
@@ -258,20 +260,35 @@ export class StageAtmosphere{
         ripple('alpha',-7+k(6)*14,.03,z,.2+1.5*ease(Math.min(p,1)),.2+.12*p,0xc3dade,p<1?.55*smooth((life.age-1)/5)*Math.pow(1-p,1.5):0,k(7)*TAU);
       }
     }else if(stage===3){
-      const bridge=nextPlane(32,v=>v===1),shown=(z:number)=>z<bridge-.5?1:0;
+      // Ambience behind the arched bridge shows over its rail and under its
+      // arch: each point's line of sight is traced to the bridge plane and
+      // only the bridge's own silhouette hides it, blended over its depth.
+      const ex=camera.eye[0],ey=camera.eye[1],bridges:number[]=[];
+      for(let tile=Math.floor((eye-32)/TILE);bridges.length<2;tile++){const z=tile*TILE+32;if(z>eye+1&&variantOf(tile)===1)bridges.push(z);}
+      const shown=(x:number,y:number,z:number)=>{
+        let alpha=1;
+        for(const b of bridges){
+          const near=smooth((z-b+1)/2);if(!near)continue;
+          const s=(b-eye)/(z-eye),u=(ex+(x-ex)*s)/BRIDGE.width+.5,v=(ey+(y-ey)*s-BRIDGE.y)/BRIDGE.height;
+          const f=clamp(Math.min(u,1-u)*BRIDGE.low.length*2-.5,0,BRIDGE.low.length-1),i=Math.min(BRIDGE.low.length-2,Math.floor(f)),t=f-i;
+          const low=BRIDGE.low[i]+(BRIDGE.low[i+1]-BRIDGE.low[i])*t,high=BRIDGE.high[i]+(BRIDGE.high[i+1]-BRIDGE.high[i])*t;
+          alpha*=1-near*smooth(Math.min(u,1-u)/BRIDGE.fade)*smooth((v-low)/BRIDGE.fade)*smooth((high-v)/BRIDGE.fade);
+        }
+        return alpha;
+      };
       for(let i=0;i<40;i++){
-        const c=cell(5,i,10,56),r=(lane:number)=>random(i,lane,c.turn),p=at(-9+r(0)*18+Math.sin(clock*.004+r(1)*TAU)*.5,-.33,c.z);
+        const c=cell(5,i,10,56),r=(lane:number)=>random(i,lane,c.turn),x=-9+r(0)*18+Math.sin(clock*.004+r(1)*TAU)*.5,p=at(x,-.33,c.z);
         const shine=Math.max(0,Math.sin(clock*(.03+r(2)*.035)+r(3)*TAU)),rx=p?clamp((.9+r(4)*.9)*p.scale,3,32):0;
-        glow('add',p,rx,Math.max(1.3,rx*.15),0xdcf2e8,.47*shine*shine*distance(c.t)*shown(c.z));
+        glow('add',p,rx,Math.max(1.3,rx*.15),0xdcf2e8,.47*shine*shine*distance(c.t)*shown(x,-.33,c.z));
       }
       for(let i=0;i<4;i++){
         const period=120+random(i,6)*50,life=cycle(period,random(i,7)),k=(lane:number)=>random(i,lane,life.turn),p=life.age/84;
-        const z=stageTravel(stage,clock-life.age)+18+k(8)*36;
-        ripple('add',-8+k(9)*16,-.32,z,.25+2*ease(Math.min(p,1)),.3+.2*p,0xbfe2d8,p<1?.36*smooth((life.age-1)/7)*Math.pow(1-p,1.4)*shown(z):0,k(10)*TAU);
+        const z=stageTravel(stage,clock-life.age)+18+k(8)*36,x=-8+k(9)*16;
+        ripple('add',x,-.32,z,.25+2*ease(Math.min(p,1)),.3+.2*p,0xbfe2d8,p<1?.36*smooth((life.age-1)/7)*Math.pow(1-p,1.4)*shown(x,-.32,z):0,k(10)*TAU);
       }
       for(let i=0;i<3;i++){
-        const c=cell(8,i,26,84),r=(lane:number)=>random(i,lane,c.turn),p=at(-10+r(0)*20+Math.sin(clock*.0012+r(1)*TAU)*3,1.4,c.z),rx=p?(10+r(2)*6)*p.scale:0;
-        glow('alpha',p,rx,rx*.22,0xa7c6c0,.12*distance(c.t)*shown(c.z),true,.35);
+        const c=cell(8,i,26,84),r=(lane:number)=>random(i,lane,c.turn),x=-10+r(0)*20+Math.sin(clock*.0012+r(1)*TAU)*3,p=at(x,1.4,c.z),rx=p?(10+r(2)*6)*p.scale:0;
+        glow('alpha',p,rx,rx*.22,0xa7c6c0,.12*distance(c.t)*shown(x,1.4,c.z),true,.35);
       }
     }else if(stage===4){
       const plum=[0xf2b9cd,0xe7a2be,0xf8d5e1,0xdc96b6];
