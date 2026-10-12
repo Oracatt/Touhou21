@@ -48,23 +48,19 @@ const squareRadius=(a:number)=>{const q=(a%(Math.PI/2)+Math.PI/2)%(Math.PI/2);re
 
 /** 灯符「无主门灯」: expanding square door frames of door plates.
  * Each frame leaves its door facing where the player stood at that moment,
- * with a lamp hung on either side of it. The lamps soon bloom into mirrored
- * rings of lantern flowers that drift into the doorway, so the door has to
- * be taken through the gaps between the flowers. Now and then lanterns float
- * out from the Boss's sleeves, hang, light a small ring and sink. */
+ * with a lamp hung on either side of it. The lamps flare at the player soon
+ * after, crossing in the doorway, so the door has to be taken off-centre. */
 function unclaimedDoorLamp(k: AttackKit){
   const period=k.pick(62,47,40,34),edge=k.pick(10,13,16,19);
   if(k.every(period)){
     const wave=k.t/period|0,rotation=(k.state.rotation=(k.state.rotation??.4)+.37),door=k.aim(),half=k.pick(.33,.26,.22,.19);
     burstShape(k,k.ox,k.oy,polygon(4,edge),1.6,rotation,T.AMULET,wave%2?C.RED:C.ORANGE,null,{skip:(p,a)=>inGap(a,door,half+.07)});
     const lamps=[-1,1].flatMap(side=>{const a=door+side*(half+.035);return k.shot(k.ox,k.oy,a,1.6*squareRadius(a-rotation),T.ORB,C8.YELLOW,null,{silent:true});});
-    k.later(k.pick(60,56,52,48),lamps,b=>k.ring(b.x,b.y,k.pick(6,8,9,10),1.45,b.angle+(b===lamps[0]?.2:-.2),T.BALL,C.YELLOW,null,{rows:k.pick(1,1,2,2),speedStep:1.1,silent:b!==lamps[0]}));
+    k.later(k.pick(60,56,52,48),lamps,b=>k.aimed(b.x,b.y,1,2.6,0,T.BALL,C.YELLOW,null,{rows:k.pick(1,1,2,3),speedStep:2,silent:b!==lamps[0]}));
     if(k.rank>=2&&wave%2)burstShape(k,k.ox,k.oy,polygon(4,edge-4),1.05,rotation+Math.PI/4,T.AMULET,C.YELLOW,null,{skip:(p,a)=>inGap(a,door,half+.06)});
   }
-  if(k.every(180,90))for(const side of[-1,1])for(let i=0;i<k.pick(1,1,2,2);i++){
-    const lantern=k.shot(k.ox+side*46,k.oy+6,DOWN+side*(.62+i*.4),1.9,T.ORB,C8.YELLOW,[k.stopTo(34,DOWN,.85)],{silent:side>0||i>0});
-    k.later(34,lantern,b=>k.ring(b.x,b.y,k.pick(5,6,7,8),1.25,DOWN+Math.PI/k.pick(5,6,7,8),T.BALL,C.ORANGE,null,{silent:true}));
-  }
+  if(k.every(180,90))for(const side of[-1,1])
+    k.aimed(k.ox+side*46,k.oy+6,1,2.4,0,T.ORB,C8.YELLOW,null,{rows:k.pick(1,2,3,3),speedStep:1.7});
 }
 unclaimedDoorLamp.home={x:0,y:104};
 
