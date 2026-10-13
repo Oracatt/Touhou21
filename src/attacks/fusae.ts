@@ -144,17 +144,21 @@ blankSignature.home={x:0,y:108};
 
 /** Extra midboss 1 — 抄札「仅限借阅之旧名目录」: dashed columns of copies
  * fall, each page laid half a column aside from the last, so the lanes below
- * step like brickwork. Halfway down, paired columns trade lanes and cross into
- * rows of X; every other page the Boss rings out vermilion return slips. */
+ * step like brickwork. All the way down, paired columns trade lanes back and
+ * forth and braid into chains of X; every other page the Boss rings out
+ * vermilion return slips. */
 function borrowOnlyCatalogue(k: AttackKit){
-  const spacing=48,slot=6,page=48,dash=6,swap=36,c=k.t%page,odd=(k.t/page|0)%2;
+  const spacing=48,slot=6,page=48,dash=6,swap=36,gap=10,c=k.t%page,odd=(k.t/page|0)%2;
   if(c%slot===0&&c/slot<dash){
-    const columns=odd?7:8,x0=odd?-144:-168,lean=Math.asin(spacing/(1.9*k.sp*swap));
+    const columns=odd?7:8,x0=odd?-144:-168,lean=Math.asin(spacing/(1.9*k.sp*swap)),sway=Math.asin(12/(1.9*k.sp*swap));
     for(let i=0;i<columns;i++){
-      // Even pages swap every pair; odd pages swap the outer pairs and keep the middle three straight.
+      // Even pages swap every pair; odd pages swap the outer pairs and sway the middle three together,
+      // a quarter column, so they never close on the outer pairs.
       const partner=odd?(i<2?i^1:i===5?6:i===6?5:-1):i^1,dir=partner<0?0:Math.sign(partner-i);
-      k.shot(x0+i*spacing,-4,DOWN,1.9,T.AMULET,dir>0?C.PALE:dir<0?C.GREEN:C.WHITE,
-        dir?[k.wait(70),k.set(DOWN-dir*lean,1.9),k.wait(swap),k.set(DOWN,1.9)]:null,{silent:i>0,safe:2304});
+      // Five turns carry a copy off the bottom; a bullet runs at most 24 commands.
+      const cmds=[k.wait(30)];
+      for(let turn=0;turn<5;turn++){const s=turn%2?-1:1;cmds.push(k.set(DOWN-s*(dir?dir*lean:sway),1.9),k.wait(swap),k.set(DOWN,1.9),k.wait(gap));}
+      k.shot(x0+i*spacing,-4,DOWN,1.9,T.AMULET,dir>0?C.PALE:dir<0?C.GREEN:C.WHITE,cmds,{silent:i>0,safe:2304});
     }
   }
   if(k.every(page*2,page))k.ring(k.ox,k.oy,20,1.3,(k.t/(page*2)|0)*Math.PI/20,T.BALL,C.RED);
@@ -163,26 +167,27 @@ borrowOnlyCatalogue.home={x:0,y:90};
 
 /** Extra midboss 2 — 封印「回声不可携出之页」: square pages open, are pulled
  * back through the seal, and open again on the other side; four seals are
- * stamped from the corners of the turning page. */
+ * stamped toward the player in two layers, one corner always at her. */
 function echoMayNotLeave(k: AttackKit){
-  const period=50;
+  const period=42;
   if(k.every(period)){
     const wave=k.t/period|0;
-    burstShape(k,k.ox,k.oy,polygon(4,11),3.4,wave*.33,T.AMULET,wave%2?C.RED:C.PALE,[k.stopTurn(46,Math.PI,2.1)]);
+    burstShape(k,k.ox,k.oy,polygon(4,13),3.4,wave*.33,T.AMULET,wave%2?C.RED:C.PALE,[k.stopTurn(46,Math.PI,2.3)]);
   }
-  if(k.every(75,30))k.ring(k.ox,k.oy,4,1.8,k.t*.33/period,T.BIG,C8.RED);
+  if(k.every(60,30))k.ring(k.ox,k.oy,4,2.2,k.aim(),T.BIG,C8.RED,null,{rows:2,speedStep:1.5});
 }
 echoMayNotLeave.home={x:0,y:110};
 
 /** Extra midboss 3 — 订正「原件归还，抄本留存」: originals return to the
- * archive; at each turning point a copy is left hanging, then falls. Between
+ * archive; at each turning point a copy is left hanging, then drifts away
+ * from the archive, so the copies scatter in every direction. Between
  * returns a green five-pointed correction mark spreads, upright and inverted
  * in turn. */
 function originalsReturned(k: AttackKit){
   const period=44;
   if(k.every(period)){
-    const n=18,a=k.unit()*TAU,originals=k.ring(k.ox,k.oy,n,3.2,a,T.AMULET,C.RED,[k.stopTurn(40,Math.PI,2.4)]);
-    k.later(44,originals,b=>k.shot(b.x,b.y,DOWN+(k.unit()-.5)*.4,0,T.AMULET,C.WHITE,[k.wait(40),k.accel(.025,80,DOWN)],{silent:true}));
+    const n=22,a=k.unit()*TAU,originals=k.ring(k.ox,k.oy,n,3.2,a,T.AMULET,C.RED,[k.stopTurn(40,Math.PI,2.4)]);
+    k.later(44,originals,b=>k.shot(b.x,b.y,Math.atan2(b.y-k.oy,b.x-k.ox)+(k.unit()-.5)*.2,0,T.AMULET,C.WHITE,[k.wait(40),k.accel(.022,90)],{silent:true}));
   }
   if(k.every(period*2,22))burstShape(k,k.ox,k.oy,star(5,5,.42),1.5,DOWN+(k.t/(period*2)|0)*TAU/10,T.RICE,C.GREEN);
 }
