@@ -70,9 +70,10 @@ test('legacy replay metadata omissions remain readable without discarding valid 
   assert.equal(storage.replayCount,1);assert.equal(storage.replays[0].revision,18);assert.equal(storage.replays[0].date,0);assert.deepEqual(storage.replays[0].summary,{});assert.deepEqual(storage.replays[0].replay,legacy.replay);
 });
 
-test('obsolete automatic-save settings disappear while existing settings retain their values',()=>{
+test('obsolete automatic-save and initial-life settings are ignored while audio settings retain their values',()=>{
   const adapter=host({'guiming-settings.json':JSON.stringify({musicVolume:45,soundVolume:0,startingLives:0,autoSaveReplay:false,obsolete:1})}),storage=new GameStorage(adapter);
-  assert.deepEqual(storage.settings,{musicVolume:45,soundVolume:0,startingLives:0});assert.equal('autoSaveReplay' in DEFAULT_SETTINGS,false);assert.deepEqual(adapter.writes,[]);
+  assert.deepEqual(storage.settings,{musicVolume:45,soundVolume:0,startingLives:2});assert.equal('autoSaveReplay' in DEFAULT_SETTINGS,false);assert.deepEqual(adapter.writes,[]);
   storage.saveSettings();assert.deepEqual(JSON.parse(adapter.files.get('guiming-settings.json')),storage.settings);assert.deepEqual(new GameStorage(adapter).settings,storage.settings);
   assert.deepEqual(new GameStorage(host({'guiming-settings.json':JSON.stringify({musicVolume:'loud',soundVolume:null,startingLives:-1})})).settings,DEFAULT_SETTINGS);
+  for(const startingLives of [0,1,5,99])assert.equal(new GameStorage(host({'guiming-settings.json':JSON.stringify({startingLives})})).settings.startingLives,2);
 });

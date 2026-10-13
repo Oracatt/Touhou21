@@ -1,5 +1,5 @@
 import {DrawList,Keys,ReplayRecorder,ReplayPlayer} from '@ts-stg/thlib';
-import {TouhouGame,TouhouDialogue,TouhouStageClear,TouhouStageTransition,TouhouRNG,AnmBank,TOUHOU_POINT_VALUE_PROFILES} from '@ts-stg/thlib/touhou';
+import {TouhouGame,TouhouDialogue,TouhouStageClear,TouhouStageTransition,TouhouPause,TouhouRNG,AnmBank,TOUHOU_POINT_VALUE_PROFILES} from '@ts-stg/thlib/touhou';
 import {STAGES,MIDBOSSES,CHARACTERS,PLAYERS,GAME} from './content.js';
 import {CampaignDirector} from './director.js';
 import type {DialogueContext} from './director.js';
@@ -8,7 +8,7 @@ import {BossSpriteCatalog} from './boss-sprites.js';
 import {BossNameCard} from './boss-name.js';
 import {GameFrameSkin} from './frame-skin.js';
 import {CampaignBossHud} from './campaign-boss-hud.js';
-import {GAME_REVISION} from './storage.js';
+import {GAME_REVISION,DEFAULT_SETTINGS} from './storage.js';
 import {clearRoadSplits} from './road-bullet-splits.js';
 import {musicTrack} from './music-data.js';
 import type {NativeHost} from '@ts-stg/thlib';
@@ -116,8 +116,8 @@ export class CampaignScene extends TouhouGame {
     this.dialogue=null;this.bossNameCard=null;this.stageClear=null;this.stageTransition=null;this.stageCaptionAge=0;this.currentStage=null;this.bgmCaption=null;
     this.outerDraw=new DrawList();this.savedRun=false;this.replayDone=false;this.finishedResult=null;this.pendingReplay=null;
     const startingLives=playbackSource
-      ? playbackSource.config.startingLives??storage.settings.startingLives
-      : config.mode==='stage-practice'?this.player.maxLives:storage.settings.startingLives;
+      ? playbackSource.config.startingLives??DEFAULT_SETTINGS.startingLives
+      : config.mode==='stage-practice'?this.player.maxLives:DEFAULT_SETTINGS.startingLives;
     this.player.lives=startingLives;
     this.hud.setLives(startingLives,this.player.lifeFragments);
     const initialHighScore=playbackSource?.config?.initialHighScore??Math.max(0,...storage.progress.scores.filter(result=>result.character===config.character&&result.difficulty===config.difficulty&&result.mode===config.mode).map(result=>result.score));
@@ -267,7 +267,19 @@ export class CampaignScene extends TouhouGame {
   }
   update(mask=0){
     if(this.playback){const value=this.playback.next();if(value===null){if(!this.replayDone){this.replayDone=true;this.onReplayDone?.(this);}return;}mask=value;}
-    this.recorder?.record(mask);
+    const pauseKey=mask&Keys.PAUSE;
+    if(!this.playback&&(this.paused?this.pauseVisual instanceof TouhouPause:
+      this.frame>29&&!!(pauseKey&~this.buttons.current))){
+      // Manual pause owns no replay frames, including its opening and resume
+      // transitions. Its capture noise and menu ANMs must not advance game RNGs.
+      const randoms=[...new Set([this.rng,this.visualRng,this.banks.front.rng,this.banks.text.rng,this.pauseCapture?.rng])]
+        .filter((rng):rng is {state:number;last?:number}=>!!rng).map(rng=>({rng,state:rng.state,last:rng.last}));
+      try{super.update(mask);}finally{for(const {rng,state,last}of randoms){rng.state=state;rng.last=last;}}
+      this.postFrame(this.options.testing||this.options.fixedClock?this.frame/60:Date.now()/1000);return;
+    }
+    // Game Over choices (including Esc's Continue/Exit shortcut) still affect
+    // gameplay. Only ordinary gameplay strips the manual pause bit.
+    this.recorder?.record(this.paused?mask:mask&~Keys.PAUSE);
     if(this.options.invincible)this.player.invulnerability.set(180);
     const verificationPhase=this.director.state==='midboss-combat'?this.director.midbossPhases?.[this.director.midbossPhaseIndex]:this.director.phase;
     if(this.options.autoCapture&&['combat','midboss-combat'].includes(this.director.state)&&this.director.phaseFrame>=125&&!verificationPhase?.spec?.survival)

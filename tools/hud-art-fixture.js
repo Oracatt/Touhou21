@@ -17,7 +17,6 @@ export function createHudArtFixture(scenarioPath){
     loadTexture:{value:(file,...args)=>{const id=native.loadTexture(file,...args);texturePaths.set(id,normalPath(file));return id;}},
   });
   const continuedMenu=['pause-continued','result-continued'].includes(scenario.kind);
-  if(continuedMenu)memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
   const app=new ProjectApplication(host,{testing:true,fixedClock:true,seed:continuedMenu?210721:210909,autostart:true,invincible:!continuedMenu,autoDialogue:true,
     character:scenario.character,mode:scenario.mode,stageId:scenario.stageId,difficulty:scenario.stageId===7?4:1,
     skipRoad:scenario.kind==='combat',spellId:scenario.kind==='spell'?scenario.spellId??STAGES[scenario.stageId-1].spells[0].id:null});
@@ -30,6 +29,8 @@ export function createHudArtFixture(scenarioPath){
   const changedTexturePaths=localizedTexturePaths.filter((file,index)=>file&&file!==`${resourceRoot}/${baseFront.entries[index]?.texture.path}`);
   assert(changedTexturePaths.length>=1,'Chinese HUD and pause/title image regions have an explicit locale texture atlas');
   let game=app.core.game,applicationUpdates=0,nativeFrames=0,ready=false,preview=false,observing=false,result=null;
+  // Reach Continue through a real first miss without changing player settings.
+  if(continuedMenu){game.player.lives=0;game.hud.setLives(0,game.player.lifeFragments);game.recorder.config.startingLives=0;}
   const inputs=[],assetLoads=[],textCalls=[],numberCalls=[],replayCalls=[],statusCalls=[],skinCalls=[],menuCalls=[];let activePriority=null,menuOwner=null;
   const initialProgress=JSON.stringify(app.storage.progress);
   const advance=(mask=0)=>{if(mask)inputs.push({frame:app.frame,mask});app.update(mask);applicationUpdates++;game=app.core.game;};

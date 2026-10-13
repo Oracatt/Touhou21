@@ -22,6 +22,8 @@ let result=null,application=null;
 const assert=(condition,message)=>{if(!condition)throw new Error(message);};
 const tick=(app,frames=1,mask=0)=>{for(let i=0;i<frames;i++)app.update(typeof mask==='function'?mask(i):mask);};
 const tap=(app,mask)=>{app.update(mask);app.update(0);};
+// QA stock presets are explicit fixture state, not player-configurable settings.
+const presetLives=(game,lives)=>{game.player.lives=lives;game.hud.setLives(lives,game.player.lifeFragments);game.recorder.config.startingLives=lives;};
 const make=options=>{
   const app=new ProjectApplication(host,{testing:true,fixedClock:true,seed:210721,...options}),track=game=>{
     const update=game.update.bind(game);game.update=mask=>{sceneUpdateCalls++;return update(mask);};return game;
@@ -63,7 +65,7 @@ function* campaign(){
 }
 function* replay(){
   application=make({autostart:true,mode:'spell-practice',stageId:1,spellId:STAGES[0].spells[0].id,difficulty:1,character:0});
-  const source=application.core.game;source.player.lives=5;source.recorder.config.startingLives=5;
+  const source=application.core.game;presetLives(source,5);
   const events={hit:0,miss:0,bomb:0,pausedFrames:0,spellFinish:0},event=source.onEvent;
   source.onEvent=(name,data)=>{if(name in events)events[name]++;event?.(name,data);};
   let frames=0,bombInput=null;
@@ -84,17 +86,17 @@ function* replay(){
   assert(events.bomb>0,'Recorded X input must trigger a real public Bomb');
   assert(bombInput?.state===1,'Single recorded X follows a real Miss and ordinary respawn recovery');
   assert(events.miss>0,'Original patterned bullets must cause a real collision and miss');
-  assert(events.pausedFrames>0,'Recorded Esc input must exercise pause and resume');
+  assert(events.pausedFrames>0,'Live Esc input must exercise pause and resume');
   assert(events.spellFinish===1,'Sample crosses exactly one natural card settlement');
   const recorded=source.recorder.toJSON(),expected=source.snapshot(),stock=source.player.lives;
-  application.storage.settings.startingLives=1;
+  assert(recorded.frames<frames&&recorded.runs.every(([mask])=>!(mask&Keys.PAUSE)),'Manual pause frames and Esc inputs stay outside the replay');
   application.storage.progress.scores=[{character:0,difficulty:1,mode:'normal',score:99999999}];
   application.storage.progress.spellRecords['0:1']={1:{name:'records changed after recording',captures:[17,13],attempts:[85,77]}};
   const progress=JSON.stringify(application.storage.progress),beforeWrites=writes;
   application.finishedResult=null;application.playbackSource=recorded;application.core.start(recorded.config);
   const playing=application.core.game;
-  assert(playing.player.lives===5,'Playback restores recorded initial stock, ignoring current options');
-  for(let i=0;i<recorded.frames;i++){application.update(0);if(i%128===127)yield;}
+  assert(playing.player.lives===5,'Playback restores recorded initial stock instead of the fixed new-run default');
+  for(let i=0;i<recorded.frames;i++){application.update(0);assert(!playing.paused,'Playback never reopens the recorded run\'s manual pause');if(i%128===127)yield;}
   assert(playing.playback.desync===null,'All actual public ReplayPlayer checkpoints pass');
   assert(stateHash(playing.snapshot())===stateHash(expected),'Recorded and replayed final simulation states are identical');
   assert(playing.player.lives===stock,'Replay follows the same public misses and stock changes');
@@ -105,12 +107,12 @@ function* replay(){
 }
 function* continuationReplay(){
   // Fixture-only low stock makes the first real road collision reach GameOver.
-  memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
   memory.set('userdata/guiming-progress.json',JSON.stringify({scores:[{character:0,difficulty:1,mode:'normal',score:12345678}]}));
   application=make({autostart:true,mode:'normal',difficulty:1,character:0});
   const source=application.core.game,events={miss:0,gameover:0},event=source.onEvent;
+  presetLives(source,0);
   source.onEvent=(name,data)=>{if(name in events)events[name]++;event?.(name,data);};
-  let frames=0,continuedAt=null,continuedPause=false,continuedResume=false;const tracks=new Set();
+  let frames=0,continuedAt=null,continuedPause=false,continuedResume=false,manualPauseFrames=0,gameOverFrames=0;const tracks=new Set();
   while(frames<5000&&(continuedAt===null||frames<continuedAt+750)){
     let mask=continuedAt===null?0:Keys.RIGHT;
     if(source.paused&&source.pauseVisual instanceof TouhouGameOver&&source.pauseVisual.phase===6)mask=Keys.SHOOT;
@@ -120,7 +122,11 @@ function* continuationReplay(){
       assert(source.pauseVisual.excluded.has(2)&&replayRow?.flashColor===null,'Continued pause keeps replay disabled but visibly gray');
       mask=Keys.PAUSE;continuedResume=true;
     }
+    const recordedBefore=source.recorder.frames,wasGameOver=source.paused&&source.pauseVisual instanceof TouhouGameOver,wasManualPause=source.paused&&!wasGameOver;
     application.update(mask);frames++;tracks.add(application.music.current?.id);
+    if(wasManualPause||source.paused&&!(source.pauseVisual instanceof TouhouGameOver)){
+      manualPauseFrames++;assert(source.recorder.frames===recordedBefore,'Manual pause freezes recording even after Continue');
+    }else if(wasGameOver){gameOverFrames++;assert(source.recorder.frames===recordedBefore+1,'GameOver/Continue menu inputs remain in the replay');}
     if(source.session.continues===1&&continuedAt===null)continuedAt=frames;
     if(frames%128===0)yield;
   }
@@ -130,19 +136,19 @@ function* continuationReplay(){
   assert(source.session.continues===1&&source.session.credits===4,'Continue consumes one of the original five credits');
   assert(source.player.highScore===12345678&&source.session.highScore===12345678,'Continue keeps an existing high score greater than the current run');
   const recorded=source.recorder.toJSON(),expected=source.snapshot();
-  assert(recorded.frames===frames,'Recorder preserves every paused GameOver/Continue input frame');
+  assert(manualPauseFrames>0&&gameOverFrames>0&&recorded.frames===frames-manualPauseFrames,'Recorder excludes manual pauses and preserves GameOver/Continue input frames');
+  assert(recorded.runs.every(([mask])=>!(mask&Keys.PAUSE)),'Continued replay contains no manual Esc input');
   assert(recorded.checkpoints.some(point=>point.frame>continuedAt),'At least one checkpoint covers simulation after Continue');
-  application.storage.settings.startingLives=5;
   application.storage.progress.scores=[{character:0,difficulty:1,mode:'normal',score:99999999}];
   application.storage.progress.spellRecords['0:1']={1:{name:'new records',captures:[5,6],attempts:[7,8]}};
   const progress=JSON.stringify(application.storage.progress),beforeWrites=writes;
   application.playbackSource=recorded;application.core.start(recorded.config);const playing=application.core.game;
-  for(let i=0;i<recorded.frames;i++){application.update(0);if(i%128===127)yield;}
+  for(let i=0;i<recorded.frames;i++){application.update(0);assert(!playing.paused||playing.pauseVisual instanceof TouhouGameOver,'Continued playback only opens the recorded GameOver menu');if(i%128===127)yield;}
   assert(playing.playback.desync===null,'Continued replay verifies every actual public checkpoint');
   assert(stateHash(playing.snapshot())===stateHash(expected),'Public Continue, respawn, stock and road clocks reproduce exactly');
   application.update(0);assert(application.replayFinished,'App signals completion for a replay containing Continue');
   assert(JSON.stringify(application.storage.progress)===progress&&writes===beforeWrites,'Continued replay writes no current progress');
-  result={kind:'continuation-replay',frames,continuedAt,events,config:recorded.config,inputRuns:recorded.runs,checkpoints:recorded.checkpoints,
+  result={kind:'continuation-replay',frames,continuedAt,manualPauseFrames,gameOverFrames,events,config:recorded.config,inputRuns:recorded.runs,checkpoints:recorded.checkpoints,
     checkedFinalHash:stateHash(expected),replayFinalHash:stateHash(playing.snapshot()),snapshot:expected,memoryWrites:writes};
 }
 function* pauseExternalPages(){
@@ -165,6 +171,8 @@ function* pausePageReplay(){
   application=make({autostart:true,testing:false,invincible:true});const app=application,source=app.core.game,visited=[];
   tick(app,100);
   for(const [selection,title]of [[3,'游戏说明'],[2,'保存回放']]){
+    const frozen={recorded:source.recorder.frames,frame:source.frame,rng:source.rng.state,visualRng:source.visualRng.state};
+    assert(source.pauseCapture,'Native gameplay supplies the real pause capture');
     tap(app,Keys.PAUSE);tick(app,12);for(let i=0;i<selection;i++)tap(app,Keys.DOWN);tap(app,Keys.SHOOT);
     if(selection===2){tick(app,34);tap(app,Keys.UP);tap(app,Keys.SHOOT);}
     tick(app,22);
@@ -173,14 +181,19 @@ function* pausePageReplay(){
     assert(source.recorder.frames===recordedBefore,'External UI inputs never enter the gameplay input stream');
     assert(source.pauseVisual.phase===6,'External UI closes through the public callback');
     app.update(0);
-    tap(app,Keys.PAUSE);tick(app,16);assert(!source.paused,'Recording returns through public Pause resume');yield;
+    app.update(Keys.PAUSE);let tail=0;while(source.paused&&tail++<30)app.update(0);
+    assert(!source.paused,'Recording returns through public Pause resume');
+    assert(source.recorder.frames===frozen.recorded&&source.frame===frozen.frame,'Pause opening, menus, external pages and resume add no recorded gameplay frames');
+    assert(source.rng.state===frozen.rng&&source.visualRng.state===frozen.visualRng,'Native pause capture and menu animations preserve gameplay and visual RNG state');
+    tick(app,16);yield;
   }
   while(source.recorder.frames<1800){app.update(0);if(source.recorder.frames%128===0)yield;}
   source.saveRun({aborted:true});
   const recorded=source.recorder.toJSON(),expected=source.snapshot(),progress=JSON.stringify(app.storage.progress),beforeWrites=writes;
+  assert(recorded.runs.every(([mask])=>!(mask&Keys.PAUSE)),'Pause/page visits save no Esc input');
   app.playbackSource=recorded;app.core.start(recorded.config);const playing=app.core.game;
-  for(let i=0;i<recorded.frames;i++){app.update(0);assert(app.page===null,'Replayed external requests cannot leave a live UI page freezing gameplay');if(i%128===127)yield;}
-  assert(playing.playback.desync===null&&stateHash(playing.snapshot())===stateHash(expected),'Deferred external-close callbacks reproduce every recorded waiting/restoration frame');
+  for(let i=0;i<recorded.frames;i++){app.update(0);assert(app.page===null&&!playing.paused,'Playback advances without reopening pause menus or external pages');if(i%128===127)yield;}
+  assert(playing.playback.desync===null&&stateHash(playing.snapshot())===stateHash(expected),'Playback reproduces the simulation after omitted pause and external-page frames');
   app.update(0);assert(app.page?.title==='回放结束','Pause/page replay reaches the real App completion page');
   assert(JSON.stringify(app.storage.progress)===progress&&writes===beforeWrites,'Pause/page replay does not mutate progress');
   result={kind:'pause-page-replay',frames:recorded.frames,applicationFrames:app.frame,visited,config:recorded.config,inputRuns:recorded.runs,checkpoints:recorded.checkpoints,
@@ -235,9 +248,9 @@ function* replayFastForward(){
   result={kind:'replay-fast-forward',frames,checks,runs,memoryWrites:writes};
 }
 function* gameOverExternalPages(){
-  memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
   memory.set('userdata/guiming-progress.json',JSON.stringify({scores:[{character:0,difficulty:1,mode:'normal',score:12345678}]}));
   application=make({autostart:true,testing:false});const app=application,game=app.core.game,visited=[];
+  presetLives(game,0);
   let frames=0,stageTrack=null;while(!(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6)&&frames<3000){if(!game.paused)stageTrack=app.music.current?.id;app.update(0);frames++;if(frames%128===0)yield;}
   assert(game.paused&&game.pauseVisual instanceof TouhouGameOver,'Real road miss opens the public GameOver owner');
   assert(stageTrack===STAGES[0].bgmStage&&app.music.current?.id==='playersScore'&&!app.music.paused,'GameOver interrupts the stage BGM with Player\'s Score');
@@ -275,7 +288,8 @@ function* manualSave(){
   assert(app.page?.title==='保存回放','Public Pause Save Replay choice opens the manual save page');selectReplaySlot(app,6);tap(app,Keys.SHOOT);
   assert(app.core.mode==='title'&&app.storage.replayCount===1,'Confirmed manual slot save returns to title');
   assert(memory.has('userdata/guiming-replays.json'),'Production save writes only to the fixture userdata adapter');
-  const data=JSON.parse(memory.get('userdata/guiming-replays.json'));assert(data.length===20&&data[6].replay.frames>0&&data.filter(Boolean).length===1,'Only slot 07 contains the actual recorder input stream');
+  const data=JSON.parse(memory.get('userdata/guiming-replays.json'));assert(data.length===20&&data[6].replay.frames===40&&data.filter(Boolean).length===1,'Only slot 07 contains the recorder input stream ending at the last gameplay frame before Pause');
+  assert(data[6].replay.runs.every(([mask])=>!(mask&Keys.PAUSE)),'Manual save contains no pause or menu inputs');
   result={kind:'manual-save',slot:7,frames:app.frame,replayFrames:data[6].replay.frames,memoryWrites:writes,snapshot:app.snapshot()};
 }
 function* replaySlots(){
@@ -329,8 +343,8 @@ function* replaySlots(){
   for(let slot=0;slot<19;slot++)assert(JSON.stringify(last[slot])===JSON.stringify(replaced[slot]),'Saving slot 20 preserves all earlier slots');
   visited.push('exit-save-slot-20');closeApplication();yield;
 
-  memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:0}));
   application=make({autostart:true,testing:false});app=application;game=app.core.game;const beforeGameOver=disk();let elapsed=0;
+  presetLives(game,0);
   while(!(game.paused&&game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6)&&elapsed++<3000){app.update(0);if(elapsed%128===0)yield;}
   assert(game.pauseVisual instanceof TouhouGameOver&&game.pauseVisual.phase===6,'Real road collision reaches the normal GameOver menu');
   unchanged(beforeGameOver,'Normal GameOver never auto-saves a recording');pauseChoice(app,2);selectReplaySlot(app,19);tap(app,Keys.BOMB);
@@ -342,7 +356,6 @@ function* replaySlots(){
   pauseChoice(app,1);assert(app.core.mode==='title'&&app.page===null,'Exiting a continued run bypasses slot selection');unchanged(beforeGameOver,'Continued exit and destruction do not write or overwrite recordings');
   visited.push('gameover-cancel','continue-save-rejected','continued-exit');closeApplication();yield;
 
-  memory.set('userdata/guiming-settings.json',JSON.stringify({startingLives:2}));
   application=make({autostart:true,testing:false,invincible:true,autoCapture:true,autoDialogue:true,mode:'spell-practice',stageId:1,spellId:ALL_SPELLS[0].id});app=application;game=app.core.game;const beforeClear=disk();elapsed=0;
   while(!app.page&&elapsed++<6000){app.update(0);if(elapsed%128===0)yield;}
   assert(app.page?.title==='练习结果'&&game.finishedResult&&game.pendingReplay?.replay.frames>0,'Actual spell completion freezes an available recording for its result page');
@@ -414,13 +427,14 @@ function* replayTermination(){
       selectReplaySlot(app,4);tap(app,Keys.SHOOT);recorded=app.storage.replays[4]?.replay;
     }else{
       recorded=source.pendingReplay?.replay??source.recorder.toJSON();
-      // This setup intentionally archives a legacy restart-terminated stream
-      // for playback compatibility; live restart itself must never save it.
+      // This setup explicitly archives the completed recording for playback;
+      // live restart itself must never save it.
       app.storage.saveReplay(4,recorded,{character:0,difficulty:1,mode:'normal',aborted:true});
     }
     assert(source.destroyed&&app.core.game!==source,`Recorded ${action} performs its live scene transition`);
     assert(action==='restart'?app.core.mode==='game'&&!!app.core.game.recorder:app.core.mode==='title',`Live ${action} keeps its actual application behavior`);
-    assert(recorded?.frames>620&&recorded.checkpoints.some(point=>point.frame===600),'Real saved replay retains Pause confirmation inputs and a prior simulation checkpoint');
+    assert(recorded?.frames===620&&recorded.checkpoints.some(point=>point.frame===600),'Saved replay ends before Pause confirmation and retains its prior simulation checkpoint');
+    assert(recorded.runs.every(([mask])=>!(mask&Keys.PAUSE)),'Restart/exit menu input stays outside the saved replay');
     // Match the real replay selector: settle any just-created live restart
     // before measuring read-only playback, then enter the replay scene.
     app.core.game?.saveRun({aborted:true});
@@ -428,7 +442,7 @@ function* replayTermination(){
     app.page=null;app.playbackSource=recorded;app.core.start(recorded.config);const playing=app.core.game;
     assert(!playing.recorder&&playing.playback,'Actual playback has no new recorder');
     for(let i=0;i<recorded.frames;i++){
-      app.update(0);assert(app.core.game===playing&&!playing.destroyed&&!playing.recorder,`Recorded ${action} cannot launch a live run or leave the replay scene`);
+      app.update(0);assert(app.core.game===playing&&!playing.destroyed&&!playing.recorder&&!playing.paused,`Run ended by ${action} replays without reopening Pause or leaving the replay scene`);
       assert(playing.playback.frame===i+1,`Recorded ${action} consumes each saved input exactly once`);if(i%128===127)yield;
     }
     assert(playing.playback.finished&&playing.playback.desync===null,`Recorded ${action} reaches the end of its full verified input stream`);

@@ -212,17 +212,17 @@ test('ordinary dialogue and short prelude fallbacks retain their public portrait
   }
 });
 
-test('recorded prelude replays its field-response gates, portrait handoff and pause without progress writes',()=>{
+test('recorded prelude replays its field-response gates and portrait handoff without manual pause or progress writes',()=>{
   const recording=fixture(),marks=[];let replay,finalHash;
   const mark=label=>{recording.game.recorder.checkpoint(recording.game.snapshot());marks.push({label,frame:recording.game.recorder.frames});};
   try{
     const game=recording.game,owner=firstBossLine(game),first=owner.index;
     assert.ok(owner.entranceState);mark('actor-appear');tick(game,59);assert.ok(!owner.box);mark('before-text');
     game.update(0);assert.equal(owner.mode,2);mark('actor-text');tick(game,5);
-    game.update(Keys.PAUSE);assert.equal(game.paused,true);mark('pause');
-    const entranceFrame=owner.entranceState.frame;tick(game,24);assert.equal(owner.entranceState.frame,entranceFrame);mark('paused');
+    const pauseFrame=game.recorder.frames;mark('before-pause');game.update(Keys.PAUSE);assert.equal(game.paused,true);
+    const entranceFrame=owner.entranceState.frame;tick(game,24);assert.equal(owner.entranceState.frame,entranceFrame);
     game.update(Keys.PAUSE);for(let i=0;i<40&&game.paused;i++)game.update(0);
-    assert.equal(game.paused,false);assert.equal(owner.entranceState.frame,entranceFrame);mark('resume');
+    assert.equal(game.paused,false);assert.equal(owner.entranceState.frame,entranceFrame);assert.equal(game.recorder.frames,pauseFrame);mark('resume');
     while(owner.entranceState.frame<93)game.update(0);assert.equal(owner.index,first);mark('before-input');
     game.update(0);assert.equal(owner.entranceState.inputReady,true);mark('input-ready');
     nextLine(game);assert.equal(owner.index,first+1);assert.ok(owner.portraitState('left'));assert.ok(owner.portraitState('right'));mark('portraits');
@@ -231,6 +231,7 @@ test('recorded prelude replays its field-response gates, portrait handoff and pa
     assert.equal(game.director.state,'combat');mark('combat');
     while(game.recorder.frames<1201)game.update(0);
     mark('final');replay=game.recorder.toJSON();finalHash=stateHash(game.snapshot());
+    assert.ok(replay.runs.every(([mask])=>!(mask&Keys.PAUSE)));
     assert.ok(replay.checkpoints.some(point=>point.frame===600));assert.ok(replay.checkpoints.some(point=>point.frame===1200));
     assert.equal(recording.storage.writes,0);
   }finally{recording.dispose();}

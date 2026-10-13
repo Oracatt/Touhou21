@@ -26,7 +26,7 @@ function replaySlots(value:unknown):(ReplayEntry|null)[]{
 }
 function settingsFrom(value:unknown):Settings{
   const stored=object(value)?value:{},settings:Settings={...DEFAULT_SETTINGS};
-  for(const key of ['musicVolume','soundVolume','startingLives'] as const){
+  for(const key of ['musicVolume','soundVolume'] as const){
     const number=stored[key];if(typeof number==='number'&&Number.isFinite(number)&&number>=0)settings[key]=number;
   }
   return settings;

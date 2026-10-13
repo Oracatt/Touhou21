@@ -5,7 +5,7 @@ import type {AnmBank,TouhouGameOptions,TouhouResources,TouhouStartSelection} fro
 import type {RunConfig,RunOptions,RunResult,RunReplayData,RunPlayback} from './shared-types.js';
 
 import {DrawList,ReplayPlayer,ReplayPlaybackController,Keys} from '@ts-stg/thlib';
-import {TouhouApplication,TouhouRNG,TouhouButtons,createTouhouResources} from '@ts-stg/thlib/touhou';
+import {TouhouApplication,TouhouRNG,TouhouButtons,TouhouPause,createTouhouResources} from '@ts-stg/thlib/touhou';
 import {GAME,STAGES,PLAYERS,ALL_SPELLS,MIDBOSS_SPELLS,MUSIC_COMMENTS} from './content.js';
 import {MUSIC_TRACKS} from './music-data.js';
 import {GameArt} from './art.js';
@@ -19,7 +19,7 @@ import {CampaignScene} from './scene.js';
 const score=(value:number)=>String(Math.trunc(value*10)).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 
 export interface ProjectGameOptions extends TouhouGameOptions {gameConfig:RunConfig;}
-interface OptionRow extends PageRow {id:'musicVolume'|'soundVolume'|'startingLives'|'defaults';}
+interface OptionRow extends PageRow {id:'musicVolume'|'soundVolume'|'defaults';}
 interface ReplayRow extends PageRow {slot:number;entry:ReplayEntry|null;empty:boolean;}
 interface RecordRow extends PageRow {entry?:RunResult;spellRecords?:boolean;empty?:boolean;}
 export class ProjectApplication {
@@ -73,7 +73,7 @@ export class ProjectApplication {
     return{banks,font:this.resources.font!,styles:this.resources.styles,sht:this.resources.shots[config.character],disposeBanks:true,character:config.character,difficulty:config.difficulty,power:config.mode==='normal'?100:400,rng,visualRng,
       renderTarget:this.renderTarget,compositeTarget:this.compositeTarget,gameConfig:config,
       onSound:(id:number,x?:number)=>this.sound(id,x),onStopSound:(id:number)=>this.resources.audio?.stop(id),
-      // Recorded exit/retry is the last input of this recording. Keep its
+      // Legacy recorded exit/retry is the last input of that recording. Keep its
       // playback scene until ReplayPlayer consumes EOF and verifies it.
       onExit:()=>{if(!this.core.game?.playback)this.requestLeaveGame();},onRestart:()=>{if(this.core.game?.playback)return;this.core.game?.saveRun({aborted:true});this.playbackSource=null;this.core.start({...config,seed:this.options.seed??(Date.now()>>>0)} as RunConfig);},
       onReplay:context=>this.openExternalPage('replays',context),onManual:context=>this.openExternalPage('manual',context),
@@ -85,8 +85,8 @@ export class ProjectApplication {
   closePage({inGame=false,close}:{inGame?:boolean;close?:()=>void}={}){this.page=null;if(inGame){close?.();return;}this.core.menu?.returnMain();this.music.play('title',true);}
   pageOptions(title:string,inGame=false,close?:()=>void):PageOptions{return{title,text:this.text,art:this.art,sound:(id:number)=>this.sound(id),onClose:()=>this.closePage({inGame,close})};}
   openExternalPage(kind:string,{close}:{close?:()=>void}={}){
-    // External utility pages consume no game frames while recording. Playback
-    // preserves the opening frame, then applies that page's close continuation
+    // External utility pages consume no game frames while recording. Legacy
+    // playback preserves the opening frame, then applies its close continuation
     // before consuming the next recorded core frame.
     if(this.playbackSource){this.playbackExternalClose=close;return;}
     if(kind==='replays')this.openSaveReplay(close);else if(kind==='options')this.openOptions(true,close);else this.openManual(true,close);
@@ -151,8 +151,8 @@ export class ProjectApplication {
     onSelect:(row,page)=>{this.music.play(row.track.id,true);page.message=`正在播放：${row.track.title}`;}});}
   openOptions(inGame=false,close?:()=>void){const settings=this.storage.settings,rows:OptionRow[]=[
     {id:'musicVolume',label:()=>`BGM 音量　${settings.musicVolume}%`},{id:'soundVolume',label:()=>`音效音量　${settings.soundVolume}%`},
-    {id:'startingLives',label:()=>`初始生命　${settings.startingLives+1}`},{id:'defaults',label:'恢复默认设置'}];
-    const adjust=(row:OptionRow,delta:number,page:ListPage<OptionRow>)=>{if(row.id==='musicVolume'||row.id==='soundVolume')settings[row.id]=Math.max(0,Math.min(100,settings[row.id]+delta*5));else if(row.id==='startingLives')settings.startingLives=Math.max(1,Math.min(5,settings.startingLives+delta));else return;this.storage.saveSettings();this.music.volume();this.resources.audio!.volume=settings.soundVolume;this.sound(10);page.message='设置已保存；初始生命在下一局生效。';};
+    {id:'defaults',label:'恢复默认设置'}];
+    const adjust=(row:OptionRow,delta:number,page:ListPage<OptionRow>)=>{if(row.id==='musicVolume'||row.id==='soundVolume')settings[row.id]=Math.max(0,Math.min(100,settings[row.id]+delta*5));else return;this.storage.saveSettings();this.music.volume();this.resources.audio!.volume=settings.soundVolume;this.sound(10);page.message='设置已保存。';};
     this.page=new ListPage({...this.pageOptions('选项',inGame,close),rows,detail:()=>`← → 调整　当前脚本后端：${this.host.backend}\n本地设置仅影响本作，不修改 TS-STG 或其他演示。`,onAdjust:adjust,
       onSelect:(row,page)=>{if(row.id==='defaults'){Object.assign(settings,DEFAULT_SETTINGS);this.storage.saveSettings();this.music.volume();this.resources.audio!.volume=settings.soundVolume;page.message='已恢复默认设置。';}else adjust(row,1,page);}});}
   openManual(inGame=false,close?:()=>void){this.page=new ReadingPage({...this.pageOptions('游戏说明',inGame,close),pages:manualPages()});}
@@ -174,8 +174,12 @@ export class ProjectApplication {
     if(this.page){this.page.update(mask);this.music.update();this.resources.audio?.flush();return;}
     const game=this.core.game,playing=!!game?.playback;
     const step=()=>{
-      if(this.playbackExternalClose){const close=this.playbackExternalClose;this.playbackExternalClose=null;close();}
-      this.core.update(playing?0:mask&~Keys.FAST_FORWARD);
+      // Older recordings include manual pause/menu frames. Consume them with
+      // their original checks intact, without making the viewer wait through them.
+      do{
+        if(this.playbackExternalClose){const close=this.playbackExternalClose;this.playbackExternalClose=null;close();}
+        this.core.update(playing?0:mask&~Keys.FAST_FORWARD);
+      }while(playing&&this.core.game===game&&!this.page&&!game!.replayDone&&game!.paused&&game!.pauseVisual instanceof TouhouPause);
     };
     try{
       if(playing)this.replayControl.update(mask,step,{shouldContinue:()=>!this.page&&this.core.game===game&&!!game?.playback&&!game.replayDone});

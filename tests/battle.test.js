@@ -10,11 +10,11 @@ import {CampaignScene,createSpellPortrait} from '../dist/src/scene.js';
 import {DrawList} from '@ts-stg/thlib';
 
 function sceneFixture({character=0,difficulty=1,mode='spell-practice',spellId=STAGES[0].spells[0].id,stageId=1,
-  storage=null,playbackSource=null,options={},onComplete,onSpellPracticeEnd}={}){
+  storage=null,startingLives=2,playbackSource=null,options={},onComplete,onSpellPracticeEnd}={}){
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11});
   resources.encodeText=text=>new Uint8Array(Array.from(text).flatMap(char=>char.charCodeAt(0)>127?[65,65]:[65]));
   resources.writeAnimationText=vm=>vm;
-  storage??={settings:{startingLives:2},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},
+  storage??={settings:{startingLives},progress:{spellRecords:{},seenSpells:[],stageUnlock:1,scores:[]},
     saved:0,replays:Array(20).fill(null),saveProgress(){this.saved++;},saveReplay(slot,replay,summary){this.replays[slot]={replay,summary};},recordClear(){this.saved++;}};
   const art={host:{readText:file=>fs.readFileSync(file,'utf8'),createTexture:()=>89,unloadTexture(){}},load:()=>({id:81,width:512,height:512,bounds:{x:0,y:0,width:265,height:512}}),portrait:()=>{},background:()=>{}};
   const text={draw:()=>{}},host={backend:'v8'},music={play(){},pause(){},resume(){},fadeOut(){}};
@@ -325,15 +325,15 @@ test('scene isolates public spell records by character and difficulty, and recor
   b.dispose();a.dispose();
 });
 
-test('stage practice starts at the public life cap while other modes keep the configured stock',()=>{
-  for(const mode of ['stage-practice','normal','extra','spell-practice'])for(const character of [0,1]){
-    const f=sceneFixture({mode,character,stageId:mode==='extra'?7:1,options:{testing:true}});
+test('stage practice starts at the public life cap while other modes use default stock regardless of old settings',()=>{
+  for(const mode of ['stage-practice','normal','extra','spell-practice'])for(const character of [0,1])for(const startingLives of [0,2,5]){
+    const f=sceneFixture({mode,character,startingLives,stageId:mode==='extra'?7:1,options:{testing:true}});
     try{
       const expected=mode==='stage-practice'?f.scene.player.maxLives:2;
       assert.equal(f.scene.player.lives,expected);
       assert.equal(f.scene.hud.lifeStock.full,expected,'HUD is correct before the first update');
       assert.equal(f.scene.recorder.config.startingLives,expected,'Replay records actual initial stock');
-      assert.equal(f.storage.settings.startingLives,2,'Practice must not overwrite the player preference');
+      assert.equal(f.storage.settings.startingLives,startingLives,'Scene initialization does not rewrite stored settings');
     }finally{f.dispose();}
   }
 });
