@@ -8,9 +8,9 @@ import {MIO} from '../dist/src/attacks/mio.js';
 import {driveAttack} from '../dist/src/danmaku.js';
 
 const cases=[
-  {attack:MIO.nonspells[6],start:60,schedule:'eaae765f2d926ed4ab616ff14d8e06a22ad6b1e2ebf9fb439edc44a01938b508',events:587,rng:73},
-  {attack:MIO.spells[5],start:80,schedule:'45fda3d94913c572fe61e00f2ce5d9d41064ad8cc54e87b76c22d6a7ed1be34d',events:528,rng:73},
-  {attack:MIO.spells[7],start:80,schedule:'8ce82fe6c3202e1c2ac14321f14d48f5dba1bb5408eab302fed0b64287620ce5',events:1057,rng:1376906378},
+  {attack:MIO.nonspells[6],start:60,schedule:'d27b17ca505e729abf71d4c3b8d1bb0d9447caf360137888832b10b33da7c5ef',events:512,rng:73},
+  {attack:MIO.spells[5],start:80,schedule:'babd1057a9d6154237078e057c6c40f391230f7e1cb38bf442209a834559a59d',events:7522,rng:953302479},
+  {attack:MIO.spells[7],start:80,schedule:'107396cddebd6ba5253765ea8baceb20b75d97d3c9c10183d684d0ba6958b59c',events:1504,rng:99321389},
 ];
 
 /** Execute the production attack and public actor motion for a complete card.
@@ -29,10 +29,10 @@ function trace({attack,start},playerX=0){
     driveAttack(attack,{game,boss,frame,difficulty:4,state,rng,start});
     boss.motion.update();boss.x=boss.motion.position.x;boss.y=boss.motion.position.y;
     const dx=boss.x-x,dy=boss.y-y;
-    samples.push({frame,x:boss.x,y:boss.y,speed:Math.hypot(dx,dy),acceleration:Math.hypot(dx-previousDx,dy-previousDy),segment:state.segment});
+    samples.push({frame,x:boss.x,y:boss.y,speed:Math.hypot(dx,dy),acceleration:Math.hypot(dx-previousDx,dy-previousDy)});
     previousDx=dx;previousDy=dy;
   }
-  return{samples,rng:rng.state,events:events.length,schedule:createHash('sha256').update(JSON.stringify(events)).digest('hex')};
+  return{samples,log:events,rng:rng.state,events:events.length,schedule:createHash('sha256').update(JSON.stringify(events)).digest('hex')};
 }
 
 test('Extra direct paths join from rest without teleporting or an abrupt first step',()=>{
@@ -47,21 +47,13 @@ test('Extra direct paths join from rest without teleporting or an abrupt first s
   }
 });
 
-test('the survival card connects every section, its breathing gaps and the continuing final section',()=>{
-  const {samples}=trace(cases[2]);
-  assert.deepEqual([...new Set(samples.filter(row=>row.segment!==undefined).map(row=>row.segment))],[0,1,2,3,4,5]);
-  for(let segment=1;segment<=6;segment++){
-    const entry=samples[80+segment*620];
-    assert.ok(entry.speed<.02,`section ${segment} starts at the last visible position`);
-  }
-  for(const segment of [3,5]){
-    const firstRest=80+segment*620+590,lastRest=80+(segment+1)*620-1;
-    assert.ok(samples[firstRest].acceleration<.1,'continuous paths decelerate before the breathing gap');
-    for(let frame=firstRest+1;frame<=lastRest;frame++){
-      assert.equal(samples[frame].x,samples[firstRest].x);
-      assert.equal(samples[frame].y,samples[firstRest].y);
-    }
-  }
+test('the survival card breathes once a second from a still Boss and every breath is fuller',()=>{
+  const {samples,log}=trace(cases[2]);
+  for(const row of samples.slice(80))assert.ok(row.speed<.02,`frame ${row.frame}: the Boss holds still`);
+  const exhales=log.filter(row=>row[1]==='bullet'&&row[5]>=26);
+  assert.deepEqual(exhales.map(row=>row[0]),Array.from({length:64},(_,breath)=>80+breath*60));
+  for(let breath=1;breath<exhales.length;breath++)assert.ok(exhales[breath][5]>=exhales[breath-1][5],`breath ${breath} is no thinner`);
+  assert.ok(exhales.at(-1)[5]>exhales[0][5]+12);
 });
 
 test('path joins preserve the authored volley schedule and consume no extra random values',()=>{

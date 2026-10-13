@@ -145,8 +145,8 @@ blankSignature.home={x:0,y:108};
 /** Extra midboss 1 — 抄札「仅限借阅之旧名目录」: dashed columns of copies
  * fall, each page laid half a column aside from the last, so the lanes below
  * step like brickwork. All the way down, paired columns trade lanes back and
- * forth and braid into chains of X; every other page the Boss rings out
- * vermilion return slips. */
+ * forth and braid into chains of X; every page the Boss throws three layers
+ * of vermilion return slips at the player. */
 function borrowOnlyCatalogue(k: AttackKit){
   const spacing=48,slot=6,page=48,dash=6,swap=36,gap=10,c=k.t%page,odd=(k.t/page|0)%2;
   if(c%slot===0&&c/slot<dash){
@@ -161,20 +161,20 @@ function borrowOnlyCatalogue(k: AttackKit){
       k.shot(x0+i*spacing,-4,DOWN,1.9,T.AMULET,dir>0?C.PALE:dir<0?C.GREEN:C.WHITE,cmds,{silent:i>0,safe:2304});
     }
   }
-  if(k.every(page*2,page))k.ring(k.ox,k.oy,20,1.3,(k.t/(page*2)|0)*Math.PI/20,T.BALL,C.RED);
+  if(k.every(page,page/2))k.aimed(k.ox,k.oy,5,2.4,.13,T.BALL,C.RED,null,{rows:3,speedStep:1.6});
 }
 borrowOnlyCatalogue.home={x:0,y:90};
 
 /** Extra midboss 2 — 封印「回声不可携出之页」: square pages open, are pulled
  * back through the seal, and open again on the other side; four seals are
- * stamped toward the player in two layers, one corner always at her. */
+ * stamped toward the player in three layers, one corner always at her. */
 function echoMayNotLeave(k: AttackKit){
-  const period=42;
+  const period=36;
   if(k.every(period)){
     const wave=k.t/period|0;
-    burstShape(k,k.ox,k.oy,polygon(4,13),3.4,wave*.33,T.AMULET,wave%2?C.RED:C.PALE,[k.stopTurn(46,Math.PI,2.3)]);
+    burstShape(k,k.ox,k.oy,polygon(4,14),3.4,wave*.33,T.AMULET,wave%2?C.RED:C.PALE,[k.stopTurn(46,Math.PI,2.5)]);
   }
-  if(k.every(60,30))k.ring(k.ox,k.oy,4,2.2,k.aim(),T.BIG,C8.RED,null,{rows:2,speedStep:1.5});
+  if(k.every(50,30))k.ring(k.ox,k.oy,4,2.4,k.aim(),T.BIG,C8.RED,null,{rows:3,speedStep:1.4});
 }
 echoMayNotLeave.home={x:0,y:110};
 
@@ -184,10 +184,10 @@ echoMayNotLeave.home={x:0,y:110};
  * returns a green five-pointed correction mark spreads, upright and inverted
  * in turn. */
 function originalsReturned(k: AttackKit){
-  const period=44;
+  const period=38;
   if(k.every(period)){
-    const n=22,a=k.unit()*TAU,originals=k.ring(k.ox,k.oy,n,3.2,a,T.AMULET,C.RED,[k.stopTurn(40,Math.PI,2.4)]);
-    k.later(44,originals,b=>k.shot(b.x,b.y,Math.atan2(b.y-k.oy,b.x-k.ox)+(k.unit()-.5)*.2,0,T.AMULET,C.WHITE,[k.wait(40),k.accel(.022,90)],{silent:true}));
+    const n=26,a=k.unit()*TAU,originals=k.ring(k.ox,k.oy,n,3.2,a,T.AMULET,C.RED,[k.stopTurn(40,Math.PI,2.4)]);
+    k.later(44,originals,b=>k.shot(b.x,b.y,Math.atan2(b.y-k.oy,b.x-k.ox)+(k.unit()-.5)*.2,0,T.AMULET,C.WHITE,[k.wait(40),k.accel(.026,90)],{silent:true}));
   }
   if(k.every(period*2,22))burstShape(k,k.ox,k.oy,star(5,5,.42),1.5,DOWN+(k.t/(period*2)|0)*TAU/10,T.RICE,C.GREEN);
 }
