@@ -171,8 +171,10 @@ export class CampaignDirector{
     if(phase.spell&&game.spell.active){if(timeout)game.spell.timeout(game.context);else game.spell.capture(game.context);}
     this._clear(game);
     const extraSpell=phase.spell&&this.mode==='extra';
+    // The final phase's fragment comes from the exit reward below; spawning
+    // another here stacks two identical pickups at the Boss's position.
     if(phase.spell||!last)game.items.spawnBossDrops(this.boss!,{counts:{[TouhouItemType.POWER]:extraSpell?8:phase.spell?4:3,[TouhouItemType.POINT]:phase.spell?5:4},
-      centerType:extraSpell?TouhouItemType.BOMB_FRAGMENT:0,timedOut:timeout,survival:!!phase.spec?.survival,mode:game.session.mode});
+      centerType:extraSpell&&!last?TouhouItemType.BOMB_FRAGMENT:0,timedOut:timeout,survival:!!phase.spec?.survival,mode:game.session.mode});
     this.events.push({event:'midboss-phase-end',stage:this.stageId,index:this.midbossPhaseIndex,timeout,frame:this.totalClock});
     this.finishing=false;
     // Every broken midboss group, including the last one before it leaves, gets the ordinary ECL handoff cue.

@@ -2,24 +2,127 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {Keys} from '@ts-stg/thlib';
-import {TouhouGame,createTouhouResources} from '@ts-stg/thlib/touhou';
+import {TouhouGame,TouhouItemType,createTouhouResources} from '@ts-stg/thlib/touhou';
 import {STAGES,MIDBOSSES} from '../dist/src/content.js';
 import {CampaignDirector} from '../dist/src/director.js';
 
-function fixture({stageId=1,midbosses=MIDBOSSES,enterCombat=true,dialogue=(_lines,{onComplete})=>onComplete()}={}){
+function fixture({stageId=1,mode='stage-practice',difficulty=mode==='extra'?4:1,midbosses=MIDBOSSES,enterCombat=true,dialogue=(_lines,{onComplete})=>onComplete()}={}){
   const resources=createTouhouResources({readText:file=>fs.readFileSync(file,'utf8'),loadTexture:()=>11});
   const sounds=[],events=[];
   const game=new TouhouGame({banks:resources.banks,font:resources.font,sht:resources.shots[0],styles:resources.styles,
-    seed:73,onSound:(id,x)=>sounds.push({id,x}),onEvent:(name,data)=>events.push({name,data})});
+    seed:73,difficulty,onSound:(id,x)=>sounds.push({id,x}),onEvent:(name,data)=>events.push({name,data})});
   game.player.invulnerability.set(999999);
-  const director=new CampaignDirector({stages:STAGES,midbosses,mode:'stage-practice',stageId,seed:73,
+  const director=new CampaignDirector({stages:STAGES,midbosses,mode,difficulty,stageId,seed:73,
     callbacks:{dialogue}}).attach(game);
-  director.stageFrame=midbosses.find(mid=>mid.stageId===stageId).atFrame;
+  director.stageFrame=midbosses.find(mid=>mid.stageId===director.stageId).atFrame;
   if(enterCombat){for(let i=0;i<160&&director.state!=='midboss-combat';i++)game.update(0);
     assert.equal(director.state,'midboss-combat');}
   else game.update(0);
   return{game,director,sounds,events,dispose(){director.destroy();game.destroy();resources.dispose();}};
 }
+
+const itemEvents=(events,name,type)=>events.filter(event=>event.name===name&&event.data.item.type===type);
+function awaitMidbossCombat({game,director}){
+  for(let i=0;i<120&&director.state!=='midboss-combat';i++)game.update(0);
+  assert.equal(director.state,'midboss-combat');
+}
+function defeatMidbossPhase({game,director}){
+  assert.equal(director.state,'midboss-combat');
+  const boss=director.boss;
+  assert.ok(boss.hp>0,'settlement starts from a live phase with HP');
+  boss.damage(100000,{type:'drop-regression'},game.context);
+  assert.ok(['midboss-phase-wait','midboss-exit'].includes(director.state));
+  const phaseEnds=director.events.filter(event=>event.event==='midboss-phase-end').length,nextItemId=game.items.nextId;
+  boss.damage(100000,{type:'duplicate-drop-regression'},game.context);
+  game.notifyBossDefeated(boss,{type:'duplicate-drop-regression'});
+  assert.equal(game.items.nextId,nextItemId,'a repeated defeat notification cannot spawn more rewards');
+  assert.equal(director.events.filter(event=>event.event==='midboss-phase-end').length,phaseEnds,'the phase settles only once');
+}
+function collectMidbossDrops({game}){
+  // Above the collection line, the real item update attracts and collects the
+  // entire scatter. Do not call collect/addBombFragments or mock the HUD path.
+  game.player.setPosition(0,80);
+  for(let i=0;i<50&&game.items.items.length;i++)game.update(0);
+  assert.equal(game.items.items.length,0,'every live reward reaches the player');
+  assert.deepEqual(game.hud.bombStock,{full:game.player.bombs,fragments:game.player.bombFragments});
+}
+
+test('Extra midboss grants one Bomb fragment per defeated card, completing exactly one Bomb after three live pickups',()=>{
+  const f=fixture({mode:'extra'}),{game,director,events}=f;
+  try{
+    assert.equal(director.stageId,7);assert.equal(director.mode,'extra');
+    assert.equal(director.difficulty,4);assert.equal(game.difficulty,4);assert.equal(game.session.mode,0);
+    assert.equal(director.midbossPhases.length,3);assert.ok(director.midbossPhases.every(phase=>phase.spell));
+    game.player.bombs=2;game.player.bombFragments=0;
+    const initialBombs=game.player.bombs;
+    for(let phase=0;phase<3;phase++){
+      awaitMidbossCombat(f);assert.equal(director.midbossPhaseIndex,phase);
+      const firstEvent=events.length;
+      defeatMidbossPhase(f);
+      const spawned=events.slice(firstEvent);
+      assert.equal(itemEvents(spawned,'itemSpawnEffect',TouhouItemType.BOMB_FRAGMENT).length,1,`card ${phase+1} spawns exactly one fragment`);
+      assert.equal(itemEvents(spawned,'itemSpawnEffect',TouhouItemType.POWER).length,phase===2?18:8,'power scatter remains unchanged');
+      assert.equal(itemEvents(spawned,'itemSpawnEffect',TouhouItemType.POINT).length,phase===2?10:5,'point scatter remains unchanged');
+      assert.equal(director.events.filter(event=>event.event==='midboss-phase-end').at(-1).timeout,false);
+      collectMidbossDrops(f);
+      assert.equal(itemEvents(events.slice(firstEvent),'itemCollect',TouhouItemType.BOMB_FRAGMENT).length,1);
+      const expected={count:initialBombs+(phase===2?1:0),fragments:phase===2?0:phase+1,maximum:game.player.maxBombs};
+      assert.equal(game.player.bombs,expected.count);assert.equal(game.player.bombFragments,expected.fragments);
+      const stockEvents=events.slice(firstEvent).filter(event=>event.name==='bombStock');
+      assert.ok(stockEvents.length>0,'the common item owner emits the HUD stock update');
+      for(const event of stockEvents)assert.deepEqual(event.data,expected,'all pickup HUD updates show the correct stock');
+      assert.deepEqual(game.hud.bombStock,{full:expected.count,fragments:expected.fragments});
+    }
+    assert.equal(director.state,'midboss-exit');
+    assert.equal(itemEvents(events,'itemSpawnEffect',TouhouItemType.BOMB_FRAGMENT).length,3);
+    assert.equal(itemEvents(events,'itemCollect',TouhouItemType.BOMB_FRAGMENT).length,3);
+    assert.equal(director.events.filter(event=>event.event==='midboss-phase-end').length,3);
+  }finally{f.dispose();}
+});
+
+test('the final Extra midboss timeout leaves the first two collected fragments unchanged and grants no exit rewards',()=>{
+  const f=fixture({mode:'extra'}),{game,director,events}=f;
+  try{
+    game.player.bombs=2;game.player.bombFragments=0;
+    for(let phase=0;phase<2;phase++){
+      awaitMidbossCombat(f);defeatMidbossPhase(f);collectMidbossDrops(f);
+    }
+    awaitMidbossCombat(f);assert.equal(director.midbossPhaseIndex,2);assert.equal(game.spell.active,true);
+    assert.equal(game.player.bombFragments,2);
+    const boss=director.boss,firstEvent=events.length,nextItemId=game.items.nextId;
+    assert.ok(boss.hp>0);game.spell.age.set(game.spell.duration-1);game.update(0);
+    assert.equal(director.state,'midboss-exit');assert.equal(game.spell.active,false);
+    assert.equal(director.events.filter(event=>event.event==='midboss-phase-end').at(-1).timeout,true);
+    game.notifyBossDefeated(boss,{type:'late-timeout-notification'});
+    for(let i=0;i<20;i++)game.update(0);
+    assert.equal(game.items.nextId,nextItemId,'neither the timed-out card nor its exit creates items');
+    assert.equal(events.slice(firstEvent).filter(event=>event.name==='itemSpawnEffect'||event.name==='itemCollect'||event.name==='bombStock').length,0);
+    assert.equal(game.player.bombs,2);assert.equal(game.player.bombFragments,2);
+    assert.deepEqual(game.hud.bombStock,{full:2,fragments:2});
+    assert.equal(itemEvents(events,'itemSpawnEffect',TouhouItemType.BOMB_FRAGMENT).length,2);
+  }finally{f.dispose();}
+});
+
+test('ordinary midboss final nonspell and final spell each retain their single exit fragment',()=>{
+  for(const stageId of [1,2]){
+    const f=fixture({mode:'normal',stageId}),{game,director,events}=f;
+    try{
+      game.player.bombs=2;game.player.bombFragments=0;
+      const phases=director.midbossPhases.length;
+      for(let phase=0;phase<phases;phase++){
+        awaitMidbossCombat(f);const firstEvent=events.length,last=phase===phases-1;
+        defeatMidbossPhase(f);
+        assert.equal(itemEvents(events.slice(firstEvent),'itemSpawnEffect',TouhouItemType.BOMB_FRAGMENT).length,last?1:0);
+        collectMidbossDrops(f);
+      }
+      assert.equal(director.state,'midboss-exit');assert.equal(game.player.bombs,2);assert.equal(game.player.bombFragments,1);
+      assert.deepEqual(game.hud.bombStock,{full:2,fragments:1});
+      assert.equal(itemEvents(events,'itemSpawnEffect',TouhouItemType.BOMB_FRAGMENT).length,1);
+      assert.equal(itemEvents(events,'itemCollect',TouhouItemType.BOMB_FRAGMENT).length,1);
+      assert.deepEqual(events.filter(event=>event.name==='bombStock').map(event=>event.data),[{count:2,fragments:1,maximum:game.player.maxBombs}]);
+    }finally{f.dispose();}
+  }
+});
 
 test('a recurring main Boss retreats through the public escape owner without a death burst',()=>{
   for(let stageId=1;stageId<=6;stageId++){
