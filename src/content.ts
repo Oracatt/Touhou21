@@ -12,7 +12,7 @@ export const GAME = Object.freeze({
   subtitle: 'Names Beyond the Boundary.',
   fullTitle: '东方归名录 ～ Names Beyond the Boundary.',
   version: '2.0.0',
-  contentRevision: 21,
+  contentRevision: 22,
   genre: '东方 Project 二次创作弹幕射击游戏',
   attribution: '东方 Project 原作：上海爱丽丝幻乐团 / ZUN',
   fanWork: true,
@@ -29,7 +29,7 @@ export const GAME = Object.freeze({
   extraRequirement: '任一自机在任一本篇难度不续关通关。',
   manual: [
     '方向键移动；Z 射击、确定；X 使用 Bomb、取消；Shift 低速移动；Esc 暂停。',
-    '灵梦与魔理沙使用 thlib 的原作自机、武器与 Bomb。低速移动时显示判定点。',
+    '灵梦使用诱导御札，魔理沙使用激光。自机、武器与 Bomb 均来自 thlib，低速移动时显示判定点。',
     '贴近敌弹而未被击中可擦弹；Bomb 可以消弹并在危险时保护自机。',
     '符卡期间不 Miss、不使用 Bomb，在时限内击破可取得符卡奖励。耐久符卡需要生存至倒计时结束。',
     '本篇有六个关卡。二面起中 Boss 在非符之后还会使用一张符卡；道中、中 Boss、非符和符卡均可在练习中反复挑战。',

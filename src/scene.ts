@@ -1,5 +1,5 @@
 import {DrawList,Keys,ReplayRecorder,ReplayPlayer} from '@ts-stg/thlib';
-import {TouhouGame,TouhouDialogue,TouhouStageClear,TouhouStageTransition,TouhouPause,TouhouRNG,AnmBank,TOUHOU_POINT_VALUE_PROFILES} from '@ts-stg/thlib/touhou';
+import {TouhouGame,TouhouDialogue,TouhouStageClear,TouhouStageTransition,TouhouPause,TouhouRNG,AnmBank,TOUHOU_POINT_VALUE_PROFILES,createTouhouWeaponPreset} from '@ts-stg/thlib/touhou';
 import {STAGES,MIDBOSSES,CHARACTERS,PLAYERS,GAME} from './content.js';
 import {CampaignDirector} from './director.js';
 import type {DialogueContext} from './director.js';
@@ -94,9 +94,10 @@ export class CampaignScene extends TouhouGame {
     if(!playbackSource&&!options.testing)storage.progress.spellRecords[recordNamespace]=records;
     const background=new StageBackground({art,seed:config.seed});
     const frameSkin=new GameFrameSkin({art});
+    const playerLoadout=config.character===0?createTouhouWeaponPreset(0,2):{};
     super({...settings,character:config.character,difficulty:config.difficulty,seed:config.seed,
       systemOptions:{...settings.systemOptions,
-        player:{...settings.systemOptions?.player,rules:{...TOUHOU_POINT_VALUE_PROFILES.classic,...settings.systemOptions?.player?.rules}},
+        player:{...playerLoadout,...settings.systemOptions?.player,rules:{...TOUHOU_POINT_VALUE_PROFILES.classic,...settings.systemOptions?.player?.rules}},
         hud:{...settings.systemOptions?.hud,skin:frameSkin,
         palette:{...settings.systemOptions?.hud?.palette,...HUD_NUMBER_PALETTE},replay:!!playbackSource}},
       factories:{...settings.factories,bossHud:(hudOptions,game)=>new CampaignBossHud(hudOptions,game as CampaignScene)},

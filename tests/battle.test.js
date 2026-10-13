@@ -33,6 +33,19 @@ function fixture(options={}){
   game.player.invulnerability.set(9999999);
   return{game,resources,dispose(){game.destroy();resources.dispose();}};
 }
+
+test('campaign Reimu selects the shared blue homing weapon while Marisa keeps the original laser preset',()=>{
+  const reimu=sceneFixture({character:0,options:{testing:true}}),marisa=sceneFixture({character:1,options:{testing:true}});
+  try{
+    assert.equal(reimu.scene.player.weapon.id,2);
+    assert.equal(reimu.scene.player.sht.profile,'weapon-2');
+    assert.equal(reimu.scene.player.sht.patterns[9][0].callbacks[1],1);
+    assert.equal(reimu.scene.player.sht.patterns[14][0].callbacks[0],3);
+    assert.equal(reimu.scene.player.normalRadius,3);
+    assert.equal(marisa.scene.player.weapon,null);
+    assert.equal(marisa.scene.player.sht.patterns[9][0].type,2);
+  }finally{reimu.dispose();marisa.dispose();}
+});
 const step=(game,director,{damage=false}={})=>{
   game.player.invulnerability.set(9999999);
   if(damage&&director.boss&&(['combat','midboss-combat'].includes(director.state))&&director.phaseFrame>90&&!director.phase?.spec?.survival)
