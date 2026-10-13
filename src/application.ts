@@ -153,7 +153,7 @@ export class ProjectApplication {
     {id:'musicVolume',label:()=>`BGM 音量　${settings.musicVolume}%`},{id:'soundVolume',label:()=>`音效音量　${settings.soundVolume}%`},
     {id:'defaults',label:'恢复默认设置'}];
     const adjust=(row:OptionRow,delta:number,page:ListPage<OptionRow>)=>{if(row.id==='musicVolume'||row.id==='soundVolume')settings[row.id]=Math.max(0,Math.min(100,settings[row.id]+delta*5));else return;this.storage.saveSettings();this.music.volume();this.resources.audio!.volume=settings.soundVolume;this.sound(10);page.message='设置已保存。';};
-    this.page=new ListPage({...this.pageOptions('选项',inGame,close),rows,detail:()=>`← → 调整　当前脚本后端：${this.host.backend}\n本地设置仅影响本作，不修改 TS-STG 或其他演示。`,onAdjust:adjust,
+    this.page=new ListPage({...this.pageOptions('选项',inGame,close),rows,detail:()=> '← → 调整',onAdjust:adjust,
       onSelect:(row,page)=>{if(row.id==='defaults'){Object.assign(settings,DEFAULT_SETTINGS);this.storage.saveSettings();this.music.volume();this.resources.audio!.volume=settings.soundVolume;page.message='已恢复默认设置。';}else adjust(row,1,page);}});}
   openManual(inGame=false,close?:()=>void){this.page=new ReadingPage({...this.pageOptions('游戏说明',inGame,close),pages:manualPages()});}
   endCampaign(result:RunResult,game:CampaignScene){if(this.options.testing){this.finishedResult=result;return;}this.page=new EndingPage({result,replayAvailable:game.canSaveReplay,text:this.text,art:this.art,music:this.music,sound:(id:number)=>this.sound(id),onClose:()=>this.requestLeaveGame()});}

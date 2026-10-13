@@ -115,6 +115,9 @@ export function inspectWindowsRelease(packageRoot){
   assert.ok(binary.length>=64&&binary.toString('ascii',0,2)==='MZ','Runtime is not a Windows executable');
   const pe=binary.readUInt32LE(60);assert.ok(pe+6<=binary.length&&binary.toString('ascii',pe,pe+4)==='PE\0\0','Runtime PE header is invalid');
   assert.equal(binary.readUInt16LE(pe+4),0x8664,'Runtime is not Windows x64');
+  assert.ok(pe+94<=binary.length,'Runtime PE optional header is incomplete');
+  assert.equal(binary.readUInt16LE(pe+24),0x20b,'Runtime is not a PE32+ executable');
+  assert.equal(binary.readUInt16LE(pe+24+68),2,'Runtime must use the Windows GUI subsystem so no console opens by default');
   const receipt=JSON.parse(fs.readFileSync(path.join(root,'runtime/NATIVE-BUILD.json'),'utf8'));
   assert.ok(receipt&&typeof receipt==='object'&&!Array.isArray(receipt),'Invalid native build receipt');
   assert.equal(receipt.format,'touhou21-windows-native-receipt-v1','Invalid native receipt format');

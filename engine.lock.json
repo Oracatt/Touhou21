@@ -3,13 +3,13 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/AIWorkspace/Touhou21/build/engine-ctrl-replay",
-  "commit": "1afc42e20675f3e3f47da62f335bfe3a0d887f94",
+  "commit": "473985915a3c728fe4b0820476dd3ca039def1b1",
   "backend": "v8",
   "supportedBackends": [
     "v8",
     "quickjs"
   ],
-  "executableSha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
+  "executableSha256": "fe8ca096f15c2b2dc66a44d514c0208edaacbf357d8f13d16f742807f91046ad",
   "sourceModified": false,
   "sourceState": {
     "gitClean": true,
@@ -3795,7 +3795,7 @@
     "outputSha256": "797b7a28a3b3431a2677adac86a7f8d7012efda16a245b56a6b947938087009e"
   },
   "thlibSha256": "fe5fe8c21473215940bca7b1d3461e8fb0828cb24930956097c0d34bb05ec603",
-  "runtimeSha256": "62e8d8b245a5bf16e169395f62385a98cf202bfa24c06bb4159e9dd79ce8ff28",
+  "runtimeSha256": "42a212036d71d181bd75a64b484abb8f5612e4c545ecdd061082e4fbfdeb1fee",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -7568,7 +7568,7 @@
     {
       "path": "PACKAGE.json",
       "bytes": 4297,
-      "sha256": "695fec08b180264ca0009c2ca2b33da79905f3554dac827a74747bdb7eecded3",
+      "sha256": "45bfda8be86e257ac9170c1e645fe25ed5a1c591205d4882ab00507da202b0a4",
       "source": "dist/TS-STG/PACKAGE.json"
     },
     {
@@ -8455,8 +8455,8 @@
     },
     {
       "path": "ts-stg.exe",
-      "bytes": 23313408,
-      "sha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
+      "bytes": 23321088,
+      "sha256": "fe8ca096f15c2b2dc66a44d514c0208edaacbf357d8f13d16f742807f91046ad",
       "source": "build/native-dev/Release/ts-stg.exe"
     }
   ],
@@ -8464,18 +8464,23 @@
     "configuration": "Release",
     "executableSource": "build/native-dev/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "695fec08b180264ca0009c2ca2b33da79905f3554dac827a74747bdb7eecded3",
-    "binarySha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
+    "packageSha256": "45bfda8be86e257ac9170c1e645fe25ed5a1c591205d4882ab00507da202b0a4",
+    "binarySha256": "fe8ca096f15c2b2dc66a44d514c0208edaacbf357d8f13d16f742807f91046ad",
     "sourceFiles": [
       {
         "path": "CMakeLists.txt",
-        "bytes": 19024,
-        "sha256": "b77974c1c5935bf309a925e76baddc241b6a2ea36d38d492e384dd6c38472474"
+        "bytes": 20686,
+        "sha256": "2c2a7750450da7fb03c4f24bccbe880853ddba7cc3b1d2565c27c7a59e15cd7c"
       },
       {
         "path": "native/include/tsstg/backend.hpp",
         "bytes": 6282,
         "sha256": "4a634edb2ef7d001f8728eb9bc520c0ef45538e6ad241b612a3f291d21a03f6f"
+      },
+      {
+        "path": "native/include/tsstg/console.hpp",
+        "bytes": 1081,
+        "sha256": "f25d84942dfc6839932c09b17e4b5eb20a6bca921ad9304173257ebe29179ded"
       },
       {
         "path": "native/include/tsstg/display.hpp",
@@ -8518,6 +8523,11 @@
         "sha256": "829adfb8374920bf49bb6a4e276f5ad10cab21df387ba323810fa901eb1da83c"
       },
       {
+        "path": "native/src/console.cpp",
+        "bytes": 8364,
+        "sha256": "22c8c25e122959bbf69aa05b6a61dcedfdc94af7aec5f5ad8be303cad14f84e9"
+      },
+      {
         "path": "native/src/display.cpp",
         "bytes": 1577,
         "sha256": "880d6de3456dea745a22d32b4ae74fe33a818af63eef80173fcdef7deb2e5d64"
@@ -8544,8 +8554,8 @@
       },
       {
         "path": "native/src/main.cpp",
-        "bytes": 5619,
-        "sha256": "3ee9e142c6c6aa889432b36985a0f06c77bb249eea0cf7a3fbe0fb85d2a62cad"
+        "bytes": 6793,
+        "sha256": "f0b6b223d8d66ae8f7645a023cced6befea47b16ac0ecbfe77e9db0bd2228357"
       },
       {
         "path": "native/src/quickjs_backend.cpp",
@@ -8573,17 +8583,23 @@
         "sha256": "ae18e973ee276ee777cf40fa0ccf4c73e23ec0280d3abd4bca39f205145ebf9a"
       }
     ],
-    "sourceSha256": "4aaf95d6fb7b3c53252701c81fb36bc3f477682e2449f27cbfcff87afbc28bd0",
+    "sourceSha256": "0531b238106fbf1043eccb3bf600c861c221432f00fe1af29982f83cf52254e2",
     "dependencyLog": {
       "source": "build/native-dev/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
-      "sha256": "98a195f4bfcb9e42c79c21ae307ff05055ac459cc2dc224871d5125ec9dd67ba"
+      "sha256": "398266f8bd79d8dbbce3d602f8521de922495fa014daffb05f45f9d15e0ebad4"
     },
     "hostObject": {
       "source": "build/native-dev/ts-stg.dir/Release/host.obj",
       "sha256": "f1e6348e14b790e37bf9f5fe7e5cfe21ca92811d6b69635a35b4ec059b7f93d9"
     },
-    "outputUtc": "2026-10-13T03:35:09.318Z",
+    "outputUtc": "2026-10-13T16:57:05.389Z",
     "objects": [
+      {
+        "source": "build/native-dev/ts-stg.dir/Release/console.obj",
+        "sha256": "991c94e138d9706ff9b9607502c7265040a3ecd353537e9665b2d25ee6df6bff",
+        "sourcePath": "native/src/console.cpp",
+        "outputUtc": "2026-10-13T16:57:04.249Z"
+      },
       {
         "source": "build/native-dev/ts-stg.dir/Release/display.obj",
         "sha256": "4ebf9e13a6d30a1685a695b96eff6308adb56b4174b9112db978fe38508d483a",
@@ -8616,9 +8632,9 @@
       },
       {
         "source": "build/native-dev/ts-stg.dir/Release/main.obj",
-        "sha256": "505931468115f6a6e3a7951a6dff7c70b4534ae4848ea169fcc049e58534744b",
+        "sha256": "e42271effc2ae9c71a04367d163e8817a0e12bf688ac1011fa39b763c23c1ce0",
         "sourcePath": "native/src/main.cpp",
-        "outputUtc": "2026-10-13T03:31:05.100Z"
+        "outputUtc": "2026-10-13T16:53:02.129Z"
       },
       {
         "source": "build/native-dev/ts-stg.dir/Release/quickjs_backend.obj",
@@ -8670,14 +8686,14 @@
     ],
     "linkLog": {
       "source": "build/native-dev/ts-stg.dir/Release/ts-stg.tlog/link.read.1.tlog",
-      "sha256": "b87de5676e7accf791f5ffa829eeb24bc443f8aa952970bffb7d870f24f8264f"
+      "sha256": "534670dd9a030c82354517ea21916df6ff82b074dd2049ae633cee52c3151172"
     },
     "evidence": "All committed native source bytes and compiled translation units, compiler dependency blocks, input/object/link timestamps and real raylib/QuickJS/V8 library hashes verified. SDK is a local cached dependency external to the isolated checkout. This is not a reproducible-build attestation. External library evidence is retained as a hash-verified copy under build/native-evidence; originalSource records the path actually named by the unchanged linker log.",
     "hostObjectUtc": "2026-10-13T03:31:04.825Z",
-    "latestSourceUtc": "2026-10-13T03:34:13.775Z",
+    "latestSourceUtc": "2026-10-13T16:55:47.035Z",
     "provenance": {
       "source": "build/native-dev/provenance.json",
-      "sha256": "416cd66b012c752c065366cf0888c33a057555d4ba06f6c5011e288471755bd5"
+      "sha256": "8c2b81b2a616eb21762b7c578e6c5c18cabeae85032f56053f2e4a0eed342534"
     }
   }
 }

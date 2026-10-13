@@ -12,4 +12,4 @@
 
 游戏原生检查 `replay-input`、`ui-input`、`replay-fast-forward` 在两个后端共 6 项全部通过。加速回放样本包含 6289 帧道中、中 Boss 与关底过程；每个后端的正常播放和 8 倍速播放均通过所有检查点，并得到与录制一致的最终状态。报告位于本地忽略的 `reports/integration/weapons/summary.json`；本次没有重跑六面完整路线，也不据此宣称真人平衡验证完成。
 
-`engine.lock.json` 固定引擎提交 `1afc42e20675f3e3f47da62f335bfe3a0d887f94`，包含完整公共素材与 TypeScript 编译结果，源码和本地原生构建证据校验通过。此次同步保留已有的原生二进制，其 C++ 输入与被锁定提交完全相同。
+武器预设由引擎提交 `1afc42e20675f3e3f47da62f335bfe3a0d887f94` 引入，包含完整公共素材与 TypeScript 编译结果，源码和本地原生构建证据校验通过。该次武器更新复用了 C++ 输入完全相同的原生二进制；后续引擎版本与运行库以 `engine.lock.json` 为准。
