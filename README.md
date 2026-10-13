@@ -6,6 +6,8 @@
 
 ## 运行
 
+当前发行版本为 **v3.0.0 / 回放修订 23**，Windows x64 下载见 [GitHub Releases](https://github.com/Oracatt/Touhou21/releases)。包含新版显示设置、灵梦诱导弹武器、回放选槽与 Ctrl 快进，以及 Extra 道中末卡重复碎片掉落修复。升级时保留 `userdata`；不同内容修订的旧录像需用录制版本播放。
+
 Windows 下双击 `Play.cmd`，使用带 JIT 的 V8 后端；`Play-QuickJS.cmd` 使用 QuickJS。开发启动脚本先编译 TypeScript，再运行 `dist/main.js`。直接运行已经编译的游戏不需要 Node.js；编译与开发启动脚本需要 Node.js 24+。
 
 原生引擎在 Windows 上默认不创建控制台。需要调试输出时，在原生命令后追加 `--console`；日志重定向和自动化命令的退出码仍可使用。开发用 `.cmd` 脚本自身的编译终端独立于引擎窗口。
