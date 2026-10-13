@@ -3,13 +3,13 @@
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
   "source": "D:/AIWorkspace/Touhou21/build/engine-ctrl-replay",
-  "commit": "52cfc7d2687fb1b26054aea28d3355e774979e41",
+  "commit": "364aaee9dfa3620e4539c2ee8b70f6e0ea70eed3",
   "backend": "v8",
   "supportedBackends": [
     "v8",
     "quickjs"
   ],
-  "executableSha256": "201d6b1a44e9ef04a553af9465c9e2c38f9f2e8eb8521ba79a025c905cd2e7af",
+  "executableSha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
   "sourceModified": false,
   "sourceState": {
     "gitClean": true,
@@ -17,7 +17,7 @@
     "excludedChanges": [],
     "policy": "All dependency/build inputs come from the pinned commit. Unstaged editor-launcher preferences are unrelated and never copied."
   },
-  "dependencies": "Immutable committed TypeScript source and common presets rebuilt with the pinned compiler; fresh Ctrl-enabled native runtime retains actual compiler/linker provenance. The prior runtime mismatch is preserved in the migration backup.",
+  "dependencies": "Immutable committed TypeScript source and common presets rebuilt with the pinned compiler; native display configuration runtime retains actual compiler/linker provenance. The previous exact SDK is preserved in the upgrade backup.",
   "thlibContent": "git-typescript-build",
   "thlibBuild": {
     "compiler": {
@@ -3725,7 +3725,7 @@
     "outputSha256": "8abcbff5f721c58dac74a86a81287b451f091d6c4cabbf55083f689fe9d9c66e"
   },
   "thlibSha256": "e10654de92d798fbb4c05b9b5863311f0974e54657c78fd2031c70fc313ca3bf",
-  "runtimeSha256": "34467a1dc271c4526b77b84a3ef98580b71eaaab1dd16f42d57f053e37d088f7",
+  "runtimeSha256": "76878d6eee3bbaf6ccfa594dab5c64e76158ba8f0a2d79b016d60ad64ceded0b",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -7428,7 +7428,7 @@
     {
       "path": "PACKAGE.json",
       "bytes": 4192,
-      "sha256": "0318781a6799bdc75c1e2501221af530df0f62f7639a641883819b402e6a2d03",
+      "sha256": "4e6935cdd741d3c2f987ad907852dde7734f5b5c97c6bad8de97636e45e19d43",
       "source": "dist/TS-STG/PACKAGE.json"
     },
     {
@@ -8315,8 +8315,8 @@
     },
     {
       "path": "ts-stg.exe",
-      "bytes": 23282688,
-      "sha256": "201d6b1a44e9ef04a553af9465c9e2c38f9f2e8eb8521ba79a025c905cd2e7af",
+      "bytes": 23313408,
+      "sha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
       "source": "build/native-dev/Release/ts-stg.exe"
     }
   ],
@@ -8324,18 +8324,28 @@
     "configuration": "Release",
     "executableSource": "build/native-dev/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "0318781a6799bdc75c1e2501221af530df0f62f7639a641883819b402e6a2d03",
-    "binarySha256": "201d6b1a44e9ef04a553af9465c9e2c38f9f2e8eb8521ba79a025c905cd2e7af",
+    "packageSha256": "4e6935cdd741d3c2f987ad907852dde7734f5b5c97c6bad8de97636e45e19d43",
+    "binarySha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
     "sourceFiles": [
       {
         "path": "CMakeLists.txt",
-        "bytes": 16992,
-        "sha256": "17d2f40e44f8ef1913a21ffede20c38177dba73be2c765f4184ba9e50cd7313e"
+        "bytes": 19024,
+        "sha256": "b77974c1c5935bf309a925e76baddc241b6a2ea36d38d492e384dd6c38472474"
       },
       {
         "path": "native/include/tsstg/backend.hpp",
         "bytes": 6282,
         "sha256": "4a634edb2ef7d001f8728eb9bc520c0ef45538e6ad241b612a3f291d21a03f6f"
+      },
+      {
+        "path": "native/include/tsstg/display.hpp",
+        "bytes": 546,
+        "sha256": "9fde7fc6f3e2c90678504044b7caadf11b658b4d10b70d9f10babdfbe656c0e7"
+      },
+      {
+        "path": "native/include/tsstg/display_setup.hpp",
+        "bytes": 1069,
+        "sha256": "c774080365c5c539901186f8cb95bbade2c2fb8daa055227b47143fa2a3732c6"
       },
       {
         "path": "native/include/tsstg/frame_stream.hpp",
@@ -8349,8 +8359,8 @@
       },
       {
         "path": "native/include/tsstg/host.hpp",
-        "bytes": 641,
-        "sha256": "cef26236a1d1f315607a223760988e5e2d93de4f40043d5cfa4a7d3a8113762a"
+        "bytes": 819,
+        "sha256": "a7647efa956fc27a98e772d769b07f121b1e138d67f76d8a6323eb07e89a07f7"
       },
       {
         "path": "native/include/tsstg/music_stream.hpp",
@@ -8368,6 +8378,16 @@
         "sha256": "829adfb8374920bf49bb6a4e276f5ad10cab21df387ba323810fa901eb1da83c"
       },
       {
+        "path": "native/src/display.cpp",
+        "bytes": 1577,
+        "sha256": "880d6de3456dea745a22d32b4ae74fe33a818af63eef80173fcdef7deb2e5d64"
+      },
+      {
+        "path": "native/src/display_setup.cpp",
+        "bytes": 24014,
+        "sha256": "b576237696f72bc4c37e8972c9f11d2718a9be654c7ff478e5a1dcc392fec2aa"
+      },
+      {
         "path": "native/src/frame_stream.cpp",
         "bytes": 3555,
         "sha256": "bbc9e003866d2ef27410319e3679f575d639f2256731a792b91156fe5219ec4c"
@@ -8379,13 +8399,13 @@
       },
       {
         "path": "native/src/host.cpp",
-        "bytes": 50564,
-        "sha256": "5cb7b6cd4d8b6880d6272d1f6d594fff334ade1680e6f1be118d5eb20878b406"
+        "bytes": 52027,
+        "sha256": "e7ddba69aaafa6a1a9bd1cb17d493b84739fd8245dd3074786ae1267f738a2a3"
       },
       {
         "path": "native/src/main.cpp",
-        "bytes": 4265,
-        "sha256": "465e1ff4e4afda71099e243be61618012e1844d24411954c101c945cd2b7455c"
+        "bytes": 5619,
+        "sha256": "3ee9e142c6c6aa889432b36985a0f06c77bb249eea0cf7a3fbe0fb85d2a62cad"
       },
       {
         "path": "native/src/quickjs_backend.cpp",
@@ -8413,17 +8433,29 @@
         "sha256": "ae18e973ee276ee777cf40fa0ccf4c73e23ec0280d3abd4bca39f205145ebf9a"
       }
     ],
-    "sourceSha256": "99b337906c865d9a54f9cb3563b46b30af5d80f9ccd5732394a0ec01f8675538",
+    "sourceSha256": "4aaf95d6fb7b3c53252701c81fb36bc3f477682e2449f27cbfcff87afbc28bd0",
     "dependencyLog": {
       "source": "build/native-dev/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
-      "sha256": "2943b0e36d1e9fa7d1fa9ad6e965c29441ab17a3a7781e2670143ef5bac46f2f"
+      "sha256": "98a195f4bfcb9e42c79c21ae307ff05055ac459cc2dc224871d5125ec9dd67ba"
     },
     "hostObject": {
       "source": "build/native-dev/ts-stg.dir/Release/host.obj",
-      "sha256": "7c7593dca7a043b9d7d40579b55ad609c32fd91182d3b9d262064bfface70dfa"
+      "sha256": "f1e6348e14b790e37bf9f5fe7e5cfe21ca92811d6b69635a35b4ec059b7f93d9"
     },
-    "outputUtc": "2026-10-12T16:58:05.748Z",
+    "outputUtc": "2026-10-13T03:35:09.318Z",
     "objects": [
+      {
+        "source": "build/native-dev/ts-stg.dir/Release/display.obj",
+        "sha256": "4ebf9e13a6d30a1685a695b96eff6308adb56b4174b9112db978fe38508d483a",
+        "sourcePath": "native/src/display.cpp",
+        "outputUtc": "2026-10-13T03:31:03.507Z"
+      },
+      {
+        "source": "build/native-dev/ts-stg.dir/Release/display_setup.obj",
+        "sha256": "7f2fd9ee859d91490cf1f3719e60ae5dbe8cae385178714c66bb8620a0bfcac1",
+        "sourcePath": "native/src/display_setup.cpp",
+        "outputUtc": "2026-10-13T03:35:08.237Z"
+      },
       {
         "source": "build/native-dev/ts-stg.dir/Release/frame_stream.obj",
         "sha256": "c8b5a2f942f89e95762c2ebf2d31ee9946f8674c5b6e1b63da019dc1f926ec4c",
@@ -8438,15 +8470,15 @@
       },
       {
         "source": "build/native-dev/ts-stg.dir/Release/host.obj",
-        "sha256": "7c7593dca7a043b9d7d40579b55ad609c32fd91182d3b9d262064bfface70dfa",
+        "sha256": "f1e6348e14b790e37bf9f5fe7e5cfe21ca92811d6b69635a35b4ec059b7f93d9",
         "sourcePath": "native/src/host.cpp",
-        "outputUtc": "2026-10-12T16:58:02.631Z"
+        "outputUtc": "2026-10-13T03:31:04.825Z"
       },
       {
         "source": "build/native-dev/ts-stg.dir/Release/main.obj",
-        "sha256": "cbd774587a597e9f0c18d5a394e20750603adb9de86c23af92d10ef0c6de2787",
+        "sha256": "505931468115f6a6e3a7951a6dff7c70b4534ae4848ea169fcc049e58534744b",
         "sourcePath": "native/src/main.cpp",
-        "outputUtc": "2026-10-12T16:58:02.923Z"
+        "outputUtc": "2026-10-13T03:31:05.100Z"
       },
       {
         "source": "build/native-dev/ts-stg.dir/Release/quickjs_backend.obj",
@@ -8498,14 +8530,14 @@
     ],
     "linkLog": {
       "source": "build/native-dev/ts-stg.dir/Release/ts-stg.tlog/link.read.1.tlog",
-      "sha256": "5b715c6536457eb122ff53d942a0efd0ec12c27ddfbf30bdcbff5117cad689a6"
+      "sha256": "b87de5676e7accf791f5ffa829eeb24bc443f8aa952970bffb7d870f24f8264f"
     },
-    "evidence": "All 17 actual native source bytes, 8 compiled translation units, compiler dependency blocks, input/object/link timestamps and real raylib/QuickJS/V8 library hashes verified. SDK is a local cached dependency external to the isolated checkout. This is not a reproducible-build attestation. External library evidence is retained as a hash-verified copy under build/native-evidence; originalSource records the path actually named by the unchanged linker log.",
-    "hostObjectUtc": "2026-10-12T16:58:02.632Z",
-    "latestSourceUtc": "2026-10-12T16:56:50.617Z",
+    "evidence": "All committed native source bytes and compiled translation units, compiler dependency blocks, input/object/link timestamps and real raylib/QuickJS/V8 library hashes verified. SDK is a local cached dependency external to the isolated checkout. This is not a reproducible-build attestation. External library evidence is retained as a hash-verified copy under build/native-evidence; originalSource records the path actually named by the unchanged linker log.",
+    "hostObjectUtc": "2026-10-13T03:31:04.825Z",
+    "latestSourceUtc": "2026-10-13T03:34:13.775Z",
     "provenance": {
       "source": "build/native-dev/provenance.json",
-      "sha256": "70b722769329397a0e318ca6f8d3ee6fbbdf99116316f8de2ed1d681a64ccf83"
+      "sha256": "47f940e956af0993e7ad1b87907b5112b5ddcf429cdd1519279e1e48a611c571"
     }
   }
 }

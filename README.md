@@ -6,9 +6,13 @@
 
 ## 运行
 
-Windows 下双击 `Play.cmd`，使用带 JIT 的 V8 后端；`Play-QuickJS.cmd` 使用 QuickJS。开发启动脚本先编译 TypeScript，再运行 `dist/main.js`。游戏以固定 60 帧模拟，画面为 960 × 720，采用纵向游戏区与右侧状态栏。直接运行已经编译的游戏不需要 Node.js；编译与开发启动脚本需要 Node.js 24+。
+Windows 下双击 `Play.cmd`，使用带 JIT 的 V8 后端；`Play-QuickJS.cmd` 使用 QuickJS。开发启动脚本先编译 TypeScript，再运行 `dist/main.js`。直接运行已经编译的游戏不需要 Node.js；编译与开发启动脚本需要 Node.js 24+。
 
-Windows 发行 ZIP 只包含 V8：完整解压后双击 `Play.cmd` 即可，不需要 Node.js。原生发行引擎不编译或链接 QuickJS；只支持 V8 录制的回放。制作与验证发行包的命令、内容清单和构建凭据见 [Windows 发行说明](docs/RELEASE.md#windows-可执行包)。构建工具不会上传 GitHub Release。
+首次启动会显示公共引擎的显示设置，可选择 640 × 480～2560 × 1920 的 4:3 分辨率、窗口或无边框全屏，以及记住设置或每次启动询问。设置保存在 `userdata/guiming-display.json`。双击 `Configure-Display.cmd`，或启动时按住 Shift / Ctrl，可再次打开设置；游戏中 Alt+Enter 切换窗口与无边框全屏。两种脚本后端共用此显示设置。
+
+物理窗口与全屏中的内容按 4:3 等比缩放，空余区域留黑。逻辑画面保持 960 × 720，采用纵向游戏区与右侧状态栏；分辨率和显示方式不改变弹幕、自机判定、固定 60 帧模拟或回放。
+
+Windows 发行 ZIP 只包含 V8：完整解压后双击 `Play.cmd` 即可，不需要 Node.js；`Configure-Display.cmd` 同样直接使用原生引擎。原生发行引擎不编译或链接 QuickJS；只支持 V8 录制的回放。制作与验证发行包的命令、内容清单和构建凭据见 [Windows 发行说明](docs/RELEASE.md#windows-可执行包)。构建工具不会上传 GitHub Release。
 
 macOS 下双击 `Play.command`（或在终端执行 `./Play.command`）。首次启动时 `npm run build:macos` 从锁定的引擎提交取出原生源码，逐个核对 `engine.lock.json` 记录的 SHA-256，再与 `tools/macos/` 中基于 CoreText 的系统文字实现一起编译出 `build/macos/ts-stg`；锁文件和这些源码不变时直接启动。编译需要 Xcode 命令行工具、CMake 3.24+、Git 以及 TS-STG 仓库的读取权限，源引擎目录只读。Windows 字体名按同风格映射到系统字体（微软雅黑 → 苹方，楷体 → 楷体-简，メイリオ / ＭＳ ゴシック的中文 → 苹方），位图文字保留原 Windows 字体的 GDI 字号度量，对白排版与 Windows 一致。`Play.command` 使用带 JIT 的 V8 后端，与 Windows 版同为 V8 12.3.219.9：编译时下载 rusty_v8 v0.89.0 中对应本机架构（Intel 或 Apple 芯片）的静态库，以及引擎锁定修订的 V8 头文件，下载文件都核对固定的 SHA-256。终端执行 `./Play.command --backend quickjs` 改用 QuickJS，QuickJS 录制的回放也需这样播放。弹幕密集时脚本耗时约 7–12 ms（QuickJS 为 30–50 ms），在集成显卡上剩余的处理落来自 GPU。`npm run verify:macos` 在 V8 与 QuickJS 下分别运行引擎的矢量文字、位图文字、媒体与绘制合约测试并要求两者快照一致，另运行 V8 后端合约测试。macOS 需要已还原的 `packages/thlib`；`restore:engine` 目前仍要求 Windows 运行时，可从已安装的 Windows 环境复制该目录。
 
@@ -44,8 +48,9 @@ npm run verify:engine -- --source D:\AIWorkspace\TS-STG
 | 方向键 | 移动；菜单选择 |
 | Z / Enter | 射击 / 确定；推进对话 |
 | X | 使用 Bomb；菜单返回 |
-| Shift | 低速移动并显示判定点；对话中长按跳过 |
-| Ctrl | 回放中按住快进，松开恢复正常速度 |
+| Shift | 低速移动并显示判定点；对话中长按跳过；启动时按住重新配置显示 |
+| Ctrl | 回放中按住快进，松开恢复正常速度；启动时按住重新配置显示 |
+| Alt+Enter | 切换窗口与无边框全屏 |
 | Esc | 暂停；菜单返回 |
 | ← / → | 选项页面调整设置 |
 

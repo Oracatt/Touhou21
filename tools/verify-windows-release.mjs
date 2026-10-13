@@ -50,10 +50,21 @@ function permitted(name,isDirectory=false){
     assert.ok(part!=='src'||parts[i-1]==='dist',`TypeScript source tree in release: ${name}`);
   }
   if(isDirectory)return;
+  if(/\.(?:cmd|bat)$/i.test(base))assert.ok(['Play.cmd','Configure-Display.cmd'].includes(name),`Unexpected release launcher: ${name}`);
   // Some upstream notices retain their original .h/.c filenames and complete texts.
   const originalNotice=/^runtime\/licenses\/.+\.[hc]$/i.test(name);
   assert.ok(originalNotice||!(/\.(?:ts|tsx|map|cpp|cc|cxx|h|hpp|c|py|ps1|mjs|pdb|obj|lib)$/i.test(base)),`Source or build artifact in release: ${name}`);
   assert.ok(!/^\.env(?:\.|$)/i.test(base)&&!['package-lock.json','npm-shrinkwrap.json'].includes(base),`Development configuration in release: ${name}`);
+}
+/** Player launchers must route display selection through the native engine;
+ * the distributable must never depend on Node or a development compiler. */
+export function inspectWindowsReleaseLaunchers(packageRoot){
+  const read=name=>fs.readFileSync(path.join(packageRoot,name),'utf8');
+  const play=read('Play.cmd'),configure=read('Configure-Display.cmd');
+  for(const [name,script]of [['Play.cmd',play],['Configure-Display.cmd',configure]])
+    assert.doesNotMatch(script,/\b(?:node(?:\.exe)?|npm(?:\.cmd)?|npx(?:\.cmd)?|tsc(?:\.cmd)?)\b/i,`Release launcher requires a compiler: ${name}`);
+  assert.match(play,/^"runtime\\ts-stg\.exe" "dist\/main\.js" --root \. --backend v8 --display-config "userdata\/guiming-display\.json" %\*\s*$/m,'Play.cmd must use the public native display configuration');
+  assert.match(configure,/^call "%~dp0Play\.cmd" --configure-display %\*\s*$/m,'Configure-Display.cmd must force the same player launcher to configure display');
 }
 function inventory(root,{checkAllowed=true}={}){
   plainPath(root);assert.ok(fs.statSync(root).isDirectory(),'Release root must be a directory');
@@ -95,7 +106,8 @@ export function inspectWindowsRelease(packageRoot){
   assert.match(manifest.inventorySha256??'',/^[0-9a-f]{64}$/i,'Invalid release inventory digest');
   assert.equal(inventoryDigest(actualPayload),manifest.inventorySha256.toLowerCase(),'Release inventory digest does not match the actual sorted files');
   const names=new Set(expected.map(entry=>entry.path));
-  for(const name of ['Play.cmd','dist/main.js','packages/thlib/dist/index.js','runtime/ts-stg.exe','runtime/NATIVE-BUILD.json'])assert.ok(names.has(name),`Missing required release file: ${name}`);
+  for(const name of ['Play.cmd','Configure-Display.cmd','README.txt','dist/main.js','packages/thlib/dist/index.js','runtime/ts-stg.exe','runtime/NATIVE-BUILD.json'])assert.ok(names.has(name),`Missing required release file: ${name}`);
+  inspectWindowsReleaseLaunchers(root);
   const byName=new Map(actualPayload.map(entry=>[entry.path,entry]));
   for(const name of requiredNotices)assert.ok(byName.get(name)?.bytes>0,`Missing or empty required attribution: ${name}`);
   const binaryFile=path.join(root,'runtime/ts-stg.exe'),binary=fs.readFileSync(binaryFile);
