@@ -2,14 +2,14 @@
   "format": "touhou21-engine-lock-v2",
   "engine": "TS-STG",
   "library": "@ts-stg/thlib",
-  "source": "D:/AIWorkspace/Touhou21/build/engine-ctrl-replay",
+  "source": "D:/github/TS-STG",
   "commit": "364aaee9dfa3620e4539c2ee8b70f6e0ea70eed3",
   "backend": "v8",
   "supportedBackends": [
     "v8",
     "quickjs"
   ],
-  "executableSha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
+  "executableSha256": "35c48d7d222c43fb9c36afaa9b9d09b03b999585477f597f1a9e4afc6bf33b26",
   "sourceModified": false,
   "sourceState": {
     "gitClean": true,
@@ -17,7 +17,7 @@
     "excludedChanges": [],
     "policy": "All dependency/build inputs come from the pinned commit. Unstaged editor-launcher preferences are unrelated and never copied."
   },
-  "dependencies": "Immutable committed TypeScript source and common presets rebuilt with the pinned compiler; native display configuration runtime retains actual compiler/linker provenance. The previous exact SDK is preserved in the upgrade backup.",
+  "dependencies": "Committed public TypeScript source and common presets, rebuilt with the exact pinned compiler. Native artifacts retain their build provenance and original notices.",
   "thlibContent": "git-typescript-build",
   "thlibBuild": {
     "compiler": {
@@ -3725,7 +3725,7 @@
     "outputSha256": "8abcbff5f721c58dac74a86a81287b451f091d6c4cabbf55083f689fe9d9c66e"
   },
   "thlibSha256": "e10654de92d798fbb4c05b9b5863311f0974e54657c78fd2031c70fc313ca3bf",
-  "runtimeSha256": "76878d6eee3bbaf6ccfa594dab5c64e76158ba8f0a2d79b016d60ad64ceded0b",
+  "runtimeSha256": "00a1fc8b39b73277a1c41d5a5ac8b36706ae76a61f645af7b50d3ec98c714996",
   "thlibFiles": [
     {
       "path": "LICENSE",
@@ -7423,19 +7423,19 @@
       "path": "LICENSE.TS-STG",
       "bytes": 1076,
       "sha256": "54874c726261159d48ef83f5a595ddc68c43d7993d5496fff0a936e3500be58d",
-      "source": "dist/TS-STG/LICENSE.TS-STG"
+      "source": "LICENSE"
     },
     {
       "path": "PACKAGE.json",
-      "bytes": 4192,
-      "sha256": "4e6935cdd741d3c2f987ad907852dde7734f5b5c97c6bad8de97636e45e19d43",
+      "bytes": 3960,
+      "sha256": "291d0ecf02ab7e246adf20576619b16abc11b9eceb15dde2f85eebcf4135a821",
       "source": "dist/TS-STG/PACKAGE.json"
     },
     {
       "path": "THIRD_PARTY.md",
       "bytes": 4290,
       "sha256": "fdae9726aaa1eb580e0b10660305497cf424afff035ff3ca9c9ff5892ae267b5",
-      "source": "dist/TS-STG/THIRD_PARTY.md"
+      "source": "THIRD_PARTY.md"
     },
     {
       "path": "licenses/quickjs-LICENSE",
@@ -8219,8 +8219,8 @@
     },
     {
       "path": "licenses/v8-sdk-manifest.json",
-      "bytes": 4955,
-      "sha256": "3455c8f14da99d8da0b07a91cdfd0f71f40bdeb726cc24bc5a9c453c0834acac",
+      "bytes": 8751,
+      "sha256": "6078d9f38edb3e546a0b45d0e44dbc4d576fb4ab1a888bbd42baa9203b9fbb46",
       "source": "dist/TS-STG/licenses/v8-sdk-manifest.json"
     },
     {
@@ -8315,17 +8315,17 @@
     },
     {
       "path": "ts-stg.exe",
-      "bytes": 23313408,
-      "sha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
-      "source": "build/native-dev/Release/ts-stg.exe"
+      "bytes": 23430144,
+      "sha256": "35c48d7d222c43fb9c36afaa9b9d09b03b999585477f597f1a9e4afc6bf33b26",
+      "source": "build/Release/ts-stg.exe"
     }
   ],
   "nativeBuild": {
     "configuration": "Release",
-    "executableSource": "build/native-dev/Release/ts-stg.exe",
+    "executableSource": "build/Release/ts-stg.exe",
     "packageSource": "dist/TS-STG/PACKAGE.json",
-    "packageSha256": "4e6935cdd741d3c2f987ad907852dde7734f5b5c97c6bad8de97636e45e19d43",
-    "binarySha256": "508d040095c1787b8fd7ac411185acca33210c2ca39ce6cee6aa04e07b9e3d3a",
+    "packageSha256": "291d0ecf02ab7e246adf20576619b16abc11b9eceb15dde2f85eebcf4135a821",
+    "binarySha256": "35c48d7d222c43fb9c36afaa9b9d09b03b999585477f597f1a9e4afc6bf33b26",
     "sourceFiles": [
       {
         "path": "CMakeLists.txt",
@@ -8338,14 +8338,14 @@
         "sha256": "4a634edb2ef7d001f8728eb9bc520c0ef45538e6ad241b612a3f291d21a03f6f"
       },
       {
-        "path": "native/include/tsstg/display.hpp",
-        "bytes": 546,
-        "sha256": "9fde7fc6f3e2c90678504044b7caadf11b658b4d10b70d9f10babdfbe656c0e7"
-      },
-      {
         "path": "native/include/tsstg/display_setup.hpp",
         "bytes": 1069,
         "sha256": "c774080365c5c539901186f8cb95bbade2c2fb8daa055227b47143fa2a3732c6"
+      },
+      {
+        "path": "native/include/tsstg/display.hpp",
+        "bytes": 546,
+        "sha256": "9fde7fc6f3e2c90678504044b7caadf11b658b4d10b70d9f10babdfbe656c0e7"
       },
       {
         "path": "native/include/tsstg/frame_stream.hpp",
@@ -8378,14 +8378,14 @@
         "sha256": "829adfb8374920bf49bb6a4e276f5ad10cab21df387ba323810fa901eb1da83c"
       },
       {
-        "path": "native/src/display.cpp",
-        "bytes": 1577,
-        "sha256": "880d6de3456dea745a22d32b4ae74fe33a818af63eef80173fcdef7deb2e5d64"
-      },
-      {
         "path": "native/src/display_setup.cpp",
         "bytes": 24014,
         "sha256": "b576237696f72bc4c37e8972c9f11d2718a9be654c7ff478e5a1dcc392fec2aa"
+      },
+      {
+        "path": "native/src/display.cpp",
+        "bytes": 1577,
+        "sha256": "880d6de3456dea745a22d32b4ae74fe33a818af63eef80173fcdef7deb2e5d64"
       },
       {
         "path": "native/src/frame_stream.cpp",
@@ -8435,109 +8435,96 @@
     ],
     "sourceSha256": "4aaf95d6fb7b3c53252701c81fb36bc3f477682e2449f27cbfcff87afbc28bd0",
     "dependencyLog": {
-      "source": "build/native-dev/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
-      "sha256": "98a195f4bfcb9e42c79c21ae307ff05055ac459cc2dc224871d5125ec9dd67ba"
+      "source": "build/ts-stg.dir/Release/ts-stg.tlog/CL.read.1.tlog",
+      "sha256": "e74e83a1f2a7aeefbdc4e316925418903b783d5f67d3550156752264c4c074b8"
     },
     "hostObject": {
-      "source": "build/native-dev/ts-stg.dir/Release/host.obj",
-      "sha256": "f1e6348e14b790e37bf9f5fe7e5cfe21ca92811d6b69635a35b4ec059b7f93d9"
+      "source": "build/ts-stg.dir/Release/host.obj",
+      "sha256": "69dfda9c769c476e083b9e2b39af0661df851b3af73634e909c94a27d000de1f"
     },
-    "outputUtc": "2026-10-13T03:35:09.318Z",
+    "outputUtc": "2026-10-13T03:43:44.176Z",
+    "hostObjectUtc": "2026-10-13T03:43:42.956Z",
+    "latestSourceUtc": "2026-10-13T03:42:21.227Z",
     "objects": [
       {
-        "source": "build/native-dev/ts-stg.dir/Release/display.obj",
-        "sha256": "4ebf9e13a6d30a1685a695b96eff6308adb56b4174b9112db978fe38508d483a",
-        "sourcePath": "native/src/display.cpp",
-        "outputUtc": "2026-10-13T03:31:03.507Z"
-      },
-      {
-        "source": "build/native-dev/ts-stg.dir/Release/display_setup.obj",
-        "sha256": "7f2fd9ee859d91490cf1f3719e60ae5dbe8cae385178714c66bb8620a0bfcac1",
+        "source": "build/ts-stg.dir/Release/display_setup.obj",
+        "sha256": "12ef3cb49d2aa998b356ae2c743263bfa5dfed49ab76da8433b01d7e7e4dadc2",
         "sourcePath": "native/src/display_setup.cpp",
-        "outputUtc": "2026-10-13T03:35:08.237Z"
+        "outputUtc": "2026-10-13T03:43:42.194Z"
       },
       {
-        "source": "build/native-dev/ts-stg.dir/Release/frame_stream.obj",
-        "sha256": "c8b5a2f942f89e95762c2ebf2d31ee9946f8674c5b6e1b63da019dc1f926ec4c",
+        "source": "build/ts-stg.dir/Release/display.obj",
+        "sha256": "553274c21d06b06db1f3429950538d0165859ee46c967863736fb06b8608a545",
+        "sourcePath": "native/src/display.cpp",
+        "outputUtc": "2026-10-13T03:43:42.213Z"
+      },
+      {
+        "source": "build/ts-stg.dir/Release/frame_stream.obj",
+        "sha256": "578c3db591d5d331e7d200ae674ca634e35aeb7fd8db963bf09dd6d5efeb2097",
         "sourcePath": "native/src/frame_stream.cpp",
-        "outputUtc": "2026-10-12T16:58:01.177Z"
+        "outputUtc": "2026-10-10T07:03:52.083Z"
       },
       {
-        "source": "build/native-dev/ts-stg.dir/Release/geometry.obj",
-        "sha256": "acd9c520f351e6d672db097b9a1a986bec970ca18dab21742dd5524a7421fd4f",
+        "source": "build/ts-stg.dir/Release/geometry.obj",
+        "sha256": "676a393f9840638ba3378467f596232b79ba5580f45f51c6207b2889c73ec649",
         "sourcePath": "native/src/geometry.cpp",
-        "outputUtc": "2026-10-12T16:58:03.795Z"
+        "outputUtc": "2026-10-10T07:03:53.553Z"
       },
       {
-        "source": "build/native-dev/ts-stg.dir/Release/host.obj",
-        "sha256": "f1e6348e14b790e37bf9f5fe7e5cfe21ca92811d6b69635a35b4ec059b7f93d9",
+        "source": "build/ts-stg.dir/Release/host.obj",
+        "sha256": "69dfda9c769c476e083b9e2b39af0661df851b3af73634e909c94a27d000de1f",
         "sourcePath": "native/src/host.cpp",
-        "outputUtc": "2026-10-13T03:31:04.825Z"
+        "outputUtc": "2026-10-13T03:43:42.956Z"
       },
       {
-        "source": "build/native-dev/ts-stg.dir/Release/main.obj",
-        "sha256": "505931468115f6a6e3a7951a6dff7c70b4534ae4848ea169fcc049e58534744b",
+        "source": "build/ts-stg.dir/Release/main.obj",
+        "sha256": "51d6448acd6ec650b9609f88937806ffc2384ece483244216e893c545324e1dd",
         "sourcePath": "native/src/main.cpp",
-        "outputUtc": "2026-10-13T03:31:05.100Z"
+        "outputUtc": "2026-10-13T03:43:43.112Z"
       },
       {
-        "source": "build/native-dev/ts-stg.dir/Release/quickjs_backend.obj",
-        "sha256": "30315423e49aa06bf718e518afebc6140947378936b53c306838549cad900b42",
+        "source": "build/ts-stg.dir/Release/quickjs_backend.obj",
+        "sha256": "15c6629af94fedc10a5aac57348d76613c93ad767d5d63133872607a0732db85",
         "sourcePath": "native/src/quickjs_backend.cpp",
-        "outputUtc": "2026-10-12T16:58:00.695Z"
+        "outputUtc": "2026-10-10T07:03:51.831Z"
       },
       {
-        "source": "build/native-dev/ts-stg.dir/Release/text_gdi.obj",
-        "sha256": "3c76064bef531ff7a6db7d34abc8e02419e2b24b551a735efc593b8bd6a5a2f4",
+        "source": "build/ts-stg.dir/Release/text_gdi.obj",
+        "sha256": "af78eaf9f5e063c061705c59c73b5f35c4641b90b5142b14f1cf5b4238fe3015",
         "sourcePath": "native/src/text_gdi.cpp",
-        "outputUtc": "2026-10-12T16:58:00.862Z"
+        "outputUtc": "2026-10-10T07:03:51.928Z"
       },
       {
-        "source": "build/native-dev/ts-stg.dir/Release/text_win32.obj",
-        "sha256": "941654bde8f317ee39623c7c962031c1e17ade3550076e32b3d22ff48c473fa0",
+        "source": "build/ts-stg.dir/Release/text_win32.obj",
+        "sha256": "0d037f54522505a2103d24c4f116e62cd6aa4f91bde7397fa85f3d5bbe97af74",
         "sourcePath": "native/src/text_win32.cpp",
-        "outputUtc": "2026-10-12T16:58:01.035Z"
+        "outputUtc": "2026-10-10T07:03:52.025Z"
       },
       {
-        "source": "build/native-dev/ts-stg.dir/Release/v8_backend.obj",
-        "sha256": "b1575ac7c5b377567c2857cfba2dabf0a9a2452f5bb06884c9f1bfd8ce0cbac4",
+        "source": "build/ts-stg.dir/Release/v8_backend.obj",
+        "sha256": "a1dad54f8f26d831913ef3039f64acd18c46fb4936a08453897053333a1c850c",
         "sourcePath": "native/src/v8_backend.cpp",
-        "outputUtc": "2026-10-12T16:57:59.078Z"
+        "outputUtc": "2026-10-10T07:03:50.995Z"
       }
     ],
     "linkInputs": [
       {
-        "source": "BUILD/NATIVE-DEV/_DEPS/RAYLIB-BUILD/RAYLIB/RELEASE/RAYLIB.LIB",
-        "sha256": "605e503b223c0b902d47f66d3cac86a40bd58387c434342fa19a61820a36f7fc",
-        "originalSource": "D:/AIWORKSPACE/TOUHOU21/BUILD/ENGINE-CTRL-REPLAY/BUILD/NATIVE-DEV/_DEPS/RAYLIB-BUILD/RAYLIB/RELEASE/RAYLIB.LIB"
+        "source": "BUILD/_DEPS/RAYLIB-BUILD/RAYLIB/RELEASE/RAYLIB.LIB",
+        "sha256": "e3b940c3f8192a7489d719e19cfab346b558e69a75fea48646be3b2739451eee"
       },
       {
-        "source": "BUILD/NATIVE-DEV/_DEPS/QUICKJS-BUILD/RELEASE/QJS.LIB",
-        "sha256": "266b176c529bef37731a3b2e030cb376d6f3c52ca75eae7e7b9aa163bec85d01",
-        "originalSource": "D:/AIWORKSPACE/TOUHOU21/BUILD/ENGINE-CTRL-REPLAY/BUILD/NATIVE-DEV/_DEPS/QUICKJS-BUILD/RELEASE/QJS.LIB"
+        "source": "BUILD/_DEPS/QUICKJS-BUILD/RELEASE/QJS.LIB",
+        "sha256": "3bc2fe8c1c54aec00f884e06190024a348c428fc3c3f176ecf372699996e0366"
       },
       {
-        "source": "build/native-evidence/4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87/v8-host.lib",
-        "sha256": "4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87",
-        "originalSource": "D:/AIWORKSPACE/TOUHOU21/BUILD/NATIVE-92CE893-LOCAL-20261010/V8-SDK/V8-HOST.LIB",
-        "copyEvidence": {
-          "method": "Byte-for-byte copy of the actual linker-read library; originalSource is the real build input, source is its retained audit copy",
-          "bytes": 208544650,
-          "originalSha256": "4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87",
-          "copiedSha256": "4fb1a22b3d6d41a3e8ff05e9c1070cda91d497e8bac6be6519462b9ce75b7e87"
-        }
+        "source": "BUILD/V8-SDK/V8-HOST.LIB",
+        "sha256": "cbdedf94c55aa2e6a2c92acfef0131e96fc5c496cad54a3431ec69d7ca48e935"
       }
     ],
     "linkLog": {
-      "source": "build/native-dev/ts-stg.dir/Release/ts-stg.tlog/link.read.1.tlog",
-      "sha256": "b87de5676e7accf791f5ffa829eeb24bc443f8aa952970bffb7d870f24f8264f"
+      "source": "build/ts-stg.dir/Release/ts-stg.tlog/link.read.1.tlog",
+      "sha256": "74b26c8c2b3a1005db0918fd7a7bf09b32ad688520daa02d0819e157660901ad"
     },
-    "evidence": "All committed native source bytes and compiled translation units, compiler dependency blocks, input/object/link timestamps and real raylib/QuickJS/V8 library hashes verified. SDK is a local cached dependency external to the isolated checkout. This is not a reproducible-build attestation. External library evidence is retained as a hash-verified copy under build/native-evidence; originalSource records the path actually named by the unchanged linker log.",
-    "hostObjectUtc": "2026-10-13T03:31:04.825Z",
-    "latestSourceUtc": "2026-10-13T03:34:13.775Z",
-    "provenance": {
-      "source": "build/native-dev/provenance.json",
-      "sha256": "47f940e956af0993e7ad1b87907b5112b5ddcf429cdd1519279e1e48a611c571"
-    }
+    "evidence": "Byte-pinned native/public-library inputs, compiler dependency and all translation-unit object checks, linker input hashes and later link time. Excluded editor-launcher preferences are recorded separately. This is local build evidence, not a reproducible-build attestation."
   }
 }
