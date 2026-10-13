@@ -46,12 +46,16 @@ function oldNameKnocks(k: AttackKit){
   if(c===40)k.ringGap(k.ox,k.oy,36,2.1,T.BALL,C.BLUE,null,{rows:2,speedStep:1.5});
   if(c===60&&(k.t/72|0)%2)k.wander(36);
 }
+/** Half a joke: red and blue butterflies leave together and zigzag against
+ * each other into a lattice. Between them the Boss bursts out laughing, a
+ * short six-armed spiral that stops and twists on, each laugh turning the
+ * other way. No aimed shots; the earlier attacks lean on them enough. */
 function halfAJoke(k: AttackKit){
-  if(k.every(34)){const wave=k.t/34|0,w=(wave%2?1:-1)*.024;
-    k.ring(k.ox,k.oy,22,2,wave*.31,T.BUTTERFLY,wave%2?C8.RED:C8.BLUE,[k.curve(w,18),k.curve(-w,36),k.curve(w,36),k.curve(-w,36),k.curve(w,36)]);}
-  // No aimed shots here: a rice ring stops and twists aside, the punchline turning the other way each time.
-  if(k.every(68,50)){const turn=(k.t/68|0)%2?.6:-.6;
-    k.ring(k.ox,k.oy,24,2.6,k.unit()*TAU,T.RICE,C.WHITE,[k.stopTurn(30,turn,2.2)]);}
+  if(k.every(30)){const wave=k.t/30|0,w=.026;
+    for(const s of[-1,1])k.ring(k.ox,k.oy,18,2,wave*.31+(s>0?Math.PI/18:0),T.BUTTERFLY,s>0?C8.RED:C8.BLUE,
+      [k.curve(s*w,18),k.curve(-s*w,36),k.curve(s*w,36),k.curve(-s*w,36),k.curve(s*w,36)],{silent:s>0});}
+  const c=k.t%120,laugh=(k.t/120|0)%2?1:-1;
+  if(c>=60&&c<96&&c%3===0)k.ring(k.ox,k.oy,6,2.6,laugh*c*.09,T.RICE,C.WHITE,[k.stopTurn(24,laugh*.8,1.9)],{silent:c%9!==0});
   if(k.every(136,110))k.wander(36);
 }
 function overlappingCorridor(k: AttackKit){
@@ -101,7 +105,7 @@ function wallOfEcho(k: AttackKit){
 function replayedVoice(k: AttackKit){
   const a=k.t*.035;
   followVoicePath(k,'replayed',Math.sin(a)*90,92+Math.sin(a*2)*26);
-  const period=k.pick(44,38,34,30);
+  const period=k.pick(44,38,34,30,36);
   if(k.every(period)){
     const wave=k.t/period|0,x=k.ox,y=k.oy,n=k.pick(2,3,4,4),flat=Math.PI/2-.36-.12*Math.sin(wave*.7);
     for(const side of[-1,1])k.fan(x,y,n,2.2,DOWN-side*flat,.09,T.RICE,side<0?C.SKY:C.WHITE,[k.wrapX(2)],{silent:side>0});
@@ -197,8 +201,8 @@ windingCalls.home={x:0,y:104};
 /** 镜声「与汝相反之回响」: the Boss keeps to the opposite side of the hall
  * from you, and its mirror image hangs above you. Both sing spirals that turn
  * opposite ways, so their threads cross in a mirrored lattice. Now and then a
- * ring of slips stops and folds across the hall's axis, each slip flying on
- * along its own mirror image. */
+ * hoop of slips leaves the Boss turning in depth, widening and sinking, and
+ * lets its slips fly off along their turn; each hoop turns the other way. */
 function mirroredVoice(k: AttackKit){
   const target=clamp(-k.px*.85,-140,140);
   followVoicePath(k,'mirrored',k.boss!.x+(target-k.boss!.x)*.045,96+10*Math.sin(k.t*.03));
@@ -207,26 +211,34 @@ function mirroredVoice(k: AttackKit){
     for(let j=0;j<3;j++){const b=a+j*TAU/3;
       k.shot(x,y,b,1.9,T.RICE,C.SKY,null,{silent:j>0||k.t%20!==0});
       k.shot(-x,y,Math.PI-b,1.9,T.RICE,C.ROSE,null,{silent:true});}}
-  if(k.every(k.pick(84,72,64,60),30)){const n=k.pick(18,22,26,28),a0=k.unit()*TAU;
-    for(let i=0;i<n;i++){const a=a0+i*TAU/n;
-      k.shot(x,y,a,2.8,T.AMULET,C.WHITE,[k.stopTo(34,Math.PI-a,2.2)],{silent:i>0});}}
+  if(k.every(k.pick(84,72,64,60),30)){
+    const n=k.pick(16,20,22,24),spin=(k.t/60|0)%2?.03:-.03,phase=k.unit()*TAU,tilt=.45,grow=.8*k.sp,sink=1.3*k.sp;
+    // A hoop turning about the vertical axis, leaned toward the viewer so the turn reads in depth.
+    const at=(theta:number,age:number)=>{const r=14+grow*age,phi=phase+spin*age,depth=r*Math.cos(theta)*Math.sin(phi);
+      return{x:x+r*Math.cos(theta)*Math.cos(phi),y:y+sink*age+r*Math.sin(theta)*Math.cos(tilt)-depth*Math.sin(tilt)};};
+    const slips:ReturnType<AttackKit['shot']>=[],angles:number[]=[];
+    for(let i=0;i<n;i++){const theta=i*TAU/n,p=at(theta,0);
+      for(const b of k.shot(p.x,p.y,0,0,T.AMULET,C.WHITE,null,{silent:i>0})){slips.push(b);angles.push(theta);}}
+    k.carry(slips,120,(index,age)=>at(angles[index],age));
+  }
 }
 mirroredVoice.home={x:0,y:96};
 
 /** 耐响「末次呼唤之六十余息」 (survival): the hall breathes once a second.
  * Each exhale is a ring of voices that leaves fast and settles slowly; every
  * fourth breath is a deep one with a ring of great beads. On the inhale the
- * hall draws its echoes back: voices rise from the side walls, and later the
- * floor too, and fly home to the Boss. Every breath is a little fuller. */
+ * hall draws its echoes back: voices rise from the side walls and the floor
+ * and fly home to the Boss. The card is short and breathes at full strength
+ * from the first breath. */
 function lastCallSixtyBreaths(k: AttackKit){
-  const breath=60,b=k.t/breath|0,c=k.t%breath,ramp=Math.min(1,b/40);
-  if(c===0){const n=Math.round(26+18*ramp),a=b*.07+(b%2)*Math.PI/n;
+  const breath=60,b=k.t/breath|0,c=k.t%breath;
+  if(c===0){const n=44,a=b*.07+(b%2)*Math.PI/n;
     k.ring(k.ox,k.oy,n,3.2,a,T.BALL,b%2?C.SKY:C.BLUE,[k.speedTo(1.2,36)]);
     if(b%4===3)k.ring(k.ox,k.oy,12,1.5,a+Math.PI/12,T.BIG,C8.WHITE,null,{silent:true});}
   if(c>=18&&c<54&&c%6===0){
-    const m=2+Math.floor(ramp*3),edges=ramp<.4?2:3,tick=c/6|0;
-    for(let j=0;j<m;j++){
-      const edge=(j+tick+b)%edges,u=k.unit(),x=edge===2?lerp(-180,180,u):edge?190:-190,y=edge===2?446:lerp(150,440,u);
+    const tick=c/6|0;
+    for(let j=0;j<5;j++){
+      const edge=(j+tick+b)%3,u=k.unit(),x=edge===2?lerp(-180,180,u):edge?190:-190,y=edge===2?446:lerp(150,440,u);
       k.shot(x,y,Math.atan2(k.oy-y,k.ox-x),1.9,T.SCALE,C.WHITE,null,{silent:j>0||c!==18,safe:6400});
     }
   }
@@ -234,8 +246,9 @@ function lastCallSixtyBreaths(k: AttackKit){
 lastCallSixtyBreaths.home={x:0,y:108};
 
 /** 封名「旧册背面白纸花」: paper flowers open, stop and turn as they fold;
- * the white ones open on the Boss's left, the red ones on its right. Petals shed from the Boss drift down in a ring, and their echo falls on
- * the mirrored side of the hall. */
+ * the white ones open on the Boss's left, the red ones on its right. Petals
+ * shed from the Boss drift down in a ring, and their echo falls on the
+ * mirrored side of the hall. */
 function whitePaperFlowerOnBack(k: AttackKit){
   if(k.every(46)){const wave=k.t/46|0,dir=wave%2?1:-1;
     burstShape(k,k.ox-dir*56,k.oy,rose(5,60),2.6,wave*.41,T.AMULET,wave%2?C.WHITE:C.ROSE,[k.wait(30),k.stopTurn(24,dir*2.2,2.1)]);}

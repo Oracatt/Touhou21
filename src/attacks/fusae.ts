@@ -143,25 +143,28 @@ function blankSignature(k: AttackKit){
 blankSignature.home={x:0,y:108};
 
 /** Extra midboss 1 — 抄札「仅限借阅之旧名目录」: dashed columns of copies
- * fall, each page laid half a column aside from the last, so the lanes below
- * step like brickwork. All the way down, paired columns trade lanes back and
- * forth and braid into chains of X; every page the Boss throws three layers
- * of vermilion return slips at the player. */
+ * fall, each page laid half a column aside from the last and leaning toward
+ * the player as a whole. All the way down, paired columns trade lanes back
+ * and forth and braid into chains of X; every page the Boss rings out a
+ * dense circle of vermilion return slips. */
 function borrowOnlyCatalogue(k: AttackKit){
   const spacing=48,slot=6,page=48,dash=6,swap=36,gap=10,c=k.t%page,odd=(k.t/page|0)%2;
+  if(c===0)k.state.pageAim=clamp(Math.atan2(k.py+4,k.px),DOWN-.5,DOWN+.5);
   if(c%slot===0&&c/slot<dash){
-    const columns=odd?7:8,x0=odd?-144:-168,lean=Math.asin(spacing/(1.9*k.sp*swap)),sway=Math.asin(12/(1.9*k.sp*swap));
+    // The whole page leans toward the player; lanes stay parallel, so their spacing narrows by the lean.
+    const base=k.state.pageAim??DOWN,across=spacing*Math.cos(base-DOWN);
+    const columns=odd?7:8,x0=odd?-144:-168,lean=Math.asin(across/(1.9*k.sp*swap)),sway=Math.asin(12/(1.9*k.sp*swap));
     for(let i=0;i<columns;i++){
       // Even pages swap every pair; odd pages swap the outer pairs and sway the middle three together,
       // a quarter column, so they never close on the outer pairs.
       const partner=odd?(i<2?i^1:i===5?6:i===6?5:-1):i^1,dir=partner<0?0:Math.sign(partner-i);
       // Five turns carry a copy off the bottom; a bullet runs at most 24 commands.
       const cmds=[k.wait(30)];
-      for(let turn=0;turn<5;turn++){const s=turn%2?-1:1;cmds.push(k.set(DOWN-s*(dir?dir*lean:sway),1.9),k.wait(swap),k.set(DOWN,1.9),k.wait(gap));}
-      k.shot(x0+i*spacing,-4,DOWN,1.9,T.AMULET,dir>0?C.PALE:dir<0?C.GREEN:C.WHITE,cmds,{silent:i>0,safe:2304});
+      for(let turn=0;turn<5;turn++){const s=turn%2?-1:1;cmds.push(k.set(base-s*(dir?dir*lean:sway),1.9),k.wait(swap),k.set(base,1.9),k.wait(gap));}
+      k.shot(x0+i*spacing,-4,base,1.9,T.AMULET,dir>0?C.PALE:dir<0?C.GREEN:C.WHITE,cmds,{silent:i>0,safe:2304});
     }
   }
-  if(k.every(page,page/2))k.aimed(k.ox,k.oy,5,2.4,.13,T.BALL,C.RED,null,{rows:3,speedStep:1.6});
+  if(k.every(page,page/2))k.ring(k.ox,k.oy,28,1.3,(k.t/page|0)*Math.PI/28,T.BALL,C.RED);
 }
 borrowOnlyCatalogue.home={x:0,y:90};
 

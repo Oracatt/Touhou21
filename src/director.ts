@@ -170,8 +170,9 @@ export class CampaignDirector{
     const phase=this.midbossPhases[this.midbossPhaseIndex],last=this.midbossPhaseIndex+1>=this.midbossPhases.length;this.boss!.invulnerable=true;
     if(phase.spell&&game.spell.active){if(timeout)game.spell.timeout(game.context);else game.spell.capture(game.context);}
     this._clear(game);
-    if(phase.spell||!last)game.items.spawnBossDrops(this.boss!,{counts:{[TouhouItemType.POWER]:phase.spell?4:3,[TouhouItemType.POINT]:phase.spell?5:4},
-      timedOut:timeout,survival:!!phase.spec?.survival,mode:game.session.mode});
+    const extraSpell=phase.spell&&this.mode==='extra';
+    if(phase.spell||!last)game.items.spawnBossDrops(this.boss!,{counts:{[TouhouItemType.POWER]:extraSpell?8:phase.spell?4:3,[TouhouItemType.POINT]:phase.spell?5:4},
+      centerType:extraSpell?TouhouItemType.BOMB_FRAGMENT:0,timedOut:timeout,survival:!!phase.spec?.survival,mode:game.session.mode});
     this.events.push({event:'midboss-phase-end',stage:this.stageId,index:this.midbossPhaseIndex,timeout,frame:this.totalClock});
     this.finishing=false;
     // Every broken midboss group, including the last one before it leaves, gets the ordinary ECL handoff cue.
@@ -309,8 +310,12 @@ export class CampaignDirector{
     // from the public successful-bonus sound46 and final Boss burst sound5.
     game.context.sound?.(27,this.boss!.x);
     this._clear(game);
-    if(phase.spell)game.items.spawnBossDrops(this.boss!,{counts:{[TouhouItemType.POWER]:5,[TouhouItemType.POINT]:6},
-      centerType:phase.spellIndex%2?TouhouItemType.BOMB_FRAGMENT:TouhouItemType.LIFE_FRAGMENT,
+    // Extra captures pay more: small power only, since one large power item equals a hundred small ones.
+    const extra=this.mode==='extra',lifeCard=(phase.spellIndex??0)%2===0;
+    if(phase.spell)game.items.spawnBossDrops(this.boss!,{counts:extra
+      ?{[TouhouItemType.POWER]:12,[TouhouItemType.POINT]:8,...lifeCard?{[TouhouItemType.LIFE_FRAGMENT]:1}:{}}
+      :{[TouhouItemType.POWER]:5,[TouhouItemType.POINT]:6},
+      centerType:lifeCard?TouhouItemType.LIFE_FRAGMENT:extra?TouhouItemType.BOMB:TouhouItemType.BOMB_FRAGMENT,
       mode:game.session.mode,timedOut:timeout,survival:!!phase.spec?.survival});
     this.events.push({event:'phase-end',stage:this.stageId,index:this.phaseIndex,defeated,timeout,frame:this.totalClock});
     this.finishing=false;

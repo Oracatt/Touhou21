@@ -52,7 +52,7 @@ test('all 39 spell cards have distinct IDs, names, patterns and persistent recor
     assert.equal(SPELL_BY_ID.get(card.id), card);
   }
   const survival = ALL_SPELLS.filter((card) => card.survival);
-  assert.deepEqual(survival.map((card) => [card.id, card.seconds]), [['s06-04', 30], ['ex-08', 65]]);
+  assert.deepEqual(survival.map((card) => [card.id, card.seconds]), [['s06-04', 30], ['ex-08', 30]]);
 });
 
 test('every stage has a complete, distinct conversation for each playable character', () => {

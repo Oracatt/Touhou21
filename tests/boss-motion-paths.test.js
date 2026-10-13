@@ -8,9 +8,9 @@ import {MIO} from '../dist/src/attacks/mio.js';
 import {driveAttack} from '../dist/src/danmaku.js';
 
 const cases=[
-  {attack:MIO.nonspells[6],start:60,schedule:'d27b17ca505e729abf71d4c3b8d1bb0d9447caf360137888832b10b33da7c5ef',events:512,rng:73},
-  {attack:MIO.spells[5],start:80,schedule:'babd1057a9d6154237078e057c6c40f391230f7e1cb38bf442209a834559a59d',events:7522,rng:953302479},
-  {attack:MIO.spells[7],start:80,schedule:'107396cddebd6ba5253765ea8baceb20b75d97d3c9c10183d684d0ba6958b59c',events:1504,rng:99321389},
+  {attack:MIO.nonspells[6],start:60,schedule:'054b7e2582f97e9e9dcbcd1160ae694c0afa97ed2197226befd363ec1465a656',events:428,rng:73},
+  {attack:MIO.spells[5],start:80,schedule:'4086448fbfea40b2129760f4c4f47c6eab111d7322d1a2ac48467960555f84c6',events:7266,rng:953302479},
+  {attack:MIO.spells[7],start:80,schedule:'1a910d26149f0e3a58a274887a233dced1c057230b5b00c8b92d657380c9cf21',events:1990,rng:1538927271},
 ];
 
 /** Execute the production attack and public actor motion for a complete card.
@@ -47,13 +47,12 @@ test('Extra direct paths join from rest without teleporting or an abrupt first s
   }
 });
 
-test('the survival card breathes once a second from a still Boss and every breath is fuller',()=>{
+test('the survival card breathes at full strength once a second from a still Boss',()=>{
   const {samples,log}=trace(cases[2]);
   for(const row of samples.slice(80))assert.ok(row.speed<.02,`frame ${row.frame}: the Boss holds still`);
   const exhales=log.filter(row=>row[1]==='bullet'&&row[5]>=26);
   assert.deepEqual(exhales.map(row=>row[0]),Array.from({length:64},(_,breath)=>80+breath*60));
-  for(let breath=1;breath<exhales.length;breath++)assert.ok(exhales[breath][5]>=exhales[breath-1][5],`breath ${breath} is no thinner`);
-  assert.ok(exhales.at(-1)[5]>exhales[0][5]+12);
+  assert.ok(exhales.every(row=>row[5]===44),'every breath is a full ring from the first');
 });
 
 test('path joins preserve the authored volley schedule and consume no extra random values',()=>{

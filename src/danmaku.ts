@@ -10,8 +10,9 @@ export interface AttackState {
   move?: {x0:number;y0:number;x:number;y:number;age:number;frames:number} | null;
   pathEntry?: {id:string;lastFrame:number;age:number;x:number;y:number};
   later?: Array<{at:number;bullets:TouhouBullet[];spawn:(bullet:TouhouBullet)=>unknown}>;
+  carried?: Array<{start:number;frames:number;bullets:TouhouBullet[];at:(index:number,age:number)=>{x:number;y:number}}>;
   echoes?: Array<{at:number;fire:Attack}>;
-  spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;segment?:number;nextAt?:number;
+  spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;nextAt?:number;pageAim?:number;
   threads?:number[];second?:{at:number;rotation:number}|null;
   echo?:{at:number;x:number;y:number;a:number}|null;echoAim?:number;hushAt?:number;
   reeds?:Array<{from:number;until:number;turn:number;shift:number}>;
@@ -153,6 +154,24 @@ export class AttackKit {
       queue.splice(i,1);for(const b of entry.bullets)if(b.state===1||b.state===2)entry.spawn(b);
     }
   }
+  /** Carry still bullets along an authored path for `frames`: `at(index,age)`
+   * places each one, facing its motion. Afterwards they fly on with the last
+   * step of the path as their velocity. */
+  carry(bullets: TouhouBullet[],frames: number,at: (index:number,age:number)=>{x:number;y:number}){(this.state.carried??=[]).push({start:this.t,frames,bullets,at});}
+  runCarry(){
+    const list=this.state.carried;if(!list?.length)return;
+    for(let i=0;i<list.length;){
+      const entry=list[i],age=this.t-entry.start;
+      entry.bullets.forEach((b,index)=>{
+        if(b.state!==1&&b.state!==2)return;
+        const p=entry.at(index,age),q=entry.at(index,age-1),dx=Math.fround(p.x-q.x),dy=Math.fround(p.y-q.y);
+        b.x=Math.fround(p.x);b.y=Math.fround(p.y);
+        if(dx||dy)b.angle=Math.fround(Math.atan2(dy,dx));
+        if(age>=entry.frames){b.vx=dx;b.vy=dy;b.speed=Math.fround(Math.hypot(dx,dy));}
+      });
+      if(age>=entry.frames)list.splice(i,1);else i++;
+    }
+  }
   /** Smoothly move the scripted actor; the move survives across frames. */
   moveTo(x: number,y: number,frames=50){const b=this.boss;if(!b)return;this.state.move={x0:b.x,y0:b.y,x:clamp(x,-150,150),y:clamp(y,48,190),age:0,frames};}
   wander(frames=50,{dx=[24,64],y=[88,136],x=[-110,110]}={}){
@@ -178,7 +197,7 @@ export const kit=new AttackKit();
 export function driveAttack(attack:Attack,{start=0,...options}:AttackOptions){
   const k=kit.bind({...options,start});
   if(k.t===-start&&attack.home&&k.boss)k.moveTo(attack.home.x,attack.home.y,Math.max(20,start-10));
-  k.moveTick();k.runLater();
+  k.moveTick();k.runLater();k.runCarry();
   if(k.t>=0)attack(k);
   return k;
 }
