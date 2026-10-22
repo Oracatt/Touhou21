@@ -119,15 +119,18 @@ export const ROAD_ATTACKS=Object.freeze(['aim','stream','lantern','fan','ring','
 const GAPS:Readonly<Record<string,number>>=Object.freeze({arch:12,procession:20,gate:14,'rain-line':10,cloud:28,post:16,waterway:18,upstream:18,crossing:18,loom:16,warp:12,archive:10,page:18,choir:12});
 /** Climbers from the lower walls hold fire until they are above the player's lane. */
 const FIRE_FLOOR:Readonly<Record<string,number>>=Object.freeze({upstream:280});
-/** Stages 3 and 4 time small-fairy attacks from the moment each fairy enters
+/** Stages 3 to 6 time small-fairy attacks from the moment each fairy enters
  * the firing area: the attack clock starts at the lead for its attack, so the
  * opening volley comes within a few frames of entry instead of at a fixed
  * route age that a fully powered player often never lets it reach. These
  * fairies also take no damage until they first reach the firing area. */
-const LEAD_STAGES=new Set([3,4]);
-const ENTRY_LEAD:Readonly<Record<string,number>>=Object.freeze({aim:24,ripple:32,current:24,side:20,stitch:16,ring:44});
+const LEAD_STAGES=new Set([3,4,5,6]);
+const ENTRY_LEAD:Readonly<Record<string,number>>=Object.freeze({aim:24,ripple:32,current:24,side:20,stitch:16,ring:44,fan:36,line:36,seal:52,chime:36,toll:46});
 /** Small-fairy HP multiplier per stage; the middle stages carry sturdier fairies. */
-const SMALL_HP=[1,1,1.3,1.4,1,1,1];
+/** Relayed aim from the bell mouth keeps route timing: its members fan out and
+ * reach the firing area at different times, which would break the baton order. */
+const ROUTE_TIMED=new Set(['peal:aim']);
+const SMALL_HP=[1,1,1.3,1.4,1.5,1.6,1];
 /** Share of the route a formation fires through. Large fairies hold fire once
  * they turn to leave, so a falling curtain is never dragged across the field. */
 const FIRE_ROUTE:Readonly<Record<string,number>>=Object.freeze({anchor:.7});
@@ -238,9 +241,11 @@ function fanVolley(k:AttackKit,p:typeof PALETTES[number],stageId:number,x:number
 function ringVolley(k:AttackKit,p:typeof PALETTES[number],stageId:number,side:number,x:number,y:number,color:number){
   const n=k.pick(8,12,16,20);
   if(stageId===5){const door=k.aim(x,y);burstShape(k,x,y,polygon(4,Math.max(2,n>>2)),1.8,k.unit()*TAU,p.type,color,null,{skip:(q,a)=>inGap(a,door,.3),extra:{safe:4096}});}
-  // Stage 4 knots close on the player: the double ring puts a bead on the player's line instead of a gap.
+  // Stage 4 knots and stage 6 bells close on the player: the double ring puts a bead on the player's line instead of a gap.
   else if(stageId===4)k.emit({x,y,angle:0,speed:1.8,speedStep:1.35,type:p.type,color,pattern:2,count:k.pick(4,6,7,8),rows:2,safe:4096});
-  else if(stageId===6)k.ringGap(x,y,k.pick(4,6,7,8),1.8,p.type,color,null,{safe:4096,rows:2,speedStep:1.35});
+  // Stage 6 bells echo: the slower row of the double ring stops, then gathers back toward the player.
+  else if(stageId===6){const n=k.pick(4,6,7,8);k.emit({x,y,angle:0,speed:1.8,type:p.type,color,pattern:2,count:n,safe:4096});
+    k.ring(x,y,n,1.35,k.unit()*TAU,p.type,color,[k.stopAim(40,k.pick(1.5,1.7,1.9,2.1))],{safe:4096,silent:true});}
   else k.ringGap(x,y,n,1.8,p.type,color,accent(k,stageId,side,30),{safe:4096});
 }
 
@@ -298,14 +303,21 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
     case 'stitch':{const step=k.pick(34,16,13,10);if(age>=16&&age%step===0){const warp=o.formation==='warp',a=warp?DOWN+((age/step|0)%2?.55:-.55):DOWN,speed=k.pick(1.6,1.9,2.1,2.3);
       k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),!warp&&stageId===4?k.aimNow(speed+.3):k.set(a,speed)],{safe:4096,silent:hush(state,age,32)});}break;}
     case 'line':if(age===40||age===100||(k.rank>=2&&age===160)||(k.rank>=3&&age===220)){const n=k.pick(4,5,6,8),blank=(k.unit()*(n-1))|0;
-      for(let i=0;i<n;i++)if(i!==blank&&i!==blank+1)k.shot(k.ox+(i-(n-1)/2)*18,k.oy+8,DOWN,1.7,p.needle,i%2?p.main:p.accent,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:1.35,silent:i!==(blank===0?2:0)});}break;
+      for(let i=0;i<n;i++)if(i!==blank&&i!==blank+1)k.shot(k.ox+(i-(n-1)/2)*18,k.oy+8,DOWN,1.7,p.needle,i%2?p.main:p.accent,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:1.35,silent:i!==(blank===0?2:0)});
+      // From Normal, stage 5 writes a word into the blank: an aimed needle from the gap.
+      if(stageId===5&&k.rank>=1){const gx=k.ox+(blank+.5-(n-1)/2)*18;k.aimed(gx,k.oy+8,k.pick(1,1,1,3),2.2,.16,p.needle,p.alt,null,{safe:4096,silent:true});}}break;
     case 'seal':if(relay(age,56,o).phase===0){k.aimed(k.ox,k.oy,1,1.7,0,T.BIG,p.orb,null,{safe:4096});
       if(k.rank>=1)k.aimed(k.ox,k.oy,k.pick(0,2,2,4),2.3,.34,p.needle,p.alt,null,{safe:4096,silent:true});}break;
     case 'chime':{const r=relay(age,40,o);if(r.phase===0&&r.round<k.pick(1,1,2,3,4)){const n=k.pick(6,7,8,9),a=k.unit()*TAU;
-      k.ring(k.ox,k.oy,n,1.9,a,p.type,p.main,null,{safe:4096});if(k.rank>=1)k.ring(k.ox,k.oy,n,1.45,a+Math.PI/n,p.type,p.accent,null,{safe:4096,silent:true});}break;}
+      // Stage 6 bells ring true: the outer ring keeps one bullet on the player's line.
+      k.emit({x:k.ox,y:k.oy,angle:stageId===6?0:a,speed:1.9,type:p.type,color:p.main,pattern:stageId===6?2:3,count:n,safe:4096});// The inner ring of a stage 6 bell echoes: it stops, then gathers back toward the player.
+      if(k.rank>=1)k.ring(k.ox,k.oy,n,1.45,a+Math.PI/n,p.type,p.accent,stageId===6?[k.stopAim(36,k.pick(1.6,1.8,2,2.2))]:null,{safe:4096,silent:true});}break;}
     case 'toll':if(age>=50&&(age-50)%k.pick(32,26,22,16)===0){const c=o.center,a=c?Math.atan2(k.oy-c.y,k.ox-c.x):o.heading;
-      k.fan(k.ox,k.oy,1,2.1,a,0,p.type,p.main,null,{safe:4096,rows:k.pick(1,2,2,3),speedStep:1.6,silent:o.index>0&&hush(state,age,90)});
-      if(k.rank>=3)k.fan(k.ox,k.oy,1,1.4,a+Math.PI,0,p.needle,p.accent,null,{safe:4096,silent:true});}break;
+      // Stage 6 spokes that ring upward stop and fall back toward the player.
+      k.fan(k.ox,k.oy,1,2.1,a,0,p.type,p.main,stageId===6&&Math.sin(a)<0?[k.stopAim(32,k.pick(1.6,1.9,2.1,2.3))]:null,{safe:4096,rows:k.pick(1,2,2,3),speedStep:1.6,silent:o.index>0&&hush(state,age,90)});
+      if(k.rank>=3)k.fan(k.ox,k.oy,1,1.4,a+Math.PI,0,p.needle,p.accent,null,{safe:4096,silent:true});
+      // From Normal, one stage 6 ring member in turn tolls straight at the player.
+      if(stageId===6&&k.rank>=1&&((age-50)/k.pick(32,26,22,16)|0)%Math.max(1,o.count)===o.index)k.aimed(k.ox,k.oy,1,2.4,0,p.needle,p.accent,null,{safe:4096,silent:true});}break;
     case 'flower':{const step=k.pick(10,6,5,4);if(age<60||age%step)break;const arms=k.pick(3,4,4,5),a=age*.055*(side||1);
       if(stageId===6&&(age/step|0)%4===3)break;
       const cmds=stageId===2?[k.stopTo(28,DOWN,2.1)]:stageId===3?[k.curve((side||1)*.012,80)]:null;
@@ -346,7 +358,7 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
   if(!ROAD_ROLES[spec.role]||!ROAD_FORMATIONS.includes(spec.formation)||!ROAD_ATTACKS.includes(spec.attack))throw new TypeError('Road wave requires an authored role, formation and attack');
   const rank=Math.min(3,difficulty),role=ROAD_ROLES[spec.role];
   const count=Math.max(1,spec.count+(rank===0&&spec.count>3?-1:rank>=2&&spec.count>2?1:0)),actors=[];
-  const guard=spec.role==='guard',lead=guard||!LEAD_STAGES.has(stageId)?null:ENTRY_LEAD[spec.attack]??20;
+  const guard=spec.role==='guard',lead=guard||!LEAD_STAGES.has(stageId)||ROUTE_TIMED.has(`${spec.formation}:${spec.attack}`)?null:ENTRY_LEAD[spec.attack]??20;
   const gap=spec.gap??GAPS[spec.formation]??0,floor=FIRE_FLOOR[spec.formation]??290,silent=!guard&&(!armed(rank,stageId,spec.beat)||rank===0&&EASY_QUIET.has(`${stageId}:${spec.sectionId}`));
   for(let index=0;index<count;index++){
     const state:RoadState & {age:number;heading:number;entered?:boolean}={age:0,heading:-DOWN},life=spec.life??role.life,jitter=(rng.unit()-.5)*12,delay=index*gap;
