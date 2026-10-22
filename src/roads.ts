@@ -130,7 +130,7 @@ const ENTRY_LEAD:Readonly<Record<string,number>>=Object.freeze({aim:24,ripple:32
 /** Relayed aim from the bell mouth keeps route timing: its members fan out and
  * reach the firing area at different times, which would break the baton order. */
 const ROUTE_TIMED=new Set(['peal:aim']);
-const SMALL_HP=[1,1,1.3,1.4,1.5,1.6,1];
+const SMALL_HP=[1,1,1.3,1.4,1.4,1.6,1];
 /** Share of the route a formation fires through. Large fairies hold fire once
  * they turn to leave, so a falling curtain is never dragged across the field. */
 const FIRE_ROUTE:Readonly<Record<string,number>>=Object.freeze({anchor:.7});
@@ -304,8 +304,8 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),!warp&&stageId===4?k.aimNow(speed+.3):k.set(a,speed)],{safe:4096,silent:hush(state,age,32)});}break;}
     case 'line':if(age===40||age===100||(k.rank>=2&&age===160)||(k.rank>=3&&age===220)){const n=k.pick(4,5,6,8),blank=(k.unit()*(n-1))|0;
       for(let i=0;i<n;i++)if(i!==blank&&i!==blank+1)k.shot(k.ox+(i-(n-1)/2)*18,k.oy+8,DOWN,1.7,p.needle,i%2?p.main:p.accent,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:1.35,silent:i!==(blank===0?2:0)});
-      // From Normal, stage 5 writes a word into the blank: an aimed needle from the gap.
-      if(stageId===5&&k.rank>=1){const gx=k.ox+(blank+.5-(n-1)/2)*18;k.aimed(gx,k.oy+8,k.pick(1,1,1,3),2.2,.16,p.needle,p.alt,null,{safe:4096,silent:true});}}break;
+      // From Hard, stage 5 writes a word into the blank: an aimed needle from the gap.
+      if(stageId===5&&k.rank>=2){const gx=k.ox+(blank+.5-(n-1)/2)*18;k.aimed(gx,k.oy+8,k.pick(1,1,1,3),2.2,.16,p.needle,p.alt,null,{safe:4096,silent:true});}}break;
     case 'seal':if(relay(age,56,o).phase===0){k.aimed(k.ox,k.oy,1,1.7,0,T.BIG,p.orb,null,{safe:4096});
       if(k.rank>=1)k.aimed(k.ox,k.oy,k.pick(0,2,2,4),2.3,.34,p.needle,p.alt,null,{safe:4096,silent:true});}break;
     case 'chime':{const r=relay(age,40,o);if(r.phase===0&&r.round<k.pick(1,1,2,3,4)){const n=k.pick(6,7,8,9),a=k.unit()*TAU;
