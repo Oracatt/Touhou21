@@ -12,7 +12,7 @@ export const GAME = Object.freeze({
   subtitle: 'Names Beyond the Boundary.',
   fullTitle: '东方归名录 ～ Names Beyond the Boundary.',
   version: '3.0.0',
-  contentRevision: 23,
+  contentRevision: 24,
   genre: '东方 Project 二次创作弹幕射击游戏',
   attribution: '东方 Project 原作：上海爱丽丝幻乐团 / ZUN',
   fanWork: true,

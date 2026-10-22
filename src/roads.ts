@@ -15,11 +15,11 @@ export interface RoadSection {id:string;title:string;start:number;end:number;wav
 export interface RoadScript {stageId:number;theme:string;sections:RoadSection[];}
 export interface RoadAttackEvent {attack:string;mechanism:string;enemyId:number;stageId:number;age:number;count:number;lasers:number;source?:'bullet';}
 export type RoadGame = AttackGame & Pick<TouhouGame,'spawnEnemy'|'banks'|'items'>;
-type RoadState = AttackState & {echoAt?:number;mirror?:{at:number;x:number;y:number}|null;soundAt?:number};
+type RoadState = AttackState & {echoAt?:number;mirror?:{at:number;x:number;y:number}|null;soundAt?:number;zone?:number};
 type Point = {x:number;y:number};
 interface RoadPathOptions {index:number;count:number;side?:number;life?:number;jitter?:number;rank?:number;}
 interface RoadRole {script:number;hp:number;life:number;power:number;points:number;directional?:boolean;}
-interface RoadEnemyOptions {game:AttackGame;enemy:TouhouEnemy;frame:number;difficulty?:number;stageId?:number;attack:string;state?:RoadState;index?:number;count?:number;gap?:number;side?:number;
+interface RoadEnemyOptions {game:AttackGame;enemy:TouhouEnemy;frame:number;difficulty?:number;stageId?:number;attack:string;state?:RoadState;index?:number;count?:number;gap?:number;side?:number;lead?:number|null;
   formation?:string;heading?:number;center?:Point|null;rng?:TouhouRNG|null;onAttack?:(event:RoadAttackEvent)=>void;}
 interface RoadFormationOptions {game:RoadGame;wave:RoadWave;stageId:number;difficulty?:number;rng:TouhouRNG;isActive?:()=>boolean;canFire?:()=>boolean;onAttack?:(event:RoadAttackEvent)=>void;}
 interface FairyContext {stageId:number;side:number;index:number;count:number;gap:number;formation:string;heading:number;center:Point|null;state:RoadState;split:RoadSplit;}
@@ -118,7 +118,16 @@ export const ROAD_ATTACKS=Object.freeze(['aim','stream','lantern','fan','ring','
  * stacking on one path; hovering lines and rings arrive together. */
 const GAPS:Readonly<Record<string,number>>=Object.freeze({arch:12,procession:20,gate:14,'rain-line':10,cloud:28,post:16,waterway:18,upstream:18,crossing:18,loom:16,warp:12,archive:10,page:18,choir:12});
 /** Climbers from the lower walls hold fire until they are above the player's lane. */
-const FIRE_FLOOR:Readonly<Record<string,number>>=Object.freeze({upstream:220});
+const FIRE_FLOOR:Readonly<Record<string,number>>=Object.freeze({upstream:280});
+/** Stages 3 and 4 time small-fairy attacks from the moment each fairy enters
+ * the firing area: the attack clock starts at the lead for its attack, so the
+ * opening volley comes within a few frames of entry instead of at a fixed
+ * route age that a fully powered player often never lets it reach. These
+ * fairies also take no damage until they first reach the firing area. */
+const LEAD_STAGES=new Set([3,4]);
+const ENTRY_LEAD:Readonly<Record<string,number>>=Object.freeze({aim:24,ripple:32,current:24,side:20,stitch:16,ring:44});
+/** Small-fairy HP multiplier per stage; the middle stages carry sturdier fairies. */
+const SMALL_HP=[1,1,1.3,1.4,1,1,1];
 /** Share of the route a formation fires through. Large fairies hold fire once
  * they turn to leave, so a falling curtain is never dragged across the field. */
 const FIRE_ROUTE:Readonly<Record<string,number>>=Object.freeze({anchor:.7});
@@ -229,7 +238,9 @@ function fanVolley(k:AttackKit,p:typeof PALETTES[number],stageId:number,x:number
 function ringVolley(k:AttackKit,p:typeof PALETTES[number],stageId:number,side:number,x:number,y:number,color:number){
   const n=k.pick(8,12,16,20);
   if(stageId===5){const door=k.aim(x,y);burstShape(k,x,y,polygon(4,Math.max(2,n>>2)),1.8,k.unit()*TAU,p.type,color,null,{skip:(q,a)=>inGap(a,door,.3),extra:{safe:4096}});}
-  else if(stageId===4||stageId===6)k.ringGap(x,y,k.pick(4,6,7,8),1.8,p.type,color,null,{safe:4096,rows:2,speedStep:1.35});
+  // Stage 4 knots close on the player: the double ring puts a bead on the player's line instead of a gap.
+  else if(stageId===4)k.emit({x,y,angle:0,speed:1.8,speedStep:1.35,type:p.type,color,pattern:2,count:k.pick(4,6,7,8),rows:2,safe:4096});
+  else if(stageId===6)k.ringGap(x,y,k.pick(4,6,7,8),1.8,p.type,color,null,{safe:4096,rows:2,speedStep:1.35});
   else k.ringGap(x,y,n,1.8,p.type,color,accent(k,stageId,side,30),{safe:4096});
 }
 
@@ -247,7 +258,7 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
     // Aimed volleys keep a stage accent: the current pauses and surges (3), a
     // thread is pulled taut (4), a bell clangs a small arc of stars (6).
     case 'aim':if(relay(age,28,o).phase===0){
-      if(stageId===3)k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.4,.24,p.type,p.main,[k.stopAim(28,2.8)],{safe:4096,rows:k.pick(1,2,2,3),speedStep:2});
+      if(stageId===3)k.aimed(k.ox,k.oy,k.pick(1,3,3,3),2.4,.24,p.type,p.main,[k.stopAim(28,2.8)],{safe:4096,rows:k.pick(1,2,2,3),speedStep:2});
       else if(stageId===4)k.aimed(k.ox,k.oy,k.pick(1,1,1,3),2.8,.3,p.needle,p.main,null,{safe:4096,rows:k.pick(2,4,5,6),speedStep:2.1});
       else if(stageId===6)k.aimed(k.ox,k.oy,k.pick(1,3,5,5),2.4,.26,p.needle,p.main,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:2});
       else k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.6,.2,p.type,p.main,null,{rows:k.pick(1,2,3,3),speedStep:1.8,safe:4096});}break;
@@ -269,14 +280,19 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
     case 'drizzle':if(age>=12&&age%k.pick(32,22,18,15)===0)k.shot(k.ox+(k.unit()-.5)*16,k.oy+6,DOWN,lerp(2.4,3,k.unit()),p.type,p.accent,null,{safe:4096,rows:k.pick(1,1,2,2),speedStep:2.1,silent:hush(state,age,44)});break;
     case 'letter':{const r=relay(age,40,o);if(r.phase===0&&r.round<k.pick(1,2,2,3,9)){const letter=k.aimed(k.ox,k.oy,1,3,0,p.needle,C.WHITE,[k.wait(28),k.hold(24),k.wait(12),k.vanish()],{safe:4096});
       o.split(58,letter,(b,k)=>k.ring(b.x,b.y,k.pick(4,5,6,7),1.5,k.unit()*TAU,p.type,p.alt,null,{silent:true}));}break;}
-    case 'side':if(age>=20&&age%k.pick(26,20,17,15)===0){
+    case 'side':{const period=k.pick(26,20,17,15);if(age>=20&&age%period===0){
       // Stage 4 wefts hang vertical warp threads; boats elsewhere fire broadside,
       // slanting down and inward, ahead of the boat. Stage 3 stays two-way on
       // Lunatic: a staircase of eight three-way boats closes the whole lower field.
       if(stageId===4)k.fan(k.ox,k.oy,1,2.2,DOWN,0,p.needle,p.main,null,{safe:4096,rows:k.pick(1,2,3,4),speedStep:1.5});
-      else k.fan(k.ox,k.oy,stageId===3?k.pick(1,2,2,2):k.pick(1,2,2,3),2.3,DOWN+side*.2,.3,p.needle,p.main,null,{safe:4096});}break;
-    case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172))k.ring(k.ox,k.oy,k.pick(6,8,10,14),2,k.unit()*TAU,p.type,p.accent,[k.stopTo(40,DOWN+side*.25,k.pick(1.1,1.3,1.4,1.5))],{safe:4096});break;
-    case 'current':if(age>=24&&age%k.pick(34,20,14,11)===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
+      else k.fan(k.ox,k.oy,stageId===3?k.pick(1,2,2,2):k.pick(1,2,2,3),2.3,DOWN+side*.2,.3,p.needle,p.main,null,{safe:4096});
+      // From Normal, stage 3 boats also throw an aimed oar stroke every few volleys.
+      const stroke=k.pick(0,3,2,2);if(stageId===3&&stroke&&((age-20)/period|0)%stroke===o.index%stroke)k.aimed(k.ox,k.oy,1,2.6,0,p.type,p.alt,null,{safe:4096,silent:true});}break;}
+    case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172))k.ring(k.ox,k.oy,k.pick(6,8,10,14),2,k.unit()*TAU,p.type,p.accent,
+      // Stage 3 eddies regather toward the player, drifting with the current; Extra still turns downstream.
+      [stageId===3?k.stopAim(40,k.pick(1.1,1.3,1.4,1.5),side*.12):k.stopTo(40,DOWN+side*.25,k.pick(1.1,1.3,1.4,1.5))],{safe:4096});break;
+    // Stage 3 climbers open the current on entry; Extra keeps its route-age beat.
+    case 'current':if(age>=24&&(age-(stageId===3?24:0))%k.pick(34,20,14,11)===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
       k.shot(k.ox,k.oy,a,2,p.needle,s<0?p.main:p.alt,[k.curve(Math.sign(turn)*.02,Math.round(Math.abs(turn)/.02))],{safe:4096,silent:s>0||hush(state,age,44)});}break;
     // Warp stitches fall on alternating slants; stage 4 weft stitches are pulled taut toward the player.
     case 'stitch':{const step=k.pick(34,16,13,10);if(age>=16&&age%step===0){const warp=o.formation==='warp',a=warp?DOWN+((age/step|0)%2?.55:-.55):DOWN,speed=k.pick(1.6,1.9,2.1,2.3);
@@ -310,8 +326,10 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
 
 /** Advance one enemy's authored attack at its age. Returns the bullets
  * emitted this frame so a caller can trace or test the score. */
-export function updateRoadEnemy({game,enemy,frame,difficulty=1,stageId=1,attack,state={},index=0,count=1,gap=0,side=1,formation='',heading=-DOWN,center=null,rng=null,onAttack}:RoadEnemyOptions){
+export function updateRoadEnemy({game,enemy,frame:age,difficulty=1,stageId=1,attack,state={},index=0,count=1,gap=0,side=1,lead=null,formation='',heading=-DOWN,center=null,rng=null,onAttack}:RoadEnemyOptions){
   if(!ROAD_ATTACKS.includes(attack))throw new RangeError(`Undefined road attack ${attack}`);
+  // With a lead, the attack clock starts when this enemy first fires from the firing area.
+  const frame=lead===null?age:age-(state.zone??=age)+lead;
   const before=game.bullets.nextId??0,lasers=game.lasers?.nextId??0;
   const k=kit.bind({game,frame,difficulty,state,rng,origin:{x:enemy.x,y:enemy.y}});
   const split:RoadSplit=(delay,parents,spawn)=>scheduleRoadSplit(k,delay,parents,spawn,onAttack?
@@ -328,12 +346,13 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
   if(!ROAD_ROLES[spec.role]||!ROAD_FORMATIONS.includes(spec.formation)||!ROAD_ATTACKS.includes(spec.attack))throw new TypeError('Road wave requires an authored role, formation and attack');
   const rank=Math.min(3,difficulty),role=ROAD_ROLES[spec.role];
   const count=Math.max(1,spec.count+(rank===0&&spec.count>3?-1:rank>=2&&spec.count>2?1:0)),actors=[];
-  const gap=spec.gap??GAPS[spec.formation]??0,floor=FIRE_FLOOR[spec.formation]??290,silent=spec.role!=='guard'&&(!armed(rank,stageId,spec.beat)||rank===0&&EASY_QUIET.has(`${stageId}:${spec.sectionId}`));
+  const guard=spec.role==='guard',lead=guard||!LEAD_STAGES.has(stageId)?null:ENTRY_LEAD[spec.attack]??20;
+  const gap=spec.gap??GAPS[spec.formation]??0,floor=FIRE_FLOOR[spec.formation]??290,silent=!guard&&(!armed(rank,stageId,spec.beat)||rank===0&&EASY_QUIET.has(`${stageId}:${spec.sectionId}`));
   for(let index=0;index<count;index++){
-    const state:RoadState & {age:number;heading:number}={age:0,heading:-DOWN},life=spec.life??role.life,jitter=(rng.unit()-.5)*12,delay=index*gap;
+    const state:RoadState & {age:number;heading:number;entered?:boolean}={age:0,heading:-DOWN},life=spec.life??role.life,jitter=(rng.unit()-.5)*12,delay=index*gap;
     const fireUntil=life*(FIRE_ROUTE[spec.formation]??1);
     const pathOptions={index,count,side:spec.side,life,jitter,rank},initial=roadPath(spec.formation,pathOptions,0);
-    const enemy=game.spawnEnemy({x:initial.x,y:initial.y,hp:Math.round(role.hp*(.85+rank*.1)),script:role.script,directional:role.directional??true,
+    const enemy=game.spawnEnemy({x:initial.x,y:initial.y,hp:Math.round(role.hp*(.85+rank*.1)*(guard?1:SMALL_HP[stageId-1]??1)),script:role.script,directional:role.directional??true,
       deathBank:game.banks.effect,drop:[],damageInvulnerability:0,
       onUpdate:actor=>{
         if(!isActive())return;const age=state.age++,route=Math.max(0,age-delay),position=roadPath(spec.formation,pathOptions,route);
@@ -342,8 +361,11 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
         const dx=position.x-actor.x,dy=position.y-actor.y;
         actor.motion.flags=0;actor.motion.speed=Math.fround(Math.hypot(dx,dy));actor.motion.angle=Math.fround(Math.atan2(dy,dx));
         if(dx||dy)state.heading=Math.atan2(dy,dx);
-        if(!silent&&canFire()&&age>=delay&&route<fireUntil&&actor.y>=10&&actor.y<=floor&&Math.abs(actor.x)<=184)
-          updateRoadEnemy({game,enemy:actor,frame:age-delay,difficulty,stageId,attack:spec.attack,state,index,count,gap,side:spec.side,formation:spec.formation,
+        const zone=actor.y>=10&&actor.y<=floor&&Math.abs(actor.x)<=184;
+        // Homing shots would otherwise finish these fairies at the screen edge before they reach the firing area.
+        if(lead!==null){if(zone)state.entered=true;actor.invulnerable=!state.entered;}
+        if(!silent&&canFire()&&age>=delay&&route<fireUntil&&zone)
+          updateRoadEnemy({game,enemy:actor,frame:age-delay,difficulty,stageId,attack:spec.attack,state,index,count,gap,side:spec.side,lead,formation:spec.formation,
             heading:state.heading,center:spec.formation==='round'?roundCenter(spec.side,life,route):null,rng,onAttack});
         if(age>=life+delay){actor.alive=false;actor.animation.destroy();}
       },

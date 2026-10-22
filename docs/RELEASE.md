@@ -43,7 +43,7 @@ thlib 包含可复用的应用流程、自机、武器、Bomb、弹幕、道具�
 
 默认 Git 排除 `packages/`、`runtime/`、`node_modules/`、`userdata/`、`reports/`、`build/`、`dist/`、日志与环境文件。源码发布不包含本机运行副本或用户存档；Windows 可执行包按下述白名单独立构建，并保留素材来源、归属与运行时第三方许可。发行包不改变这些资源各自的权利与许可范围。
 
-当前游戏版本为 `3.0.0`，回放内容修订以 `src/storage.ts` 的 `GAME_REVISION` 和 `src/content.ts` 的 `GAME.contentRevision` 为准（当前为 23）。两者必须相同，打包器会检查。仅提升发行版本号不改变模拟或再次递增修订；旧修订回放保留在存档中，须使用录制版本播放。会改变确定性模拟的版本更新应递增修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm run typecheck`、`npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。历史修订与验收结果见 [VERIFICATION.md](VERIFICATION.md)、[ROADS.md](ROADS.md) 和 [BOSS-FLOW.md](BOSS-FLOW.md)。
+当前游戏版本为 `3.0.0`，回放内容修订以 `src/storage.ts` 的 `GAME_REVISION` 和 `src/content.ts` 的 `GAME.contentRevision` 为准（当前为 24）。两者必须相同，打包器会检查。仅提升发行版本号不改变模拟或再次递增修订；旧修订回放保留在存档中，须使用录制版本播放。会改变确定性模拟的版本更新应递增修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm run typecheck`、`npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。历史修订与验收结果见 [VERIFICATION.md](VERIFICATION.md)、[ROADS.md](ROADS.md) 和 [BOSS-FLOW.md](BOSS-FLOW.md)。
 
 ## Windows 可执行包
 
