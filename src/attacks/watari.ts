@@ -29,19 +29,22 @@ function copperCoinFerry(k: AttackKit){
 }
 copperCoinFerry.home={x:0,y:108};
 
-/** Nonspell 1: two currents leave the Boss's sides and bend outward, so the
- * water parts around the middle; aimed reeds cut across the channel. From
- * Normal a wake follows the boat down the channel: a slow row of scales that
- * sways toward one bank and then the other, so the middle is never still. */
+/** Nonspell 1: two currents leave the Boss's sides and run down either bank
+ * of the channel the player is in; the channel breathes wider and narrower
+ * and drifts from side to side, so the player has to follow it and cannot
+ * leave the river. From Normal a wake follows the boat: a slow row of scales
+ * thrown at the player that sways across her, toward one bank and then the
+ * other, so the channel is never still. */
 function pairedCurrents(k: AttackKit){
-  if(k.every(k.pick(5,3,3,2)))for(const side of[-1,1]){
-    const angle=DOWN-side*(.55+.28*Math.sin(k.t*.031));
-    k.fan(k.ox+side*44,k.oy+4,k.pick(1,2,2,2),2.3,angle,.24,T.SCALE,side<0?C.AZURE:C.CYAN,[k.curve(side*.0065,90)],{silent:k.t%10!==0});
+  if(k.every(k.pick(5,3,3,2))){
+    const half=k.pick(64,52,46,40)+14*Math.sin(k.t*.043),drift=k.pick(0,30,36,40)*Math.sin(k.t*.017);
+    for(const side of[-1,1]){const x=k.ox+side*44,y=k.oy+4,angle=Math.atan2(k.py-y,k.px+drift+side*half-x);
+      k.shot(x,y,angle,2.3,T.SCALE,side<0?C.AZURE:C.CYAN,null,{rows:k.pick(1,2,2,2),speedStep:1.9,silent:k.t%10!==0||side>0});}
   }
   const wake=k.pick(0,50,38,32);
-  if(wake&&k.every(wake,20)){const sway=((k.t-20)/wake|0)%2?1:-1;
-    k.fan(k.ox,k.oy+8,k.pick(0,5,7,9),1.7,DOWN,.13,T.SCALE,C.WHITE,[k.wait(30),k.curve(sway*.006,70)],{silent:true});}
-  if(k.every(k.pick(90,80,64,56),40))k.aimed(k.ox,k.oy,k.pick(1,3,5,5),3,.17,T.RICE,C.GREEN,null,{rows:k.pick(2,3,3,4),speedStep:2});
+  if(wake&&k.every(wake,20)){const sway=((k.t-20)/wake|0)%2?1:-1,y=k.oy+8;
+    // The curve turns the row by .42 rad, so it leaves half of that to one side and sweeps across the player.
+    k.fan(k.ox,y,k.pick(0,5,7,9),1.7,k.aim(k.ox,y)-sway*.21,.13,T.SCALE,C.WHITE,[k.wait(30),k.curve(sway*.006,70)],{silent:true});}
   if(k.every(240,200))k.wander(44);
 }
 
