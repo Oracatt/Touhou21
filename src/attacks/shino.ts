@@ -28,9 +28,9 @@ const arcOnField=(cx:number,cy:number,r:number,from:number,sweep:number)=>{
  * stands still is untouched until the ring is released through the old centre;
  * stitches that would leave the field are not sewn. */
 function stitchTheShadow(k: AttackKit){
-  const period=k.pick(240,220,204,190);
+  const period=k.pick(240,200,186,174);
   if(k.every(period)){
-    const cx=k.px,cy=k.py,n=k.pick(12,16,18,20),r=k.pick(100,96,92,90),turn=k.unit()*TAU;
+    const cx=k.px,cy=k.py,n=k.pick(12,18,20,22),r=k.pick(100,96,92,90),turn=k.unit()*TAU;
     const top=Math.atan2(k.oy-cy,k.ox-cx),ex=cx+Math.cos(top)*r,ey=cy+Math.sin(top)*r;
     const speed=k.pick(2.3,2.5,2.6,2.7),omega=speed*k.sp/r,descent=Math.max(36,Math.round(Math.hypot(ex-k.ox,ey-k.oy)/(speed*k.sp)));
     const stitches:{a:number,sweep:number,frames:number}[]=[];
@@ -42,13 +42,13 @@ function stitchTheShadow(k: AttackKit){
     stitches.forEach((s,i)=>{
       const inward=s.a+Math.PI,cmds=[k.goTo(ex,ey,descent,0)];
       if(s.frames)cmds.push(k.set(top+Math.sign(s.sweep)*Math.PI/2,speed),k.curve(Math.sign(s.sweep)*omega,s.frames));
-      cmds.push(k.set(inward,0),k.wait(release-descent-s.frames),k.set(inward,k.pick(1.6,1.8,1.9,2)));
+      cmds.push(k.set(inward,0),k.wait(release-descent-s.frames),k.set(inward,k.pick(1.6,2,2.1,2.2)));
       k.shot(k.ox,k.oy,top+Math.PI,0,T.NEEDLE,i%2?C.MAGENTA:C.PALE,cmds,{silent:i>0});
     });
   }
-  if(k.every(k.pick(40,30,26,22),20))for(const side of[-1,1])
-    k.fan(k.ox+side*40,k.oy,k.pick(3,4,5,5),2.1,DOWN-side*(.55+.25*Math.sin(k.t*.03)),.16,T.RICE,C.PINK,null,{silent:side>0});
-  if(k.every(period,period/2|0))k.ringGap(k.ox,k.oy,k.pick(14,18,22,26),1.9,T.BALL,C.MAGENTA);
+  if(k.every(k.pick(40,26,23,20),20))for(const side of[-1,1])
+    k.fan(k.ox+side*40,k.oy,k.pick(3,5,5,6),2.1,DOWN-side*(.55+.25*Math.sin(k.t*.03)),.16,T.RICE,C.PINK,null,{silent:side>0});
+  if(k.every(period,period/2|0))k.ringGap(k.ox,k.oy,k.pick(14,20,24,28),1.9,T.BALL,C.MAGENTA);
 }
 stitchTheShadow.home={x:0,y:96};
 

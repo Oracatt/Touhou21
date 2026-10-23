@@ -12,14 +12,17 @@ function pageRow(k: AttackKit,{spacing,blank,width=1,speed,color,y=-4,type=T.AMU
   return cells;
 }
 
-/** Midboss (stage 5): shelves of paper fall with a gap at the player's column. */
+/** Midboss (stage 5): shelves of paper fall with a gap near the player's
+ * column; from Normal the gap weaves two cells to either side in turn, so the
+ * shelves snake and the player has to follow the aisle. */
 function shelfSorting(k: AttackKit){
-  const period=k.pick(38,30,25,21),spacing=k.pick(30,26,23,21);
+  const period=k.pick(38,27,23,20),spacing=k.pick(30,25,22,20);
   if(k.every(period)){
-    const cells=Math.floor(368/spacing)+1,blank=Math.round((k.px+184)/368*(cells-1));
-    pageRow(k,{spacing,blank,width:k.pick(2,1,1,1),speed:1.9,color:(k.t/period)&1?C.GREEN:C.PALE,y:k.oy+10});
+    const row=k.t/period|0,cells=Math.floor(368/spacing)+1,weave=k.pick(0,2,2,2)*[0,1,0,-1][row%4];
+    const blank=clamp(Math.round((k.px+184)/368*(cells-1))+weave,1,cells-2);
+    pageRow(k,{spacing,blank,width:k.pick(2,1,1,1),speed:1.9,color:row&1?C.GREEN:C.PALE,y:k.oy+10});
   }
-  if(k.every(100,50))k.aimed(k.ox,k.oy,3,1.7,.34,T.BIG,C8.RED);
+  if(k.every(k.pick(100,80,70,60),50))k.aimed(k.ox,k.oy,k.pick(3,3,5,5),1.7,.34,T.BIG,C8.RED);
   if(k.every(200,160))k.wander(40);
 }
 
@@ -84,15 +87,17 @@ function closedStacks(k: AttackKit){
  * third of a cell off the one before, so the shelves slant and only the
  * aisle stays open. */
 function archiveRefusesOriginals(k: AttackKit){
-  const period=k.pick(28,23,20,18),spacing=k.pick(30,26,24,22),cells=Math.floor(368/spacing)+1;
+  const period=k.pick(28,21,18,16),spacing=k.pick(30,26,24,22),cells=Math.floor(368/spacing)+1;
   if(k.every(period)){
     const row=k.t/period|0,shift=(row%3-1)*spacing/3;
     let blank=k.state.blank??Math.floor(cells/2);
     blank=clamp(blank+(k.unit()<.5?-1:1),2,cells-3);k.state.blank=blank;
     pageRow(k,{spacing,blank,width:k.pick(2,1,1,1),speed:1.7,color:row&1?C.WHITE:C.PALE,shift});
-    if(k.rank>=1&&row%k.pick(5,5,4,4)===2)
+    if(k.rank>=1&&row%k.pick(5,4,3,3)===2)
       k.shot(-184+(368-(cells-1)*spacing)/2+shift+blank*spacing,-4,DOWN,1.7,T.BIG,C8.RED,null,{silent:true,safe:2304});
   }
+  // From Normal the librarian sends return slips after the reader, so the aisle is not a resting place.
+  if(k.rank>=1&&k.every(k.pick(0,84,70,60),40))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.2,.22,T.RICE,C.RED);
 }
 archiveRefusesOriginals.home={x:0,y:84};
 
