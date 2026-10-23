@@ -12,7 +12,7 @@ export interface AttackState {
   later?: Array<{at:number;bullets:TouhouBullet[];spawn:(bullet:TouhouBullet)=>unknown}>;
   carried?: Array<{start:number;frames:number;bullets:TouhouBullet[];at:(index:number,age:number)=>{x:number;y:number}}>;
   echoes?: Array<{at:number;fire:Attack}>;
-  spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;nextAt?:number;pageAim?:number;
+  spin?:number;door?:number;rotation?:number;blank?:number;chapter?:number;nextAt?:number;pageAim?:number;flow?:number;
   threads?:number[];second?:{at:number;rotation:number}|null;
   echo?:{at:number;x:number;y:number;a:number}|null;echoAim?:number;hushAt?:number;
   reeds?:Array<{from:number;until:number;turn:number;shift:number}>;
