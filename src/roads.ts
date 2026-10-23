@@ -359,12 +359,13 @@ export function spawnRoadFormation({game,wave:spec,stageId,difficulty=1,rng,isAc
   const rank=Math.min(3,difficulty),role=ROAD_ROLES[spec.role];
   const count=Math.max(1,spec.count+(rank===0&&spec.count>3?-1:rank>=2&&spec.count>2?1:0)),actors=[];
   const guard=spec.role==='guard',lead=guard||!LEAD_STAGES.has(stageId)||ROUTE_TIMED.has(`${spec.formation}:${spec.attack}`)?null:ENTRY_LEAD[spec.attack]??20;
+  const hpScale=guard?1:stageId===5&&spec.role==='scribe'&&spec.attack==='line'?1.2:SMALL_HP[stageId-1]??1;
   const gap=spec.gap??GAPS[spec.formation]??0,floor=FIRE_FLOOR[spec.formation]??290,silent=!guard&&(!armed(rank,stageId,spec.beat)||rank===0&&EASY_QUIET.has(`${stageId}:${spec.sectionId}`));
   for(let index=0;index<count;index++){
     const state:RoadState & {age:number;heading:number;entered?:boolean}={age:0,heading:-DOWN},life=spec.life??role.life,jitter=(rng.unit()-.5)*12,delay=index*gap;
     const fireUntil=life*(FIRE_ROUTE[spec.formation]??1);
     const pathOptions={index,count,side:spec.side,life,jitter,rank},initial=roadPath(spec.formation,pathOptions,0);
-    const enemy=game.spawnEnemy({x:initial.x,y:initial.y,hp:Math.round(role.hp*(.85+rank*.1)*(guard?1:SMALL_HP[stageId-1]??1)),script:role.script,directional:role.directional??true,
+    const enemy=game.spawnEnemy({x:initial.x,y:initial.y,hp:Math.round(role.hp*(.85+rank*.1)*hpScale),script:role.script,directional:role.directional??true,
       deathBank:game.banks.effect,drop:[],damageInvulnerability:0,
       onUpdate:actor=>{
         if(!isActive())return;const age=state.age++,route=Math.max(0,age-delay),position=roadPath(spec.formation,pathOptions,route);
