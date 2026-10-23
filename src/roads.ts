@@ -242,7 +242,7 @@ function ringVolley(k:AttackKit,p:typeof PALETTES[number],stageId:number,side:nu
   const n=k.pick(8,12,16,20);
   if(stageId===5){const door=k.aim(x,y);burstShape(k,x,y,polygon(4,Math.max(2,n>>2)),1.8,k.unit()*TAU,p.type,color,null,{skip:(q,a)=>inGap(a,door,.3),extra:{safe:4096}});}
   // Stage 4 knots and stage 6 bells close on the player: the double ring puts a bead on the player's line instead of a gap.
-  else if(stageId===4)k.emit({x,y,angle:0,speed:1.8,speedStep:1.35,type:p.type,color,pattern:2,count:k.pick(4,6,7,8),rows:2,safe:4096});
+  else if(stageId===4)k.emit({x,y,angle:0,speed:1.8,speedStep:1.35,type:p.type,color,pattern:2,count:k.pick(5,8,9,10),rows:2,safe:4096});
   // Stage 6 bells echo: the slower row of the double ring stops, then gathers back toward the player.
   else if(stageId===6){const n=k.pick(4,6,7,8);k.emit({x,y,angle:0,speed:1.8,type:p.type,color,pattern:2,count:n,safe:4096});
     k.ring(x,y,n,1.35,k.unit()*TAU,p.type,color,[k.stopAim(40,k.pick(1.5,1.7,1.9,2.1))],{safe:4096,silent:true});}
@@ -264,7 +264,7 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
     // thread is pulled taut (4), a bell clangs a small arc of stars (6).
     case 'aim':if(relay(age,28,o).phase===0){
       if(stageId===3)k.aimed(k.ox,k.oy,k.pick(1,3,3,3),2.4,.24,p.type,p.main,[k.stopAim(28,2.8)],{safe:4096,rows:k.pick(1,2,2,3),speedStep:2});
-      else if(stageId===4)k.aimed(k.ox,k.oy,k.pick(1,1,1,3),2.8,.3,p.needle,p.main,null,{safe:4096,rows:k.pick(2,4,5,6),speedStep:2.1});
+      else if(stageId===4)k.aimed(k.ox,k.oy,k.pick(1,3,3,3),2.8,.3,p.needle,p.main,null,{safe:4096,rows:k.pick(2,4,5,6),speedStep:2.1});
       else if(stageId===6)k.aimed(k.ox,k.oy,k.pick(1,3,5,5),2.4,.26,p.needle,p.main,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:2});
       else k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.6,.2,p.type,p.main,null,{rows:k.pick(1,2,3,3),speedStep:1.8,safe:4096});}break;
     case 'stream':{const r=relay(age,26,o);if(r.phase>=0&&r.phase<r.step&&r.phase%k.pick(10,7,6,5)===0)k.aimed(k.ox,k.oy,1,3,0,p.type,p.main,null,{safe:4096});break;}
@@ -289,18 +289,18 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       // Stage 4 wefts hang vertical warp threads; boats elsewhere fire broadside,
       // slanting down and inward, ahead of the boat. Stage 3 stays two-way on
       // Lunatic: a staircase of eight three-way boats closes the whole lower field.
-      if(stageId===4)k.fan(k.ox,k.oy,1,2.2,DOWN,0,p.needle,p.main,null,{safe:4096,rows:k.pick(1,2,3,4),speedStep:1.5});
+      if(stageId===4)k.fan(k.ox,k.oy,1,2.2,DOWN,0,p.needle,p.main,null,{safe:4096,rows:k.pick(1,3,4,5),speedStep:1.5});
       else k.fan(k.ox,k.oy,stageId===3?k.pick(1,2,2,2):k.pick(1,2,2,3),2.3,DOWN+side*.2,.3,p.needle,p.main,null,{safe:4096});
-      // From Normal, stage 3 boats also throw an aimed oar stroke every few volleys.
-      const stroke=k.pick(0,3,2,2);if(stageId===3&&stroke&&((age-20)/period|0)%stroke===o.index%stroke)k.aimed(k.ox,k.oy,1,2.6,0,p.type,p.alt,null,{safe:4096,silent:true});}break;}
-    case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172))k.ring(k.ox,k.oy,k.pick(6,8,10,14),2,k.unit()*TAU,p.type,p.accent,
+      // From Normal, stage 3 boats also throw an aimed oar stroke every other volley (every volley on Lunatic).
+      const stroke=k.pick(0,2,2,1);if(stageId===3&&stroke&&((age-20)/period|0)%stroke===o.index%stroke)k.aimed(k.ox,k.oy,1,2.6,0,p.type,p.alt,null,{safe:4096,silent:true});}break;}
+    case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172))k.ring(k.ox,k.oy,stageId===3?k.pick(7,10,12,16):k.pick(6,8,10,14),2,k.unit()*TAU,p.type,p.accent,
       // Stage 3 eddies regather toward the player, drifting with the current; Extra still turns downstream.
       [stageId===3?k.stopAim(40,k.pick(1.1,1.3,1.4,1.5),side*.12):k.stopTo(40,DOWN+side*.25,k.pick(1.1,1.3,1.4,1.5))],{safe:4096});break;
     // Stage 3 climbers open the current on entry; Extra keeps its route-age beat.
-    case 'current':if(age>=24&&(age-(stageId===3?24:0))%k.pick(34,20,14,11)===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
+    case 'current':if(age>=24&&(age-(stageId===3?24:0))%(stageId===3?k.pick(30,16,12,10):k.pick(34,20,14,11))===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
       k.shot(k.ox,k.oy,a,2,p.needle,s<0?p.main:p.alt,[k.curve(Math.sign(turn)*.02,Math.round(Math.abs(turn)/.02))],{safe:4096,silent:s>0||hush(state,age,44)});}break;
     // Warp stitches fall on alternating slants; stage 4 weft stitches are pulled taut toward the player.
-    case 'stitch':{const step=k.pick(34,16,13,10);if(age>=16&&age%step===0){const warp=o.formation==='warp',a=warp?DOWN+((age/step|0)%2?.55:-.55):DOWN,speed=k.pick(1.6,1.9,2.1,2.3);
+    case 'stitch':{const step=stageId===4?k.pick(30,13,11,9):k.pick(34,16,13,10);if(age>=16&&age%step===0){const warp=o.formation==='warp',a=warp?DOWN+((age/step|0)%2?.55:-.55):DOWN,speed=k.pick(1.6,1.9,2.1,2.3);
       k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),!warp&&stageId===4?k.aimNow(speed+.3):k.set(a,speed)],{safe:4096,silent:hush(state,age,32)});}break;}
     case 'line':if(age===40||age===100||(k.rank>=2&&age===160)||(k.rank>=3&&age===220)){const n=k.pick(4,5,6,8),blank=(k.unit()*(n-1))|0;
       for(let i=0;i<n;i++)if(i!==blank&&i!==blank+1)k.shot(k.ox+(i-(n-1)/2)*18,k.oy+8,DOWN,1.7,p.needle,i%2?p.main:p.accent,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:1.35,silent:i!==(blank===0?2:0)});
