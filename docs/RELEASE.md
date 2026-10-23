@@ -43,14 +43,14 @@ thlib 包含可复用的应用流程、自机、武器、Bomb、弹幕、道具�
 
 默认 Git 排除 `packages/`、`runtime/`、`node_modules/`、`userdata/`、`reports/`、`build/`、`dist/`、日志与环境文件。源码发布不包含本机运行副本或用户存档；Windows 可执行包按下述白名单独立构建，并保留素材来源、归属与运行时第三方许可。发行包不改变这些资源各自的权利与许可范围。
 
-当前游戏版本为 `3.0.0`，回放内容修订以 `src/storage.ts` 的 `GAME_REVISION` 和 `src/content.ts` 的 `GAME.contentRevision` 为准（当前为 24）。两者必须相同，打包器会检查。仅提升发行版本号不改变模拟或再次递增修订；旧修订回放保留在存档中，须使用录制版本播放。会改变确定性模拟的版本更新应递增修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm run typecheck`、`npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。历史修订与验收结果见 [VERIFICATION.md](VERIFICATION.md)、[ROADS.md](ROADS.md) 和 [BOSS-FLOW.md](BOSS-FLOW.md)。
+当前游戏版本为 `4.0.0`，回放内容修订以 `src/storage.ts` 的 `GAME_REVISION` 和 `src/content.ts` 的 `GAME.contentRevision` 为准（当前为 25）。两者必须相同，打包器会检查。仅提升发行版本号不改变模拟或再次递增修订；旧修订回放保留在存档中，须使用录制版本播放。会改变确定性模拟的版本更新应递增修订号，同时更新依赖锁与验证报告；不同后端的回放不混播。发布前运行 `npm run typecheck`、`npm test`、`npm run verify:engine`、`npm run audit`、`npm run verify` 和 `npm run verify:visual`，并人工确认弹幕可读性、结局、音乐播放与输入响应。历史修订与验收结果见 [VERIFICATION.md](VERIFICATION.md)、[ROADS.md](ROADS.md) 和 [BOSS-FLOW.md](BOSS-FLOW.md)。
 
 ## Windows 可执行包
 
 Windows 发行版仅包含 V8。在 Windows x64 的已还原开发环境中，先准备下述仅 V8 的原生构建审计输入，再运行：
 
 ```powershell
-npm run package:windows -- --native-allowlist build/native-v8-only-release/packaging-allowlist.json
+npm run package:windows -- --native-allowlist build/native-v8-only-4739859-release/packaging-allowlist.json
 ```
 
 游戏入口和业务资源必须已提交，thlib 全部文件必须匹配锁；工具先使用锁定的 TypeScript 编译器构建游戏，再以白名单暂存文件。原生构建凭据必须声明仅 V8，并通过实际后端检查；不接受双后端 EXE。输出在独立的 `build/releases/<时间与随机标识>/` 中，包含 `Touhou-Guiminglu-<版本>-r<修订>-windows-x64-v8.zip`、对应 `.sha256` 和 `release-result.json`。工具不创建标签、推送代码或上传 GitHub Release。
@@ -67,10 +67,10 @@ npm run verify:windows-release -- --package <解压后的Touhou-Guiminglu目录>
 
 ### 仅 V8 的本地 Release 构建
 
-引擎锁保留开发所用的双后端依赖。发行构建在 `build/native-v8-only-release/source/` 中，从锁定 Git 提交复制原生源文件后，仅修改 CMake、后端工厂声明、宿主创建器与命令行路由四处：不拉取/编译/链接 QuickJS，固定构造 V8，拒绝其他后端。不修改 TS-STG 源仓库、开发 `runtime/` 或引擎锁。打包只接受经过核验的本地构建清单：
+引擎锁保留开发所用的双后端依赖。发行构建在 `build/native-v8-only-4739859-release/source/` 中，从锁定 Git 提交复制原生源文件后，仅修改 CMake、后端工厂声明、宿主创建器与命令行路由四处：不拉取/编译/链接 QuickJS，固定构造 V8，拒绝其他后端。不修改 TS-STG 源仓库、开发 `runtime/` 或引擎锁。打包只接受经过核验的本地构建清单：
 
 ```powershell
-npm run package:windows -- --native-allowlist build/native-v8-only-release/packaging-allowlist.json
+npm run package:windows -- --native-allowlist build/native-v8-only-4739859-release/packaging-allowlist.json
 ```
 
 此清单及其原生凭据由构建审计生成，属于本机构建输入，不提交 Git。它必须记录当前锁中全部原始源码的 SHA-256、实际构建输入的 SHA-256、四份补丁全文与前后哈希、Release 配置、V8 检查结果、实际 EXE 和所附每份第三方声明的 SHA-256。打包器重查所有输入哈希，并再次执行发行包验证。实际 EXE 与锁内双后端 EXE 不同，清单明确标记 `exactLockedBinary: false`，同时保留两个哈希；这是以锁定源码为基础的仅 V8 发行配置，不宣称未修改源码或二进制可复现。仅编入 raylib 和 V8，声明清单不包含 QuickJS；原引擎的第三方总说明可以作为上游来源文档保留，发行凭据明确指出实际编入范围。开发依赖验证与发行包验证分别记录结果。没有提供相应审计输入时会报错并停止打包。
