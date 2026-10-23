@@ -30,13 +30,18 @@ function copperCoinFerry(k: AttackKit){
 copperCoinFerry.home={x:0,y:108};
 
 /** Nonspell 1: two currents leave the Boss's sides and bend outward, so the
- * water parts around the middle; aimed reeds cut across the channel. */
+ * water parts around the middle; aimed reeds cut across the channel. From
+ * Normal a wake follows the boat down the channel: a slow row of scales that
+ * sways toward one bank and then the other, so the middle is never still. */
 function pairedCurrents(k: AttackKit){
-  if(k.every(k.pick(5,4,3,3)))for(const side of[-1,1]){
+  if(k.every(k.pick(5,3,3,2)))for(const side of[-1,1]){
     const angle=DOWN-side*(.55+.28*Math.sin(k.t*.031));
-    k.fan(k.ox+side*44,k.oy+4,k.pick(1,1,2,2),2.3,angle,.24,T.SCALE,side<0?C.AZURE:C.CYAN,[k.curve(side*.0065,90)],{silent:k.t%10!==0});
+    k.fan(k.ox+side*44,k.oy+4,k.pick(1,2,2,2),2.3,angle,.24,T.SCALE,side<0?C.AZURE:C.CYAN,[k.curve(side*.0065,90)],{silent:k.t%10!==0});
   }
-  if(k.every(90,40))k.aimed(k.ox,k.oy,k.pick(1,3,3,5),3,.17,T.RICE,C.GREEN,null,{rows:k.pick(2,3,3,4),speedStep:2});
+  const wake=k.pick(0,50,38,32);
+  if(wake&&k.every(wake,20)){const sway=((k.t-20)/wake|0)%2?1:-1;
+    k.fan(k.ox,k.oy+8,k.pick(0,5,7,9),1.7,DOWN,.13,T.SCALE,C.WHITE,[k.wait(30),k.curve(sway*.006,70)],{silent:true});}
+  if(k.every(k.pick(90,80,64,56),40))k.aimed(k.ox,k.oy,k.pick(1,3,5,5),3,.17,T.RICE,C.GREEN,null,{rows:k.pick(2,3,3,4),speedStep:2});
   if(k.every(240,200))k.wander(44);
 }
 

@@ -2,7 +2,7 @@ import type {AttackKit, BossAttacks} from '../danmaku.js';
 ﻿/** 御影房枝 — Stage 5 and the Extra midboss. Paper obeys rules: rows with a
  * blank cell, sorted colours, folds, five seals and a signature star. */
 import {T,C,C8,DOWN,TAU,clamp,lerp} from '../danmaku.js';
-import {polygon,star,burstShape} from './shapes.js';
+import {polygon,star,rose,burstShape} from './shapes.js';
 
 /** A falling row of paper with a blank stretch around `blank` (cells). */
 function pageRow(k: AttackKit,{spacing,blank,width=1,speed,color,y=-4,type=T.AMULET,angle=DOWN,shift=0}:{spacing:number;blank:number;width?:number;speed:number;color:number;y?:number;type?:number;angle?:number;shift?:number}){
@@ -85,7 +85,10 @@ function closedStacks(k: AttackKit){
 /** 札符「不收原件之书库」: rows of blank pages fall with a winding
  * empty cell; vermilion seals are stamped down that aisle. Each row sits a
  * third of a cell off the one before, so the shelves slant and only the
- * aisle stays open. */
+ * aisle stays open. From Normal each seal splashes a ring of red ink halfway
+ * down. Every few rows the librarian refuses the originals: a six-petal
+ * flower of red and green pages opens, halts, and alternate pages turn
+ * opposite ways, weaving a lattice over the shelves. */
 function archiveRefusesOriginals(k: AttackKit){
   const period=k.pick(28,21,18,16),spacing=k.pick(30,26,24,22),cells=Math.floor(368/spacing)+1;
   if(k.every(period)){
@@ -93,11 +96,17 @@ function archiveRefusesOriginals(k: AttackKit){
     let blank=k.state.blank??Math.floor(cells/2);
     blank=clamp(blank+(k.unit()<.5?-1:1),2,cells-3);k.state.blank=blank;
     pageRow(k,{spacing,blank,width:k.pick(2,1,1,1),speed:1.7,color:row&1?C.WHITE:C.PALE,shift});
-    if(k.rank>=1&&row%k.pick(5,4,3,3)===2)
-      k.shot(-184+(368-(cells-1)*spacing)/2+shift+blank*spacing,-4,DOWN,1.7,T.BIG,C8.RED,null,{silent:true,safe:2304});
+    if(k.rank>=1&&row%k.pick(5,4,3,3)===2){
+      const seal=k.shot(-184+(368-(cells-1)*spacing)/2+shift+blank*spacing,-4,DOWN,1.7,T.BIG,C8.RED,null,{silent:true,safe:2304});
+      k.later(Math.round(196/(1.7*k.sp)),seal,b=>k.ring(b.x,b.y,k.pick(6,8,10,12),1.1,k.unit()*TAU,T.AMULET,C.RED,null,{silent:true}));
+    }
   }
-  // From Normal the librarian sends return slips after the reader, so the aisle is not a resting place.
-  if(k.rank>=1&&k.every(k.pick(0,84,70,60),40))k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.2,.22,T.RICE,C.RED);
+  const bloom=k.pick(180,128,112,100);
+  if(k.every(bloom,60)){
+    const round=(k.t-60)/bloom|0,shape=rose(6,k.pick(24,36,42,48)),turn=k.pick(.7,.8,.9,1)*(round%2?1:-1);
+    for(const odd of[0,1])burstShape(k,k.ox,k.oy,shape,1.7,round*.37,T.AMULET,odd?C.RED:C.GREEN,[k.wait(30),k.stopTurn(18,odd?turn:-turn,1.5)],
+      {skip:(p,a,i)=>i%2!==odd,extra:{silent:odd>0}});
+  }
 }
 archiveRefusesOriginals.home={x:0,y:84};
 

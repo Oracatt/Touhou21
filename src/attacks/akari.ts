@@ -13,7 +13,7 @@ function lanternGreeting(k: AttackKit){
     const i=(c-56)/9;k.state.spin=(k.state.spin??0)+.41;
     k.ring(k.ox,k.oy,k.pick(12,18,22,28),1.55+i*.18,k.state.spin,T.BALL,i%2?C.YELLOW:C.ORANGE);
   }
-  if(c===104)k.aimed(k.ox,k.oy,k.pick(1,3,3,5),3.1,.21,T.RICE,C.RED,null,{rows:k.pick(2,3,4,4),speedStep:1.9});
+  if(c===104)k.aimed(k.ox,k.oy,k.pick(1,3,3,5),3.1,.21,T.AMULET,C.RED,null,{rows:k.pick(2,3,4,4),speedStep:1.9});
 }
 
 /** Nonspell 1: rings that bend alternately left and right weave a lattice
@@ -24,7 +24,7 @@ function lanternSpin(k: AttackKit){
     const odd=(k.t/period)&1;
     k.ring(k.ox,k.oy,k.pick(12,16,20,24),1.7,k.t*.013,T.BALL,odd?C.YELLOW:C.ORANGE,[k.curve(odd?.0062:-.0062,120)]);
   }
-  if(k.every(100,50))k.aimed(k.ox,k.oy,k.pick(1,3,3,5),3,.24,T.RICE,C.RED,null,{rows:k.pick(2,3,3,4),speedStep:2});
+  if(k.every(100,50))k.aimed(k.ox,k.oy,k.pick(1,3,3,5),3,.24,T.AMULET,C.RED,null,{rows:k.pick(2,3,3,4),speedStep:2});
   if(k.every(200,150))k.wander(48);
 }
 
@@ -76,7 +76,7 @@ function lanternSlope(k: AttackKit){
       k.rank===3?{rows:2,speedStep:1.1}:null);
     if(k.rank>=1)k.shot(x,y,DOWN,0,T.ORB,C8.YELLOW,[k.wait(cycle-c+10),k.set(DOWN,1.2)],{safe:2304});
   }
-  if(c===step*6+20)burstShape(k,k.ox,k.oy,rose(5,k.pick(25,35,40,45)),1.7,DOWN+round*Math.PI/5,T.RICE,round%2?C.ORANGE:C.RED);
+  if(c===step*6+20)burstShape(k,k.ox,k.oy,rose(5,k.pick(25,35,40,45)),1.7,DOWN+round*Math.PI/5,T.AMULET,round%2?C.ORANGE:C.RED);
   if(c===step*6+40)k.wander(40,{dx:[16,40],y:[84,104]});
 }
 lanternSlope.home={x:0,y:92};
