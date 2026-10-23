@@ -56,21 +56,21 @@ export const ROAD_SCRIPTS:RoadScript[]=deepFreeze([
     section('cloud-break','云隙',4200,4500),
   ]},
   {stageId:3,theme:'ferry-waterways',sections:[
-    section('reeds','芦苇：顺流蛇行与逆流上溯',0,700,[W(100,'waterway','ripple',5,-1),W(250,'waterway','ripple',5,1),W(410,'upstream','current',5,-1,'courier'),W(560,'upstream','current',5,1,'courier')]),
-    section('crossing-boats','渡船：横渡队与第一只回航大妖精',700,1400,[W(710,'crossing','side',5,-1,'courier'),W(840,'waterway','aim',5,1),W(960,'anchor','motif',1,1,'guard',{life:420}),W(1050,'drop','ripple',5,-1),W(1200,'crossing','side',6,1,'courier')]),
-    section('two-currents','分流：逆流与顺流互相穿越',1400,2040,[W(1410,'upstream','current',6,1,'courier'),W(1520,'waterway','ripple',6,-1),W(1660,'upstream','current',6,-1,'courier'),W(1790,'waterway','aim',5,1),W(1920,'crossing','side',6,-1,'courier')]),
+    section('reeds','芦苇：顺流蛇行与逆流上溯',0,700,[W(100,'waterway','ripple',5,-1),W(180,'waterway','ripple',5,1),W(400,'upstream','current',5,-1,'courier'),W(470,'upstream','current',5,1,'courier')]),
+    section('crossing-boats','渡船：横渡队与第一只回航大妖精',700,1400,[W(710,'crossing','side',5,-1,'courier'),W(770,'crossing','side',5,1,'courier'),W(860,'waterway','aim',5,1),W(960,'anchor','motif',1,1,'guard',{life:420}),W(1050,'drop','ripple',5,-1),W(1200,'crossing','side',6,1,'courier')]),
+    section('two-currents','分流：逆流与顺流互相穿越',1400,2040,[W(1410,'upstream','current',6,1,'courier'),W(1480,'upstream','current',6,-1,'courier'),W(1600,'waterway','ripple',6,-1),W(1790,'waterway','aim',5,1),W(1920,'crossing','side',6,-1,'courier')]),
     section('midboss-landing','途中：渡守澪舟',2040,2280),
-    section('fast-current','后半：急流与花形大妖精',2280,3060,[W(2290,'waterway','aim',7,-1),W(2400,'upstream','current',6,1,'courier'),W(2520,'anchor','flower',2,-1,'guard',{life:380}),W(2660,'crossing','side',7,1,'courier'),W(2800,'drop','ripple',6,1),W(2920,'upstream','current',7,-1,'courier')]),
-    section('fare-gates','水闸：回航大妖精与横渡锚点',3060,3900,[W(3070,'anchor','motif',1,-1,'guard',{life:420}),W(3150,'crossing','side',7,-1,'courier'),W(3290,'waterway','ripple',7,1),W(3430,'upstream','current',7,1,'courier'),W(3580,'drop','ripple',6,-1),W(3720,'waterway','aim',8,-1)]),
+    section('fast-current','后半：急流与花形大妖精',2280,3060,[W(2290,'waterway','aim',7,-1),W(2400,'upstream','current',6,1,'courier'),W(2520,'anchor','flower',2,-1,'guard',{life:380}),W(2660,'crossing','side',7,1,'courier'),W(2720,'crossing','side',7,-1,'courier'),W(2800,'drop','ripple',6,1),W(2920,'upstream','current',7,-1,'courier')]),
+    section('fare-gates','水闸：回航大妖精与横渡锚点',3060,3900,[W(3070,'anchor','motif',1,-1,'guard',{life:420}),W(3150,'crossing','side',7,-1,'courier'),W(3210,'crossing','side',7,1,'courier'),W(3290,'waterway','ripple',7,1),W(3430,'upstream','current',7,1,'courier'),W(3580,'drop','ripple',6,-1),W(3720,'waterway','aim',8,1)]),
     section('far-bank','彼岸：双大妖精涟漪',3900,4500,[W(3910,'anchor','rings',2,1,'guard',{life:360}),W(4030,'crossing','side',6,1,'courier'),W(4180,'upstream','current',6,-1,'courier')]),
     section('quiet-water','静水',4500,4800),
   ]},
   {stageId:4,theme:'woven-memories',sections:[
-    section('warp-threads','经线：垂落的经线与横穿的纬线',0,760,[W(100,'warp','stitch',5,-1,'weaver'),W(250,'loom','side',5,1,'weaver'),W(420,'warp','stitch',5,1,'weaver'),W(570,'loom','side',5,-1,'weaver')]),
+    section('warp-threads','经线：垂落的经线与横穿的纬线',0,760,[W(100,'warp','stitch',5,-1,'weaver'),W(230,'loom','side',5,1,'weaver'),W(300,'loom','side',5,-1,'weaver'),W(450,'warp','stitch',5,1,'weaver'),W(590,'loom','side',5,-1,'weaver')]),
     section('loose-knots','结点：丝网大妖精与游针',760,1480,[W(770,'drop','ring',5,1,'weaver'),W(900,'anchor','motif',1,-1,'guard',{life:430}),W(990,'loom','stitch',6,1,'weaver'),W(1140,'warp','aim',6,-1),W(1300,'loom','side',6,-1,'weaver')]),
     section('cross-stitch','交织：经纬同时穿过',1480,2160,[W(1490,'loom','stitch',6,-1,'weaver'),W(1580,'warp','stitch',6,1,'weaver'),W(1760,'loom','side',6,1,'weaver'),W(1900,'drop','ring',6,-1,'weaver'),W(2030,'warp','aim',6,1)]),
     section('midboss-knot','途中：糸守紫乃',2160,2400),
-    section('dense-weft','后半：双向纬线与花形大妖精',2400,3200,[W(2410,'loom','stitch',7,1,'weaver'),W(2500,'loom','stitch',7,-1,'weaver'),W(2640,'anchor','flower',2,1,'guard',{life:400}),W(2800,'warp','stitch',7,-1,'weaver'),W(2940,'loom','side',7,1,'weaver'),W(3060,'drop','ring',6,-1,'weaver')]),
+    section('dense-weft','后半：双向纬线与花形大妖精',2400,3200,[W(2410,'loom','stitch',7,1,'weaver'),W(2500,'loom','stitch',7,-1,'weaver'),W(2640,'anchor','flower',2,1,'guard',{life:400}),W(2800,'warp','stitch',7,-1,'weaver'),W(2940,'loom','side',7,1,'weaver'),W(3000,'loom','side',7,-1,'weaver'),W(3060,'drop','ring',6,-1,'weaver')]),
     section('shuttle','梭子：丝网大妖精与经纬网格',3200,4100,[W(3210,'anchor','motif',1,1,'guard',{life:430}),W(3290,'loom','side',7,-1,'weaver'),W(3440,'warp','stitch',7,1,'weaver'),W(3590,'loom','stitch',7,1,'weaver'),W(3740,'warp','aim',7,-1),W(3900,'loom','side',8,1,'weaver')]),
     section('last-stitches','收针：双大妖精环射',4100,4800,[W(4110,'anchor','rings',2,-1,'guard',{life:360}),W(4230,'warp','stitch',6,1,'weaver'),W(4380,'loom','stitch',6,-1,'weaver'),W(4520,'warp','aim',7,1)]),
     section('unwoven-space','空白布边',4800,5100),
@@ -263,8 +263,8 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
     // Aimed volleys keep a stage accent: the current pauses and surges (3), a
     // thread is pulled taut (4), a bell clangs a small arc of stars (6).
     case 'aim':if(relay(age,28,o).phase===0){
-      if(stageId===3)k.aimed(k.ox,k.oy,k.pick(1,3,3,3),2.4,.24,p.type,p.main,[k.stopAim(28,2.8)],{safe:4096,rows:k.pick(1,2,2,3),speedStep:2});
-      else if(stageId===4)k.aimed(k.ox,k.oy,k.pick(1,3,3,3),2.8,.3,p.needle,p.main,null,{safe:4096,rows:k.pick(2,4,5,6),speedStep:2.1});
+      if(stageId===3)k.aimed(k.ox,k.oy,k.pick(3,5,7,9),2.4,k.pick(.34,.3,.26,.24),p.type,p.main,[k.stopTurn(28,0,2.8)],{safe:4096,rows:k.pick(1,2,2,2),speedStep:2});
+      else if(stageId===4)k.aimed(k.ox,k.oy,k.pick(3,5,7,7),2.8,k.pick(.34,.3,.26,.28),p.needle,p.main,null,{safe:4096,rows:k.pick(2,3,3,4),speedStep:2.1});
       else if(stageId===6)k.aimed(k.ox,k.oy,k.pick(1,3,5,5),2.4,.26,p.needle,p.main,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:2});
       else k.aimed(k.ox,k.oy,k.pick(1,1,3,3),2.6,.2,p.type,p.main,null,{rows:k.pick(1,2,3,3),speedStep:1.8,safe:4096});}break;
     case 'stream':{const r=relay(age,26,o);if(r.phase>=0&&r.phase<r.step&&r.phase%k.pick(10,7,6,5)===0)k.aimed(k.ox,k.oy,1,3,0,p.type,p.main,null,{safe:4096});break;}
@@ -289,19 +289,24 @@ function fairyAttack(k:AttackKit,attack:string,o:FairyContext){
       // Stage 4 wefts hang vertical warp threads; boats elsewhere fire broadside,
       // slanting down and inward, ahead of the boat. Stage 3 stays two-way on
       // Lunatic: a staircase of eight three-way boats closes the whole lower field.
-      if(stageId===4)k.fan(k.ox,k.oy,1,2.2,DOWN,0,p.needle,p.main,null,{safe:4096,rows:k.pick(1,3,4,5),speedStep:1.5});
-      else k.fan(k.ox,k.oy,stageId===3?k.pick(1,2,2,2):k.pick(1,2,2,3),2.3,DOWN+side*.2,.3,p.needle,p.main,null,{safe:4096});
-      // From Normal, stage 3 boats also throw an aimed oar stroke every other volley (every volley on Lunatic).
-      const stroke=k.pick(0,2,2,1);if(stageId===3&&stroke&&((age-20)/period|0)%stroke===o.index%stroke)k.aimed(k.ox,k.oy,1,2.6,0,p.type,p.alt,null,{safe:4096,silent:true});}break;}
-    case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172))k.ring(k.ox,k.oy,stageId===3?k.pick(7,10,12,16):k.pick(6,8,10,14),2,k.unit()*TAU,p.type,p.accent,
-      // Stage 3 eddies regather toward the player, drifting with the current; Extra still turns downstream.
-      [stageId===3?k.stopAim(40,k.pick(1.1,1.3,1.4,1.5),side*.12):k.stopTo(40,DOWN+side*.25,k.pick(1.1,1.3,1.4,1.5))],{safe:4096});break;
+      if(stageId===4)k.fan(k.ox,k.oy,k.pick(1,3,3,3),2.2,DOWN,k.pick(0,.32,.28,.24),p.needle,p.main,null,{safe:4096,rows:k.pick(1,2,3,3),speedStep:1.5});
+      else if(stageId===3)k.fan(k.ox,k.oy,k.pick(2,3,4,5),2.3,DOWN,k.pick(.6,.42,.32,.26),p.needle,p.main,null,{safe:4096});
+      else k.fan(k.ox,k.oy,k.pick(1,2,2,3),2.3,DOWN+side*.2,.3,p.needle,p.main,null,{safe:4096});
+      // From Normal, stage 3 boats also throw an aimed oar stroke every few volleys (every other on Lunatic).
+      const stroke=k.pick(0,3,3,2);if(stageId===3&&stroke&&((age-20)/period|0)%stroke===o.index%stroke)k.aimed(k.ox,k.oy,1,2.6,0,p.type,p.alt,null,{safe:4096,silent:true});}break;}
+    case 'ripple':if(age===36||(k.rank>=1&&age===104)||(k.rank>=2&&age===172)){const a=k.unit()*TAU;
+      // Stage 3 eddies spread across the river; from Normal a slower inner ring halts and regathers toward
+      // the player, drifting with the current. Extra still turns the whole ring downstream.
+      if(stageId===3){const n=k.pick(8,12,14,16);k.ring(k.ox,k.oy,n,2,a,p.type,p.accent,null,{safe:4096});
+        if(k.rank>=1)k.ring(k.ox,k.oy,k.pick(0,6,8,10),1.4,a+Math.PI/n,p.type,p.main,[k.stopAim(40,k.pick(1.1,1.3,1.4,1.5),side*.12)],{safe:4096,silent:true});}
+      else k.ring(k.ox,k.oy,k.pick(6,8,10,14),2,a,p.type,p.accent,[k.stopTo(40,DOWN+side*.25,k.pick(1.1,1.3,1.4,1.5))],{safe:4096});}break;
     // Stage 3 climbers open the current on entry; Extra keeps its route-age beat.
     case 'current':if(age>=24&&(age-(stageId===3?24:0))%(stageId===3?k.pick(30,16,12,10):k.pick(34,20,14,11))===0)for(const s of[-1,1]){const a=o.heading+s*Math.PI/2,turn=wrap(DOWN-a);
       k.shot(k.ox,k.oy,a,2,p.needle,s<0?p.main:p.alt,[k.curve(Math.sign(turn)*.02,Math.round(Math.abs(turn)/.02))],{safe:4096,silent:s>0||hush(state,age,44)});}break;
-    // Warp stitches fall on alternating slants; stage 4 weft stitches are pulled taut toward the player.
+    // Warp stitches fall on alternating slants; every other stage 4 weft stitch is pulled taut toward the player, the rest slant.
     case 'stitch':{const step=stageId===4?k.pick(30,13,11,9):k.pick(34,16,13,10);if(age>=16&&age%step===0){const warp=o.formation==='warp',a=warp?DOWN+((age/step|0)%2?.55:-.55):DOWN,speed=k.pick(1.6,1.9,2.1,2.3);
-      k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),!warp&&stageId===4?k.aimNow(speed+.3):k.set(a,speed)],{safe:4096,silent:hush(state,age,32)});}break;}
+      const taut=!warp&&stageId===4&&(age/step|0)%2===0,slant=!warp&&stageId===4?DOWN+((age/step>>1)%2?.5:-.5):a;
+      k.shot(k.ox,k.oy,DOWN,.01,p.needle,warp?p.accent:p.alt,[k.wait(k.pick(70,62,56,50)),taut?k.aimNow(speed+.3):k.set(slant,speed)],{safe:4096,silent:hush(state,age,32)});}break;}
     case 'line':if(age===40||age===100||(k.rank>=2&&age===160)||(k.rank>=3&&age===220)){const n=k.pick(4,5,6,8),blank=(k.unit()*(n-1))|0;
       for(let i=0;i<n;i++)if(i!==blank&&i!==blank+1)k.shot(k.ox+(i-(n-1)/2)*18,k.oy+8,DOWN,1.7,p.needle,i%2?p.main:p.accent,null,{safe:4096,rows:k.pick(1,1,1,2),speedStep:1.35,silent:i!==(blank===0?2:0)});
       // From Hard, stage 5 writes a word into the blank: an aimed needle from the gap.
