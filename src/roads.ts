@@ -70,7 +70,7 @@ export const ROAD_SCRIPTS:RoadScript[]=deepFreeze([
     section('loose-knots','结点：丝网大妖精与游针',760,1480,[W(770,'drop','ring',5,1,'weaver'),W(900,'anchor','motif',1,-1,'guard',{life:430}),W(990,'loom','stitch',6,1,'weaver'),W(1140,'warp','aim',6,-1),W(1300,'loom','side',6,-1,'weaver')]),
     section('cross-stitch','交织：经纬同时穿过',1480,2160,[W(1490,'loom','stitch',6,-1,'weaver'),W(1580,'warp','stitch',6,1,'weaver'),W(1760,'loom','side',6,1,'weaver'),W(1900,'drop','ring',6,-1,'weaver'),W(2030,'warp','aim',6,1)]),
     section('midboss-knot','途中：糸守紫乃',2160,2400),
-    section('dense-weft','后半：双向纬线与花形大妖精',2400,3200,[W(2410,'loom','stitch',7,1,'weaver'),W(2500,'loom','stitch',7,-1,'weaver'),W(2640,'anchor','flower',2,1,'guard',{life:400}),W(2800,'warp','stitch',7,-1,'weaver'),W(2940,'loom','side',7,1,'weaver'),W(3000,'loom','side',7,-1,'weaver'),W(3060,'drop','ring',6,-1,'weaver')]),
+    section('dense-weft','后半：双向纬线与花形大妖精',2400,3200,[W(2410,'loom','stitch',7,1,'weaver'),W(2500,'loom','stitch',7,-1,'weaver'),W(2640,'anchor','flower',2,1,'guard',{life:400}),W(2800,'warp','stitch',7,-1,'weaver'),W(2940,'loom','side',7,1,'weaver'),W(3060,'drop','ring',6,-1,'weaver')]),
     section('shuttle','梭子：丝网大妖精与经纬网格',3200,4100,[W(3210,'anchor','motif',1,1,'guard',{life:430}),W(3290,'loom','side',7,-1,'weaver'),W(3440,'warp','stitch',7,1,'weaver'),W(3590,'loom','stitch',7,1,'weaver'),W(3740,'warp','aim',7,-1),W(3900,'loom','side',8,1,'weaver')]),
     section('last-stitches','收针：双大妖精环射',4100,4800,[W(4110,'anchor','rings',2,-1,'guard',{life:360}),W(4230,'warp','stitch',6,1,'weaver'),W(4380,'loom','stitch',6,-1,'weaver'),W(4520,'warp','aim',7,1)]),
     section('unwoven-space','空白布边',4800,5100),
